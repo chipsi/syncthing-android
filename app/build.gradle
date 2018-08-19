@@ -23,7 +23,7 @@ android {
     compileSdkVersion 27
     buildToolsVersion '27.0.3'
 
-    buildTypes.debug.applicationIdSuffix ".beta"
+    buildTypes.debug.applicationIdSuffix ".debug"
     dataBinding.enabled = true
 
     playAccountConfigs {
@@ -32,12 +32,12 @@ android {
         }
     }
     defaultConfig {
-        applicationId "com.nutomic.syncthingandroid"
+        applicationId "com.github.catfriend1.syncthingandroid"
         minSdkVersion 16
         targetSdkVersion 26
-        versionCode 4148
-        versionName "0.10.14-beta2"
-        testApplicationId 'com.nutomic.syncthingandroid.test'
+        versionCode 4149
+        versionName "0.14.50.rc2.1"
+        testApplicationId 'com.github.catfriend1.syncthingandroid.test'
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
         playAccountConfig = playAccountConfigs.defaultAccountConfig
     }
