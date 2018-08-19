@@ -40,20 +40,12 @@ public abstract class StateDialogActivity extends SyncthingActivity {
     protected void onResume() {
         super.onResume();
         mIsPaused = false;
-        switch (mServiceState) {
-            case DISABLED:
-                showDisabledDialog();
-                break;
-            default:
-                break;
-        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         mIsPaused = true;
-        dismissDisabledDialog();
         dismissLoadingDialog();
     }
 
@@ -63,7 +55,6 @@ public abstract class StateDialogActivity extends SyncthingActivity {
         if (getService() != null) {
             getService().unregisterOnServiceStateChangeListener(this::onServiceStateChange);
         }
-        dismissDisabledDialog();
     }
 
     private void onServiceStateChange(SyncthingService.State currentState) {
@@ -71,48 +62,16 @@ public abstract class StateDialogActivity extends SyncthingActivity {
         switch (mServiceState) {
             case INIT: // fallthrough
             case STARTING:
-                dismissDisabledDialog();
                 showLoadingDialog();
                 break;
             case ACTIVE:
-                dismissDisabledDialog();
                 dismissLoadingDialog();
                 break;
-            case DISABLED:
-                if (!mIsPaused) {
-                    showDisabledDialog();
-                }
-                break;
+            case DISABLED: // fallthrough
             case ERROR: // fallthrough
             default:
                 break;
         }
-    }
-
-    private void showDisabledDialog() {
-        if (this.isFinishing() && (mDisabledDialog != null)) {
-            return;
-        }
-        mDisabledDialog = new AlertDialog.Builder(this)
-                .setTitle(R.string.syncthing_disabled_title)
-                .setMessage(R.string.syncthing_disabled_message)
-                .setPositiveButton(R.string.syncthing_disabled_change_settings,
-                        (dialogInterface, i) -> {
-                            Intent intent = new Intent(this, SettingsActivity.class);
-                            intent.putExtra(SettingsActivity.EXTRA_OPEN_SUB_PREF_SCREEN, "category_run_conditions");
-                            startActivity(intent);
-                        }
-                )
-                .setNegativeButton(R.string.exit,
-                        (dialogInterface, i) -> ActivityCompat.finishAffinity(this)
-                )
-                .setCancelable(false)
-                .show();
-    }
-
-    private void dismissDisabledDialog() {
-        Util.dismissDialogSafe(mDisabledDialog, this);
-        mDisabledDialog = null;
     }
 
     /**
@@ -124,26 +83,21 @@ public abstract class StateDialogActivity extends SyncthingActivity {
 
         DialogLoadingBinding binding = DataBindingUtil.inflate(
                 getLayoutInflater(), R.layout.dialog_loading, null, false);
-        boolean isGeneratingKeys = getIntent().getBooleanExtra(EXTRA_KEY_GENERATION_IN_PROGRESS, false);
-        binding.loadingText.setText((isGeneratingKeys)
-                ? R.string.web_gui_creating_key
-                : R.string.api_loading);
+        binding.loadingText.setText(R.string.api_loading);
 
         mLoadingDialog = new AlertDialog.Builder(this)
                 .setCancelable(false)
                 .setView(binding.getRoot())
                 .show();
 
-        if (!isGeneratingKeys) {
-            new Handler().postDelayed(() -> {
-                if (this.isFinishing() || mLoadingDialog == null)
-                    return;
+        new Handler().postDelayed(() -> {
+            if (this.isFinishing() || mLoadingDialog == null)
+                return;
 
-                binding.loadingSlowMessage.setVisibility(View.VISIBLE);
-                binding.viewLogs.setOnClickListener(v ->
-                        startActivity(new Intent(this, LogActivity.class)));
-            }, SLOW_LOADING_TIME);
-        }
+            binding.loadingSlowMessage.setVisibility(View.VISIBLE);
+            binding.viewLogs.setOnClickListener(v ->
+                    startActivity(new Intent(this, LogActivity.class)));
+        }, SLOW_LOADING_TIME);
     }
 
     private void dismissLoadingDialog() {

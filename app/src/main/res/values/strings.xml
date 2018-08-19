@@ -12,19 +12,23 @@
     <string name="welcome_title">Welcome to Syncthing for Android</string>
 
     <!-- Welcome wizard -->
-    <!-- Slide 1 -->
+    <!-- Slide "Introduction" -->
     <string name="introduction">Introduction</string>
     <string name="welcome_text">Syncthing is an open-source file synchronization application.\n\
 To share data with other devices, you need to add their unique device IDs to the device list. Afterwards you can select which folders to share with which devices.\n\
 Please report any problems you encounter via Github.</string>
 
-    <!-- Slide 2 -->
+    <!-- Slide "Storage Permission" -->
     <string name="storage_permission_title">Storage Permission</string>
     <string name="storage_permission_desc">Syncthing needs to access your storage to do file synchronization.</string>
 
-    <!-- Slide 3 -->
+    <!-- Slide "Location Permission"" -->
     <string name="location_permission_title">Location Permission</string>
-    <string name="location_permission_desc">Syncthing can be configured to run on selected wifi networks. Android requires applications to have location permissions to be able look up active WiFi network name, as you can sometimes infer users location from the name of the network they are connected to. If you want to use this feature, press the button above to give the required location permissions to Syncthing. Otherwise you can skip this step.</string>
+    <string name="location_permission_desc">Syncthing can be configured to run on selected Wi-Fi networks. Android requires applications to have location permissions to be able look up active Wi-Fi network name, as you can sometimes infer users location from the name of the network they are connected to. If you want to use this feature, press the button above to give the required location permissions to Syncthing. Otherwise you can skip this step.</string>
+
+    <!-- Slide "Key Generation" -->
+    <string name="key_generation_title">Key Generation</string>
+    <string name="key_generation_success">Secure keys for private data exchange have been successfully generated.</string>
 
     <!-- Generic texts used everywhere -->
     <string name="back">Back</string>
@@ -34,6 +38,7 @@ Please report any problems you encounter via Github.</string>
     <string name="generic_error">Error</string>
     <string name="grant_permission">Grant permission</string>
     <string name="permission_granted">Permission granted</string>
+    <string name="reason">Reason:</string>
 
     <string name="accept">Accept</string>
 
@@ -82,7 +87,7 @@ Please report any problems you encounter via Github.</string>
     <string name="api_loading">Loading&#8230;</string>
 
     <!-- Shown instead of web_gui_loading if the key does not exist and has to be created -->
-    <string name="web_gui_creating_key">Generating secure keys. This may take a few minutes.</string>
+    <string name="web_gui_creating_key">Generating secure keys. This may take a few minutes&#8230;</string>
 
     <string name="syncthing_loading_slow_message">Syncthing is taking very long to load. Use the logs to check for any errors.</string>
 
@@ -135,6 +140,13 @@ Please report any problems you encounter via Github.</string>
     <!-- Title for current upload rate -->
     <string name="upload_title">Upload</string>
 
+    <!-- StatusFragment -->
+    <string name="status_fragment_title">Status</string>
+    <string name="syncthing_starting">Syncthing is starting.</string>
+    <string name="syncthing_running">Syncthing is running.</string>
+    <string name="syncthing_not_running">Syncthing is not running.</string>
+    <string name="syncthing_has_crashed">Syncthing has crashed.</string>
+
     <!-- DrawerFragment -->
 
 
@@ -151,7 +163,7 @@ Please report any problems you encounter via Github.</string>
     <string name="ram_usage">RAM Usage</string>
 
     <!-- Title for announce server status -->
-    <string name="announce_server">Announce Server</string>
+    <string name="announce_server">Configured Announce Server</string>
 
     <string name="restart">Restart</string>
 
@@ -302,22 +314,22 @@ Please report any problems you encounter via Github.</string>
     <string name="run_on_mobile_data_title">Run on mobile data</string>
     <string name="run_on_mobile_data_summary">Run when device is connected via the mobile data network. Warning: This can consume a lot of data from your mobile operator data plan if you sync large amounts of data.</string>
 
-    <string name="run_on_wifi_title">Run on wifi</string>
-    <string name="run_on_wifi_summary">Run when device is connected to a wifi network.</string>
+    <string name="run_on_wifi_title">Run on Wi-Fi</string>
+    <string name="run_on_wifi_summary">Run when device is connected to a Wi-Fi network.</string>
 
-    <string name="run_on_metered_wifi_title">Run on metered wifi</string>
-    <string name="run_on_metered_wifi_summary">Run when device is connected to a metered wifi network e.g. a hotspot or tethered network. Attention: This can consume large portion of your data plan if you sync a lot of data.</string>
+    <string name="run_on_metered_wifi_title">Run on metered Wi-Fi</string>
+    <string name="run_on_metered_wifi_summary">Run when device is connected to a metered Wi-Fi network e.g. a hotspot or tethered network. Attention: This can consume large portion of your data plan if you sync a lot of data.</string>
 
-    <string name="run_on_whitelisted_wifi_title">Run on specified wifi networks</string>
-    <string name="run_on_whitelisted_wifi_networks">Run only on selected wifi networks: %1$s</string>
-    <string name="run_on_all_wifi_networks">Run on all wifi networks.</string>
+    <string name="run_on_whitelisted_wifi_title">Run on specified Wi-Fi networks</string>
+    <string name="run_on_whitelisted_wifi_networks">Run only on selected Wi-Fi networks: %1$s</string>
+    <string name="run_on_all_wifi_networks">Run on all Wi-Fi networks.</string>
 
-    <string name="sync_only_wifi_ssids_wifi_turn_on_wifi">Please turn on WiFi to select networks.</string>
+    <string name="sync_only_wifi_ssids_wifi_turn_on_wifi">Please turn on Wi-Fi to select networks.</string>
 
     <string name="sync_only_wifi_ssids_need_to_grant_location_permission">You need to grant LOCATION permission to use this feature.</string>
 
     <string name="sync_only_wifi_ssids_location_permission_rejected_dialog_title">Permission required</string>
-    <string name="sync_only_wifi_ssids_location_permission_rejected_dialog_content">Starting with Android 8.1, location access is required to be able to read the WiFi\'s name. You can use this feature only if you grant this permission.</string>
+    <string name="sync_only_wifi_ssids_location_permission_rejected_dialog_content">Starting with Android 8.1, location access is required to be able to read the Wi-Fi\'s name. You can use this feature only if you grant this permission.</string>
 
     <string name="power_source_title">Run when device is powered by</string>
 
@@ -334,7 +346,7 @@ Please report any problems you encounter via Github.</string>
     <string name="respect_master_sync_summary">Disable Syncthing when the quick settings tile \'Auto-sync data\' is toggled off.</string>
 
     <string name="run_in_flight_mode_title">Run when device is in flight mode</string>
-    <string name="run_in_flight_mode_summary">Enable if your phone has problems detecting manual wifi connections during flight mode.</string>
+    <string name="run_in_flight_mode_summary">Enable if your device has problems detecting manual Wi-Fi connections during flight mode.</string>
 
     <string name="service_settings_title">Service setting</string>
     <string name="service_settings_summary">Run Syncthing as a service. Adds a persistent notification to prevent it from being terminated by Android. Checking this option starts Syncthing on operating system startup.</string>
@@ -627,18 +639,29 @@ Please report any problems you encounter via Github.</string>
     <!-- Sub Folder title -->
     <string name="sub_folder">Sub folder</string>
 
+    <!-- RunConditionMonitor -->
+
+    <!-- Explanations why syncthing is running or not running -->
+    <string name="reason_not_on_ac_power">Phone is not running on AC power.</string>
+    <string name="reason_not_on_battery_power">Phone is not running on battery power.</string>
+    <string name="reason_not_while_power_saving">Syncthing is not running as the phone is currently power saving.</string>
+    <string name="reason_not_while_auto_sync_data_disabled">Syncthing is not running as Android currently has \'Auto-sync data\' disabled.</string>
+    <string name="reason_on_mobile_data">Syncthing is running as mobile data is currently connected.</string>
+    <string name="reason_not_on_mobile_data">Syncthing is allowed to run on mobile data connection but mobile data isn\'t connected.</string>
+    <string name="reason_on_wifi">Syncthing is allowed to run on WiFi and WiFi is currently connected.</string>
+    <string name="reason_not_on_wifi">Syncthing is allowed to run on WiFi but WiFi isn\'t connected or the phone is in flight mode.</string>
+    <string name="reason_on_metered_nonmetered_wifi">Syncthing is allowed to run on metered and non-metered WiFi connections.</string>
+    <string name="reason_on_whitelisted_wifi">Syncthing is allowed to run on the current WiFi network.</string>
+    <string name="reason_not_on_whitelisted_wifi">Syncthing is not running as the current WiFi network\'s name is not whitelisted.</string>
+    <string name="reason_on_nonmetered_wifi">Syncthing is allowed to run on non-metered WiFi connections. The active WiFi connection is non-metered.</string>
+    <string name="reason_not_nonmetered_wifi">Syncthing is not running as you disallowed it to run on metered WiFi connections.</string>
+    <string name="reason_on_flight_mode">Syncthing is running as you allowed it to run when flight mode is active.</string>
+
     <!-- SyncthingService -->
 
 
     <!-- Title of the "syncthing disabled" dialog -->
     <string name="syncthing_disabled_title">Syncthing is disabled</string>
-
-    <!-- Message of the "syncthing disabled" dialog -->
-    <string name="syncthing_disabled_message">Do you want to change the run conditions?</string>
-
-    <!-- Button text on the "syncthing disabled" dialog -->
-    <string name="syncthing_disabled_change_settings">Change Settings</string>
-
     <!-- Button text on the "syncthing disabled" dialog, used as menu item to stop syncthing service if "always_run_in_background" is true -->
     <string name="exit">Exit</string>
 
@@ -649,8 +672,9 @@ Please report any problems you encounter via Github.</string>
 
     <string name="syncthing_terminated">Syncthing was terminated</string>
 
-    <!-- Toast shown if syncthing failed to create a config -->
-    <string name="config_create_failed">Failed to create config file</string>
+    <!-- Toast shown if syncthing failed to create or read the config -->
+    <string name="config_create_failed">Failed to create configuration.</string>
+    <string name="config_read_failed">Failed to read configuration. Consider backing up data from your sync folders, then clear this app\'s data from Android settings and launch it again.</string>
 
     <!-- Toast shown if a config file crucial to operation is missing -->
     <string name="config_file_missing">A config file crucial to operation is missing</string>
