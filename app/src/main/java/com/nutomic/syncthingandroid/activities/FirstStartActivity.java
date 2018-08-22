@@ -2,15 +2,19 @@ package com.nutomic.syncthingandroid.activities;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.Manifest;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PowerManager;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -89,6 +93,7 @@ public class FirstStartActivity extends Activity {
          * If anything mandatory is missing, the according welcome slide(s) will be shown.
          */
         Boolean showSlideStoragePermission = !haveStoragePermission();
+        Boolean showSlideIgnoreDoze = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) && !haveIgnoreDozePermission();
         Boolean showSlideLocationPermission = !haveLocationPermission();
         Boolean showSlideKeyGeneration = !Constants.getConfigFile(this).exists();
 
@@ -96,7 +101,7 @@ public class FirstStartActivity extends Activity {
          * If we don't have to show slides for mandatory prerequisites,
          * start directly into MainActivity.
          */
-        if (!showSlideStoragePermission && !showSlideKeyGeneration) {
+        if (false && !showSlideStoragePermission && !showSlideIgnoreDoze && !showSlideKeyGeneration) {
             startApp();
             return;
         }
@@ -130,10 +135,14 @@ public class FirstStartActivity extends Activity {
         mSlides = new Slide[
                 1 +
                 (showSlideStoragePermission ? 1 : 0) +
+                (showSlideIgnoreDoze ? 1 : 0) +
                 (showSlideLocationPermission ? 1 : 0) +
                 (showSlideKeyGeneration ? 1 : 0)
         ];
         mSlides[slideIndex++] = new Slide(R.layout.activity_firststart_intro, colorsActive[0], colorsInactive[0]);
+        if (showSlideIgnoreDoze) {
+            mSlides[slideIndex++] = new Slide(R.layout.activity_firststart_ignore_doze_permission, colorsActive[1], colorsInactive[1]);
+        }
         if (showSlideStoragePermission) {
             mSlidePosStoragePermission = slideIndex;
             mSlides[slideIndex++] = new Slide(R.layout.activity_firststart_storage_permission, colorsActive[1], colorsInactive[1]);
@@ -342,6 +351,24 @@ public class FirstStartActivity extends Activity {
     /**
      * Permission check and request functions
      */
+    private boolean haveIgnoreDozePermission() {
+        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        return pm.isIgnoringBatteryOptimizations(getPackageName());
+    }
+
+    private void requestIgnoreDozePermission() {
+        Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+        intent.setData(Uri.parse("package:" + getPackageName()));
+        try {
+            startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            // Some devices dont seem to support this request (according to Google Play
+            // crash reports).
+            Log.w(TAG, "Request ignore battery optimizations not supported", e);
+            Toast.makeText(this, R.string.dialog_disable_battery_optimizations_not_supported, Toast.LENGTH_LONG).show();
+        }
+    }
+
     private boolean haveLocationPermission() {
         int permissionState = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_COARSE_LOCATION);
