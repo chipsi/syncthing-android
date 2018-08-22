@@ -69,6 +69,7 @@ public class FirstStartActivity extends Activity {
      * shown.
      */
     private int mSlidePosStoragePermission = -1;
+    private int mSlidePosIgnoreDozePermission = -1;
     private int mSlidePosKeyGeneration = -1;
 
     private ViewPager mViewPager;
@@ -94,7 +95,7 @@ public class FirstStartActivity extends Activity {
          * If anything mandatory is missing, the according welcome slide(s) will be shown.
          */
         Boolean showSlideStoragePermission = !haveStoragePermission();
-        Boolean showSlideIgnoreDoze = !haveIgnoreDozePermission();
+        Boolean showSlideIgnoreDozePermission = !haveIgnoreDozePermission();
         Boolean showSlideLocationPermission = !haveLocationPermission();
         Boolean showSlideKeyGeneration = !Constants.getConfigFile(this).exists();
 
@@ -102,7 +103,9 @@ public class FirstStartActivity extends Activity {
          * If we don't have to show slides for mandatory prerequisites,
          * start directly into MainActivity.
          */
-        if (!showSlideStoragePermission && !showSlideIgnoreDoze && !showSlideKeyGeneration) {
+        if (!showSlideStoragePermission &&
+                !showSlideIgnoreDozePermission &&
+                !showSlideKeyGeneration) {
             startApp();
             return;
         }
@@ -136,12 +139,13 @@ public class FirstStartActivity extends Activity {
         mSlides = new Slide[
                 1 +
                 (showSlideStoragePermission ? 1 : 0) +
-                (showSlideIgnoreDoze ? 1 : 0) +
+                (showSlideIgnoreDozePermission ? 1 : 0) +
                 (showSlideLocationPermission ? 1 : 0) +
                 (showSlideKeyGeneration ? 1 : 0)
         ];
         mSlides[slideIndex++] = new Slide(R.layout.activity_firststart_intro, colorsActive[0], colorsInactive[0]);
-        if (showSlideIgnoreDoze) {
+        if (showSlideIgnoreDozePermission) {
+            mSlidePosIgnoreDozePermission = slideIndex;
             mSlides[slideIndex++] = new Slide(R.layout.activity_firststart_ignore_doze_permission, colorsActive[4], colorsInactive[4]);
         }
         if (showSlideStoragePermission) {
@@ -203,6 +207,15 @@ public class FirstStartActivity extends Activity {
             }
         }
 
+        if (mViewPager.getCurrentItem() == mSlidePosIgnoreDozePermission) {
+            // As the ignore doze permission is a prerequisite to run syncthing, refuse to continue without it.
+            if (!haveIgnoreDozePermission()) {
+                Toast.makeText(this, R.string.toast_ignore_doze_permission_required,
+                        Toast.LENGTH_LONG).show();
+                return;
+            }
+        }
+
         int current = getItem(+1);
         if (current < mSlides.length) {
             // Move to next slide.
@@ -214,7 +227,6 @@ public class FirstStartActivity extends Activity {
         } else {
             // Start the app after "mNextButton" was hit on the last slide.
             Log.v(TAG, "User completed first start UI.");
-            mPreferences.edit().putBoolean(Constants.PREF_FIRST_START, false).apply();
             startApp();
         }
     }
