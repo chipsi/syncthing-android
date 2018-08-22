@@ -1,6 +1,7 @@
 package com.nutomic.syncthingandroid.activities;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -93,7 +94,7 @@ public class FirstStartActivity extends Activity {
          * If anything mandatory is missing, the according welcome slide(s) will be shown.
          */
         Boolean showSlideStoragePermission = !haveStoragePermission();
-        Boolean showSlideIgnoreDoze = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) && !haveIgnoreDozePermission();
+        Boolean showSlideIgnoreDoze = !haveIgnoreDozePermission();
         Boolean showSlideLocationPermission = !haveLocationPermission();
         Boolean showSlideKeyGeneration = !Constants.getConfigFile(this).exists();
 
@@ -101,7 +102,7 @@ public class FirstStartActivity extends Activity {
          * If we don't have to show slides for mandatory prerequisites,
          * start directly into MainActivity.
          */
-        if (false && !showSlideStoragePermission && !showSlideIgnoreDoze && !showSlideKeyGeneration) {
+        if (!showSlideStoragePermission && !showSlideIgnoreDoze && !showSlideKeyGeneration) {
             startApp();
             return;
         }
@@ -141,7 +142,7 @@ public class FirstStartActivity extends Activity {
         ];
         mSlides[slideIndex++] = new Slide(R.layout.activity_firststart_intro, colorsActive[0], colorsInactive[0]);
         if (showSlideIgnoreDoze) {
-            mSlides[slideIndex++] = new Slide(R.layout.activity_firststart_ignore_doze_permission, colorsActive[1], colorsInactive[1]);
+            mSlides[slideIndex++] = new Slide(R.layout.activity_firststart_ignore_doze_permission, colorsActive[4], colorsInactive[4]);
         }
         if (showSlideStoragePermission) {
             mSlidePosStoragePermission = slideIndex;
@@ -297,6 +298,17 @@ public class FirstStartActivity extends Activity {
                 });
             }
 
+            /* Slide: ignore doze permission */
+            Button btnGrantIgnoreDozePerm = (Button) view.findViewById(R.id.btnGrantIgnoreDozePerm);
+            if (btnGrantIgnoreDozePerm != null) {
+                btnGrantIgnoreDozePerm.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        requestIgnoreDozePermission();
+                    }
+                });
+            }
+
             /* Slide: location permission */
             Button btnGrantLocationPerm = (Button) view.findViewById(R.id.btnGrantLocationPerm);
             if (btnGrantLocationPerm != null) {
@@ -352,10 +364,16 @@ public class FirstStartActivity extends Activity {
      * Permission check and request functions
      */
     private boolean haveIgnoreDozePermission() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            // Older android version don't have the doze feature so we'll assume having the anti-doze permission.
+            return true;
+        }
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         return pm.isIgnoringBatteryOptimizations(getPackageName());
     }
 
+    @SuppressLint("InlinedApi")
+    @TargetApi(23)
     private void requestIgnoreDozePermission() {
         Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
         intent.setData(Uri.parse("package:" + getPackageName()));
