@@ -300,10 +300,29 @@ public class RunConditionMonitor {
      * Functions for run condition information retrieval.
      */
     private boolean isOnAcPower() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            // API level < 21
+            return isOnAcPower_API16();
+        } else {
+            // API level >= 21
+            return isOnAcPower_API21();
+        }
+    }
+
+    @TargetApi(16)
+    private boolean isOnAcPower_API16() {
         Intent batteryIntent = mContext.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
         int status = batteryIntent.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
         return status == BatteryManager.BATTERY_STATUS_CHARGING ||
             status == BatteryManager.BATTERY_STATUS_FULL;
+    }
+
+    @TargetApi(21)
+    private boolean isOnAcPower_API21() {
+        Intent intent = mContext.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        int plugged = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);
+        return plugged == BatteryManager.BATTERY_PLUGGED_AC ||
+            plugged == BatteryManager.BATTERY_PLUGGED_USB;
     }
 
     @TargetApi(21)
