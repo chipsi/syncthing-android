@@ -53,7 +53,6 @@ public class StatusFragment extends ListFragment implements SyncthingService.OnS
     private ArrayAdapter mAdapter;
     private SyncthingService.State mServiceState = SyncthingService.State.INIT;
     private final Handler mRestApiQueryHandler = new Handler();
-    private Boolean mLastVisibleToUser = false;
 
     /**
      * Object that must be locked upon accessing the status holders.
@@ -74,21 +73,34 @@ public class StatusFragment extends ListFragment implements SyncthingService.OnS
     public void setUserVisibleHint(boolean isVisibleToUser)
     {
         super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser && !mLastVisibleToUser) {
+        if (isVisibleToUser) {
             // User switched to the current tab, start handler.
-            mRestApiQueryHandler.post(mRestApiQueryRunnable);
-
-        } else if (!isVisibleToUser && mLastVisibleToUser) {
+            startRestApiQueryHandler();
+        } else {
             // User switched away to another tab, stop handler.
-            mRestApiQueryHandler.removeCallbacks(mRestApiQueryRunnable);
+            stopRestApiQueryHandler();
         }
-        mLastVisibleToUser = isVisibleToUser;
     }
 
     @Override
     public void onPause() {
-        mRestApiQueryHandler.removeCallbacks(mRestApiQueryRunnable);
+        stopRestApiQueryHandler();
         super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        startRestApiQueryHandler();
+    }
+
+    private void startRestApiQueryHandler() {
+        stopRestApiQueryHandler();
+        mRestApiQueryHandler.post(mRestApiQueryRunnable);
+    }
+
+    private void stopRestApiQueryHandler() {
+        mRestApiQueryHandler.removeCallbacks(mRestApiQueryRunnable);
     }
 
     @Override
