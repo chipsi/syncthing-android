@@ -236,18 +236,17 @@ public class SyncthingService extends Service {
         }
 
         if (ACTION_RESTART.equals(intent.getAction()) && mCurrentState == State.ACTIVE) {
-            shutdown(State.INIT, () -> launchStartupTask());
+            shutdown(State.INIT, () -> launchStartupTask(SyncthingRunnable.Command.main));
         } else if (ACTION_STOP.equals(intent.getAction()) && mCurrentState == State.ACTIVE) {
             shutdown(State.DISABLED, () -> {});
         } else if (ACTION_RESET_DATABASE.equals(intent.getAction())) {
             shutdown(State.INIT, () -> {
                 new SyncthingRunnable(this, SyncthingRunnable.Command.resetdatabase).run();
-                launchStartupTask();
+                launchStartupTask(SyncthingRunnable.Command.main);
             });
         } else if (ACTION_RESET_DELTAS.equals(intent.getAction())) {
             shutdown(State.INIT, () -> {
-                new SyncthingRunnable(this, SyncthingRunnable.Command.resetdeltas).run();
-                launchStartupTask();
+                launchStartupTask(SyncthingRunnable.Command.resetdeltas);
             });
         } else if (ACTION_REFRESH_NETWORK_INFO.equals(intent.getAction())) {
             mRunConditionMonitor.updateShouldRunDecision();
@@ -282,7 +281,7 @@ public class SyncthingService extends Service {
                 switch (mCurrentState) {
                     case DISABLED:
                     case INIT:
-                        launchStartupTask();
+                        launchStartupTask(SyncthingRunnable.Command.main);
                         break;
                     case STARTING:
                     case ACTIVE:
@@ -305,7 +304,7 @@ public class SyncthingService extends Service {
     /**
      * Prepares to launch the syncthing binary.
      */
-    private void launchStartupTask () {
+    private void launchStartupTask (SyncthingRunnable.Command srCommand) {
         Log.v(TAG, "Starting syncthing");
         synchronized(mStateLock) {
             if (mCurrentState != State.DISABLED && mCurrentState != State.INIT) {
@@ -320,7 +319,7 @@ public class SyncthingService extends Service {
             return;
         }
         onServiceStateChange(State.STARTING);
-        mStartupTask = new StartupTask(this);
+        mStartupTask = new StartupTask(this, srCommand);
         mStartupTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
@@ -330,9 +329,11 @@ public class SyncthingService extends Service {
      */
      private static class StartupTask extends AsyncTask<Void, Void, Void> {
          private WeakReference<SyncthingService> refSyncthingService;
+         private SyncthingRunnable.Command srCommand;
 
-         StartupTask(SyncthingService context) {
+         StartupTask(SyncthingService context, SyncthingRunnable.Command srCommand) {
              refSyncthingService = new WeakReference<>(context);
+             this.srCommand = srCommand;
          }
 
          @Override
@@ -360,7 +361,7 @@ public class SyncthingService extends Service {
              // Get a reference to the service if it is still there.
              SyncthingService syncthingService = refSyncthingService.get();
              if (syncthingService != null) {
-                 syncthingService.onStartupTaskCompleteListener();
+                 syncthingService.onStartupTaskCompleteListener(srCommand);
              }
          }
      }
@@ -368,19 +369,27 @@ public class SyncthingService extends Service {
      /**
       * Callback on {@link StartupTask#onPostExecute}.
       */
-     private void onStartupTaskCompleteListener() {
+     private void onStartupTaskCompleteListener(SyncthingRunnable.Command srCommand) {
          if (mApi == null) {
              mApi = new RestApi(this, mConfig.getWebGuiUrl(), mConfig.getApiKey(),
                                  this::onApiAvailable, () -> onServiceStateChange(mCurrentState));
              Log.i(TAG, "Web GUI will be available at " + mConfig.getWebGuiUrl());
          }
 
-         // Start the syncthing binary.
+         // Check mSyncthingRunnable lifecycle and create singleton.
          if (mSyncthingRunnable != null || mSyncthingRunnableThread != null) {
              Log.e(TAG, "onStartupTaskCompleteListener: Syncthing binary lifecycle violated");
              return;
          }
-         mSyncthingRunnable = new SyncthingRunnable(this, SyncthingRunnable.Command.main);
+         mSyncthingRunnable = new SyncthingRunnable(this, srCommand);
+
+         /**
+          * Check if an old syncthing instance is still running.
+          * This happens after an in-place app upgrade. If so, end it.
+          */
+         mSyncthingRunnable.killSyncthing();
+
+         // Start the syncthing binary in a separate thread.
          mSyncthingRunnableThread = new Thread(mSyncthingRunnable);
          mSyncthingRunnableThread.start();
 
@@ -639,7 +648,7 @@ public class SyncthingService extends Service {
             } catch (IOException e) {
                 Log.w(TAG, "Failed to import config", e);
             }
-            launchStartupTask();
+            launchStartupTask(SyncthingRunnable.Command.main);
         });
         return true;
     }

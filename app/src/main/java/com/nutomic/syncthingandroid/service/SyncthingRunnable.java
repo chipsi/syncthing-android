@@ -138,12 +138,6 @@ public class SyncthingRunnable implements Runnable {
             }
 
             /**
-             * Check if an old syncthing instance is still running.
-             * This happens after an in-place app upgrade. If so, end it.
-             */
-            killSyncthing();
-
-            /**
              * Setup and run a new syncthing instance
              */
             increaseInotifyWatches();
