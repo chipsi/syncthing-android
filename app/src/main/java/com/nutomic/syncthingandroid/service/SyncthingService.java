@@ -240,11 +240,13 @@ public class SyncthingService extends Service {
         } else if (ACTION_STOP.equals(intent.getAction()) && mCurrentState == State.ACTIVE) {
             shutdown(State.DISABLED, () -> {});
         } else if (ACTION_RESET_DATABASE.equals(intent.getAction())) {
+            Log.i(TAG, "Invoking reset of database");
             shutdown(State.INIT, () -> {
                 new SyncthingRunnable(this, SyncthingRunnable.Command.resetdatabase).run();
                 launchStartupTask(SyncthingRunnable.Command.main);
             });
         } else if (ACTION_RESET_DELTAS.equals(intent.getAction())) {
+            Log.i(TAG, "Invoking reset of delta indexes");
             shutdown(State.INIT, () -> {
                 launchStartupTask(SyncthingRunnable.Command.resetdeltas);
             });
