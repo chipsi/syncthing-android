@@ -282,11 +282,7 @@ public class SyncthingService extends Service {
                 switch (mCurrentState) {
                     case DISABLED:
                     case INIT:
-                        // HACK: Make sure there is no syncthing binary left running from an improper
-                        // shutdown (eg Play Store update).
-                        shutdown(State.INIT, () -> {
-                            launchStartupTask();
-                        });
+                        launchStartupTask();
                         break;
                     case STARTING:
                     case ACTIVE:
@@ -312,7 +308,7 @@ public class SyncthingService extends Service {
     private void launchStartupTask () {
         Log.v(TAG, "Starting syncthing");
         synchronized(mStateLock) {
-            if (mCurrentState != State.INIT) {
+            if (mCurrentState != State.DISABLED && mCurrentState != State.INIT) {
                 Log.e(TAG, "launchStartupTask: Wrong state " + mCurrentState + " detected. Cancelling.");
                 return;
             }

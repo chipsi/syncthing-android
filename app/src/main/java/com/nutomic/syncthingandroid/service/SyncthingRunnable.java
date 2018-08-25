@@ -133,10 +133,20 @@ public class SyncthingRunnable implements Runnable {
                 ? pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG)
                 : null;
         try {
-            if (wakeLock != null)
+            if (wakeLock != null) {
                 wakeLock.acquire();
-            increaseInotifyWatches();
+            }
 
+            /**
+             * Check if an old syncthing instance is still running.
+             * This happens after an in-place app upgrade. If so, end it.
+             */
+            killSyncthing();
+
+            /**
+             * Setup and run a new syncthing instance
+             */
+            increaseInotifyWatches();
             HashMap<String, String> targetEnv = buildEnvironment();
             process = setupAndLaunch(targetEnv);
 
@@ -216,10 +226,12 @@ public class SyncthingRunnable implements Runnable {
         } catch (IOException | InterruptedException e) {
             Log.e(TAG, "Failed to execute syncthing binary or read output", e);
         } finally {
-            if (wakeLock != null)
+            if (wakeLock != null) {
                 wakeLock.release();
-            if (process != null)
+            }
+            if (process != null) {
                 process.destroy();
+            }
         }
 
         // Restart syncthing if it exited unexpectedly while running on a separate thread.
@@ -346,7 +358,7 @@ public class SyncthingRunnable implements Runnable {
         int exitCode;
         List<String> syncthingPIDs = getSyncthingPIDs();
         if (syncthingPIDs.isEmpty()) {
-            Log.d(TAG, "killSyncthing: Found no more running instances of " + Constants.FILENAME_SYNCTHING_BINARY);
+            Log.d(TAG, "killSyncthing: Found no running instances of " + Constants.FILENAME_SYNCTHING_BINARY);
             return;
         }
         for (String syncthingPID : syncthingPIDs) {
@@ -358,6 +370,15 @@ public class SyncthingRunnable implements Runnable {
                     " exit code " + Integer.toString(exitCode));
             }
         }
+
+        /**
+         * Wait for the syncthing instance to end.
+         */
+        Log.v(TAG, "Waiting for all syncthing instances to end ...");
+        while (!getSyncthingPIDs().isEmpty()) {
+            SystemClock.sleep(50);
+        }
+        Log.v(TAG, "killSyncthing: Complete.");
     }
 
     /**
