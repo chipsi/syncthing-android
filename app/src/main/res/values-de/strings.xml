@@ -327,9 +327,9 @@ Bitte melden Sie auftretende Probleme via GitHub.</string>
     <string name="power_source_title">Starte, wenn Gerät betrieben per</string>
 
     <string-array name="power_source_entries">
-        <item>Ladegerät- und batteriebetrieben</item>
-        <item>Ladegerätbetrieben</item>
-        <item>Batteriebetrieben</item>
+        <item>Ladegerät und Akku</item>
+        <item>Ladegerät</item>
+        <item>Akku</item>
     </string-array>
 
     <string name="respect_battery_saving_title">Berücksichtige Android Energiesparmodus</string>
