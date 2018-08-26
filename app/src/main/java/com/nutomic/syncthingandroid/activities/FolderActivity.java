@@ -381,7 +381,6 @@ public class FolderActivity extends SyncthingActivity
     }
 
     private void onReceiveFolderIgnoreList(FolderIgnoreList folderIgnoreList) {
-        // Toast.makeText(this, R.string.edit_ignore_file_error, Toast.LENGTH_SHORT).show();
         if (folderIgnoreList.ignore == null) {
             Log.w(TAG, "onReceiveFolderIgnoreList: folderIgnoreList == null.");
             return;
