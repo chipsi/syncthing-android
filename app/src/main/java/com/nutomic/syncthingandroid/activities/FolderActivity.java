@@ -305,6 +305,12 @@ public class FolderActivity extends SyncthingActivity
 
     @Override
     public void onPause() {
+        try {
+            // This should trigger {@link #mTextWatcher} if the element still has the focus.
+            mEditIgnoreListContent.clearFocus();
+        } catch (Exception e) {
+            Log.e(TAG, "onPause: mEditIgnoreListContent", e);
+        }
         super.onPause();
 
         // We don't want to update every time a TextView's character changes,
@@ -567,8 +573,6 @@ public class FolderActivity extends SyncthingActivity
         if (mCanWriteToPath) {
             mAccessExplanationView.setText(R.string.folder_path_readwrite);
             mFolderTypeView.setEnabled(true);
-            mEditIgnoreListTitle.setEnabled(true);
-            mEditIgnoreListContent.setEnabled(true);
             if (mIsCreateMode) {
                 /**
                  * Suggest folder type FOLDER_TYPE_SEND_RECEIVE for folders to be created
@@ -577,6 +581,9 @@ public class FolderActivity extends SyncthingActivity
                  * or enabled root mode thus having write access.
                  */
                 mFolder.type = Constants.FOLDER_TYPE_SEND_RECEIVE;
+            } else {
+                mEditIgnoreListTitle.setEnabled(true);
+                mEditIgnoreListContent.setEnabled(true);
             }
         } else {
             // Force "sendonly" folder.
