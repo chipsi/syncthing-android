@@ -234,15 +234,18 @@
 
                 <EditText
                     android:id="@+id/edit_ignore_list_content"
+                    style="@style/Widget.Syncthing.TextView.Label.Details"
                     android:inputType="textMultiLine"
                     android:gravity="top|start"
                     android:hint="@string/ignore_patterns"
-                    android:layout_height="wrap_content"
                     android:layout_width="match_parent"
-                    android:lines="8"
-                    android:minLines="6"
-                    android:maxLines="10"
-                    android:scrollbars="vertical"/>
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="55dp"
+                    android:layout_marginStart="55dp"
+                    android:layout_marginTop="-20dp"
+                    android:minLines="5"
+                    android:maxLines="100"
+                    android:scrollbars="none"/>
 
             </LinearLayout>
         </LinearLayout>

@@ -378,6 +378,7 @@ public class FolderActivity extends SyncthingActivity
             return;
         }
         String ignoreList = TextUtils.join("\n", folderIgnoreList.ignore);
+        mEditIgnoreListContent.setMaxLines(Integer.MAX_VALUE);
         mEditIgnoreListContent.setText(ignoreList);
     }
 
