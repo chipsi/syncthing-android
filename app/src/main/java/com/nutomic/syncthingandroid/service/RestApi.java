@@ -516,7 +516,7 @@ public class RestApi {
     }
 
     /**
-     * Requests ignore list for given folder.id
+     * Requests ignore list for given folder.
      */
     public void getFolderIgnoreList(String folderId, OnResultListener1<FolderIgnoreList> listener) {
         new GetRequest(mContext, mUrl, GetRequest.URI_DB_IGNORES, mApiKey,
@@ -524,6 +524,16 @@ public class RestApi {
             FolderIgnoreList folderIgnoreList = new Gson().fromJson(result, FolderIgnoreList.class);
             listener.onResult(folderIgnoreList);
         });
+    }
+
+    /**
+     * Posts ignore list for given folder.
+     */
+    public void postFolderIgnoreList(String folderId, String[] ignore) {
+        FolderIgnoreList folderIgnoreList = new FolderIgnoreList();
+        folderIgnoreList.ignore = ignore;
+        new PostRequest(mContext, mUrl, PostRequest.URI_DB_IGNORES, mApiKey,
+            ImmutableMap.of("folder", folderId), new Gson().toJson(folderIgnoreList), null);
     }
 
     /**

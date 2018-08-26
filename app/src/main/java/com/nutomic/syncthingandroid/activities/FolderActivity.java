@@ -119,6 +119,7 @@ public class FolderActivity extends SyncthingActivity
             mFolder.label        = mLabelView.getText().toString();
             mFolder.id           = mIdView.getText().toString();;
             // mPathView must not be handled here as it's handled by {@link onActivityResult}
+            // mEditIgnoreListContent must not be handled here as it's written back when the dialog ends.
             mFolderNeedsToUpdate = true;
         }
     };
@@ -299,6 +300,7 @@ public class FolderActivity extends SyncthingActivity
         }
         mLabelView.removeTextChangedListener(mTextWatcher);
         mIdView.removeTextChangedListener(mTextWatcher);
+        mEditIgnoreListContent.removeTextChangedListener(mTextWatcher);
     }
 
     @Override
@@ -308,6 +310,7 @@ public class FolderActivity extends SyncthingActivity
         // We don't want to update every time a TextView's character changes,
         // so we hold off until the view stops being visible to the user.
         if (mFolderNeedsToUpdate) {
+            Log.v(TAG, "onPause: mFolderNeedsToUpdate == true");
             updateFolder();
         }
     }
@@ -379,7 +382,9 @@ public class FolderActivity extends SyncthingActivity
         }
         String ignoreList = TextUtils.join("\n", folderIgnoreList.ignore);
         mEditIgnoreListContent.setMaxLines(Integer.MAX_VALUE);
+        mEditIgnoreListContent.removeTextChangedListener(mTextWatcher);
         mEditIgnoreListContent.setText(ignoreList);
+        mEditIgnoreListContent.addTextChangedListener(mTextWatcher);
     }
 
     // If the FolderActivity gets recreated after the VersioningDialogActivity is closed, then the result from the VersioningDialogActivity will be received before
@@ -640,11 +645,23 @@ public class FolderActivity extends SyncthingActivity
 
     private void updateFolder() {
         if (!mIsCreateMode) {
+            RestApi restApi = getApi();
             /**
              * RestApi is guaranteed not to be null as {@link onServiceStateChange}
              * immediately finishes this activity if SyncthingService shuts down.
              */
-            getApi().updateFolder(mFolder);
+            /*
+            if (restApi == null) {
+                Log.e(TAG, "updateFolder: restApi == null");
+                return;
+            }
+            */
+            // Update ignore list.
+            String[] ignore = mEditIgnoreListContent.getText().toString().split("\n");
+            restApi.postFolderIgnoreList(mFolder.id, ignore);
+
+            // Update model and send the config to REST endpoint.
+            restApi.updateFolder(mFolder);
         }
     }
 
