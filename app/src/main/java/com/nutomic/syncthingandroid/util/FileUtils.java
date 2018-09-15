@@ -106,19 +106,28 @@ public class FileUtils {
                 Boolean primary = (Boolean) isPrimary.invoke(storageVolumeElement);
                 Boolean isPrimaryVolume = (primary && PRIMARY_VOLUME_NAME.equals(volumeId));
                 Boolean isExternalVolume = ((uuid != null) && uuid.equals(volumeId));
-                Boolean isHomeVolume = (uuid == null && HOME_VOLUME_NAME.equals(volumeId));
+                Boolean isHomeVolume = HOME_VOLUME_NAME.equals(volumeId);
                 if (isPrimaryVolume || isExternalVolume) {
+                    Log.v(TAG, "getVolumePath: isPrimaryVolume || isExternalVolume");
                     // Return path if the correct volume corresponding to volumeId was found.
                     return (String) getPath.invoke(storageVolumeElement);
                 } else if (isHomeVolume) {
+                    Log.v(TAG, "getVolumePath: isHomeVolume");
                     // Reading the environment var avoids hard coding the case of the "documents" folder.
                     return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).getAbsolutePath();
                 }
-                Log.d(TAG, "Skipping volume, uuid = '" + uuid + "', volumeId = '" + volumeId + "'");
+                Log.d(TAG, "Skipping volume with uuid='" + uuid +
+                    "', volumeId='" + volumeId +
+                    "', primary=" + primary +
+                    ", isPrimaryVolume=" + isPrimaryVolume +
+                    ", isExternalVolume=" + isExternalVolume +
+                    ", isHomeVolume=" + isHomeVolume
+                );
             }
         } catch (Exception e) {
             Log.w(TAG, "getVolumePath exception", e);
         }
+        Log.e(TAG, "getVolumePath failed for volumeId='" + volumeId + "'");
         return null;
     }
 
