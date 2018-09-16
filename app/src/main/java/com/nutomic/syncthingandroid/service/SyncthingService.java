@@ -23,14 +23,18 @@ import com.nutomic.syncthingandroid.model.Folder;
 import com.nutomic.syncthingandroid.util.ConfigXml;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.ref.WeakReference;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -643,7 +647,7 @@ public class SyncthingService extends Service {
             failSuccess = false;
         }
 
-        // Backup SharedPreferences.
+        // Export SharedPreferences.
         File file;
         FileOutputStream fileOutputStream = null;
         ObjectOutputStream objectOutputStream = null;
@@ -681,30 +685,113 @@ public class SyncthingService extends Service {
      * @return True if the import was successful, false otherwise (eg if files aren't found).
      */
     public boolean importConfig() {
-        File config = new File(Constants.EXPORT_PATH, Constants.CONFIG_FILE);
-        File privateKey = new File(Constants.EXPORT_PATH, Constants.PRIVATE_KEY_FILE);
-        File publicKey = new File(Constants.EXPORT_PATH, Constants.PUBLIC_KEY_FILE);
-
-        // Check if necessary files for import are available.
-        if (!config.exists() || !privateKey.exists() || !publicKey.exists()) {
-            return false;
-        }
+        Boolean failSuccess = true;
 
         // Shutdown synchronously.
         shutdown(State.INIT, () -> {});
 
         // Import config.
         try {
-            Files.copy(config, Constants.getConfigFile(this));
-            Files.copy(privateKey, Constants.getPrivateKeyFile(this));
-            Files.copy(publicKey, Constants.getPublicKeyFile(this));
+            File config = new File(Constants.EXPORT_PATH, Constants.CONFIG_FILE);
+            File privateKey = new File(Constants.EXPORT_PATH, Constants.PRIVATE_KEY_FILE);
+            File publicKey = new File(Constants.EXPORT_PATH, Constants.PUBLIC_KEY_FILE);
+
+            // Check if necessary files for import are available.
+            if (config.exists() && privateKey.exists() && publicKey.exists()) {
+                Files.copy(config, Constants.getConfigFile(this));
+                Files.copy(privateKey, Constants.getPrivateKeyFile(this));
+                Files.copy(publicKey, Constants.getPublicKeyFile(this));
+            } else {
+                Log.e(TAG, "importConfig: config, privateKey and/or publicKey files missing");
+                failSuccess = false;
+            }
         } catch (IOException e) {
-            Log.w(TAG, "Failed to import config", e);
-            return false;
+            Log.w(TAG, "importConfig: Failed to import config", e);
+            failSuccess = false;
+        }
+
+        // Import SharedPreferences.
+        File file;
+        FileInputStream fileInputStream = null;
+        ObjectInputStream objectInputStream = null;
+        Map<String, Object> sharedPrefsMap = null;
+        try {
+            file = new File(Constants.EXPORT_PATH, Constants.SHARED_PREFS_EXPORT_FILE);
+            fileInputStream = new FileInputStream(file);
+            if (file.exists()) {
+                // Read, deserialize shared preferences.
+                objectInputStream = new ObjectInputStream(fileInputStream);
+                sharedPrefsMap = (Map) objectInputStream.readObject();
+
+                // Prepare a SharedPreferences commit.
+                SharedPreferences.Editor editor = mPreferences.edit();
+                editor.clear();
+                for (Map.Entry<String, Object> e : sharedPrefsMap.entrySet()) {
+                    String prefKey = e.getKey();
+                    switch (prefKey) {
+                        // Preferences that are no longer used and left-overs from previous versions of the app.
+                        case "first_start":
+                        case "notify_crashes":
+                        // Cached information which is not available on SettingsActivity.
+                        case Constants.PREF_DEBUG_FACILITIES_AVAILABLE:
+                        case Constants.PREF_EVENT_PROCESSOR_LAST_SYNC_ID:
+                        case Constants.PREF_LAST_BINARY_VERSION:
+                            Log.v(TAG, "importConfig: Ignoring pref \"" + prefKey + "\".");
+                            break;
+                        default:
+                            Log.v(TAG, "importConfig: Adding pref \"" + prefKey + "\" to commit ...");
+
+                            // The editor only provides typed setters.
+                            if (e.getValue() instanceof Boolean) {
+                                editor.putBoolean(prefKey, (Boolean) e.getValue());
+                            } else if (e.getValue() instanceof String) {
+                                editor.putString(prefKey, (String) e.getValue());
+                            } else if (e.getValue() instanceof Integer) {
+                                editor.putInt(prefKey, (int) e.getValue());
+                            } else if (e.getValue() instanceof Float) {
+                                editor.putFloat(prefKey, (float) e.getValue());
+                            } else if (e.getValue() instanceof Long) {
+                                editor.putLong(prefKey, (Long) e.getValue());
+                            } else if (e.getValue() instanceof Set) {
+                                editor.putStringSet(prefKey, (Set<String>) e.getValue());
+                            } else {
+                                Log.v(TAG, "importConfig: SharedPref type " + e.getValue().getClass().getName() + " is unknown");
+                            }
+                            break;
+                    }
+                }
+
+                /**
+                 * If all shared preferences have been added to the commit successfully,
+                 * apply the commit.
+                 */
+                failSuccess = failSuccess && editor.commit();
+            } else {
+                // File not found.
+                Log.w(TAG, "importConfig: SharedPreferences file missing. This is expected if you migrate from the official app to the forked app.");
+                /**
+                 * Don't fail as the file might be expectedly missing when users migrate
+                 * to the forked app.
+                 */
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            Log.e(TAG, "importConfig: Failed to import SharedPreferences #1", e);
+            failSuccess = false;
+        } finally {
+            try {
+                if (objectInputStream != null) {
+                    objectInputStream.close();
+                }
+                if (fileInputStream != null) {
+                    fileInputStream.close();
+                }
+            } catch (IOException e) {
+                Log.e(TAG, "importConfig: Failed to import SharedPreferences #2", e);
+            }
         }
 
         // Start syncthing after successful import.
         launchStartupTask(SyncthingRunnable.Command.main);
-        return true;
+        return failSuccess;
     }
 }
