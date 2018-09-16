@@ -106,6 +106,11 @@ public class Constants {
         return new File(context.getFilesDir(), "https-cert.pem");
     }
 
+    /**
+     * Name of the export file holding the SharedPreferences backup.
+     */
+    static final String SHARED_PREFS_EXPORT_FILE = "sharedpreferences.dat";
+
     static File getSyncthingBinary(Context context) {
         return new File(context.getApplicationInfo().nativeLibraryDir, FILENAME_SYNCTHING_BINARY);
     }

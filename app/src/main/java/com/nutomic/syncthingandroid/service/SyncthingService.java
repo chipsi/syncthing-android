@@ -23,7 +23,9 @@ import com.nutomic.syncthingandroid.model.Folder;
 import com.nutomic.syncthingandroid.util.ConfigXml;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.lang.ref.WeakReference;
 import java.net.URL;
 import java.util.HashSet;
@@ -626,7 +628,8 @@ public class SyncthingService extends Service {
     /**
      * Exports the local config and keys to {@link Constants#EXPORT_PATH}.
      */
-    public void exportConfig() {
+    public boolean exportConfig() {
+        Boolean failSuccess = true;
         Constants.EXPORT_PATH.mkdirs();
         try {
             Files.copy(Constants.getConfigFile(this),
@@ -637,7 +640,39 @@ public class SyncthingService extends Service {
                     new File(Constants.EXPORT_PATH, Constants.PUBLIC_KEY_FILE));
         } catch (IOException e) {
             Log.w(TAG, "Failed to export config", e);
+            failSuccess = false;
         }
+
+        // Backup SharedPreferences.
+        File file;
+        FileOutputStream fileOutputStream = null;
+        ObjectOutputStream objectOutputStream = null;
+        try {
+            file = new File(Constants.EXPORT_PATH, Constants.SHARED_PREFS_EXPORT_FILE);
+            fileOutputStream = new FileOutputStream(file);
+            if (!file.exists()) {
+				file.createNewFile();
+			}
+            objectOutputStream = new ObjectOutputStream(fileOutputStream);
+            objectOutputStream.writeObject(mPreferences.getAll());
+            objectOutputStream.flush();
+			fileOutputStream.flush();
+        } catch (IOException e) {
+            Log.e(TAG, "exportConfig: Failed to export SharedPreferences #1", e);
+            failSuccess = false;
+        } finally {
+            try {
+                if (objectOutputStream != null) {
+                    objectOutputStream.close();
+                }
+				if (fileOutputStream != null) {
+					fileOutputStream.close();
+				}
+			} catch (IOException e) {
+				Log.e(TAG, "exportConfig: Failed to export SharedPreferences #2", e);
+			}
+        }
+        return failSuccess;
     }
 
     /**
@@ -649,18 +684,27 @@ public class SyncthingService extends Service {
         File config = new File(Constants.EXPORT_PATH, Constants.CONFIG_FILE);
         File privateKey = new File(Constants.EXPORT_PATH, Constants.PRIVATE_KEY_FILE);
         File publicKey = new File(Constants.EXPORT_PATH, Constants.PUBLIC_KEY_FILE);
-        if (!config.exists() || !privateKey.exists() || !publicKey.exists())
+
+        // Check if necessary files for import are available.
+        if (!config.exists() || !privateKey.exists() || !publicKey.exists()) {
             return false;
-        shutdown(State.INIT, () -> {
-            try {
-                Files.copy(config, Constants.getConfigFile(this));
-                Files.copy(privateKey, Constants.getPrivateKeyFile(this));
-                Files.copy(publicKey, Constants.getPublicKeyFile(this));
-            } catch (IOException e) {
-                Log.w(TAG, "Failed to import config", e);
-            }
-            launchStartupTask(SyncthingRunnable.Command.main);
-        });
+        }
+
+        // Shutdown synchronously.
+        shutdown(State.INIT, () -> {});
+
+        // Import config.
+        try {
+            Files.copy(config, Constants.getConfigFile(this));
+            Files.copy(privateKey, Constants.getPrivateKeyFile(this));
+            Files.copy(publicKey, Constants.getPublicKeyFile(this));
+        } catch (IOException e) {
+            Log.w(TAG, "Failed to import config", e);
+            return false;
+        }
+
+        // Start syncthing after successful import.
+        launchStartupTask(SyncthingRunnable.Command.main);
         return true;
     }
 }
