@@ -552,16 +552,21 @@ public class SettingsActivity extends SyncthingActivity {
                     new AlertDialog.Builder(getActivity())
                             .setMessage(R.string.dialog_confirm_import)
                             .setPositiveButton(android.R.string.yes, (dialog, which) -> {
-                                        // Shutdown syncthing, import config, start syncthing.
-                                        if (mSyncthingService.importConfig()) {
-                                            Toast.makeText(getActivity(),
-                                                    getString(R.string.config_imported_successful),
-                                                    Toast.LENGTH_SHORT).show();
-                                        } else {
+                                        // Shutdown syncthing, import config, if run conditions applied restart syncthing.
+                                        if (!mSyncthingService.importConfig()) {
                                             Toast.makeText(getActivity(),
                                                     getString(R.string.config_import_failed,
                                                     Constants.EXPORT_PATH), Toast.LENGTH_LONG).show();
+                                            return;
                                         }
+                                        Toast.makeText(getActivity(),
+                                                getString(R.string.config_imported_successful),
+                                                Toast.LENGTH_SHORT).show();
+                                        // We don't have to send the config via REST on leaving activity.
+                                        mPendingConfig = false;
+                                        // We have to evaluate run conditions, they may have changed by the imported prefs.
+                                        mPendingRunConditions = true;
+                                        getActivity().finish();
                                     })
                             .setNegativeButton(android.R.string.no, null)
                             .show();
