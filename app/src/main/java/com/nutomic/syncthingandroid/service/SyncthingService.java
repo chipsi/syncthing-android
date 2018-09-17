@@ -634,6 +634,9 @@ public class SyncthingService extends Service {
      */
     public boolean exportConfig() {
         Boolean failSuccess = true;
+        Log.v(TAG, "exportConfig BEGIN");
+
+        // Copy config, privateKey and/or publicKey to export path.
         Constants.EXPORT_PATH.mkdirs();
         try {
             Files.copy(Constants.getConfigFile(this),
@@ -686,11 +689,12 @@ public class SyncthingService extends Service {
      */
     public boolean importConfig() {
         Boolean failSuccess = true;
+        Log.v(TAG, "importConfig BEGIN");
 
         // Shutdown synchronously.
-        shutdown(State.INIT, () -> {});
+        shutdown(State.DISABLED, () -> {});
 
-        // Import config.
+        // Import config, privateKey and/or publicKey.
         try {
             File config = new File(Constants.EXPORT_PATH, Constants.CONFIG_FILE);
             File privateKey = new File(Constants.EXPORT_PATH, Constants.PRIVATE_KEY_FILE);
@@ -717,9 +721,9 @@ public class SyncthingService extends Service {
         Map<String, Object> sharedPrefsMap = null;
         try {
             file = new File(Constants.EXPORT_PATH, Constants.SHARED_PREFS_EXPORT_FILE);
-            fileInputStream = new FileInputStream(file);
             if (file.exists()) {
                 // Read, deserialize shared preferences.
+                fileInputStream = new FileInputStream(file);
                 objectInputStream = new ObjectInputStream(fileInputStream);
                 sharedPrefsMap = (Map) objectInputStream.readObject();
 
@@ -790,8 +794,10 @@ public class SyncthingService extends Service {
             }
         }
 
-        // Start syncthing after successful import.
-        launchStartupTask(SyncthingRunnable.Command.main);
+        // Start syncthing after successful import if run conditions apply.
+        if (mLastDeterminedShouldRun) {
+            launchStartupTask(SyncthingRunnable.Command.main);
+        }
         return failSuccess;
     }
 }
