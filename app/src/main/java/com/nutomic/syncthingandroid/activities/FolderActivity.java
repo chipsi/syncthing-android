@@ -5,8 +5,11 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.provider.DocumentFile;
@@ -41,9 +44,13 @@ import com.nutomic.syncthingandroid.util.Util;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import static android.support.v4.view.MarginLayoutParamsCompat.setMarginEnd;
@@ -97,6 +104,7 @@ public class FolderActivity extends SyncthingActivity
     private TextView mFolderTypeDescriptionView;
     private SwitchCompat mFolderFileWatcher;
     private SwitchCompat mFolderPaused;
+    private ViewGroup mWifiSsidContainer;
     private ViewGroup mDevicesContainer;
     private TextView mPullOrderTypeView;
     private TextView mPullOrderDescriptionView;
@@ -171,6 +179,7 @@ public class FolderActivity extends SyncthingActivity
         mPullOrderDescriptionView = findViewById(R.id.pullOrderDescription);
         mVersioningDescriptionView = findViewById(R.id.versioningDescription);
         mVersioningTypeView = findViewById(R.id.versioningType);
+        mWifiSsidContainer = findViewById(R.id.wifiSsidContainer);
         mDevicesContainer = findViewById(R.id.devicesContainer);
         mEditIgnoreListTitle = findViewById(R.id.edit_ignore_list_title);
         mEditIgnoreListContent = findViewById(R.id.edit_ignore_list_content);
@@ -416,8 +425,25 @@ public class FolderActivity extends SyncthingActivity
         updateVersioningDescription();
         mFolderFileWatcher.setChecked(mFolder.fsWatcherEnabled);
         mFolderPaused.setChecked(mFolder.paused);
-        List<Device> devicesList = getApi().getDevices(false);
 
+        // Populate wifiSsidAvailList.
+        List<String> wifiSsidAvailList = new ArrayList<String>();
+        WifiConfiguration[] wifiNetworks = loadConfiguredNetworksSorted();
+        if (wifiNetworks != null) {
+            // Display without surrounding quotes.
+            wifiSsidAvailList = extractSsid(wifiNetworks, true);
+        }
+        mWifiSsidContainer.removeAllViews();
+        if (wifiSsidAvailList.isEmpty()) {
+            addEmptyWifiSsidListView();
+        } else {
+            for (String wifiSsid : wifiSsidAvailList) {
+                addWifiSsidViewAndSetListener(wifiSsid, getLayoutInflater());
+            }
+        }
+
+        // Populate devicesList.
+        List<Device> devicesList = getApi().getDevices(false);
         mDevicesContainer.removeAllViews();
         if (devicesList.isEmpty()) {
             addEmptyDeviceListView();
@@ -628,6 +654,29 @@ public class FolderActivity extends SyncthingActivity
         mFolder.versioning = new Folder.Versioning();
     }
 
+    private void addEmptyWifiSsidListView() {
+        int height = (int) TypedValue.applyDimension(COMPLEX_UNIT_DIP, 48, getResources().getDisplayMetrics());
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(WRAP_CONTENT, height);
+        int dividerInset = getResources().getDimensionPixelOffset(R.dimen.material_divider_inset);
+        int contentInset = getResources().getDimensionPixelOffset(R.dimen.abc_action_bar_content_inset_material);
+        setMarginStart(params, dividerInset);
+        setMarginEnd(params, contentInset);
+        TextView emptyView = new TextView(mWifiSsidContainer.getContext());
+        emptyView.setGravity(CENTER_VERTICAL);
+        emptyView.setText(R.string.devices_list_empty);
+        mWifiSsidContainer.addView(emptyView, params);
+    }
+
+    private void addWifiSsidViewAndSetListener(String wifiSsid, LayoutInflater inflater) {
+        inflater.inflate(R.layout.item_wifi_ssid_form, mWifiSsidContainer);
+        SwitchCompat wifiSsidView = (SwitchCompat) mWifiSsidContainer.getChildAt(mWifiSsidContainer.getChildCount()-1);
+        wifiSsidView.setOnCheckedChangeListener(null);
+        // ToDo wifiSsidView.setChecked(mFolder.getDevice(device.deviceID) != null);
+        wifiSsidView.setText(wifiSsid);
+        wifiSsidView.setTag(wifiSsid);
+        wifiSsidView.setOnCheckedChangeListener(mCheckedListener);
+    }
+
     private void addEmptyDeviceListView() {
         int height = (int) TypedValue.applyDimension(COMPLEX_UNIT_DIP, 48, getResources().getDisplayMetrics());
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(WRAP_CONTENT, height);
@@ -824,5 +873,66 @@ public class FolderActivity extends SyncthingActivity
     private void setVersioningDescription(String type, String description) {
         mVersioningTypeView.setText(type);
         mVersioningDescriptionView.setText(description);
+    }
+
+    /**
+     * Removes any network that is no longer saved on the device. Otherwise it will never be
+     * removed from the allowed set by MultiSelectListPreference.
+     */
+    private void filterRemovedNetworks(Set<String> selected, CharSequence[] all) {
+        HashSet<CharSequence> availableNetworks = new HashSet<>(Arrays.asList(all));
+        selected.retainAll(availableNetworks);
+    }
+
+    /**
+     * Converts WiFi configuration to a list representation, using the SSID.
+     *
+     * It can also remove surrounding quotes which indicate that the SSID is an UTF-8
+     * string and not a Hex-String, if the strings are intended to be displayed to the
+     * user, who will not expect the quotes.
+     *
+     * @param configs the objects to convert
+     * @param stripQuotes if to remove surrounding quotes
+     * @return the formatted SSID of the wifi configurations
+     */
+    private List<String> extractSsid(WifiConfiguration[] configs, boolean stripQuotes) {
+        List<String> result = new ArrayList<String>();
+        for (int i = 0; i < configs.length; i++) {
+            // See #620: there may be null-SSIDs
+            String ssid = configs[i].SSID != null ? configs[i].SSID : "";
+            // WiFi SSIDs can either be UTF-8 (encapsulated in '"') or hex-strings
+            if (stripQuotes) {
+                result.add(ssid.replaceFirst("^\"", "").replaceFirst("\"$", ""));
+            } else {
+                result.add(ssid);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Load the configured WiFi networks, sort them by SSID.
+     *
+     * @return a sorted array of WifiConfiguration, or null, if data cannot be retrieved
+     */
+    private WifiConfiguration[] loadConfiguredNetworksSorted() {
+        WifiManager wifiManager = (WifiManager)
+                getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        if (wifiManager != null) {
+            List<WifiConfiguration> configuredNetworks = wifiManager.getConfiguredNetworks();
+            // if WiFi is turned off, getConfiguredNetworks returns null on many devices
+            if (configuredNetworks != null) {
+                WifiConfiguration[] result = configuredNetworks.toArray(new WifiConfiguration[configuredNetworks.size()]);
+                Arrays.sort(result, (lhs, rhs) -> {
+                    // See #620: There may be null-SSIDs
+                    String l = lhs.SSID != null ? lhs.SSID : "";
+                    String r = rhs.SSID != null ? rhs.SSID : "";
+                    return l.compareToIgnoreCase(r);
+                });
+                return result;
+            }
+        }
+        // WiFi is turned off or device doesn't have WiFi
+        return null;
     }
 }

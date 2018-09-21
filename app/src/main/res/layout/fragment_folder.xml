@@ -54,20 +54,34 @@
                 android:focusable="true"
                 android:hint="@string/directory"/>
 
+            <TextView
+                style="@style/Widget.Syncthing.TextView.Label.Details"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/ic_wifi_black_24dp"
+                android:drawableStart="@drawable/ic_wifi_black_24dp"
+                android:text="@string/wifi_networks" />
+
+            <LinearLayout
+                android:id="@+id/wifiSsidContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+            </LinearLayout>
+
+            <TextView
+                style="@style/Widget.Syncthing.TextView.Label.Details"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/ic_device_hub_black_24dp_active"
+                android:drawableStart="@drawable/ic_device_hub_black_24dp_active"
+                android:text="@string/devices" />
+
             <LinearLayout
                 android:id="@+id/devicesContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
-
-                <TextView
-                    style="@style/Widget.Syncthing.TextView.Label.Details"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:drawableLeft="@drawable/ic_device_hub_black_24dp_active"
-                    android:drawableStart="@drawable/ic_device_hub_black_24dp_active"
-                    android:text="@string/devices" />
-
             </LinearLayout>
 
             <LinearLayout
@@ -235,7 +249,7 @@
                 <EditText
                     android:id="@+id/edit_ignore_list_content"
                     style="@style/Widget.Syncthing.TextView.Label.Details"
-                    android:inputType="textMultiLine"
+                    android:inputType="textMultiLine|textNoSuggestions"
                     android:gravity="top|start"
                     android:hint="@string/ignore_patterns"
                     android:layout_width="match_parent"

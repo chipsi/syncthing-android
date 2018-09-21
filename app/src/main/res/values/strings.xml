@@ -189,6 +189,9 @@ Please report any problems you encounter via Github.</string>
     <string name="folder_pause">Pause Folder</string>
 
     <!-- Setting title -->
+    <string name="wifi_networks">WiFi networks</string>
+
+    <!-- Setting title -->
     <string name="devices">Devices</string>
 
     <!-- Setting title -->
