@@ -531,4 +531,16 @@ public class SyncthingRunnable implements Runnable {
             return pb.start();
         }
     }
+
+    public class ExecutableNotFoundException extends Exception {
+
+        public ExecutableNotFoundException(String message) {
+            super(message);
+        }
+
+        public ExecutableNotFoundException(String message, Throwable throwable) {
+            super(message, throwable);
+        }
+
+    }
 }
