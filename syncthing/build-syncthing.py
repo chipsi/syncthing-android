@@ -55,6 +55,8 @@ def which(program):
     def is_exe(fpath):
         return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
 
+    if (sys.platform == 'win32'):
+        program += ".exe"
     fpath, fname = os.path.split(program)
     if fpath:
         if is_exe(program):
@@ -70,21 +72,27 @@ def which(program):
 def install_go():
     import os
     import tarfile
+    import zipfile
     import urllib
     import hashlib
 
     # Consts.
     pwd_path = os.path.dirname(os.path.realpath(__file__))
-    url = 'https://dl.google.com/go/go1.9.7.linux-amd64.tar.gz'
-    expected_shasum = '88573008f4f6233b81f81d8ccf92234b4f67238df0f0ab173d75a302a1f3d6ee'
+    if sys.platform == 'win32':
+        url =               'https://dl.google.com/go/go1.9.7.windows-amd64.zip'
+        expected_shasum =   '8db4b21916a3bc79f48d0611202ee5814c82f671b36d5d2efcb446879456cd28'
+        tar_gz_fullfn = pwd_path + os.path.sep + 'go.zip';
+    else:
+        url =               'https://dl.google.com/go/go1.9.7.linux-amd64.tar.gz'
+        expected_shasum =   '88573008f4f6233b81f81d8ccf92234b4f67238df0f0ab173d75a302a1f3d6ee'
+        tar_gz_fullfn = pwd_path + os.path.sep + 'go.tgz';
 
     # Download prebuilt-go.
     url_base_name = os.path.basename(url)
-    tar_gz_fullfn = pwd_path + os.path.sep + 'go.tgz';
     if not os.path.isfile(tar_gz_fullfn):
-        print('Downloading prebuilt-go tar to:', tar_gz_fullfn)
+        print('Downloading prebuilt-go to:', tar_gz_fullfn)
         tar_gz_fullfn = urllib.urlretrieve(url, tar_gz_fullfn)[0]
-    print('Downloaded prebuilt-go tar to:', tar_gz_fullfn)
+    print('Downloaded prebuilt-go to:', tar_gz_fullfn)
 
     # Verfiy SHA-1 checksum of downloaded files.
     with open(tar_gz_fullfn, 'rb') as f:
@@ -99,8 +107,14 @@ def install_go():
     # This will go to a subfolder "go" in the current path.
     print("Extracting prebuilt-go ...")
     file_name, file_extension = os.path.splitext(url_base_name)
-    tar = tarfile.open(tar_gz_fullfn)
-    tar.extractall(pwd_path)
+    if sys.platform == 'win32':
+        zip = zipfile.ZipFile(tar_gz_fullfn, 'r')
+        zip.extractall(pwd_path)
+        zip.close()
+    else:
+        tar = tarfile.open(tar_gz_fullfn)
+        tar.extractall(pwd_path)
+        tar.close()
 
     # Add (...).tar/go/bin" to the PATH.
     go_bin_path = pwd_path + os.path.sep + 'go' + os.path.sep + 'bin'
