@@ -43,6 +43,7 @@ import com.nutomic.syncthingandroid.service.SyncthingRunnable.ExecutableNotFound
 import com.nutomic.syncthingandroid.util.ConfigXml;
 
 import java.lang.ref.WeakReference;
+
 import javax.inject.Inject;
 
 public class FirstStartActivity extends Activity {
@@ -56,7 +57,7 @@ public class FirstStartActivity extends Activity {
         public int dotColorActive;
         public int dotColorInActive;
 
-        Slide (int layout, int dotColorActive, int dotColorInActive) {
+        Slide(int layout, int dotColorActive, int dotColorInActive) {
             this.layout = layout;
             this.dotColorActive = dotColorActive;
             this.dotColorInActive = dotColorInActive;
@@ -80,7 +81,8 @@ public class FirstStartActivity extends Activity {
     private Button mBackButton;
     private Button mNextButton;
 
-    @Inject SharedPreferences mPreferences;
+    @Inject
+    SharedPreferences mPreferences;
 
     /**
      * Handles activity behaviour depending on prerequisites.
@@ -114,7 +116,7 @@ public class FirstStartActivity extends Activity {
         // Make notification bar transparent (API level 21+)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
-                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
         }
 
         // Show first start welcome wizard UI.
@@ -139,11 +141,11 @@ public class FirstStartActivity extends Activity {
         int slideIndex = 0;
         mSlides = new Slide[
                 1 +
-                (showSlideStoragePermission ? 1 : 0) +
-                (showSlideIgnoreDozePermission ? 1 : 0) +
-                (showSlideLocationPermission ? 1 : 0) +
-                (showSlideKeyGeneration ? 1 : 0)
-        ];
+                        (showSlideStoragePermission ? 1 : 0) +
+                        (showSlideIgnoreDozePermission ? 1 : 0) +
+                        (showSlideLocationPermission ? 1 : 0) +
+                        (showSlideKeyGeneration ? 1 : 0)
+                ];
         mSlides[slideIndex++] = new Slide(R.layout.activity_firststart_intro, colorsActive[0], colorsInactive[0]);
         if (showSlideStoragePermission) {
             mSlidePosStoragePermission = slideIndex;
@@ -366,7 +368,7 @@ public class FirstStartActivity extends Activity {
          * so that back navigation works as expected.
          */
         if (mPreferences.getBoolean(Constants.PREF_START_INTO_WEB_GUI, false)) {
-            startActivities(new Intent[] {mainIntent, new Intent(this, WebGuiActivity.class)});
+            startActivities(new Intent[]{mainIntent, new Intent(this, WebGuiActivity.class)});
         } else {
             startActivity(mainIntent);
         }
