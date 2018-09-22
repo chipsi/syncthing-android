@@ -59,13 +59,13 @@ public class ConfigXml {
 
     private Document mConfig;
 
-    public ConfigXml(Context context) throws OpenConfigException {
+    public ConfigXml(Context context) throws OpenConfigException, SyncthingRunnable.ExecutableNotFoundException {
         mContext = context;
         mConfigFile = Constants.getConfigFile(mContext);
         boolean isFirstStart = !mConfigFile.exists();
         if (isFirstStart) {
             Log.i(TAG, "App started for the first time. Generating keys and config.");
-            new SyncthingRunnable(context, SyncthingRunnable.Command.generate).run();
+            new SyncthingRunnable(context, SyncthingRunnable.Command.generate).run(true);
         }
 
         readConfig();

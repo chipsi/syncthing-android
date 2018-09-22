@@ -355,6 +355,12 @@ public class SyncthingService extends Service {
              try {
                  syncthingService.mConfig = new ConfigXml(syncthingService);
                  syncthingService.mConfig.updateIfNeeded();
+             } catch (SyncthingRunnable.ExecutableNotFoundException e) {
+                 syncthingService.mNotificationHandler.showCrashedNotification(R.string.config_read_failed, "SycnthingRunnable.ExecutableNotFoundException");
+                 synchronized (syncthingService.mStateLock) {
+                     syncthingService.onServiceStateChange(State.ERROR);
+                 }
+                 cancel(true);
              } catch (ConfigXml.OpenConfigException e) {
                  syncthingService.mNotificationHandler.showCrashedNotification(R.string.config_read_failed, "ConfigXml.OpenConfigException");
                  synchronized (syncthingService.mStateLock) {

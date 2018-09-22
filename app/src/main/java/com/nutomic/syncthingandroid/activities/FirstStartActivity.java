@@ -39,6 +39,7 @@ import android.widget.Toast;
 import com.nutomic.syncthingandroid.R;
 import com.nutomic.syncthingandroid.SyncthingApp;
 import com.nutomic.syncthingandroid.service.Constants;
+import com.nutomic.syncthingandroid.service.SyncthingRunnable.ExecutableNotFoundException;
 import com.nutomic.syncthingandroid.util.ConfigXml;
 
 import java.lang.ref.WeakReference;
@@ -479,6 +480,9 @@ public class FirstStartActivity extends Activity {
             }
             try {
                 configXml = new ConfigXml(firstStartActivity);
+            } catch (ExecutableNotFoundException e) {
+                publishProgress(firstStartActivity.getString(R.string.executable_not_found, e.getMessage()));
+                cancel(true);
             } catch (ConfigXml.OpenConfigException e) {
                 publishProgress(firstStartActivity.getString(R.string.config_create_failed));
                 cancel(true);

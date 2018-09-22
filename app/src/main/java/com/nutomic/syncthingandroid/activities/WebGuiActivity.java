@@ -134,7 +134,11 @@ public class WebGuiActivity extends SyncthingActivity
         setContentView(R.layout.activity_web_gui);
 
         mLoadingView = findViewById(R.id.loading);
-        mConfig = new ConfigXml(this);
+        try {
+            mConfig = new ConfigXml(this);
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
         loadCaCert();
 
         mWebView = findViewById(R.id.webview);
