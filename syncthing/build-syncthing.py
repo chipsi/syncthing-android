@@ -63,6 +63,14 @@ def which(program):
 
     return None
 
+def change_permissions_recursive(path, mode):
+    import os
+    for root, dirs, files in os.walk(path, topdown=False):
+        for dir in [os.path.join(root,d) for d in dirs]:
+            os.chmod(dir, mode)
+    for file in [os.path.join(root, f) for f in files]:
+            os.chmod(file, mode)
+
 def install_go():
     import os
     import tarfile
@@ -161,6 +169,11 @@ def install_ndk():
         zip = zipfile.ZipFile(zip_fullfn, 'r')
         zip.extractall(pwd_path)
         zip.close()
+
+    # Linux only - Set executable permission on files.
+    if platform.system() == 'Linux':
+        print("Setting permissions on NDK executables ...")
+        change_permissions_recursive(ndk_home_path, 0o755);
 
     # Add "ANDROID_NDK_HOME" environment variable.
     print('Adding ANDROID_NDK_HOME=\'' + ndk_home_path + '\'')
