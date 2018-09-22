@@ -56,9 +56,11 @@ public class SyncthingRunnable implements Runnable {
     private final File mSyncthingBinary;
     private String[] mCommand;
     private final File mLogFile;
+    private final boolean mUseRoot;
+
     @Inject
     SharedPreferences mPreferences;
-    private final boolean mUseRoot;
+
     @Inject
     NotificationHandler mNotificationHandler;
 

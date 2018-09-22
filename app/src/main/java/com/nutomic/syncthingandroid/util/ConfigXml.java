@@ -52,6 +52,7 @@ public class ConfigXml {
     private static final int FOLDER_ID_APPENDIX_LENGTH = 4;
 
     private final Context mContext;
+
     @Inject
     SharedPreferences mPreferences;
 
