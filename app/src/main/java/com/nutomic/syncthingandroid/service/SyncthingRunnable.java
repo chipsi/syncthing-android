@@ -315,7 +315,11 @@ public class SyncthingRunnable implements Runnable {
      * Manually run "sysctl fs.inotify" in a root shell terminal to check current limit.
      */
     private void increaseInotifyWatches() {
-        if (!mUseRoot || !Shell.SU.available()) {
+        if (!mUseRoot) {
+            // Settings prohibit using root privileges. Cannot increase inotify limit.
+            return;
+        }
+        if (!Shell.SU.available()) {
             Log.i(TAG, "increaseInotifyWatches: Root is not available. Cannot increase inotify limit.");
             return;
         }
@@ -327,7 +331,11 @@ public class SyncthingRunnable implements Runnable {
      * Look for a running libsyncthing.so process and nice its IO.
      */
     private void niceSyncthing() {
-        if (!mUseRoot || !Shell.SU.available()) {
+        if (!mUseRoot) {
+            // Settings prohibit using root privileges. Cannot nice syncthing.
+            return;
+        }
+        if (!Shell.SU.available()) {
             Log.i(TAG_NICE, "Root is not available. Cannot nice syncthing.");
             return;
         }
