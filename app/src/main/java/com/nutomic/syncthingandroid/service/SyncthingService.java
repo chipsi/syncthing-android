@@ -150,18 +150,7 @@ public class SyncthingService extends Service {
      * {@link onStartCommand}.
      */
     private State mCurrentState = State.DISABLED;
-
     private ConfigXml mConfig;
-    private @Nullable
-    PollWebGuiAvailableTask mPollWebGuiAvailableTask = null;
-    private @Nullable
-    RestApi mApi = null;
-    private @Nullable
-    EventProcessor mEventProcessor = null;
-    private @Nullable
-    RunConditionMonitor mRunConditionMonitor = null;
-    private @Nullable
-    SyncthingRunnable mSyncthingRunnable = null;
     private StartupTask mStartupTask = null;
     private Thread mSyncthingRunnableThread = null;
     private Handler mHandler;
@@ -169,8 +158,24 @@ public class SyncthingService extends Service {
     private final HashSet<OnServiceStateChangeListener> mOnServiceStateChangeListeners = new HashSet<>();
     private final SyncthingServiceBinder mBinder = new SyncthingServiceBinder(this);
 
+    private @Nullable
+    PollWebGuiAvailableTask mPollWebGuiAvailableTask = null;
+
+    private @Nullable
+    RestApi mApi = null;
+
+    private @Nullable
+    EventProcessor mEventProcessor = null;
+
+    private @Nullable
+    RunConditionMonitor mRunConditionMonitor = null;
+
+    private @Nullable
+    SyncthingRunnable mSyncthingRunnable = null;
+
     @Inject
     NotificationHandler mNotificationHandler;
+
     @Inject
     SharedPreferences mPreferences;
 
