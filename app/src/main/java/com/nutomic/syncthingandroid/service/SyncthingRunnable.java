@@ -483,6 +483,14 @@ public class SyncthingRunnable implements Runnable {
     }
 
     private Process setupAndLaunch(HashMap<String, String> env) throws IOException {
+        // Check if "libSyncthing.so" exists.
+        if (mCommand.length > 0) {
+            File libSyncthing = new File(mCommand[0]);
+            if (!libSyncthing.exists()) {
+                throw new RuntimeException("Syncthing core binary is missing in APK package location " + mCommand[0]);
+            }
+        }
+
         if (mUseRoot) {
             ProcessBuilder pb = new ProcessBuilder("su");
             Process process = pb.start();
