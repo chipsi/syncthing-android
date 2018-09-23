@@ -75,8 +75,12 @@ def install_go():
     import os
     import tarfile
     import zipfile
-    import urllib
     import hashlib
+
+    if sys.version_info[0] >= 3:
+        from urllib.request import urlretrieve
+    else:
+        from urllib import urlretrieve
 
     # Consts.
     pwd_path = os.path.dirname(os.path.realpath(__file__))
@@ -93,7 +97,7 @@ def install_go():
     url_base_name = os.path.basename(url)
     if not os.path.isfile(tar_gz_fullfn):
         print('Downloading prebuilt-go to:', tar_gz_fullfn)
-        tar_gz_fullfn = urllib.urlretrieve(url, tar_gz_fullfn)[0]
+        tar_gz_fullfn = urlretrieve(url, tar_gz_fullfn)[0]
     print('Downloaded prebuilt-go to:', tar_gz_fullfn)
 
     # Verfiy SHA-256 checksum of downloaded files.
@@ -130,8 +134,12 @@ def install_go():
 def install_ndk():
     import os
     import zipfile
-    import urllib
     import hashlib
+
+    if sys.version_info[0] >= 3:
+        from urllib.request import urlretrieve
+    else:
+        from urllib import urlretrieve
 
     # Consts.
     pwd_path = os.path.dirname(os.path.realpath(__file__))
@@ -148,7 +156,7 @@ def install_ndk():
     url_base_name = os.path.basename(url)
     if not os.path.isfile(zip_fullfn):
         print('Downloading NDK to:', zip_fullfn)
-        zip_fullfn = urllib.urlretrieve(url, zip_fullfn)[0]
+        zip_fullfn = urlretrieve(url, zip_fullfn)[0]
     print('Downloaded NDK to:', zip_fullfn)
 
     # Verfiy SHA-1 checksum of downloaded files.
