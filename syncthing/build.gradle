@@ -13,4 +13,5 @@ task cleanNative(type: Delete) {
     delete "android-ndk-r18"
     delete "gobuild"
     delete "go"
+    delete "mingit"
 }
