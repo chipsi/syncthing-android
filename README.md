@@ -32,7 +32,7 @@ The project is translated on [Transifex](https://www.transifex.com/projects/p/sy
 - Python 2.7
 `Make sure, Python is installed and available on the PATH environment variable.`
 - Git (for Linux) or Git for Windows
-`Make sure, git (or git.exe) is installed and available on the PATH environment variable.`
+`Make sure, git (or git.exe) is installed and available on the PATH environment variable. If Git is not found on the PATH environment variable, build-syncthing.py will automatically try to download and setup MinGit 2.19.0-x64 on the PATH.`
 
 ### Build instructions
 
