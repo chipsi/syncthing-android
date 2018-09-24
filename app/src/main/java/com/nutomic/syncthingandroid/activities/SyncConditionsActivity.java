@@ -72,6 +72,8 @@ public class SyncConditionsActivity extends SyncthingActivity
         super.onCreate(savedInstanceState);
         ((SyncthingApp) getApplication()).component().inject(this);
 
+        setContentView(R.layout.activity_sync_conditions);
+
         /*
         if (getIntent().hasExtra(EXTRA_INITIAL_DIRECTORY)) {
             displayFolder(new File(getIntent().getStringExtra(EXTRA_INITIAL_DIRECTORY)));
@@ -103,53 +105,12 @@ public class SyncConditionsActivity extends SyncthingActivity
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        // ToDo getMenuInflater().inflate(R.menu.folder_picker, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            /*
-            case R.id.create_folder:
-                final EditText et = new EditText(this);
-                AlertDialog dialog = new AlertDialog.Builder(this)
-                        .setTitle(R.string.create_folder)
-                        .setView(et)
-                        .setPositiveButton(android.R.string.ok,
-                                (dialogInterface, i) -> createFolder(et.getText().toString())
-                        )
-                        .setNegativeButton(android.R.string.cancel, null)
-                        .create();
-                dialog.setOnShowListener(dialogInterface -> ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
-                        .showSoftInput(et, InputMethodManager.SHOW_IMPLICIT));
-                dialog.show();
-                return true;
-            case R.id.select:
-                Intent intent = new Intent()
-                        .putExtra(EXTRA_RESULT_DIRECTORY, Util.formatPath(mLocation.getAbsolutePath()));
-                setResult(Activity.RESULT_OK, intent);
-                finish();
-                return true;
-            case android.R.id.home:
-                finish();
-                return true;
-            */
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-
     /**
      * Cancel without saving changes.
      */
     @Override
     public void onBackPressed() {
-        setResult(Activity.RESULT_CANCELED);
+        setResult(Activity.RESULT_OK);
         finish();
     }
 

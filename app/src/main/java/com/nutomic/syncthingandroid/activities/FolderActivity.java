@@ -102,10 +102,12 @@ public class FolderActivity extends SyncthingActivity
     private TextView mAccessExplanationView;
     private TextView mFolderTypeView;
     private TextView mFolderTypeDescriptionView;
+    private ViewGroup mDevicesContainer;
     private SwitchCompat mFolderFileWatcher;
     private SwitchCompat mFolderPaused;
-    private ViewGroup mWifiSsidContainer;
-    private ViewGroup mDevicesContainer;
+    private SwitchCompat mCustomSyncConditions;
+    private TextView mCustomSyncConditionsDialog;
+    private TextView mCustomSyncConditionsCurrent;
     private TextView mPullOrderTypeView;
     private TextView mPullOrderDescriptionView;
     private TextView mVersioningDescriptionView;
@@ -145,6 +147,10 @@ public class FolderActivity extends SyncthingActivity
                     mFolder.paused = isChecked;
                     mFolderNeedsToUpdate = true;
                     break;
+                case R.id.customSyncConditions:
+                    mCustomSyncConditionsDialog.setEnabled(isChecked);
+                    mCustomSyncConditionsCurrent.setEnabled(isChecked);
+                    break;
                 case R.id.device_toggle:
                     Device device = (Device) view.getTag();
                     if (isChecked) {
@@ -175,16 +181,19 @@ public class FolderActivity extends SyncthingActivity
         mFolderTypeDescriptionView = findViewById(R.id.folderTypeDescription);
         mFolderFileWatcher = findViewById(R.id.fileWatcher);
         mFolderPaused = findViewById(R.id.folderPause);
+        mCustomSyncConditions = findViewById(R.id.customSyncConditions);
+        mCustomSyncConditionsDialog = findViewById(R.id.customSyncConditionsDialog);
+        mCustomSyncConditionsCurrent = findViewById(R.id.customSyncConditionsCurrent);
         mPullOrderTypeView = findViewById(R.id.pullOrderType);
         mPullOrderDescriptionView = findViewById(R.id.pullOrderDescription);
         mVersioningDescriptionView = findViewById(R.id.versioningDescription);
         mVersioningTypeView = findViewById(R.id.versioningType);
-        mWifiSsidContainer = findViewById(R.id.wifiSsidContainer);
         mDevicesContainer = findViewById(R.id.devicesContainer);
         mEditIgnoreListTitle = findViewById(R.id.edit_ignore_list_title);
         mEditIgnoreListContent = findViewById(R.id.edit_ignore_list_content);
 
         mPathView.setOnClickListener(view -> onPathViewClick());
+        mCustomSyncConditionsDialog.setOnClickListener(view -> onCustomSyncConditionsDialogClick());
 
         findViewById(R.id.folderTypeContainer).setOnClickListener(v -> showFolderTypeDialog());
         findViewById(R.id.pullOrderContainer).setOnClickListener(v -> showPullOrderDialog());
@@ -248,6 +257,20 @@ public class FolderActivity extends SyncthingActivity
         intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
         intent.putExtra("android.content.extra.SHOW_ADVANCED", true);
         startActivityForResult(intent, CHOOSE_FOLDER_REQUEST);
+    }
+
+    /**
+     * Invoked after user clicked on the {@link mCustomSyncConditionsDialog} label.
+     */
+    @SuppressLint("InlinedAPI")
+    private void onCustomSyncConditionsDialogClick() {
+        startActivityForResult(
+            SyncConditionsActivity.createIntent(
+                this, Constants.PREF_OBJECT_PREFIX_FOLDER + mFolder.id, mFolder.label
+            ),
+            0
+        );
+        return;
     }
 
     private void showFolderTypeDialog() {
@@ -416,6 +439,7 @@ public class FolderActivity extends SyncthingActivity
         mIdView.removeTextChangedListener(mTextWatcher);
         mFolderFileWatcher.setOnCheckedChangeListener(null);
         mFolderPaused.setOnCheckedChangeListener(null);
+        mCustomSyncConditions.setOnCheckedChangeListener(null);
 
         // Update views
         mLabelView.setText(mFolder.label);
@@ -425,22 +449,7 @@ public class FolderActivity extends SyncthingActivity
         updateVersioningDescription();
         mFolderFileWatcher.setChecked(mFolder.fsWatcherEnabled);
         mFolderPaused.setChecked(mFolder.paused);
-
-        // Populate wifiSsidAvailList.
-        List<String> wifiSsidAvailList = new ArrayList<String>();
-        WifiConfiguration[] wifiNetworks = loadConfiguredNetworksSorted();
-        if (wifiNetworks != null) {
-            // Display without surrounding quotes.
-            wifiSsidAvailList = extractSsid(wifiNetworks, true);
-        }
-        mWifiSsidContainer.removeAllViews();
-        if (wifiSsidAvailList.isEmpty()) {
-            addEmptyWifiSsidListView();
-        } else {
-            for (String wifiSsid : wifiSsidAvailList) {
-                addWifiSsidViewAndSetListener(wifiSsid, getLayoutInflater());
-            }
-        }
+        // ToDo mCustomSyncConditions.setChecked();
 
         // Populate devicesList.
         List<Device> devicesList = getApi().getDevices(false);
@@ -458,6 +467,7 @@ public class FolderActivity extends SyncthingActivity
         mIdView.addTextChangedListener(mTextWatcher);
         mFolderFileWatcher.setOnCheckedChangeListener(mCheckedListener);
         mFolderPaused.setOnCheckedChangeListener(mCheckedListener);
+        mCustomSyncConditions.setOnCheckedChangeListener(mCheckedListener);
     }
 
     @Override
@@ -652,29 +662,6 @@ public class FolderActivity extends SyncthingActivity
         mFolder.paused = false;
         mFolder.type = Constants.FOLDER_TYPE_SEND_RECEIVE;
         mFolder.versioning = new Folder.Versioning();
-    }
-
-    private void addEmptyWifiSsidListView() {
-        int height = (int) TypedValue.applyDimension(COMPLEX_UNIT_DIP, 48, getResources().getDisplayMetrics());
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(WRAP_CONTENT, height);
-        int dividerInset = getResources().getDimensionPixelOffset(R.dimen.material_divider_inset);
-        int contentInset = getResources().getDimensionPixelOffset(R.dimen.abc_action_bar_content_inset_material);
-        setMarginStart(params, dividerInset);
-        setMarginEnd(params, contentInset);
-        TextView emptyView = new TextView(mWifiSsidContainer.getContext());
-        emptyView.setGravity(CENTER_VERTICAL);
-        emptyView.setText(R.string.devices_list_empty);
-        mWifiSsidContainer.addView(emptyView, params);
-    }
-
-    private void addWifiSsidViewAndSetListener(String wifiSsid, LayoutInflater inflater) {
-        inflater.inflate(R.layout.item_wifi_ssid_form, mWifiSsidContainer);
-        SwitchCompat wifiSsidView = (SwitchCompat) mWifiSsidContainer.getChildAt(mWifiSsidContainer.getChildCount()-1);
-        wifiSsidView.setOnCheckedChangeListener(null);
-        // ToDo wifiSsidView.setChecked(mFolder.getDevice(device.deviceID) != null);
-        wifiSsidView.setText(wifiSsid);
-        wifiSsidView.setTag(wifiSsid);
-        wifiSsidView.setOnCheckedChangeListener(mCheckedListener);
     }
 
     private void addEmptyDeviceListView() {

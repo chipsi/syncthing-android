@@ -156,7 +156,7 @@
                 android:gravity="center_vertical">
 
                 <android.support.v7.widget.SwitchCompat
-                    android:id="@+id/customSyncConditionsTitle"
+                    android:id="@+id/customSyncConditions"
                     style="@style/Widget.Syncthing.TextView.Label.Details"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
