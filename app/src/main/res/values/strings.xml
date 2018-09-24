@@ -792,5 +792,8 @@ Please report any problems you encounter via Github.</string>
     <string name="no_sub_folder_is_selected">No sub folder is selected</string>
     <string name="share_device_id_chooser">Share device ID with</string>
     <string name="run_on_whitelisted_wifi_summary">Turn the whitelist on to restrict sync happening only on specified WiFi networks.</string>
+    <string name="custom_sync_conditions_title">Custom sync conditions</string>
+    <string name="custom_sync_conditions_description">Allows you to specify exceptions to the global run conditions.</string>
+    <string name="custom_sync_conditions_dialog">Specify sync conditions</string>
 
 </resources>
