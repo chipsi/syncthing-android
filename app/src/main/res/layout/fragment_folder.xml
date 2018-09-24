@@ -146,7 +146,7 @@
                 android:drawableStart="@drawable/ic_pause_circle_outline_black_24dp"
                 android:text="@string/folder_pause" />
 
-            <!-- Individual sync conditions -->
+            <!-- Custom sync conditions -->
             <LinearLayout
                 android:id="@+id/customSyncConditionsContainer"
                 android:layout_width="match_parent"
@@ -184,7 +184,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:focusable="true"
-                    android:hint="@string/custom_sync_conditions_dialog"/>
+                    android:text="@string/custom_sync_conditions_dialog"/>
 
                 <TextView
                     android:id="@+id/customSyncConditionsCurrent"
