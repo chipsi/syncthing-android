@@ -83,3 +83,9 @@ try:
     subprocess.check_call(adb_bin + ' install -r --user 0 ' + debug_apk)
 except:
     sys.exit(0)
+
+print('[INFO] Starting app ...')
+try:
+    subprocess.check_call(adb_bin + ' shell monkey -p com.github.catfriend1.syncthingandroid.debug 1')
+except:
+    sys.exit(0)
