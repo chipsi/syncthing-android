@@ -24,7 +24,6 @@ public class Constants {
     // Preferences - Behaviour
     public static final String PREF_START_INTO_WEB_GUI          = "start_into_web_gui";
     public static final String PREF_USE_ROOT                    = "use_root";
-    public static final String PREF_NOTIFICATION_TYPE           = "notification_type";
     public static final String PREF_ENVIRONMENT_VARIABLES       = "environment_variables";
     public static final String PREF_DEBUG_FACILITIES_ENABLED    = "debug_facilities_enabled";
     public static final String PREF_USE_WAKE_LOCK               = "wakelock_while_binary_running";

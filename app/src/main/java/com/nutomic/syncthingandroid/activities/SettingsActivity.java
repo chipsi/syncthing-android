@@ -193,10 +193,6 @@ public class SettingsActivity extends SyncthingActivity {
                 });
             }
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                categoryBehaviour.removePreference(findPreference(Constants.PREF_NOTIFICATION_TYPE));
-            }
-
             mDeviceName             = (EditTextPreference) findPreference("deviceName");
             mListenAddresses        = (EditTextPreference) findPreference("listenAddresses");
             mMaxRecvKbps            = (EditTextPreference) findPreference("maxRecvKbps");
