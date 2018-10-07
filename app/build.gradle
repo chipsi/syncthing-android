@@ -59,7 +59,9 @@ android {
         }
         debug {
             gradle.buildFinished {
-                pushToDevice.execute()
+                buildResult -> if (!buildResult.failure) {
+                    pushToDevice.execute()
+                }
             }
         }
     }
