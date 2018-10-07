@@ -621,7 +621,7 @@ public class SyncthingService extends Service {
     }
 
     /**
-     * Called to notifiy listeners of an API change.
+     * Called to notify listeners of an API change.
      */
     private void onServiceStateChange(State newState) {
         Log.v(TAG, "onServiceStateChange: from " + mCurrentState + " to " + newState);
