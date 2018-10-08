@@ -539,7 +539,7 @@ public class SettingsActivity extends SyncthingActivity {
                                         if (mSyncthingService.exportConfig()) {
                                             Toast.makeText(getActivity(),
                                                     getString(R.string.config_export_successful,
-                                                    Constants.EXPORT_PATH), Toast.LENGTH_LONG).show();
+                                                    Constants.EXPORT_PATH_OBJ), Toast.LENGTH_LONG).show();
                                         } else {
                                             Toast.makeText(getActivity(),
                                                     getString(R.string.config_export_failed),
@@ -557,7 +557,7 @@ public class SettingsActivity extends SyncthingActivity {
                                         if (!mSyncthingService.importConfig()) {
                                             Toast.makeText(getActivity(),
                                                     getString(R.string.config_import_failed,
-                                                    Constants.EXPORT_PATH), Toast.LENGTH_LONG).show();
+                                                    Constants.EXPORT_PATH_OBJ), Toast.LENGTH_LONG).show();
                                             return;
                                         }
                                         Toast.makeText(getActivity(),

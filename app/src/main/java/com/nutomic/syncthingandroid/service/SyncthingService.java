@@ -30,6 +30,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.ref.WeakReference;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -670,14 +672,14 @@ public class SyncthingService extends Service {
         Log.v(TAG, "exportConfig BEGIN");
 
         // Copy config, privateKey and/or publicKey to export path.
-        Constants.EXPORT_PATH.mkdirs();
+        Constants.EXPORT_PATH_OBJ.mkdirs();
         try {
             Files.copy(Constants.getConfigFile(this),
-                    new File(Constants.EXPORT_PATH, Constants.CONFIG_FILE));
+                    new File(Constants.EXPORT_PATH_OBJ, Constants.CONFIG_FILE));
             Files.copy(Constants.getPrivateKeyFile(this),
-                    new File(Constants.EXPORT_PATH, Constants.PRIVATE_KEY_FILE));
+                    new File(Constants.EXPORT_PATH_OBJ, Constants.PRIVATE_KEY_FILE));
             Files.copy(Constants.getPublicKeyFile(this),
-                    new File(Constants.EXPORT_PATH, Constants.PUBLIC_KEY_FILE));
+                    new File(Constants.EXPORT_PATH_OBJ, Constants.PUBLIC_KEY_FILE));
         } catch (IOException e) {
             Log.w(TAG, "Failed to export config", e);
             failSuccess = false;
@@ -688,7 +690,7 @@ public class SyncthingService extends Service {
         FileOutputStream fileOutputStream = null;
         ObjectOutputStream objectOutputStream = null;
         try {
-            file = new File(Constants.EXPORT_PATH, Constants.SHARED_PREFS_EXPORT_FILE);
+            file = new File(Constants.EXPORT_PATH_OBJ, Constants.SHARED_PREFS_EXPORT_FILE);
             fileOutputStream = new FileOutputStream(file);
             if (!file.exists()) {
                 file.createNewFile();
@@ -712,6 +714,27 @@ public class SyncthingService extends Service {
                 Log.e(TAG, "exportConfig: Failed to export SharedPreferences #2", e);
             }
         }
+
+        // ToDo - Use an AsyncTask to do the job ... ?!
+        Path databaseSourcePath = Paths.get(this.getFilesDir() + "/" + Constants.INDEX_DB_FOLDER);
+        Path databaseExportPath = Paths.get(Constants.EXPORT_PATH + "/" + Constants.INDEX_DB_FOLDER);
+        try {
+            databaseExportPath.delete();
+        } catch (IOException e) {
+            Log.e(TAG, "Failed to delete directory '" + databaseExportPath + "'");
+        }
+        try {
+            java.nio.file.Files.walk(databaseSourcePath).forEach(source -> {
+                try {
+                    java.nio.file.Files.copy(source, databaseExportPath.resolve(databaseSourcePath.relativize(source)));
+                } catch (IOException e) {
+                    Log.e(TAG, "Failed to copy file '" + source + "' to '" + databaseExportPath + "'");
+                }
+             });
+        } catch (IOException e) {
+            Log.e(TAG, "Failed to copy directory '" + databaseSourcePath + "' to '" + databaseExportPath + "'");
+        }
+
         return failSuccess;
     }
 
@@ -730,9 +753,9 @@ public class SyncthingService extends Service {
 
         // Import config, privateKey and/or publicKey.
         try {
-            File config = new File(Constants.EXPORT_PATH, Constants.CONFIG_FILE);
-            File privateKey = new File(Constants.EXPORT_PATH, Constants.PRIVATE_KEY_FILE);
-            File publicKey = new File(Constants.EXPORT_PATH, Constants.PUBLIC_KEY_FILE);
+            File config = new File(Constants.EXPORT_PATH_OBJ, Constants.CONFIG_FILE);
+            File privateKey = new File(Constants.EXPORT_PATH_OBJ, Constants.PRIVATE_KEY_FILE);
+            File publicKey = new File(Constants.EXPORT_PATH_OBJ, Constants.PUBLIC_KEY_FILE);
 
             // Check if necessary files for import are available.
             if (config.exists() && privateKey.exists() && publicKey.exists()) {
@@ -754,7 +777,7 @@ public class SyncthingService extends Service {
         ObjectInputStream objectInputStream = null;
         Map<String, Object> sharedPrefsMap = null;
         try {
-            file = new File(Constants.EXPORT_PATH, Constants.SHARED_PREFS_EXPORT_FILE);
+            file = new File(Constants.EXPORT_PATH_OBJ, Constants.SHARED_PREFS_EXPORT_FILE);
             if (file.exists()) {
                 // Read, deserialize shared preferences.
                 fileInputStream = new FileInputStream(file);
