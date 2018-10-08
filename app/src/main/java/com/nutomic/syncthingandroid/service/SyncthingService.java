@@ -667,6 +667,10 @@ public class SyncthingService extends Service {
 
     /**
      * Exports the local config and keys to {@link Constants#EXPORT_PATH}.
+     *
+     * Test with Android Virtual Device using emulator.
+     * cls & adb shell su 0 "ls -a -l -R /data/data/com.github.catfriend1.syncthingandroid.debug/files; echo === SDCARD ===; ls -a -l -R /storage/emulated/0/backups/syncthing"
+     *
      */
     public boolean exportConfig() {
         Boolean failSuccess = true;
@@ -716,6 +720,7 @@ public class SyncthingService extends Service {
             }
         }
 
+        Log.v(TAG, "exportConfig: Exporting index database");
         // ToDo - Use an AsyncTask to do the job ... ?!
         Path databaseSourcePath = Paths.get(this.getFilesDir() + "/" + Constants.INDEX_DB_FOLDER);
         Path databaseExportPath = Paths.get(Constants.EXPORT_PATH + "/" + Constants.INDEX_DB_FOLDER);
@@ -736,11 +741,15 @@ public class SyncthingService extends Service {
             Log.e(TAG, "Failed to copy directory '" + databaseSourcePath + "' to '" + databaseExportPath + "'");
         }
 
+        Log.v(TAG, "exportConfig END");
         return failSuccess;
     }
 
     /**
      * Imports config and keys from {@link Constants#EXPORT_PATH}.
+     *
+     * Test with Android Virtual Device using emulator.
+     * cls & adb shell su 0 "ls -a -l -R /data/data/com.github.catfriend1.syncthingandroid.debug/files; echo === SDCARD ===; ls -a -l -R /storage/emulated/0/backups/syncthing"
      *
      * @return True if the import was successful, false otherwise (eg if files aren't found).
      */
@@ -855,7 +864,29 @@ public class SyncthingService extends Service {
             }
         }
 
-        // Start syncthing after successful import if run conditions apply.
+        // ToDo - Use an AsyncTask to do the job ... ?!
+        Log.v(TAG, "importConfig: Importing index database");
+        Path databaseImportPath = Paths.get(Constants.EXPORT_PATH + "/" + Constants.INDEX_DB_FOLDER);
+        Path databaseTargetPath = Paths.get(this.getFilesDir() + "/" + Constants.INDEX_DB_FOLDER);
+        try {
+            FileUtils.deleteDirectoryRecursively(databaseTargetPath);
+        } catch (IOException e) {
+            Log.e(TAG, "Failed to delete directory '" + databaseTargetPath + "'" + e);
+        }
+        try {
+            java.nio.file.Files.walk(databaseImportPath).forEach(source -> {
+                try {
+                    java.nio.file.Files.copy(source, databaseTargetPath.resolve(databaseImportPath.relativize(source)));
+                } catch (IOException e) {
+                    Log.e(TAG, "Failed to copy file '" + source + "' to '" + databaseTargetPath + "'");
+                }
+             });
+        } catch (IOException e) {
+            Log.e(TAG, "Failed to copy directory '" + databaseImportPath + "' to '" + databaseTargetPath + "'");
+        }
+        Log.v(TAG, "importConfig END");
+
+        // Start syncthing after import if run conditions apply.
         if (mLastDeterminedShouldRun) {
             launchStartupTask(SyncthingRunnable.Command.main);
         }
