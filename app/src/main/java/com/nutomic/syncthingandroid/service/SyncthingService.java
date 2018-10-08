@@ -219,6 +219,10 @@ public class SyncthingService extends Service {
         mStoragePermissionGranted = (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
                 PackageManager.PERMISSION_GRANTED);
+
+        if (mNotificationHandler != null) {
+            mNotificationHandler.setAppShutdownInProgress(false);
+        }
     }
 
     /**
@@ -505,6 +509,9 @@ public class SyncthingService extends Service {
              */
             mRunConditionMonitor.shutdown();
         }
+        if (mNotificationHandler != null) {
+            mNotificationHandler.setAppShutdownInProgress(true);
+        }
         if (mStoragePermissionGranted) {
             synchronized (mStateLock) {
                 if (mCurrentState == State.STARTING) {
@@ -557,10 +564,6 @@ public class SyncthingService extends Service {
         if (mApi != null) {
             mApi.shutdown();
             mApi = null;
-        }
-
-        if (mNotificationHandler != null) {
-            mNotificationHandler.cancelPersistentNotification(this);
         }
 
         if (mSyncthingRunnable != null) {

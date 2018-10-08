@@ -18,7 +18,7 @@ public class BootReceiver extends BroadcastReceiver {
                 !intent.getAction().equals(Intent.ACTION_MY_PACKAGE_REPLACED))
             return;
 
-        if (!alwaysRunInBackground(context))
+        if (!startServiceOnBoot(context))
             return;
 
         startServiceCompat(context);
@@ -39,8 +39,8 @@ public class BootReceiver extends BroadcastReceiver {
         }
     }
 
-    private static boolean alwaysRunInBackground(Context context) {
+    private static boolean startServiceOnBoot(Context context) {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
-        return sp.getBoolean(Constants.PREF_ALWAYS_RUN_IN_BACKGROUND, false);
+        return sp.getBoolean(Constants.PREF_START_SERVICE_ON_BOOT, false);
     }
 }

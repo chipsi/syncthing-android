@@ -100,7 +100,7 @@ public class SettingsActivity extends SyncthingActivity {
         @Inject SharedPreferences mPreferences;
 
         private Preference         mCategoryRunConditions;
-        private CheckBoxPreference mAlwaysRunInBackground;
+        private CheckBoxPreference mStartServiceOnBoot;
         private ListPreference     mPowerSource;
         private CheckBoxPreference mRunOnMobileData;
         private CheckBoxPreference mRunOnWifi;
@@ -163,8 +163,8 @@ public class SettingsActivity extends SyncthingActivity {
 
             addPreferencesFromResource(R.xml.app_settings);
             PreferenceScreen screen = getPreferenceScreen();
-            mAlwaysRunInBackground =
-                    (CheckBoxPreference) findPreference(Constants.PREF_ALWAYS_RUN_IN_BACKGROUND);
+            mStartServiceOnBoot =
+                    (CheckBoxPreference) findPreference(Constants.PREF_START_SERVICE_ON_BOOT);
             mPowerSource =
                     (ListPreference) findPreference(Constants.PREF_POWER_SOURCE);
             mRunOnMobileData =

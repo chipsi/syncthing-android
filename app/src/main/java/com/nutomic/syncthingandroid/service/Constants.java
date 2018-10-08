@@ -11,7 +11,7 @@ public class Constants {
     public static final String FILENAME_SYNCTHING_BINARY        = "libsyncthing.so";
 
     // Preferences - Run conditions
-    public static final String PREF_ALWAYS_RUN_IN_BACKGROUND    = "always_run_in_background";
+    public static final String PREF_START_SERVICE_ON_BOOT       = "always_run_in_background";
     public static final String PREF_RUN_ON_MOBILE_DATA          = "run_on_mobile_data";
     public static final String PREF_RUN_ON_WIFI                 = "run_on_wifi";
     public static final String PREF_RUN_ON_METERED_WIFI         = "run_on_metered_wifi";
