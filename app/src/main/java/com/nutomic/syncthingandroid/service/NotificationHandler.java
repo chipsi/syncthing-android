@@ -90,7 +90,7 @@ public class NotificationHandler {
     }
 
     /**
-     * Shows or hides the persistent notification.
+     * Shows, updates or hides the notification.
      */
     public void updatePersistentNotification(SyncthingService service) {
         boolean startServiceOnBoot = mPreferences.getBoolean(Constants.PREF_START_SERVICE_ON_BOOT, false);
