@@ -162,7 +162,7 @@ public class NotificationHandler {
                 .setOngoing(true)
                 .setOnlyAlertOnce(true)
                 .setPriority(NotificationCompat.PRIORITY_MIN)
-                .setContentIntent(PendingIntent.getActivity(mContext, 0, intent, 0));
+                .setContentIntent(PendingIntent.getActivity(mContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT));
         if (!appShutdownInProgress) {
             if (startForegroundService) {
                 Log.v(TAG, "Starting foreground service or updating notification");
