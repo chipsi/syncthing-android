@@ -21,6 +21,7 @@ import com.nutomic.syncthingandroid.SyncthingApp;
 import com.nutomic.syncthingandroid.http.PollWebGuiAvailableTask;
 import com.nutomic.syncthingandroid.model.Folder;
 import com.nutomic.syncthingandroid.util.ConfigXml;
+import com.nutomic.syncthingandroid.util.FileUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -719,9 +720,9 @@ public class SyncthingService extends Service {
         Path databaseSourcePath = Paths.get(this.getFilesDir() + "/" + Constants.INDEX_DB_FOLDER);
         Path databaseExportPath = Paths.get(Constants.EXPORT_PATH + "/" + Constants.INDEX_DB_FOLDER);
         try {
-            databaseExportPath.delete();
+            FileUtils.deleteDirectoryRecursively(databaseExportPath);
         } catch (IOException e) {
-            Log.e(TAG, "Failed to delete directory '" + databaseExportPath + "'");
+            Log.e(TAG, "Failed to delete directory '" + databaseExportPath + "'" + e);
         }
         try {
             java.nio.file.Files.walk(databaseSourcePath).forEach(source -> {
