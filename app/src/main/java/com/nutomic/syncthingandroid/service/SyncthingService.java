@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.content.SharedPreferences;
 import android.Manifest;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
@@ -724,26 +725,32 @@ public class SyncthingService extends Service {
             }
         }
 
-        Log.v(TAG, "exportConfig: Exporting index database");
-        Path databaseSourcePath = Paths.get(this.getFilesDir() + "/" + Constants.INDEX_DB_FOLDER);
-        Path databaseExportPath = Paths.get(Constants.EXPORT_PATH + "/" + Constants.INDEX_DB_FOLDER);
-        if (java.nio.file.Files.exists(databaseExportPath)) {
-            try {
-                FileUtils.deleteDirectoryRecursively(databaseExportPath);
-            } catch (IOException e) {
-                Log.e(TAG, "Failed to delete directory '" + databaseExportPath + "'" + e);
-            }
-        }
-        try {
-            java.nio.file.Files.walk(databaseSourcePath).forEach(source -> {
+        /**
+         * java.nio.file library is available since API level 26, see
+         * https://developer.android.com/reference/java/nio/file/package-summary
+         */
+        if (Build.VERSION.SDK_INT >= 26) {
+            Log.v(TAG, "exportConfig: Exporting index database");
+            Path databaseSourcePath = Paths.get(this.getFilesDir() + "/" + Constants.INDEX_DB_FOLDER);
+            Path databaseExportPath = Paths.get(Constants.EXPORT_PATH + "/" + Constants.INDEX_DB_FOLDER);
+            if (java.nio.file.Files.exists(databaseExportPath)) {
                 try {
-                    java.nio.file.Files.copy(source, databaseExportPath.resolve(databaseSourcePath.relativize(source)));
+                    FileUtils.deleteDirectoryRecursively(databaseExportPath);
                 } catch (IOException e) {
-                    Log.e(TAG, "Failed to copy file '" + source + "' to '" + databaseExportPath + "'");
+                    Log.e(TAG, "Failed to delete directory '" + databaseExportPath + "'" + e);
                 }
-             });
-        } catch (IOException e) {
-            Log.e(TAG, "Failed to copy directory '" + databaseSourcePath + "' to '" + databaseExportPath + "'");
+            }
+            try {
+                java.nio.file.Files.walk(databaseSourcePath).forEach(source -> {
+                    try {
+                        java.nio.file.Files.copy(source, databaseExportPath.resolve(databaseSourcePath.relativize(source)));
+                    } catch (IOException e) {
+                        Log.e(TAG, "Failed to copy file '" + source + "' to '" + databaseExportPath + "'");
+                    }
+                 });
+            } catch (IOException e) {
+                Log.e(TAG, "Failed to copy directory '" + databaseSourcePath + "' to '" + databaseExportPath + "'");
+            }
         }
         Log.v(TAG, "exportConfig END");
 
@@ -873,25 +880,31 @@ public class SyncthingService extends Service {
             }
         }
 
-        Path databaseImportPath = Paths.get(Constants.EXPORT_PATH + "/" + Constants.INDEX_DB_FOLDER);
-        if (java.nio.file.Files.exists(databaseImportPath)) {
-            Log.v(TAG, "importConfig: Importing index database");
-            Path databaseTargetPath = Paths.get(this.getFilesDir() + "/" + Constants.INDEX_DB_FOLDER);
-            try {
-                FileUtils.deleteDirectoryRecursively(databaseTargetPath);
-            } catch (IOException e) {
-                Log.e(TAG, "Failed to delete directory '" + databaseTargetPath + "'" + e);
-            }
-            try {
-                java.nio.file.Files.walk(databaseImportPath).forEach(source -> {
-                    try {
-                        java.nio.file.Files.copy(source, databaseTargetPath.resolve(databaseImportPath.relativize(source)));
-                    } catch (IOException e) {
-                        Log.e(TAG, "Failed to copy file '" + source + "' to '" + databaseTargetPath + "'");
-                    }
-                 });
-            } catch (IOException e) {
-                Log.e(TAG, "Failed to copy directory '" + databaseImportPath + "' to '" + databaseTargetPath + "'");
+        /**
+         * java.nio.file library is available since API level 26, see
+         * https://developer.android.com/reference/java/nio/file/package-summary
+         */
+        if (Build.VERSION.SDK_INT >= 26) {
+            Path databaseImportPath = Paths.get(Constants.EXPORT_PATH + "/" + Constants.INDEX_DB_FOLDER);
+            if (java.nio.file.Files.exists(databaseImportPath)) {
+                Log.v(TAG, "importConfig: Importing index database");
+                Path databaseTargetPath = Paths.get(this.getFilesDir() + "/" + Constants.INDEX_DB_FOLDER);
+                try {
+                    FileUtils.deleteDirectoryRecursively(databaseTargetPath);
+                } catch (IOException e) {
+                    Log.e(TAG, "Failed to delete directory '" + databaseTargetPath + "'" + e);
+                }
+                try {
+                    java.nio.file.Files.walk(databaseImportPath).forEach(source -> {
+                        try {
+                            java.nio.file.Files.copy(source, databaseTargetPath.resolve(databaseImportPath.relativize(source)));
+                        } catch (IOException e) {
+                            Log.e(TAG, "Failed to copy file '" + source + "' to '" + databaseTargetPath + "'");
+                        }
+                     });
+                } catch (IOException e) {
+                    Log.e(TAG, "Failed to copy directory '" + databaseImportPath + "' to '" + databaseTargetPath + "'");
+                }
             }
         }
         Log.v(TAG, "importConfig END");
