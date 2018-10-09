@@ -676,6 +676,10 @@ public class SyncthingService extends Service {
         Boolean failSuccess = true;
         Log.v(TAG, "exportConfig BEGIN");
 
+        // Shutdown synchronously.
+        shutdown(State.DISABLED, () -> {
+        });
+
         // Copy config, privateKey and/or publicKey to export path.
         Constants.EXPORT_PATH_OBJ.mkdirs();
         try {
@@ -740,8 +744,12 @@ public class SyncthingService extends Service {
         } catch (IOException e) {
             Log.e(TAG, "Failed to copy directory '" + databaseSourcePath + "' to '" + databaseExportPath + "'");
         }
-
         Log.v(TAG, "exportConfig END");
+
+        // Start syncthing after export if run conditions apply.
+        if (mLastDeterminedShouldRun) {
+            launchStartupTask(SyncthingRunnable.Command.main);
+        }
         return failSuccess;
     }
 
