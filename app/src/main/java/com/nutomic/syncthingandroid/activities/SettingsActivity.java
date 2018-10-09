@@ -536,15 +536,16 @@ public class SettingsActivity extends SyncthingActivity {
                     new AlertDialog.Builder(getActivity())
                             .setMessage(R.string.dialog_confirm_export)
                             .setPositiveButton(android.R.string.yes, (dialog, which) -> {
-                                        if (mSyncthingService.exportConfig()) {
-                                            Toast.makeText(getActivity(),
-                                                    getString(R.string.config_export_successful,
-                                                    Constants.EXPORT_PATH_OBJ), Toast.LENGTH_LONG).show();
-                                        } else {
+                                        if (!mSyncthingService.exportConfig()) {
                                             Toast.makeText(getActivity(),
                                                     getString(R.string.config_export_failed),
                                                     Toast.LENGTH_LONG).show();
+                                            return;
                                         }
+                                        Toast.makeText(getActivity(),
+                                                getString(R.string.config_export_successful,
+                                                Constants.EXPORT_PATH_OBJ), Toast.LENGTH_LONG).show();
+                                        getActivity().finish();
                                     })
                             .setNegativeButton(android.R.string.no, null)
                             .show();
