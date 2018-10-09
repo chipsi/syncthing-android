@@ -728,10 +728,12 @@ public class SyncthingService extends Service {
         // ToDo - Use an AsyncTask to do the job ... ?!
         Path databaseSourcePath = Paths.get(this.getFilesDir() + "/" + Constants.INDEX_DB_FOLDER);
         Path databaseExportPath = Paths.get(Constants.EXPORT_PATH + "/" + Constants.INDEX_DB_FOLDER);
-        try {
-            FileUtils.deleteDirectoryRecursively(databaseExportPath);
-        } catch (IOException e) {
-            Log.e(TAG, "Failed to delete directory '" + databaseExportPath + "'" + e);
+        if (java.nio.file.Files.exists(databaseExportPath)) {
+            try {
+                FileUtils.deleteDirectoryRecursively(databaseExportPath);
+            } catch (IOException e) {
+                Log.e(TAG, "Failed to delete directory '" + databaseExportPath + "'" + e);
+            }
         }
         try {
             java.nio.file.Files.walk(databaseSourcePath).forEach(source -> {
@@ -873,24 +875,26 @@ public class SyncthingService extends Service {
         }
 
         // ToDo - Use an AsyncTask to do the job ... ?!
-        Log.v(TAG, "importConfig: Importing index database");
         Path databaseImportPath = Paths.get(Constants.EXPORT_PATH + "/" + Constants.INDEX_DB_FOLDER);
-        Path databaseTargetPath = Paths.get(this.getFilesDir() + "/" + Constants.INDEX_DB_FOLDER);
-        try {
-            FileUtils.deleteDirectoryRecursively(databaseTargetPath);
-        } catch (IOException e) {
-            Log.e(TAG, "Failed to delete directory '" + databaseTargetPath + "'" + e);
-        }
-        try {
-            java.nio.file.Files.walk(databaseImportPath).forEach(source -> {
-                try {
-                    java.nio.file.Files.copy(source, databaseTargetPath.resolve(databaseImportPath.relativize(source)));
-                } catch (IOException e) {
-                    Log.e(TAG, "Failed to copy file '" + source + "' to '" + databaseTargetPath + "'");
-                }
-             });
-        } catch (IOException e) {
-            Log.e(TAG, "Failed to copy directory '" + databaseImportPath + "' to '" + databaseTargetPath + "'");
+        if (java.nio.file.Files.exists(databaseImportPath)) {
+            Log.v(TAG, "importConfig: Importing index database");
+            Path databaseTargetPath = Paths.get(this.getFilesDir() + "/" + Constants.INDEX_DB_FOLDER);
+            try {
+                FileUtils.deleteDirectoryRecursively(databaseTargetPath);
+            } catch (IOException e) {
+                Log.e(TAG, "Failed to delete directory '" + databaseTargetPath + "'" + e);
+            }
+            try {
+                java.nio.file.Files.walk(databaseImportPath).forEach(source -> {
+                    try {
+                        java.nio.file.Files.copy(source, databaseTargetPath.resolve(databaseImportPath.relativize(source)));
+                    } catch (IOException e) {
+                        Log.e(TAG, "Failed to copy file '" + source + "' to '" + databaseTargetPath + "'");
+                    }
+                 });
+            } catch (IOException e) {
+                Log.e(TAG, "Failed to copy directory '" + databaseImportPath + "' to '" + databaseTargetPath + "'");
+            }
         }
         Log.v(TAG, "importConfig END");
 
