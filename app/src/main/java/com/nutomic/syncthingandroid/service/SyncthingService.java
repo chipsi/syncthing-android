@@ -725,7 +725,6 @@ public class SyncthingService extends Service {
         }
 
         Log.v(TAG, "exportConfig: Exporting index database");
-        // ToDo - Use an AsyncTask to do the job ... ?!
         Path databaseSourcePath = Paths.get(this.getFilesDir() + "/" + Constants.INDEX_DB_FOLDER);
         Path databaseExportPath = Paths.get(Constants.EXPORT_PATH + "/" + Constants.INDEX_DB_FOLDER);
         if (java.nio.file.Files.exists(databaseExportPath)) {
@@ -874,7 +873,6 @@ public class SyncthingService extends Service {
             }
         }
 
-        // ToDo - Use an AsyncTask to do the job ... ?!
         Path databaseImportPath = Paths.get(Constants.EXPORT_PATH + "/" + Constants.INDEX_DB_FOLDER);
         if (java.nio.file.Files.exists(databaseImportPath)) {
             Log.v(TAG, "importConfig: Importing index database");
