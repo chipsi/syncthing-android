@@ -12,16 +12,16 @@ import com.nutomic.syncthingandroid.R;
 import com.nutomic.syncthingandroid.service.Constants;
 import com.nutomic.syncthingandroid.service.SyncthingRunnable;
 
-import org.mindrot.jbcrypt.BCrypt;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
-import java.io.File;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Locale;
@@ -33,11 +33,20 @@ import javax.inject.Inject;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
+import org.mindrot.jbcrypt.BCrypt;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+import org.xml.sax.InputSource;
 
 /**
  * Provides direct access to the config.xml file in the file system.
@@ -95,14 +104,19 @@ public class ConfigXml {
             throw new OpenConfigException();
         }
         try {
+            FileInputStream inputStream = new FileInputStream(mConfigFile);
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "UTF-8");
+            InputSource inputSource = new InputSource(inputStreamReader);
+            inputSource.setEncoding("UTF-8");
             DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            Log.d(TAG, "Trying to read '" + mConfigFile + "'");
-            mConfig = db.parse(mConfigFile);
+            Log.d(TAG, "Parsing config file '" + mConfigFile + "'");
+            mConfig = db.parse(inputSource);
+            inputStream.close();
+            Log.i(TAG, "Sucessfully parsed config file");
         } catch (SAXException | ParserConfigurationException | IOException e) {
-            Log.w(TAG, "Cannot read '" + mConfigFile + "'", e);
+            Log.w(TAG, "Failed to parse config file '" + mConfigFile + "'", e);
             throw new OpenConfigException();
         }
-        Log.i(TAG, "Loaded Syncthing config file");
     }
 
     public URL getWebGuiUrl() {
@@ -244,6 +258,12 @@ public class ConfigXml {
             iConfigVersion = 28;
         }
 
+        NodeList folders = mConfig.getDocumentElement().getElementsByTagName("folder");
+        for (int i = 0; i < folders.getLength(); i++) {
+            Element r = (Element) folders.item(i);
+            Log.v(TAG, "folder -" + r.getAttribute("label") + "-");
+        }
+
         if (iConfigVersion != iOldConfigVersion) {
             mConfig.getDocumentElement().setAttribute("version", Integer.toString(iConfigVersion));
             Log.i(TAG, "New config version is " + Integer.toString(iConfigVersion));
@@ -339,14 +359,38 @@ public class ConfigXml {
         Log.i(TAG, "Writing updated config file");
         File mConfigTempFile = Constants.getConfigTempFile(mContext);
         try {
+            mConfig.setXmlStandalone(true);
+
+            // Write XML header.
+            FileOutputStream fileOutputStream = new FileOutputStream(mConfigTempFile);
+            fileOutputStream.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>".getBytes("UTF-8"));
+
+            // Prepare Object-to-XML transform.
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
-            DOMSource domSource = new DOMSource(mConfig);
-            StreamResult streamResult = new StreamResult(mConfigTempFile);
-            transformer.transform(domSource, streamResult);
+            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-16");
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            transformer.setOutputProperty(OutputKeys.INDENT, "no");
+
+            // Output XML body.
+            // transformer.transform(new DOMSource(mConfig), new StreamResult(fileOutputStream));
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            StreamResult sr = new StreamResult(new OutputStreamWriter(bos, "UTF-8"));
+            transformer.transform(new DOMSource(mConfig), sr);
+            byte[] outputBytes = bos.toByteArray();
+            //bos.writeTo(fileOutputStream);
+            fileOutputStream.write(outputBytes);
+            fileOutputStream.close();
         } catch (TransformerException e) {
-            Log.w(TAG, "Failed to save temporary config file", e);
+            Log.w(TAG, "Failed to transform object to xml and save temporary config file", e);
             return;
+        } catch (FileNotFoundException e) {
+            Log.w(TAG, "Failed to save temporary config file, FileNotFoundException", e);
+        } catch (UnsupportedEncodingException e) {
+            Log.w(TAG, "Failed to save temporary config file, UnsupportedEncodingException", e);
+        } catch (IOException e) {
+            Log.w(TAG, "Failed to save temporary config file, IOException", e);
         }
         try {
             mConfigTempFile.renameTo(mConfigFile);
