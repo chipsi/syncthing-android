@@ -359,8 +359,6 @@ public class ConfigXml {
         Log.i(TAG, "Writing updated config file");
         File mConfigTempFile = Constants.getConfigTempFile(mContext);
         try {
-            mConfig.setXmlStandalone(true);
-
             // Write XML header.
             FileOutputStream fileOutputStream = new FileOutputStream(mConfigTempFile);
             fileOutputStream.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>".getBytes("UTF-8"));
@@ -374,12 +372,10 @@ public class ConfigXml {
             transformer.setOutputProperty(OutputKeys.INDENT, "no");
 
             // Output XML body.
-            // transformer.transform(new DOMSource(mConfig), new StreamResult(fileOutputStream));
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            StreamResult sr = new StreamResult(new OutputStreamWriter(bos, "UTF-8"));
-            transformer.transform(new DOMSource(mConfig), sr);
-            byte[] outputBytes = bos.toByteArray();
-            //bos.writeTo(fileOutputStream);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            StreamResult streamResult = new StreamResult(new OutputStreamWriter(byteArrayOutputStream, "UTF-8"));
+            transformer.transform(new DOMSource(mConfig), streamResult);
+            byte[] outputBytes = byteArrayOutputStream.toByteArray();
             fileOutputStream.write(outputBytes);
             fileOutputStream.close();
         } catch (TransformerException e) {
