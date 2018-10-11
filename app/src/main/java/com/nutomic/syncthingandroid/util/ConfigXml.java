@@ -21,7 +21,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
-
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Locale;
@@ -112,7 +111,7 @@ public class ConfigXml {
             Log.d(TAG, "Parsing config file '" + mConfigFile + "'");
             mConfig = db.parse(inputSource);
             inputStream.close();
-            Log.i(TAG, "Sucessfully parsed config file");
+            Log.i(TAG, "Successfully parsed config file");
         } catch (SAXException | ParserConfigurationException | IOException e) {
             Log.w(TAG, "Failed to parse config file '" + mConfigFile + "'", e);
             throw new OpenConfigException();
@@ -256,12 +255,6 @@ public class ConfigXml {
              * with the fsWatcher GUI notification.
              */
             iConfigVersion = 28;
-        }
-
-        NodeList folders = mConfig.getDocumentElement().getElementsByTagName("folder");
-        for (int i = 0; i < folders.getLength(); i++) {
-            Element r = (Element) folders.item(i);
-            Log.v(TAG, "folder -" + r.getAttribute("label") + "-");
         }
 
         if (iConfigVersion != iOldConfigVersion) {
