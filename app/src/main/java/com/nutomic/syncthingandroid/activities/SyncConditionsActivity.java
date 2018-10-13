@@ -1,36 +1,21 @@
 package com.nutomic.syncthingandroid.activities;
 
-// import android.annotation.SuppressLint;
 import android.app.Activity;
-// import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-// import android.os.Build;
 import android.os.Bundle;
-// import android.os.Environment;
 import android.os.IBinder;
-/*
-import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
-import android.text.TextUtils;
-*/
+import android.support.v7.widget.SwitchCompat;
+import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-/*
-import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.ListView;
+import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-*/
 
 import com.google.common.collect.Sets;
 import com.nutomic.syncthingandroid.R;
@@ -40,13 +25,16 @@ import com.nutomic.syncthingandroid.service.SyncthingService;
 import com.nutomic.syncthingandroid.service.SyncthingServiceBinder;
 import com.nutomic.syncthingandroid.util.Util;
 
-/*
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-*/
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.inject.Inject;
+
+import static android.support.v4.view.MarginLayoutParamsCompat.setMarginEnd;
+import static android.support.v4.view.MarginLayoutParamsCompat.setMarginStart;
+import static android.util.TypedValue.COMPLEX_UNIT_DIP;
+import static android.view.Gravity.CENTER_VERTICAL;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 /**
  * Activity that allows selecting a directory in the local file system.
@@ -59,6 +47,11 @@ public class SyncConditionsActivity extends SyncthingActivity
 
     private static final String EXTRA_OBJECT_READABLE_NAME =
             "com.nutomic.syncthingandroid.activities.SyncConditionsActivity.OBJECT_READABLE_NAME";
+
+    private ViewGroup mWifiSsidContainer;
+
+    @Inject
+    SharedPreferences mPreferences;
 
     public static Intent createIntent(Context context, String objectPrefixAndId, String objectReadableName) {
         Intent intent = new Intent(context, SyncConditionsActivity.class);
@@ -74,6 +67,41 @@ public class SyncConditionsActivity extends SyncthingActivity
 
         setContentView(R.layout.activity_sync_conditions);
 
+        // Populate wifiSsidContainer.
+        mWifiSsidContainer = findViewById(R.id.wifiSsidContainer);
+        mWifiSsidContainer.removeAllViews();
+        Set<String> globalWhitelistedSsid = mPreferences.getStringSet(Constants.PREF_WIFI_SSID_WHITELIST, new HashSet<>());
+        // from JavaDoc: Note that you must not modify the set instance returned by this call.
+        // therefore required to make a defensive copy of the elements
+        globalWhitelistedSsid = new HashSet<>(globalWhitelistedSsid);
+        if (globalWhitelistedSsid.isEmpty()) {
+            // Add empty WiFi Ssid ListView.
+            int height = (int) TypedValue.applyDimension(COMPLEX_UNIT_DIP, 48, getResources().getDisplayMetrics());
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(WRAP_CONTENT, height);
+            int dividerInset = getResources().getDimensionPixelOffset(R.dimen.material_divider_inset);
+            int contentInset = getResources().getDimensionPixelOffset(R.dimen.abc_action_bar_content_inset_material);
+            setMarginStart(params, dividerInset);
+            setMarginEnd(params, contentInset);
+            TextView emptyView = new TextView(mWifiSsidContainer.getContext());
+            emptyView.setGravity(CENTER_VERTICAL);
+            emptyView.setText(R.string.wifi_ssid_whitelist_empty);
+            mWifiSsidContainer.addView(emptyView, params);
+        } else {
+            for (String wifiSsid : globalWhitelistedSsid) {
+                // Strip quotes.
+                wifiSsid = wifiSsid.replaceFirst("^\"", "").replaceFirst("\"$", "");
+                // Add WiFi Ssid to list.
+                LayoutInflater layoutInflater = getLayoutInflater();
+                layoutInflater.inflate(R.layout.item_wifi_ssid_form, mWifiSsidContainer);
+                SwitchCompat wifiSsidView = (SwitchCompat) mWifiSsidContainer.getChildAt(mWifiSsidContainer.getChildCount()-1);
+                wifiSsidView.setOnCheckedChangeListener(null);
+                // ToDo wifiSsidView.setChecked(mFolder.getDevice(device.deviceID) != null);
+                wifiSsidView.setText(wifiSsid);
+                wifiSsidView.setTag(wifiSsid);
+                wifiSsidView.setOnCheckedChangeListener(mCheckedListener);
+            }
+        }
+
         /*
         if (getIntent().hasExtra(EXTRA_INITIAL_DIRECTORY)) {
             displayFolder(new File(getIntent().getStringExtra(EXTRA_INITIAL_DIRECTORY)));
@@ -88,6 +116,18 @@ public class SyncConditionsActivity extends SyncthingActivity
         }
         */
     }
+
+    private final CompoundButton.OnCheckedChangeListener mCheckedListener =
+            new CompoundButton.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(CompoundButton view, boolean isChecked) {
+            switch (view.getId()) {
+                default:
+                    // ToDo
+                    break;
+            }
+        }
+    };
 
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {

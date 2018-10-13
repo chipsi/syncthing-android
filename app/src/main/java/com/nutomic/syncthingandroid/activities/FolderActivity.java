@@ -1,7 +1,6 @@
 package com.nutomic.syncthingandroid.activities;
 
 import android.annotation.SuppressLint;
-// import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -29,7 +28,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-// import com.google.common.base.Objects;
 import com.google.gson.Gson;
 import com.nutomic.syncthingandroid.R;
 import com.nutomic.syncthingandroid.model.Device;
@@ -43,7 +41,6 @@ import com.nutomic.syncthingandroid.util.TextWatcherAdapter;
 import com.nutomic.syncthingandroid.util.Util;
 
 import java.io.File;
-// import java.io.IOException;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.HashSet;
