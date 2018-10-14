@@ -229,7 +229,29 @@ public class RunConditionMonitor {
         return false;
     }
 
-    private Boolean checkConditionSyncOnMeteredWifi() {
+    /**
+     * Constants.PREF_RUN_ON_METERED_WIFI
+     */
+    private Boolean checkConditionSyncOnMeteredWifi(String prefNameSyncOnMeteredWifi) {
+        boolean prefRunOnMeteredWifi = mPreferences.getBoolean(prefNameSyncOnMeteredWifi, false);
+        if (prefRunOnMeteredWifi) {
+            mRunDecisionExplanation += "\n" + res.getString(R.string.reason_on_metered_nonmetered_wifi);
+            // Check if wifi whitelist run condition is met.
+            if (checkConditionSyncOnWhitelistedWifi(Constants.PREF_WIFI_SSID_WHITELIST)) {
+                return true;
+            }
+        } else {
+            // Check if we are on a non-metered wifi.
+            if (!isMeteredNetworkConnection()) {
+                mRunDecisionExplanation += "\n" + res.getString(R.string.reason_on_nonmetered_wifi);
+                // Check if wifi whitelist run condition is met.
+                if (checkConditionSyncOnWhitelistedWifi(Constants.PREF_WIFI_SSID_WHITELIST)) {
+                    return true;
+                }
+            } else {
+                mRunDecisionExplanation += "\n" + res.getString(R.string.reason_not_nonmetered_wifi);
+            }
+        }
         return false;
     }
 
@@ -255,12 +277,11 @@ public class RunConditionMonitor {
     private boolean decideShouldRun() {
         mRunDecisionExplanation = "";
 
-        // Get run conditions preferences.
-        boolean prefRunOnMeteredWifi = mPreferences.getBoolean(Constants.PREF_RUN_ON_METERED_WIFI, false);
-        boolean prefRunInFlightMode = mPreferences.getBoolean(Constants.PREF_RUN_IN_FLIGHT_MODE, false);
+        // Get sync condition preferences.
         String prefPowerSource = mPreferences.getString(Constants.PREF_POWER_SOURCE, POWER_SOURCE_CHARGER_BATTERY);
         boolean prefRespectPowerSaving = mPreferences.getBoolean(Constants.PREF_RESPECT_BATTERY_SAVING, true);
         boolean prefRespectMasterSync = mPreferences.getBoolean(Constants.PREF_RESPECT_MASTER_SYNC, false);
+        boolean prefRunInFlightMode = mPreferences.getBoolean(Constants.PREF_RUN_IN_FLIGHT_MODE, false);
 
         // PREF_POWER_SOURCE
         switch (prefPowerSource) {
@@ -308,27 +329,11 @@ public class RunConditionMonitor {
 
         // Run on wifi.
         if (checkConditionSyncOnWifi(Constants.PREF_RUN_ON_WIFI)) {
-            Log.v(TAG, "decideShouldRun: checkConditionSyncOnWifi");
             // Wifi is connected.
-            if (prefRunOnMeteredWifi) {
-                mRunDecisionExplanation += "\n" + res.getString(R.string.reason_on_metered_nonmetered_wifi);
-                // Check if wifi whitelist run condition is met.
-                if (checkConditionSyncOnWhitelistedWifi(Constants.PREF_WIFI_SSID_WHITELIST)) {
-                    Log.v(TAG, "decideShouldRun: checkConditionSyncOnWifi && prefRunOnMeteredWifi && checkConditionSyncOnWhitelistedWifi");
-                    return true;
-                }
-            } else {
-                // Check if we are on a non-metered wifi.
-                if (!isMeteredNetworkConnection()) {
-                    mRunDecisionExplanation += "\n" + res.getString(R.string.reason_on_nonmetered_wifi);
-                    // Check if wifi whitelist run condition is met.
-                    if (checkConditionSyncOnWhitelistedWifi(Constants.PREF_WIFI_SSID_WHITELIST)) {
-                        Log.v(TAG, "decideShouldRun: checkConditionSyncOnWifi && !prefRunOnMeteredWifi && !isMeteredNetworkConnection && checkConditionSyncOnWhitelistedWifi");
-                        return true;
-                    }
-                } else {
-                    mRunDecisionExplanation += "\n" + res.getString(R.string.reason_not_nonmetered_wifi);
-                }
+            Log.v(TAG, "decideShouldRun: checkConditionSyncOnWifi");
+            if (checkConditionSyncOnMeteredWifi(Constants.PREF_RUN_ON_METERED_WIFI)) {
+                Log.v(TAG, "decideShouldRun: checkConditionSyncOnWifi && checkConditionSyncOnMeteredWifi && checkConditionSyncOnWhitelistedWifi");
+                return true;
             }
         }
 
