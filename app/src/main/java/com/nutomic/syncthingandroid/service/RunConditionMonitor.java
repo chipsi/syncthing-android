@@ -235,23 +235,19 @@ public class RunConditionMonitor {
     private Boolean checkConditionSyncOnMeteredWifi(String prefNameSyncOnMeteredWifi) {
         boolean prefRunOnMeteredWifi = mPreferences.getBoolean(prefNameSyncOnMeteredWifi, false);
         if (prefRunOnMeteredWifi) {
+            // Condition is always met as we allow both types of wifi - metered and non-metered.
             mRunDecisionExplanation += "\n" + res.getString(R.string.reason_on_metered_nonmetered_wifi);
-            // Check if wifi whitelist run condition is met.
-            if (checkConditionSyncOnWhitelistedWifi(Constants.PREF_WIFI_SSID_WHITELIST)) {
-                return true;
-            }
-        } else {
-            // Check if we are on a non-metered wifi.
-            if (!isMeteredNetworkConnection()) {
-                mRunDecisionExplanation += "\n" + res.getString(R.string.reason_on_nonmetered_wifi);
-                // Check if wifi whitelist run condition is met.
-                if (checkConditionSyncOnWhitelistedWifi(Constants.PREF_WIFI_SSID_WHITELIST)) {
-                    return true;
-                }
-            } else {
-                mRunDecisionExplanation += "\n" + res.getString(R.string.reason_not_nonmetered_wifi);
-            }
+            return true;
         }
+
+        // Check if we are on a non-metered wifi.
+        if (!isMeteredNetworkConnection()) {
+            mRunDecisionExplanation += "\n" + res.getString(R.string.reason_on_nonmetered_wifi);
+            return true;
+        }
+
+        // We disallowed non-metered wifi and are connected to metered wifi.
+        mRunDecisionExplanation += "\n" + res.getString(R.string.reason_not_nonmetered_wifi);
         return false;
     }
 
@@ -332,8 +328,13 @@ public class RunConditionMonitor {
             // Wifi is connected.
             Log.v(TAG, "decideShouldRun: checkConditionSyncOnWifi");
             if (checkConditionSyncOnMeteredWifi(Constants.PREF_RUN_ON_METERED_WIFI)) {
-                Log.v(TAG, "decideShouldRun: checkConditionSyncOnWifi && checkConditionSyncOnMeteredWifi && checkConditionSyncOnWhitelistedWifi");
-                return true;
+                // Wifi type is allowed.
+                Log.v(TAG, "decideShouldRun: checkConditionSyncOnWifi && checkConditionSyncOnMeteredWifi");
+                if (checkConditionSyncOnWhitelistedWifi(Constants.PREF_WIFI_SSID_WHITELIST)) {
+                    // Wifi is whitelisted.
+                    Log.v(TAG, "decideShouldRun: checkConditionSyncOnWifi && checkConditionSyncOnMeteredWifi && checkConditionSyncOnWhitelistedWifi");
+                    return true;
+                }
             }
         }
 
