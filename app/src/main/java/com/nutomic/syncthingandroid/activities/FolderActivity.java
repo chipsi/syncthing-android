@@ -714,7 +714,7 @@ public class FolderActivity extends SyncthingActivity
             Constants.DYN_PREF_OBJECT_CUSTOM_SYNC_CONDITIONS(Constants.PREF_OBJECT_PREFIX_FOLDER + mFolder.id),
             mCustomSyncConditionsSwitch.isChecked()
         );
-        editor.commit();
+        editor.apply();
 
         // Update folder via restApi.
         RestApi restApi = getApi();

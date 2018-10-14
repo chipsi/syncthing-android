@@ -247,7 +247,7 @@ public class SyncConditionsActivity extends SyncthingActivity
                 }
             }
             editor.putStringSet(mPrefSelectedWhitelistSsid, selectedWhitelistedSsid);
-            editor.commit();
+            editor.apply();
         }
     }
 
