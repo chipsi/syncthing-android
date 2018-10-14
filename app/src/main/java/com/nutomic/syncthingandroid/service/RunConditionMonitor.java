@@ -62,8 +62,8 @@ public class RunConditionMonitor {
     }
 
     private class SyncConditionResult {
-        public Boolean conditionMet;
-        public String explanation;
+        public Boolean conditionMet = false;
+        public String explanation = "";
 
         SyncConditionResult(Boolean conditionMet) {
             this.conditionMet = conditionMet;
@@ -207,7 +207,7 @@ public class RunConditionMonitor {
     private SyncConditionResult checkConditionSyncOnWifi(String prefNameSyncOnWifi) {
         boolean prefSyncOnWifi = mPreferences.getBoolean(prefNameSyncOnWifi, true);
         if (!prefSyncOnWifi) {
-            return new SyncConditionResult(false);
+            return new SyncConditionResult(false, "\n" + res.getString(R.string.reason_wifi_disallowed));
         }
 
         if (isWifiOrEthernetConnection()) {
@@ -266,7 +266,7 @@ public class RunConditionMonitor {
     private SyncConditionResult checkConditionSyncOnMobileData(String prefNameSyncOnMobileData) {
         boolean prefSyncOnMobileData = mPreferences.getBoolean(prefNameSyncOnMobileData, false);
         if (!prefSyncOnMobileData) {
-            return new SyncConditionResult(false);
+            return new SyncConditionResult(false, res.getString(R.string.reason_mobile_data_disallowed));
         }
 
         if (isMobileDataConnection()) {
