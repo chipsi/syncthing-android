@@ -61,6 +61,20 @@ public class RunConditionMonitor {
         void onSyncPreconditionChanged();
     }
 
+    private class SyncConditionResult {
+        public Boolean conditionMet;
+        public String explanation;
+
+        SyncConditionResult(Boolean conditionMet) {
+            this.conditionMet = conditionMet;
+        }
+
+        SyncConditionResult(Boolean conditionMet, String explanation) {
+            this.conditionMet = conditionMet;
+            this.explanation = explanation;
+        }
+    }
+
     private final Context mContext;
     private ReceiverManager mReceiverManager;
     private Resources res;
@@ -190,80 +204,76 @@ public class RunConditionMonitor {
     /**
      * Constants.PREF_RUN_ON_WIFI
      */
-    private Boolean checkConditionSyncOnWifi(String prefNameSyncOnWifi) {
+    private SyncConditionResult checkConditionSyncOnWifi(String prefNameSyncOnWifi) {
         boolean prefSyncOnWifi = mPreferences.getBoolean(prefNameSyncOnWifi, true);
-        if (prefSyncOnWifi) {
-            if (isWifiOrEthernetConnection()) {
-                mRunDecisionExplanation += "\n" + res.getString(R.string.reason_on_wifi);
-                return true;
-            } else {
-                mRunDecisionExplanation += "\n" + res.getString(R.string.reason_not_on_wifi);
-                /**
-                 * if (prefRunOnWifi && !isWifiOrEthernetConnection()) { return false; }
-                 * This is intentionally not returning "false" as the flight mode workaround
-                 * relevant for some phone models needs to be done by the code below.
-                 * ConnectivityManager.getActiveNetworkInfo() returns "null" on those phones which
-                 * results in assuming !isWifiOrEthernetConnection even if the phone is connected
-                 * to wifi during flight mode, see {@link isWifiOrEthernetConnection}.
-                 */
-            }
+        if (!prefSyncOnWifi) {
+            return new SyncConditionResult(false);
         }
-        return false;
+
+        if (isWifiOrEthernetConnection()) {
+            return new SyncConditionResult(true, "\n" + res.getString(R.string.reason_on_wifi));
+        }
+
+        /**
+         * if (prefRunOnWifi && !isWifiOrEthernetConnection()) { return false; }
+         * This is intentionally not returning "false" as the flight mode workaround
+         * relevant for some phone models needs to be done by the code below.
+         * ConnectivityManager.getActiveNetworkInfo() returns "null" on those phones which
+         * results in assuming !isWifiOrEthernetConnection even if the phone is connected
+         * to wifi during flight mode, see {@link isWifiOrEthernetConnection}.
+         */
+        return new SyncConditionResult(false, "\n" + res.getString(R.string.reason_not_on_wifi));
     }
 
     /**
      * Constants.PREF_WIFI_SSID_WHITELIST
      */
-    private Boolean checkConditionSyncOnWhitelistedWifi(String prefNameSyncOnWhitelistedWifi) {
+    private SyncConditionResult checkConditionSyncOnWhitelistedWifi(String prefNameSyncOnWhitelistedWifi) {
         Set<String> whitelistedWifiSsids = mPreferences.getStringSet(prefNameSyncOnWhitelistedWifi, new HashSet<>());
         boolean prefWifiWhitelistEnabled = !whitelistedWifiSsids.isEmpty();
         try {
             if (wifiWhitelistConditionMet(prefWifiWhitelistEnabled, whitelistedWifiSsids)) {
-                mRunDecisionExplanation += "\n" + res.getString(R.string.reason_on_whitelisted_wifi);
-                return true;
+                return new SyncConditionResult(true, "\n" + res.getString(R.string.reason_on_whitelisted_wifi));
             }
-            mRunDecisionExplanation += "\n" + res.getString(R.string.reason_not_on_whitelisted_wifi);
+            return new SyncConditionResult(false, "\n" + res.getString(R.string.reason_not_on_whitelisted_wifi));
         } catch (LocationUnavailableException e) {
-            mRunDecisionExplanation += "\n" + res.getString(R.string.reason_location_unavailable);
+            return new SyncConditionResult(false, "\n" + res.getString(R.string.reason_location_unavailable));
         }
-        return false;
     }
 
     /**
      * Constants.PREF_RUN_ON_METERED_WIFI
      */
-    private Boolean checkConditionSyncOnMeteredWifi(String prefNameSyncOnMeteredWifi) {
+    private SyncConditionResult checkConditionSyncOnMeteredWifi(String prefNameSyncOnMeteredWifi) {
         boolean prefSyncOnMeteredWifi = mPreferences.getBoolean(prefNameSyncOnMeteredWifi, false);
         if (prefSyncOnMeteredWifi) {
             // Condition is always met as we allow both types of wifi - metered and non-metered.
-            mRunDecisionExplanation += "\n" + res.getString(R.string.reason_on_metered_nonmetered_wifi);
-            return true;
+            return new SyncConditionResult(true, "\n" + res.getString(R.string.reason_on_metered_nonmetered_wifi));
         }
 
         // Check if we are on a non-metered wifi.
         if (!isMeteredNetworkConnection()) {
-            mRunDecisionExplanation += "\n" + res.getString(R.string.reason_on_nonmetered_wifi);
-            return true;
+            return new SyncConditionResult(true, "\n" + res.getString(R.string.reason_on_nonmetered_wifi));
         }
 
         // We disallowed non-metered wifi and are connected to metered wifi.
-        mRunDecisionExplanation += "\n" + res.getString(R.string.reason_not_nonmetered_wifi);
-        return false;
+        return new SyncConditionResult(false, "\n" + res.getString(R.string.reason_not_nonmetered_wifi));
     }
 
     /**
      * Constants.PREF_RUN_ON_MOBILE_DATA
      */
-    private Boolean checkConditionSyncOnMobileData(String prefNameSyncOnMobileData) {
+    private SyncConditionResult checkConditionSyncOnMobileData(String prefNameSyncOnMobileData) {
         boolean prefSyncOnMobileData = mPreferences.getBoolean(prefNameSyncOnMobileData, false);
-        if (prefSyncOnMobileData) {
-            if (isMobileDataConnection()) {
-                mRunDecisionExplanation = res.getString(R.string.reason_on_mobile_data);
-                return true;
-            }
-            mRunDecisionExplanation = res.getString(R.string.reason_not_on_mobile_data);
+        if (!prefSyncOnMobileData) {
+            return new SyncConditionResult(false);
         }
-        return false;
+
+        if (isMobileDataConnection()) {
+            return new SyncConditionResult(true, res.getString(R.string.reason_on_mobile_data));
+        }
+
+        return new SyncConditionResult(false, res.getString(R.string.reason_not_on_mobile_data));
     }
 
     /**
@@ -316,21 +326,31 @@ public class RunConditionMonitor {
             return false;
         }
 
-        // Run on mobile data.
-        if (checkConditionSyncOnMobileData(Constants.PREF_RUN_ON_MOBILE_DATA)) {
+        // Run on mobile data?
+        SyncConditionResult scr = checkConditionSyncOnMobileData(Constants.PREF_RUN_ON_MOBILE_DATA);
+        mRunDecisionExplanation += scr.explanation;
+        if (scr.conditionMet) {
             // Mobile data is connected.
             Log.v(TAG, "decideShouldRun: checkConditionSyncOnMobileData");
             return true;
         }
 
-        // Run on wifi.
-        if (checkConditionSyncOnWifi(Constants.PREF_RUN_ON_WIFI)) {
+        // Run on WiFi?
+        scr = checkConditionSyncOnWifi(Constants.PREF_RUN_ON_WIFI);
+        mRunDecisionExplanation += scr.explanation;
+        if (scr.conditionMet) {
             // Wifi is connected.
             Log.v(TAG, "decideShouldRun: checkConditionSyncOnWifi");
-            if (checkConditionSyncOnMeteredWifi(Constants.PREF_RUN_ON_METERED_WIFI)) {
+
+            scr = checkConditionSyncOnMeteredWifi(Constants.PREF_RUN_ON_METERED_WIFI);
+            mRunDecisionExplanation += scr.explanation;
+            if (scr.conditionMet) {
                 // Wifi type is allowed.
                 Log.v(TAG, "decideShouldRun: checkConditionSyncOnWifi && checkConditionSyncOnMeteredWifi");
-                if (checkConditionSyncOnWhitelistedWifi(Constants.PREF_WIFI_SSID_WHITELIST)) {
+
+                scr = checkConditionSyncOnWhitelistedWifi(Constants.PREF_WIFI_SSID_WHITELIST);
+                mRunDecisionExplanation += scr.explanation;
+                if (scr.conditionMet) {
                     // Wifi is whitelisted.
                     Log.v(TAG, "decideShouldRun: checkConditionSyncOnWifi && checkConditionSyncOnMeteredWifi && checkConditionSyncOnWhitelistedWifi");
                     return true;
@@ -356,21 +376,27 @@ public class RunConditionMonitor {
      * Check if an object's individual sync conditions are met.
      */
     public Boolean checkObjectSyncConditions(String objectPrefixAndId) {
-        // Run on mobile data.
-        if (checkConditionSyncOnMobileData(Constants.DYN_PREF_OBJECT_SYNC_ON_MOBILE_DATA(objectPrefixAndId))) {
+        // Sync on mobile data?
+        SyncConditionResult scr = checkConditionSyncOnMobileData(Constants.DYN_PREF_OBJECT_SYNC_ON_MOBILE_DATA(objectPrefixAndId));
+        if (scr.conditionMet) {
             // Mobile data is connected.
             Log.v(TAG, "checkObjectSyncConditions: checkConditionSyncOnMobileData");
             return true;
         }
 
-        // Run on wifi.
-        if (checkConditionSyncOnWifi(Constants.DYN_PREF_OBJECT_SYNC_ON_WIFI(objectPrefixAndId))) {
+        // Sync on WiFi?
+        scr = checkConditionSyncOnWifi(Constants.DYN_PREF_OBJECT_SYNC_ON_WIFI(objectPrefixAndId));
+        if (scr.conditionMet) {
             // Wifi is connected.
             Log.v(TAG, "checkObjectSyncConditions: checkConditionSyncOnWifi");
-            if (checkConditionSyncOnMeteredWifi(Constants.DYN_PREF_OBJECT_SYNC_ON_METERED_WIFI(objectPrefixAndId))) {
+
+            scr = checkConditionSyncOnMeteredWifi(Constants.DYN_PREF_OBJECT_SYNC_ON_METERED_WIFI(objectPrefixAndId));
+            if (scr.conditionMet) {
                 // Wifi type is allowed.
                 Log.v(TAG, "checkObjectSyncConditions: checkConditionSyncOnWifi && checkConditionSyncOnMeteredWifi");
-                if (checkConditionSyncOnWhitelistedWifi(Constants.DYN_PREF_OBJECT_SELECTED_WHITELIST_SSID(objectPrefixAndId))) {
+
+                scr = checkConditionSyncOnWhitelistedWifi(Constants.DYN_PREF_OBJECT_SELECTED_WHITELIST_SSID(objectPrefixAndId));
+                if (scr.conditionMet) {
                     // Wifi is whitelisted.
                     Log.v(TAG, "checkObjectSyncConditions: checkConditionSyncOnWifi && checkConditionSyncOnMeteredWifi && checkConditionSyncOnWhitelistedWifi");
                     return true;
