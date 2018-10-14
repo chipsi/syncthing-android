@@ -353,6 +353,34 @@ public class RunConditionMonitor {
     }
 
     /**
+     * Check if an object's individual sync conditions are met.
+     */
+    public Boolean checkObjectSyncConditions(String objectPrefixAndId) {
+        // Run on mobile data.
+        if (checkConditionSyncOnMobileData(Constants.DYN_PREF_OBJECT_SYNC_ON_MOBILE_DATA(objectPrefixAndId))) {
+            // Mobile data is connected.
+            Log.v(TAG, "checkObjectSyncConditions: checkConditionSyncOnMobileData");
+            return true;
+        }
+
+        // Run on wifi.
+        if (checkConditionSyncOnWifi(Constants.DYN_PREF_OBJECT_SYNC_ON_WIFI(objectPrefixAndId))) {
+            // Wifi is connected.
+            Log.v(TAG, "checkObjectSyncConditions: checkConditionSyncOnWifi");
+            if (checkConditionSyncOnMeteredWifi(Constants.DYN_PREF_OBJECT_SYNC_ON_METERED_WIFI(objectPrefixAndId))) {
+                // Wifi type is allowed.
+                Log.v(TAG, "checkObjectSyncConditions: checkConditionSyncOnWifi && checkConditionSyncOnMeteredWifi");
+                if (checkConditionSyncOnWhitelistedWifi(Constants.DYN_PREF_OBJECT_SELECTED_WHITELIST_SSID(objectPrefixAndId))) {
+                    // Wifi is whitelisted.
+                    Log.v(TAG, "checkObjectSyncConditions: checkConditionSyncOnWifi && checkConditionSyncOnMeteredWifi && checkConditionSyncOnWhitelistedWifi");
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
      * Return whether the wifi whitelist run condition is met.
      * Precondition: An active wifi connection has been detected.
      */

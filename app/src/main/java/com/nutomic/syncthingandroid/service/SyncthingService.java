@@ -350,7 +350,8 @@ public class SyncthingService extends Service {
      */
     private void onSyncPreconditionChanged() {
         if (mRestApi != null) {
-            // ToDo - Route events forward.
+            // Forward event.
+            mRestApi.onSyncPreconditionChanged(mRunConditionMonitor);
         }
     }
 
@@ -488,6 +489,9 @@ public class SyncthingService extends Service {
                 return;
             }
             onServiceStateChange(State.ACTIVE);
+        }
+        if (mRestApi != null && mRunConditionMonitor != null) {
+            mRestApi.onSyncPreconditionChanged(mRunConditionMonitor);
         }
 
         /**
