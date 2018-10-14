@@ -708,6 +708,7 @@ public class FolderActivity extends SyncthingActivity
         }
 
         // Save folder specific preferences.
+        Log.v(TAG, "updateFolder: mFolder.id = \'" + mFolder.id + "\'");
         SharedPreferences.Editor editor = mPreferences.edit();
         editor.putBoolean(Constants.PREF_OBJECT_PREFIX_FOLDER + mFolder.id + "_custom_sync_conditions", mCustomSyncConditionsSwitch.isChecked());
         editor.commit();
