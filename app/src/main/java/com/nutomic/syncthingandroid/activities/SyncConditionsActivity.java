@@ -13,6 +13,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
@@ -104,6 +105,7 @@ public class SyncConditionsActivity extends SyncthingActivity
 
         // Generate shared preferences names.
         mObjectPrefixAndId = intent.getStringExtra(EXTRA_OBJECT_PREFIX_AND_ID);
+        Log.v(TAG, "Prefix is \'" + mObjectPrefixAndId + "\' (" + mObjectReadableName + ")");
         mPrefSyncOnWifi = mObjectPrefixAndId + "_" + Constants.PREF_RUN_ON_WIFI;
         mPrefSyncOnWhitelistedWifi = mObjectPrefixAndId + "_" + "use_wifi_whitelist";
         mPrefSelectedWhitelistSsid = mObjectPrefixAndId + "_" + Constants.PREF_WIFI_SSID_WHITELIST;
@@ -123,19 +125,19 @@ public class SyncConditionsActivity extends SyncthingActivity
         /**
          * Load custom folder preferences. If unset, use global setting as default.
          */
-        mSyncOnWifi.setChecked(mPreferences.getBoolean(mPrefSyncOnWifi, globalRunOnWifiEnabled));
+        mSyncOnWifi.setChecked(globalRunOnWifiEnabled && mPreferences.getBoolean(mPrefSyncOnWifi, globalRunOnWifiEnabled));
         mSyncOnWifi.setEnabled(globalRunOnWifiEnabled);
         mSyncOnWifi.setOnCheckedChangeListener(mCheckedListener);
 
-        mSyncOnWhitelistedWifi.setChecked(mPreferences.getBoolean(mPrefSyncOnWhitelistedWifi, globalWhitelistEnabled));
+        mSyncOnWhitelistedWifi.setChecked(globalWhitelistEnabled && mPreferences.getBoolean(mPrefSyncOnWhitelistedWifi, globalWhitelistEnabled));
         mSyncOnWhitelistedWifi.setEnabled(globalWhitelistEnabled);
         mSyncOnWhitelistedWifi.setOnCheckedChangeListener(mCheckedListener);
 
-        mSyncOnMeteredWifi.setChecked(mPreferences.getBoolean(mPrefSyncOnMeteredWifi, globalRunOnMeteredWifiEnabled));
+        mSyncOnMeteredWifi.setChecked(globalRunOnMeteredWifiEnabled && mPreferences.getBoolean(mPrefSyncOnMeteredWifi, globalRunOnMeteredWifiEnabled));
         mSyncOnMeteredWifi.setEnabled(globalRunOnMeteredWifiEnabled);
         mSyncOnMeteredWifi.setOnCheckedChangeListener(mCheckedListener);
 
-        mSyncOnMobileData.setChecked(mPreferences.getBoolean(mPrefSyncOnMobileData, globalRunOnMobileDataEnabled));
+        mSyncOnMobileData.setChecked(globalRunOnMobileDataEnabled && mPreferences.getBoolean(mPrefSyncOnMobileData, globalRunOnMobileDataEnabled));
         mSyncOnMobileData.setEnabled(globalRunOnMobileDataEnabled);
         mSyncOnMobileData.setOnCheckedChangeListener(mCheckedListener);
 
@@ -161,21 +163,21 @@ public class SyncConditionsActivity extends SyncthingActivity
             emptyView.setGravity(CENTER_VERTICAL);
             emptyView.setText(R.string.wifi_ssid_whitelist_empty);
             mWifiSsidContainer.addView(emptyView, params);
+            mWifiSsidContainer.setEnabled(false);
         } else {
             for (String wifiSsid : globalWhitelistedSsid) {
-                // Strip quotes and add  WiFi Ssid to view.
-                wifiSsid = wifiSsid.replaceFirst("^\"", "").replaceFirst("\"$", "");
+                // Strip quotes and add WiFi Ssid to view.
                 LayoutInflater layoutInflater = getLayoutInflater();
                 layoutInflater.inflate(R.layout.item_wifi_ssid_form, mWifiSsidContainer);
                 SwitchCompat wifiSsidView = (SwitchCompat) mWifiSsidContainer.getChildAt(mWifiSsidContainer.getChildCount()-1);
                 wifiSsidView.setOnCheckedChangeListener(null);
                 wifiSsidView.setChecked(selectedWhitelistedSsid.contains(wifiSsid));
-                wifiSsidView.setText(wifiSsid);
+                wifiSsidView.setEnabled(mSyncOnWhitelistedWifi.isChecked());
+                wifiSsidView.setText(wifiSsid.replaceFirst("^\"", "").replaceFirst("\"$", ""));
                 wifiSsidView.setTag(wifiSsid);
                 wifiSsidView.setOnCheckedChangeListener(mCheckedListener);
             }
         }
-        mWifiSsidContainer.setEnabled(!globalWhitelistEnabled);
     }
 
     private final CompoundButton.OnCheckedChangeListener mCheckedListener =
@@ -183,10 +185,16 @@ public class SyncConditionsActivity extends SyncthingActivity
         @Override
         public void onCheckedChanged(CompoundButton view, boolean isChecked) {
             switch (view.getId()) {
+                case R.id.sync_on_whitelisted_wifi_title:
+                    // Enable or disable WiFi Ssid switches according to parent switch.
+                    for (int i = 0; i < mWifiSsidContainer.getChildCount(); i++) {
+                        mWifiSsidContainer.getChildAt(i).setEnabled(isChecked);
+                    }
+                    break;
                 default:
-                    mUnsavedChanges = true;
                     break;
             }
+            mUnsavedChanges = true;
         }
     };
 
@@ -210,7 +218,32 @@ public class SyncConditionsActivity extends SyncthingActivity
     public void onPause() {
         super.onPause();
         if (mUnsavedChanges) {
-            Log.v(TAG, "onPause: mUnsavedChanges == true");
+            Log.v(TAG, "onPause: mUnsavedChanges == true. Saving prefs ...");
+            /**
+             * Save custom folder preferences.
+             */
+            SharedPreferences.Editor editor = mPreferences.edit();
+            editor.putBoolean(mPrefSyncOnWifi, mSyncOnWifi.isChecked());
+            editor.putBoolean(mPrefSyncOnWhitelistedWifi, mSyncOnWhitelistedWifi.isChecked());
+            editor.putBoolean(mPrefSyncOnMeteredWifi, mSyncOnMeteredWifi.isChecked());
+            editor.putBoolean(mPrefSyncOnMobileData, mSyncOnMobileData.isChecked());
+
+            // Save Selected WiFi Ssid's to mPrefSelectedWhitelistSsid.
+            Set<String> selectedWhitelistedSsid = new HashSet<>();
+            if (mSyncOnWhitelistedWifi.isChecked()) {
+                for (int i = 0; i < mWifiSsidContainer.getChildCount(); i++) {
+                    View view = mWifiSsidContainer.getChildAt(i);
+                    if (view instanceof SwitchCompat) {
+                        SwitchCompat wifiSsidSwitch = (SwitchCompat) view;
+                        if (wifiSsidSwitch.isChecked()) {
+                            selectedWhitelistedSsid.add((String) wifiSsidSwitch.getTag());
+                            // Log.v(TAG, "onPause: +Ssid [" + (String) wifiSsidSwitch.getTag() + "]");
+                        }
+                    }
+                }
+            }
+            editor.putStringSet(mPrefSelectedWhitelistSsid, selectedWhitelistedSsid);
+            editor.commit();
         }
     }
 
