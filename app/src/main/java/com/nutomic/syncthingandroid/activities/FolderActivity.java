@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -33,6 +35,7 @@ import com.nutomic.syncthingandroid.model.FolderIgnoreList;
 import com.nutomic.syncthingandroid.service.Constants;
 import com.nutomic.syncthingandroid.service.RestApi;
 import com.nutomic.syncthingandroid.service.SyncthingService;
+import com.nutomic.syncthingandroid.SyncthingApp;
 import com.nutomic.syncthingandroid.util.FileUtils;
 import com.nutomic.syncthingandroid.util.TextWatcherAdapter;
 import com.nutomic.syncthingandroid.util.Util;
@@ -42,6 +45,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
 
 import static android.support.v4.view.MarginLayoutParamsCompat.setMarginEnd;
 import static android.support.v4.view.MarginLayoutParamsCompat.setMarginStart;
@@ -95,15 +100,18 @@ public class FolderActivity extends SyncthingActivity
     private ViewGroup mDevicesContainer;
     private SwitchCompat mFolderFileWatcher;
     private SwitchCompat mFolderPaused;
-    private SwitchCompat mCustomSyncConditions;
+    private SwitchCompat mCustomSyncConditionsSwitch;
+    private TextView mCustomSyncConditionsDescription;
     private TextView mCustomSyncConditionsDialog;
-    private TextView mCustomSyncConditionsCurrent;
     private TextView mPullOrderTypeView;
     private TextView mPullOrderDescriptionView;
     private TextView mVersioningDescriptionView;
     private TextView mVersioningTypeView;
     private TextView mEditIgnoreListTitle;
     private EditText mEditIgnoreListContent;
+
+    @Inject
+    SharedPreferences mPreferences;
 
     private boolean mIsCreateMode;
     private boolean mFolderNeedsToUpdate = false;
@@ -137,9 +145,11 @@ public class FolderActivity extends SyncthingActivity
                     mFolder.paused = isChecked;
                     mFolderNeedsToUpdate = true;
                     break;
-                case R.id.customSyncConditions:
+                case R.id.customSyncConditionsSwitch:
+                    mCustomSyncConditionsDescription.setEnabled(isChecked);
                     mCustomSyncConditionsDialog.setEnabled(isChecked);
-                    mCustomSyncConditionsCurrent.setEnabled(isChecked);
+                    // This is needed to display the "discard changes dialog".
+                    mFolderNeedsToUpdate = true;
                     break;
                 case R.id.device_toggle:
                     Device device = (Device) view.getTag();
@@ -157,6 +167,7 @@ public class FolderActivity extends SyncthingActivity
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ((SyncthingApp) getApplication()).component().inject(this);
         setContentView(R.layout.fragment_folder);
 
         mIsCreateMode = getIntent().getBooleanExtra(EXTRA_IS_CREATE, false);
@@ -171,9 +182,9 @@ public class FolderActivity extends SyncthingActivity
         mFolderTypeDescriptionView = findViewById(R.id.folderTypeDescription);
         mFolderFileWatcher = findViewById(R.id.fileWatcher);
         mFolderPaused = findViewById(R.id.folderPause);
-        mCustomSyncConditions = findViewById(R.id.customSyncConditions);
+        mCustomSyncConditionsSwitch = findViewById(R.id.customSyncConditionsSwitch);
+        mCustomSyncConditionsDescription = findViewById(R.id.customSyncConditionsDescription);
         mCustomSyncConditionsDialog = findViewById(R.id.customSyncConditionsDialog);
-        mCustomSyncConditionsCurrent = findViewById(R.id.customSyncConditionsCurrent);
         mPullOrderTypeView = findViewById(R.id.pullOrderType);
         mPullOrderDescriptionView = findViewById(R.id.pullOrderDescription);
         mVersioningDescriptionView = findViewById(R.id.versioningDescription);
@@ -429,7 +440,7 @@ public class FolderActivity extends SyncthingActivity
         mIdView.removeTextChangedListener(mTextWatcher);
         mFolderFileWatcher.setOnCheckedChangeListener(null);
         mFolderPaused.setOnCheckedChangeListener(null);
-        mCustomSyncConditions.setOnCheckedChangeListener(null);
+        mCustomSyncConditionsSwitch.setOnCheckedChangeListener(null);
 
         // Update views
         mLabelView.setText(mFolder.label);
@@ -439,7 +450,20 @@ public class FolderActivity extends SyncthingActivity
         updateVersioningDescription();
         mFolderFileWatcher.setChecked(mFolder.fsWatcherEnabled);
         mFolderPaused.setChecked(mFolder.paused);
-        // ToDo mCustomSyncConditions.setChecked();
+        findViewById(R.id.editIgnoresContainer).setVisibility(mIsCreateMode ? View.GONE : View.VISIBLE);
+
+        // Update views - custom sync conditions.
+        mCustomSyncConditionsSwitch.setChecked(false);
+        if (mIsCreateMode) {
+            findViewById(R.id.customSyncConditionsContainer).setVisibility(View.GONE);
+        } else {
+            mCustomSyncConditionsSwitch.setChecked(mPreferences.getBoolean(
+                Constants.PREF_OBJECT_PREFIX_FOLDER + mFolder.id + "_custom_sync_conditions", false
+            ));
+        }
+        mCustomSyncConditionsSwitch.setEnabled(!mIsCreateMode);
+        mCustomSyncConditionsDescription.setEnabled(mCustomSyncConditionsSwitch.isChecked());
+        mCustomSyncConditionsDialog.setEnabled(mCustomSyncConditionsSwitch.isChecked());
 
         // Populate devicesList.
         List<Device> devicesList = getApi().getDevices(false);
@@ -457,7 +481,7 @@ public class FolderActivity extends SyncthingActivity
         mIdView.addTextChangedListener(mTextWatcher);
         mFolderFileWatcher.setOnCheckedChangeListener(mCheckedListener);
         mFolderPaused.setOnCheckedChangeListener(mCheckedListener);
-        mCustomSyncConditions.setOnCheckedChangeListener(mCheckedListener);
+        mCustomSyncConditionsSwitch.setOnCheckedChangeListener(mCheckedListener);
     }
 
     @Override
@@ -678,25 +702,34 @@ public class FolderActivity extends SyncthingActivity
     }
 
     private void updateFolder() {
-        if (!mIsCreateMode) {
-            RestApi restApi = getApi();
-            /**
-             * RestApi is guaranteed not to be null as {@link onServiceStateChange}
-             * immediately finishes this activity if SyncthingService shuts down.
-             */
-            /*
-            if (restApi == null) {
-                Log.e(TAG, "updateFolder: restApi == null");
-                return;
-            }
-            */
-            // Update ignore list.
-            String[] ignore = mEditIgnoreListContent.getText().toString().split("\n");
-            restApi.postFolderIgnoreList(mFolder.id, ignore);
-
-            // Update model and send the config to REST endpoint.
-            restApi.updateFolder(mFolder);
+        if (mIsCreateMode) {
+            // If we are about to create this folder, we cannot update via restApi.
+            return;
         }
+
+        // Save folder specific preferences.
+        SharedPreferences.Editor editor = mPreferences.edit();
+        editor.putBoolean(Constants.PREF_OBJECT_PREFIX_FOLDER + mFolder.id + "_custom_sync_conditions", mCustomSyncConditionsSwitch.isChecked());
+        editor.commit();
+
+        // Update folder via restApi.
+        RestApi restApi = getApi();
+        /**
+         * RestApi is guaranteed not to be null as {@link onServiceStateChange}
+         * immediately finishes this activity if SyncthingService shuts down.
+         */
+        /*
+        if (restApi == null) {
+            Log.e(TAG, "updateFolder: restApi == null");
+            return;
+        }
+        */
+        // Update ignore list.
+        String[] ignore = mEditIgnoreListContent.getText().toString().split("\n");
+        restApi.postFolderIgnoreList(mFolder.id, ignore);
+
+        // Update model and send the config to REST endpoint.
+        restApi.updateFolder(mFolder);
     }
 
     @Override
