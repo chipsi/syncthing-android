@@ -315,8 +315,8 @@ Bitte melden Sie auftretende Probleme via GitHub.</string>
     <string name="run_on_metered_wifi_title">Starte bei getakteter WLAN-Verbindung</string>
     <string name="run_on_metered_wifi_summary">Starte, wenn das Gerät mit einem getakteten WLAN-Netzwerk wie z. B. einem Hotspot- oder Tethering-Netzwerk verbunden ist. Achtung: Dies kann einen großen Anteil des mobilen Datenvolumens verbrauchen, wenn Du viele Dateien synchronisierst.</string>
 
-    <string name="run_on_whitelisted_wifi_title">Starte in festgelegten WLAN-Netzwerken</string>
-    <string name="run_on_whitelisted_wifi_networks">Starte nur in ausgewählten WLAN-Netzwerken: %1$s</string>
+    <string name="run_on_whitelisted_wifi_title">Starte bei ausgewählten WLAN\'s</string>
+    <string name="run_on_whitelisted_wifi_networks">Starte in ausgewählten WLAN\'s: %1$s</string>
     <string name="run_on_all_wifi_networks">Starte in allen WLAN-Netzwerken.</string>
 
     <string name="sync_only_wifi_ssids_wifi_turn_on_wifi">Bitte WLAN aktivieren, um eines zu wählen.</string>
@@ -603,8 +603,10 @@ Bitte melden Sie auftretende Probleme via GitHub.</string>
     <string name="reason_not_on_battery_power">Telefon wird nicht batteriebetrieben</string>
     <string name="reason_not_while_power_saving">Syncthing läuft nicht, weil das Telefon im Energiesparmodus ist.</string>
     <string name="reason_not_while_auto_sync_data_disabled">Syncthing läuft nicht, weil die Android-Kachel \"Automatische Datensynchronisation\" ausgeschaltet ist.</string>
+    <string name="reason_mobile_data_disallowed">Syncthing wurde verboten, die mobile Datenverbindung zu nutzen.</string>
     <string name="reason_on_mobile_data">Syncthing läuft, weil die mobile Datenverbindung aufgebaut ist.</string>
     <string name="reason_not_on_mobile_data">Syncthing darf bei mobiler Datenverbindung laufen, jedoch sind mobile Daten nicht verbunden.</string>
+    <string name="reason_wifi_disallowed">Syncthing wurde verboten, die WLAN-Verbindung zu nutzen.</string>
     <string name="reason_on_wifi">Syncthing darf bei WLAN-Verbindung laufen und WLAN ist gerade verbunden.</string>
     <string name="reason_not_on_wifi">Syncthing darf bei WLAN-Verbindung laufen, jedoch ist WLAN gerade nicht verbunden oder das Telefon befindet sich im Flugzeugmodus.</string>
     <string name="reason_on_metered_nonmetered_wifi">Syncthing darf bei getakteter und nicht-getakteter WLAN-Verbindung laufen.</string>
