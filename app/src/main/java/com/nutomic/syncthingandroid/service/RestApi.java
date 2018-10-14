@@ -782,6 +782,10 @@ public class RestApi {
         Log.v(TAG, "onSyncPreconditionChanged: Event fired.");
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
         synchronized (mConfigLock) {
+            if (mConfig == null || mConfig.folders == null) {
+                Log.d(TAG, "onSyncPreconditionChanged: mConfig.folders is not ready yet.");
+                return;
+            }
             Boolean configChanged = false;
             for (Folder folder : mConfig.folders) {
                 Boolean folderCustomSyncConditionsEnabled = sharedPreferences.getBoolean(
