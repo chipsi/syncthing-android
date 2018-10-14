@@ -458,7 +458,7 @@ public class FolderActivity extends SyncthingActivity
             findViewById(R.id.customSyncConditionsContainer).setVisibility(View.GONE);
         } else {
             mCustomSyncConditionsSwitch.setChecked(mPreferences.getBoolean(
-                Constants.PREF_OBJECT_PREFIX_FOLDER + mFolder.id + "_custom_sync_conditions", false
+                Constants.DYN_PREF_OBJECT_CUSTOM_SYNC_CONDITIONS(Constants.PREF_OBJECT_PREFIX_FOLDER + mFolder.id), false
             ));
         }
         mCustomSyncConditionsSwitch.setEnabled(!mIsCreateMode);
@@ -710,7 +710,10 @@ public class FolderActivity extends SyncthingActivity
         // Save folder specific preferences.
         Log.v(TAG, "updateFolder: mFolder.id = \'" + mFolder.id + "\'");
         SharedPreferences.Editor editor = mPreferences.edit();
-        editor.putBoolean(Constants.PREF_OBJECT_PREFIX_FOLDER + mFolder.id + "_custom_sync_conditions", mCustomSyncConditionsSwitch.isChecked());
+        editor.putBoolean(
+            Constants.DYN_PREF_OBJECT_CUSTOM_SYNC_CONDITIONS(Constants.PREF_OBJECT_PREFIX_FOLDER + mFolder.id),
+            mCustomSyncConditionsSwitch.isChecked()
+        );
         editor.commit();
 
         // Update folder via restApi.

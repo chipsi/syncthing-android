@@ -69,6 +69,7 @@ public class SyncConditionsActivity extends SyncthingActivity
     private String mPrefSyncOnMeteredWifi;
     private String mPrefSyncOnMobileData;
 
+    // UI information and state.
     private String mObjectReadableName;
     private boolean mUnsavedChanges = false;
 
@@ -106,11 +107,11 @@ public class SyncConditionsActivity extends SyncthingActivity
         // Generate shared preferences names.
         mObjectPrefixAndId = intent.getStringExtra(EXTRA_OBJECT_PREFIX_AND_ID);
         Log.v(TAG, "Prefix is \'" + mObjectPrefixAndId + "\' (" + mObjectReadableName + ")");
-        mPrefSyncOnWifi = mObjectPrefixAndId + "_" + Constants.PREF_RUN_ON_WIFI;
-        mPrefSyncOnWhitelistedWifi = mObjectPrefixAndId + "_" + "use_wifi_whitelist";
-        mPrefSelectedWhitelistSsid = mObjectPrefixAndId + "_" + Constants.PREF_WIFI_SSID_WHITELIST;
-        mPrefSyncOnMeteredWifi = mObjectPrefixAndId + "_" + Constants.PREF_RUN_ON_METERED_WIFI;
-        mPrefSyncOnMobileData = mObjectPrefixAndId + "_" + Constants.PREF_RUN_ON_MOBILE_DATA;
+        mPrefSyncOnWifi = Constants.DYN_PREF_OBJECT_SYNC_ON_WIFI(mObjectPrefixAndId);
+        mPrefSyncOnWhitelistedWifi = Constants.DYN_PREF_OBJECT_SYNC_ON_WHITELISTED_WIFI(mObjectPrefixAndId);
+        mPrefSelectedWhitelistSsid = Constants.DYN_PREF_OBJECT_SELECTED_WHITELIST_SSID(mObjectPrefixAndId);
+        mPrefSyncOnMeteredWifi = Constants.DYN_PREF_OBJECT_SYNC_ON_METERED_WIFI(mObjectPrefixAndId);
+        mPrefSyncOnMobileData = Constants.DYN_PREF_OBJECT_SYNC_ON_MOBILE_DATA(mObjectPrefixAndId);
 
         /**
          * Load global run conditions.
