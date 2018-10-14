@@ -211,7 +211,21 @@ public class RunConditionMonitor {
         return false;
     }
 
-    private Boolean checkConditionSyncOnWhitelistedWifi() {
+    /**
+     * Constants.PREF_WIFI_SSID_WHITELIST
+     */
+    private Boolean checkConditionSyncOnWhitelistedWifi(String prefNameSyncOnWhitelistedWifi) {
+        Set<String> whitelistedWifiSsids = mPreferences.getStringSet(prefNameSyncOnWhitelistedWifi, new HashSet<>());
+        boolean prefWifiWhitelistEnabled = !whitelistedWifiSsids.isEmpty();
+        try {
+            if (wifiWhitelistConditionMet(prefWifiWhitelistEnabled, whitelistedWifiSsids)) {
+                mRunDecisionExplanation += "\n" + res.getString(R.string.reason_on_whitelisted_wifi);
+                return true;
+            }
+            mRunDecisionExplanation += "\n" + res.getString(R.string.reason_not_on_whitelisted_wifi);
+        } catch (LocationUnavailableException e) {
+            mRunDecisionExplanation += "\n" + res.getString(R.string.reason_location_unavailable);
+        }
         return false;
     }
 
@@ -226,7 +240,6 @@ public class RunConditionMonitor {
         boolean prefRunOnMobileData = mPreferences.getBoolean(prefNameSyncOnMobileData, false);
         if (prefRunOnMobileData) {
             if (isMobileDataConnection()) {
-                Log.v(TAG, "decideShouldRun: prefRunOnMobileData && isMobileDataConnection");
                 mRunDecisionExplanation = res.getString(R.string.reason_on_mobile_data);
                 return true;
             }
@@ -244,8 +257,6 @@ public class RunConditionMonitor {
 
         // Get run conditions preferences.
         boolean prefRunOnMeteredWifi = mPreferences.getBoolean(Constants.PREF_RUN_ON_METERED_WIFI, false);
-        Set<String> whitelistedWifiSsids = mPreferences.getStringSet(Constants.PREF_WIFI_SSID_WHITELIST, new HashSet<>());
-        boolean prefWifiWhitelistEnabled = !whitelistedWifiSsids.isEmpty();
         boolean prefRunInFlightMode = mPreferences.getBoolean(Constants.PREF_RUN_IN_FLIGHT_MODE, false);
         String prefPowerSource = mPreferences.getString(Constants.PREF_POWER_SOURCE, POWER_SOURCE_CHARGER_BATTERY);
         boolean prefRespectPowerSaving = mPreferences.getBoolean(Constants.PREF_RESPECT_BATTERY_SAVING, true);
@@ -291,39 +302,33 @@ public class RunConditionMonitor {
         // Run on mobile data.
         if (checkConditionSyncOnMobileData(Constants.PREF_RUN_ON_MOBILE_DATA)) {
             // Mobile data is connected.
+            Log.v(TAG, "decideShouldRun: checkConditionSyncOnMobileData");
             return true;
         }
 
         // Run on wifi.
         if (checkConditionSyncOnWifi(Constants.PREF_RUN_ON_WIFI)) {
+            Log.v(TAG, "decideShouldRun: checkConditionSyncOnWifi");
             // Wifi is connected.
-            try {
-                if (prefRunOnMeteredWifi) {
-                    mRunDecisionExplanation += "\n" + res.getString(R.string.reason_on_metered_nonmetered_wifi);
-                    // We are on non-metered or metered wifi. Check if wifi whitelist run condition is met.
-                    if (wifiWhitelistConditionMet(prefWifiWhitelistEnabled, whitelistedWifiSsids)) {
-                        Log.v(TAG, "decideShouldRun: prefRunOnWifi && isWifiOrEthernetConnection && prefRunOnMeteredWifi && wifiWhitelistConditionMet");
-                        mRunDecisionExplanation += "\n" + res.getString(R.string.reason_on_whitelisted_wifi);
+            if (prefRunOnMeteredWifi) {
+                mRunDecisionExplanation += "\n" + res.getString(R.string.reason_on_metered_nonmetered_wifi);
+                // Check if wifi whitelist run condition is met.
+                if (checkConditionSyncOnWhitelistedWifi(Constants.PREF_WIFI_SSID_WHITELIST)) {
+                    Log.v(TAG, "decideShouldRun: checkConditionSyncOnWifi && prefRunOnMeteredWifi && checkConditionSyncOnWhitelistedWifi");
+                    return true;
+                }
+            } else {
+                // Check if we are on a non-metered wifi.
+                if (!isMeteredNetworkConnection()) {
+                    mRunDecisionExplanation += "\n" + res.getString(R.string.reason_on_nonmetered_wifi);
+                    // Check if wifi whitelist run condition is met.
+                    if (checkConditionSyncOnWhitelistedWifi(Constants.PREF_WIFI_SSID_WHITELIST)) {
+                        Log.v(TAG, "decideShouldRun: checkConditionSyncOnWifi && !prefRunOnMeteredWifi && !isMeteredNetworkConnection && checkConditionSyncOnWhitelistedWifi");
                         return true;
                     }
-                    mRunDecisionExplanation += "\n" + res.getString(R.string.reason_not_on_whitelisted_wifi);
                 } else {
-                    // Check if we are on a non-metered wifi.
-                    if (!isMeteredNetworkConnection()) {
-                        mRunDecisionExplanation += "\n" + res.getString(R.string.reason_on_nonmetered_wifi);
-                        // Check if wifi whitelist run condition is met.
-                        if (wifiWhitelistConditionMet(prefWifiWhitelistEnabled, whitelistedWifiSsids)) {
-                            Log.v(TAG, "decideShouldRun: prefRunOnWifi && isWifiOrEthernetConnection && !prefRunOnMeteredWifi && !isMeteredNetworkConnection && wifiWhitelistConditionMet");
-                            mRunDecisionExplanation += "\n" + res.getString(R.string.reason_on_whitelisted_wifi);
-                            return true;
-                        }
-                        mRunDecisionExplanation += "\n" + res.getString(R.string.reason_not_on_whitelisted_wifi);
-                    } else {
-                        mRunDecisionExplanation += "\n" + res.getString(R.string.reason_not_nonmetered_wifi);
-                    }
+                    mRunDecisionExplanation += "\n" + res.getString(R.string.reason_not_nonmetered_wifi);
                 }
-            } catch (LocationUnavailableException e) {
-                mRunDecisionExplanation += "\n" + res.getString(R.string.reason_location_unavailable);
             }
         }
 
