@@ -53,8 +53,12 @@ public class RunConditionMonitor {
         }
     };
 
-    public interface OnRunConditionChangedListener {
-        void onRunConditionChanged(boolean shouldRun);
+    public interface OnShouldRunChangedListener {
+        void onShouldRunDecisionChanged(boolean shouldRun);
+    }
+
+    public interface OnSyncPreconditionChangedListener {
+        void onSyncPreconditionChanged();
     }
 
     private final Context mContext;
@@ -63,20 +67,28 @@ public class RunConditionMonitor {
     private String mRunDecisionExplanation = "";
 
     /**
-     * Sending callback notifications through {@link OnDeviceStateChangedListener} is enabled if not null.
+     * Sending callback notifications through {@link #OnShouldRunChangedListener} is enabled if not null.
      */
-    private @Nullable OnRunConditionChangedListener mOnRunConditionChangedListener = null;
+    private @Nullable OnShouldRunChangedListener mOnShouldRunChangedListener = null;
+
+    /**
+     * Sending callback notifications through {@link #OnSyncPreconditionChangedListener} is enabled if not null.
+     */
+    private @Nullable OnSyncPreconditionChangedListener mOnSyncPreconditionChangedListener = null;
 
     /**
      * Stores the result of the last call to {@link decideShouldRun}.
      */
     private boolean lastDeterminedShouldRun = false;
 
-    public RunConditionMonitor(Context context, OnRunConditionChangedListener listener) {
+    public RunConditionMonitor(Context context,
+            OnShouldRunChangedListener onShouldRunChangedListener,
+            OnSyncPreconditionChangedListener onSyncPreconditionChangedListener) {
         Log.v(TAG, "Created new instance");
         ((SyncthingApp) context.getApplicationContext()).component().inject(this);
         mContext = context;
-        mOnRunConditionChangedListener = listener;
+        mOnShouldRunChangedListener = onShouldRunChangedListener;
+        mOnSyncPreconditionChangedListener = onSyncPreconditionChangedListener;
 
         /**
          * Register broadcast receivers.
@@ -142,15 +154,24 @@ public class RunConditionMonitor {
         }
     }
 
+    /**
+     * Event handler that is fired after preconditions changed.
+     * We then need to decide if syncthing should run.
+     */
     public void updateShouldRunDecision() {
         // Check if the current conditions changed the result of decideShouldRun()
         // compared to the last determined result.
         boolean newShouldRun = decideShouldRun();
         if (newShouldRun != lastDeterminedShouldRun) {
-            if (mOnRunConditionChangedListener != null) {
-                mOnRunConditionChangedListener.onRunConditionChanged(newShouldRun);
+            if (mOnShouldRunChangedListener != null) {
+                mOnShouldRunChangedListener.onShouldRunDecisionChanged(newShouldRun);
             }
             lastDeterminedShouldRun = newShouldRun;
+        }
+
+        // Notify about changed preconditions.
+        if (mOnSyncPreconditionChangedListener != null) {
+            mOnSyncPreconditionChangedListener.onSyncPreconditionChanged();
         }
     }
 
