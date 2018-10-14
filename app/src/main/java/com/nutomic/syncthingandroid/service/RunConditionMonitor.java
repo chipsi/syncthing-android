@@ -188,9 +188,9 @@ public class RunConditionMonitor {
         mRunDecisionExplanation = "";
 
         // Get run conditions preferences.
-        boolean prefRunOnMobileData= mPreferences.getBoolean(Constants.PREF_RUN_ON_MOBILE_DATA, false);
-        boolean prefRunOnWifi= mPreferences.getBoolean(Constants.PREF_RUN_ON_WIFI, true);
-        boolean prefRunOnMeteredWifi= mPreferences.getBoolean(Constants.PREF_RUN_ON_METERED_WIFI, false);
+        boolean prefRunOnMobileData = mPreferences.getBoolean(Constants.PREF_RUN_ON_MOBILE_DATA, false);
+        boolean prefRunOnWifi = mPreferences.getBoolean(Constants.PREF_RUN_ON_WIFI, true);
+        boolean prefRunOnMeteredWifi = mPreferences.getBoolean(Constants.PREF_RUN_ON_METERED_WIFI, false);
         Set<String> whitelistedWifiSsids = mPreferences.getStringSet(Constants.PREF_WIFI_SSID_WHITELIST, new HashSet<>());
         boolean prefWifiWhitelistEnabled = !whitelistedWifiSsids.isEmpty();
         boolean prefRunInFlightMode = mPreferences.getBoolean(Constants.PREF_RUN_IN_FLIGHT_MODE, false);
