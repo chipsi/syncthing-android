@@ -62,9 +62,12 @@ public class RunConditionMonitor {
     }
 
     private final Context mContext;
-    @Inject SharedPreferences mPreferences;
     private ReceiverManager mReceiverManager;
+    private Resources res;
     private String mRunDecisionExplanation = "";
+
+    @Inject
+    SharedPreferences mPreferences;
 
     /**
      * Sending callback notifications through {@link #OnShouldRunChangedListener} is enabled if not null.
@@ -87,6 +90,7 @@ public class RunConditionMonitor {
         Log.v(TAG, "Created new instance");
         ((SyncthingApp) context.getApplicationContext()).component().inject(this);
         mContext = context;
+        res = mContext.getResources();
         mOnShouldRunChangedListener = onShouldRunChangedListener;
         mOnSyncPreconditionChangedListener = onSyncPreconditionChangedListener;
 
@@ -180,11 +184,42 @@ public class RunConditionMonitor {
     }
 
     /**
+     * Each sync condition has its own evaluator function which
+     * determines if the condition is met.
+     */
+    private Boolean checkConditionSyncOnWifi() {
+        return false;
+    }
+
+    private Boolean checkConditionSyncOnWhitelistedWifi() {
+        return false;
+    }
+
+    private Boolean checkConditionSyncOnMeteredWifi() {
+        return false;
+    }
+
+    /**
+     * Constants.PREF_RUN_ON_MOBILE_DATA
+     */
+    private Boolean checkConditionSyncOnMobileData(String prefNameSyncOnMobileData) {
+        boolean prefRunOnMobileData = mPreferences.getBoolean(prefNameSyncOnMobileData, false);
+        if (prefRunOnMobileData) {
+            if (isMobileDataConnection()) {
+                Log.v(TAG, "decideShouldRun: prefRunOnMobileData && isMobileDataConnection");
+                mRunDecisionExplanation = res.getString(R.string.reason_on_mobile_data);
+                return true;
+            }
+            mRunDecisionExplanation = res.getString(R.string.reason_not_on_mobile_data);
+        }
+        return false;
+    }
+
+    /**
      * Determines if Syncthing should currently run.
      * Updates mRunDecisionExplanation.
      */
     private boolean decideShouldRun() {
-        Resources res = mContext.getResources();
         mRunDecisionExplanation = "";
 
         // Get run conditions preferences.
@@ -236,13 +271,8 @@ public class RunConditionMonitor {
         }
 
         // Run on mobile data.
-        if (prefRunOnMobileData) {
-            if (isMobileDataConnection()) {
-                Log.v(TAG, "decideShouldRun: prefRunOnMobileData && isMobileDataConnection");
-                mRunDecisionExplanation = res.getString(R.string.reason_on_mobile_data);
-                return true;
-            }
-            mRunDecisionExplanation = res.getString(R.string.reason_not_on_mobile_data);
+        if (checkConditionSyncOnMobileData(Constants.PREF_RUN_ON_MOBILE_DATA)) {
+            return true;
         }
 
         // Run on wifi.
