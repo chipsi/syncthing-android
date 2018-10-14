@@ -131,7 +131,7 @@ public class SyncConditionsActivity extends SyncthingActivity
         mSyncOnWifi.setOnCheckedChangeListener(mCheckedListener);
 
         mSyncOnWhitelistedWifi.setChecked(globalWhitelistEnabled && mPreferences.getBoolean(mPrefSyncOnWhitelistedWifi, globalWhitelistEnabled));
-        mSyncOnWhitelistedWifi.setEnabled(globalWhitelistEnabled);
+        mSyncOnWhitelistedWifi.setEnabled(globalWhitelistEnabled && mSyncOnWifi.isChecked());
         mSyncOnWhitelistedWifi.setOnCheckedChangeListener(mCheckedListener);
 
         mSyncOnMeteredWifi.setChecked(globalRunOnMeteredWifiEnabled && mPreferences.getBoolean(mPrefSyncOnMeteredWifi, globalRunOnMeteredWifiEnabled));
@@ -186,6 +186,9 @@ public class SyncConditionsActivity extends SyncthingActivity
         @Override
         public void onCheckedChanged(CompoundButton view, boolean isChecked) {
             switch (view.getId()) {
+                case R.id.sync_on_wifi_title:
+                    mSyncOnWhitelistedWifi.setEnabled(isChecked);
+                    // Fall-through to dependent options.
                 case R.id.sync_on_whitelisted_wifi_title:
                     // Enable or disable WiFi Ssid switches according to parent switch.
                     for (int i = 0; i < mWifiSsidContainer.getChildCount(); i++) {
