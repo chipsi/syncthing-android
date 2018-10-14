@@ -191,8 +191,8 @@ public class RunConditionMonitor {
      * Constants.PREF_RUN_ON_WIFI
      */
     private Boolean checkConditionSyncOnWifi(String prefNameSyncOnWifi) {
-        boolean prefRunOnWifi = mPreferences.getBoolean(prefNameSyncOnWifi, true);
-        if (prefRunOnWifi) {
+        boolean prefSyncOnWifi = mPreferences.getBoolean(prefNameSyncOnWifi, true);
+        if (prefSyncOnWifi) {
             if (isWifiOrEthernetConnection()) {
                 mRunDecisionExplanation += "\n" + res.getString(R.string.reason_on_wifi);
                 return true;
@@ -233,8 +233,8 @@ public class RunConditionMonitor {
      * Constants.PREF_RUN_ON_METERED_WIFI
      */
     private Boolean checkConditionSyncOnMeteredWifi(String prefNameSyncOnMeteredWifi) {
-        boolean prefRunOnMeteredWifi = mPreferences.getBoolean(prefNameSyncOnMeteredWifi, false);
-        if (prefRunOnMeteredWifi) {
+        boolean prefSyncOnMeteredWifi = mPreferences.getBoolean(prefNameSyncOnMeteredWifi, false);
+        if (prefSyncOnMeteredWifi) {
             // Condition is always met as we allow both types of wifi - metered and non-metered.
             mRunDecisionExplanation += "\n" + res.getString(R.string.reason_on_metered_nonmetered_wifi);
             return true;
@@ -255,8 +255,8 @@ public class RunConditionMonitor {
      * Constants.PREF_RUN_ON_MOBILE_DATA
      */
     private Boolean checkConditionSyncOnMobileData(String prefNameSyncOnMobileData) {
-        boolean prefRunOnMobileData = mPreferences.getBoolean(prefNameSyncOnMobileData, false);
-        if (prefRunOnMobileData) {
+        boolean prefSyncOnMobileData = mPreferences.getBoolean(prefNameSyncOnMobileData, false);
+        if (prefSyncOnMobileData) {
             if (isMobileDataConnection()) {
                 mRunDecisionExplanation = res.getString(R.string.reason_on_mobile_data);
                 return true;
