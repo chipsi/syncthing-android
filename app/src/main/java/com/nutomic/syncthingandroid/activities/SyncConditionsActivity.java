@@ -69,7 +69,7 @@ public class SyncConditionsActivity extends SyncthingActivity
     private String mPrefSyncOnMobileData;
 
     private String mObjectReadableName;
-    private boolean mFolderNeedsToUpdate = false;
+    private boolean mUnsavedChanges = false;
 
     @Inject
     SharedPreferences mPreferences;
@@ -125,15 +125,19 @@ public class SyncConditionsActivity extends SyncthingActivity
          */
         mSyncOnWifi.setChecked(mPreferences.getBoolean(mPrefSyncOnWifi, globalRunOnWifiEnabled));
         mSyncOnWifi.setEnabled(globalRunOnWifiEnabled);
+        mSyncOnWifi.setOnCheckedChangeListener(mCheckedListener);
 
         mSyncOnWhitelistedWifi.setChecked(mPreferences.getBoolean(mPrefSyncOnWhitelistedWifi, globalWhitelistEnabled));
         mSyncOnWhitelistedWifi.setEnabled(globalWhitelistEnabled);
+        mSyncOnWhitelistedWifi.setOnCheckedChangeListener(mCheckedListener);
 
         mSyncOnMeteredWifi.setChecked(mPreferences.getBoolean(mPrefSyncOnMeteredWifi, globalRunOnMeteredWifiEnabled));
         mSyncOnMeteredWifi.setEnabled(globalRunOnMeteredWifiEnabled);
+        mSyncOnMeteredWifi.setOnCheckedChangeListener(mCheckedListener);
 
         mSyncOnMobileData.setChecked(mPreferences.getBoolean(mPrefSyncOnMobileData, globalRunOnMobileDataEnabled));
         mSyncOnMobileData.setEnabled(globalRunOnMobileDataEnabled);
+        mSyncOnMobileData.setOnCheckedChangeListener(mCheckedListener);
 
         // Read selected WiFi Ssid whitelist items.
         Set<String> selectedWhitelistedSsid = mPreferences.getStringSet(mPrefSelectedWhitelistSsid, new HashSet<>());
@@ -180,7 +184,7 @@ public class SyncConditionsActivity extends SyncthingActivity
         public void onCheckedChanged(CompoundButton view, boolean isChecked) {
             switch (view.getId()) {
                 default:
-                    mFolderNeedsToUpdate = true;
+                    mUnsavedChanges = true;
                     break;
             }
         }
@@ -203,9 +207,30 @@ public class SyncConditionsActivity extends SyncthingActivity
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        if (mUnsavedChanges) {
+            Log.v(TAG, "onPause: mUnsavedChanges == true");
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.sync_conditions_settings, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.done).setVisible(true);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
+            case R.id.done:
                 onBackPressed();
                 return true;
             default:
