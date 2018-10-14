@@ -49,8 +49,8 @@ Please report any problems you encounter via Github.</string>
 
 
     <!-- Title of the exit app when running as a service confirmation dialog -->
-    <string name="dialog_exit_while_running_as_service_title">Confirm to stop service</string>
-    <string name="dialog_exit_while_running_as_service_message">For your consideration: You configured Syncthing to run as a service. Therefore it monitors run conditions and syncs at any time in the background when conditions match. You should only stop the service manually if you ran into severe problems. Otherwise, uncheck running as a service in the settings. Would you like to stop the service now until the next device reboot?</string>
+    <string name="dialog_exit_while_running_as_service_title">Confirm to quit app</string>
+    <string name="dialog_exit_while_running_as_service_message">For your consideration: You configured the app to start automatically on boot. Therefore it monitors run conditions and syncs at any time in the background when conditions match. You should only quit manually if you run into severe problems. Otherwise, disable \'Start automatically on boot \' in the settings. Would you like to quit now until the device rebooted?</string>
 
     <!-- Title of the "add folder" menu action -->
     <string name="add_folder">Add Folder</string>
@@ -187,9 +187,6 @@ Please report any problems you encounter via Github.</string>
 
     <!-- Setting title -->
     <string name="folder_pause">Pause Folder</string>
-
-    <!-- Setting title -->
-    <string name="wifi_networks">WiFi networks</string>
 
     <!-- Setting title -->
     <string name="devices">Devices</string>
@@ -352,23 +349,9 @@ Please report any problems you encounter via Github.</string>
     <string name="run_as_background_service">Start service automatically on boot</string>
 
     <!-- Preferences - Behaviour -->
-    <string name="advanced_folder_picker">Use advanced Folder Picker</string>
-
-    <string name="advanced_folder_picker_summary">Select any folder on the device for syncing</string>
-
     <string name="use_root_title">Run Syncthing as Superuser</string>
 
     <string name="use_root_summary">Running Syncthing as root allows it to write to folders Android normally restricts to be readonly accessed. Use this feature cautious.</string>
-
-    <string name="notification_type_title">Notification</string>
-
-    <string name="notification_type_summary">Choose the notification type</string>
-
-    <string-array name="notification_type_entries">
-        <item>Normal</item>
-        <item>Low Priority</item>
-        <item>None</item>
-    </string-array>
 
     <string name="preference_language_title">Language</string>
 
