@@ -29,6 +29,8 @@ import com.google.zxing.integration.android.IntentResult;
 import com.nutomic.syncthingandroid.R;
 import com.nutomic.syncthingandroid.model.Connections;
 import com.nutomic.syncthingandroid.model.Device;
+import com.nutomic.syncthingandroid.service.Constants;
+import com.nutomic.syncthingandroid.service.RestApi;
 import com.nutomic.syncthingandroid.service.SyncthingService;
 import com.nutomic.syncthingandroid.SyncthingApp;
 import com.nutomic.syncthingandroid.util.Compression;
@@ -51,7 +53,11 @@ import static com.nutomic.syncthingandroid.util.Compression.METADATA;
 /**
  * Shows device details and allows changing them.
  */
-public class DeviceActivity extends SyncthingActivity implements View.OnClickListener {
+public class DeviceActivity extends SyncthingActivity
+        implements
+            View.OnClickListener,
+            SyncthingActivity.OnServiceConnectedListener,
+            SyncthingService.OnServiceStateChangeListener {
 
     public static final String EXTRA_NOTIFICATION_ID =
             "com.nutomic.syncthingandroid.activities.DeviceActivity.NOTIFICATION_ID";
@@ -185,8 +191,8 @@ public class DeviceActivity extends SyncthingActivity implements View.OnClickLis
         setContentView(R.layout.fragment_device);
 
         mIsCreateMode = getIntent().getBooleanExtra(EXTRA_IS_CREATE, false);
-        registerOnServiceConnectedListener(this::onServiceConnected);
         setTitle(mIsCreateMode ? R.string.add_device : R.string.edit_device);
+        registerOnServiceConnectedListener(this);
 
         mIdContainer = findViewById(R.id.idContainer);
         mIdView = findViewById(R.id.id);
@@ -229,7 +235,7 @@ public class DeviceActivity extends SyncthingActivity implements View.OnClickLis
     private void onCustomSyncConditionsDialogClick() {
         startActivityForResult(
             SyncConditionsActivity.createIntent(
-                this, Constants.PREF_OBJECT_PREFIX_DEVICE + mDevice.id, mDevice.label
+                this, Constants.PREF_OBJECT_PREFIX_DEVICE + mDevice.deviceID, mDevice.name
             ),
             0
         );
@@ -295,20 +301,32 @@ public class DeviceActivity extends SyncthingActivity implements View.OnClickLis
         Util.dismissDialogSafe(mDeleteDialog, this);
     }
 
-    private void onServiceConnected() {
+    /**
+     * Register for service state change events.
+     */
+    @Override
+    public void onServiceConnected() {
         Log.v(TAG, "onServiceConnected");
         SyncthingService syncthingService = (SyncthingService) getService();
         syncthingService.getNotificationHandler().cancelConsentNotification(getIntent().getIntExtra(EXTRA_NOTIFICATION_ID, 0));
-        syncthingService.registerOnServiceStateChangeListener(this::onServiceStateChange);
+        syncthingService.registerOnServiceStateChangeListener(this);
     }
 
     /**
      * Sets version and current address of the device.
-     * <p/>
      * NOTE: This is only called once on startup, should be called more often to properly display
      * version/address changes.
      */
     private void onReceiveConnections(Connections connections) {
+        if (connections == null || connections.connections == null) {
+            Log.e(TAG, "onReceiveConnections: connections == null || connections.connections == null");
+            return;
+        }
+        if (mDevice == null) {
+            Log.e(TAG, "onReceiveConnections: mDevice == null");
+            return;
+        }
+
         boolean viewsExist = mSyncthingVersionView != null && mCurrentAddressView != null;
         if (viewsExist && connections.connections.containsKey(mDevice.deviceID)) {
             mCurrentAddressView.setVisibility(VISIBLE);
@@ -318,18 +336,21 @@ public class DeviceActivity extends SyncthingActivity implements View.OnClickLis
         }
     }
 
-    private void onServiceStateChange(SyncthingService.State currentState) {
+    @Override
+    public void onServiceStateChange(SyncthingService.State currentState) {
         if (currentState != ACTIVE) {
             finish();
             return;
         }
 
         if (!mIsCreateMode) {
-            List<Device> devices = getApi().getDevices(false);
+            RestApi restApi = getApi();     // restApi != null because of State.ACTIVE
+            List<Device> devices = restApi.getDevices(false);
+            String passedId = getIntent().getStringExtra(EXTRA_DEVICE_ID);
             mDevice = null;
-            for (Device device : devices) {
-                if (device.deviceID.equals(getIntent().getStringExtra(EXTRA_DEVICE_ID))) {
-                    mDevice = device;
+            for (Device currentDevice : devices) {
+                if (currentDevice.deviceID.equals(passedId)) {
+                    mDevice = currentDevice;
                     break;
                 }
             }
@@ -338,10 +359,10 @@ public class DeviceActivity extends SyncthingActivity implements View.OnClickLis
                 finish();
                 return;
             }
+            if (restApi != null) {
+                restApi.getConnections(this::onReceiveConnections);
+            }
         }
-
-        getApi().getConnections(this::onReceiveConnections);
-
         updateViewsAndSetListeners();
     }
 
@@ -367,7 +388,7 @@ public class DeviceActivity extends SyncthingActivity implements View.OnClickLis
             findViewById(R.id.customSyncConditionsContainer).setVisibility(View.GONE);
         } else {
             mCustomSyncConditionsSwitch.setChecked(mPreferences.getBoolean(
-                Constants.DYN_PREF_OBJECT_CUSTOM_SYNC_CONDITIONS(Constants.PREF_OBJECT_PREFIX_DEVICE + mDevice.id), false
+                Constants.DYN_PREF_OBJECT_CUSTOM_SYNC_CONDITIONS(Constants.PREF_OBJECT_PREFIX_DEVICE + mDevice.deviceID), false
             ));
         }
         mCustomSyncConditionsSwitch.setEnabled(!mIsCreateMode);
@@ -476,12 +497,34 @@ public class DeviceActivity extends SyncthingActivity implements View.OnClickLis
 
     /**
      * Sends the updated device info if in edit mode.
+     * Preconditions: mDeviceNeedsToUpdate == true
      */
     private void updateDevice() {
-        // ToDo
-        if (!mIsCreateMode && mDeviceNeedsToUpdate && mDevice != null) {
-            getApi().editDevice(mDevice);
+        if (mIsCreateMode) {
+            // If we are about to create this folder, we cannot update via restApi.
+            return;
         }
+        if (mDevice == null) {
+            Log.e(TAG, "updateDevice: mDevice == null");
+            return;
+        }
+
+        // Save device specific preferences.
+        Log.v(TAG, "updateDevice: mDevice.deviceID = \'" + mDevice.deviceID + "\'");
+        SharedPreferences.Editor editor = mPreferences.edit();
+        editor.putBoolean(
+            Constants.DYN_PREF_OBJECT_CUSTOM_SYNC_CONDITIONS(Constants.PREF_OBJECT_PREFIX_DEVICE + mDevice.deviceID),
+            mCustomSyncConditionsSwitch.isChecked()
+        );
+        editor.apply();
+
+        // Update device via restApi and send the config to REST endpoint.
+        RestApi restApi = getApi();
+        if (restApi == null) {
+            Log.e(TAG, "updateDevice: restApi == null");
+            return;
+        }
+        restApi.updateDevice(mDevice);
     }
 
     private List<String> persistableAddresses(CharSequence userInput) {

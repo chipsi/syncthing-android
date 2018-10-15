@@ -386,7 +386,7 @@ public class SettingsActivity extends SyncthingActivity {
                 case "deviceName":
                     Device localDevice = mRestApi.getLocalDevice();
                     localDevice.name = (String) o;
-                    mRestApi.editDevice(localDevice);
+                    mRestApi.updateDevice(localDevice);
                     break;
                 case "listenAddresses":
                     mOptions.listenAddresses = Iterables.toArray(splitter.split((String) o), String.class);

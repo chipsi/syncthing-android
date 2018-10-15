@@ -27,7 +27,7 @@ public interface DaggerComponent {
     void inject(SyncthingApp app);
     void inject(MainActivity activity);
     void inject(FirstStartActivity activity);
-    void Inject(DeviceActivity activity);
+    void inject(DeviceActivity activity);
     void inject(FolderActivity activity);
     void inject(FolderPickerActivity activity);
     void inject(SyncConditionsActivity activity);
