@@ -263,7 +263,6 @@ public class FolderActivity extends SyncthingActivity
     /**
      * Invoked after user clicked on the {@link mCustomSyncConditionsDialog} label.
      */
-    @SuppressLint("InlinedAPI")
     private void onCustomSyncConditionsDialogClick() {
         startActivityForResult(
             SyncConditionsActivity.createIntent(

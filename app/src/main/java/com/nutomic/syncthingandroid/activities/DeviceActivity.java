@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -24,10 +25,12 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
+
 import com.nutomic.syncthingandroid.R;
 import com.nutomic.syncthingandroid.model.Connections;
 import com.nutomic.syncthingandroid.model.Device;
 import com.nutomic.syncthingandroid.service.SyncthingService;
+import com.nutomic.syncthingandroid.SyncthingApp;
 import com.nutomic.syncthingandroid.util.Compression;
 import com.nutomic.syncthingandroid.util.TextWatcherAdapter;
 import com.nutomic.syncthingandroid.util.Util;
@@ -35,6 +38,8 @@ import com.nutomic.syncthingandroid.util.Util;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import static android.text.TextUtils.isEmpty;
 import static android.view.View.GONE;
@@ -84,9 +89,18 @@ public class DeviceActivity extends SyncthingActivity implements View.OnClickLis
 
     private SwitchCompat mDevicePaused;
 
+    private SwitchCompat mCustomSyncConditionsSwitch;
+
+    private TextView mCustomSyncConditionsDescription;
+
+    private TextView mCustomSyncConditionsDialog;
+
     private TextView mSyncthingVersionView;
 
     private View mCompressionContainer;
+
+    @Inject
+    SharedPreferences mPreferences;
 
     private boolean mIsCreateMode;
 
@@ -154,6 +168,12 @@ public class DeviceActivity extends SyncthingActivity implements View.OnClickLis
                     mDevice.paused = isChecked;
                     mDeviceNeedsToUpdate = true;
                     break;
+                case R.id.customSyncConditionsSwitch:
+                    mCustomSyncConditionsDescription.setEnabled(isChecked);
+                    mCustomSyncConditionsDialog.setEnabled(isChecked);
+                    // This is needed to display the "discard changes dialog".
+                    mDeviceNeedsToUpdate = true;
+                    break;
             }
         }
     };
@@ -161,6 +181,7 @@ public class DeviceActivity extends SyncthingActivity implements View.OnClickLis
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ((SyncthingApp) getApplication()).component().inject(this);
         setContentView(R.layout.fragment_device);
 
         mIsCreateMode = getIntent().getBooleanExtra(EXTRA_IS_CREATE, false);
@@ -177,9 +198,13 @@ public class DeviceActivity extends SyncthingActivity implements View.OnClickLis
         mCompressionValueView = findViewById(R.id.compressionValue);
         mIntroducerView = findViewById(R.id.introducer);
         mDevicePaused = findViewById(R.id.devicePause);
+        mCustomSyncConditionsSwitch = findViewById(R.id.customSyncConditionsSwitch);
+        mCustomSyncConditionsDescription = findViewById(R.id.customSyncConditionsDescription);
+        mCustomSyncConditionsDialog = findViewById(R.id.customSyncConditionsDialog);
         mSyncthingVersionView = findViewById(R.id.syncthingVersion);
 
         mQrButton.setOnClickListener(this);
+        mCustomSyncConditionsDialog.setOnClickListener(view -> onCustomSyncConditionsDialogClick());
         mCompressionContainer.setOnClickListener(this);
 
         if (savedInstanceState != null){
@@ -196,6 +221,19 @@ public class DeviceActivity extends SyncthingActivity implements View.OnClickLis
         else {
             prepareEditMode();
         }
+    }
+
+    /**
+     * Invoked after user clicked on the {@link mCustomSyncConditionsDialog} label.
+     */
+    private void onCustomSyncConditionsDialogClick() {
+        startActivityForResult(
+            SyncConditionsActivity.createIntent(
+                this, Constants.PREF_OBJECT_PREFIX_DEVICE + mDevice.id, mDevice.label
+            ),
+            0
+        );
+        return;
     }
 
     private void restoreDialogStates(Bundle savedInstanceState) {
@@ -313,6 +351,7 @@ public class DeviceActivity extends SyncthingActivity implements View.OnClickLis
         mAddressesView.removeTextChangedListener(mAddressesTextWatcher);
         mIntroducerView.setOnCheckedChangeListener(null);
         mDevicePaused.setOnCheckedChangeListener(null);
+        mCustomSyncConditionsSwitch.setOnCheckedChangeListener(null);
 
         // Update views
         mIdView.setText(mDevice.deviceID);
@@ -322,12 +361,26 @@ public class DeviceActivity extends SyncthingActivity implements View.OnClickLis
         mIntroducerView.setChecked(mDevice.introducer);
         mDevicePaused.setChecked(mDevice.paused);
 
+        // Update views - custom sync conditions.
+        mCustomSyncConditionsSwitch.setChecked(false);
+        if (mIsCreateMode) {
+            findViewById(R.id.customSyncConditionsContainer).setVisibility(View.GONE);
+        } else {
+            mCustomSyncConditionsSwitch.setChecked(mPreferences.getBoolean(
+                Constants.DYN_PREF_OBJECT_CUSTOM_SYNC_CONDITIONS(Constants.PREF_OBJECT_PREFIX_DEVICE + mDevice.id), false
+            ));
+        }
+        mCustomSyncConditionsSwitch.setEnabled(!mIsCreateMode);
+        mCustomSyncConditionsDescription.setEnabled(mCustomSyncConditionsSwitch.isChecked());
+        mCustomSyncConditionsDialog.setEnabled(mCustomSyncConditionsSwitch.isChecked());
+
         // Keep state updated
         mIdView.addTextChangedListener(mIdTextWatcher);
         mNameView.addTextChangedListener(mNameTextWatcher);
         mAddressesView.addTextChangedListener(mAddressesTextWatcher);
         mIntroducerView.setOnCheckedChangeListener(mCheckedListener);
         mDevicePaused.setOnCheckedChangeListener(mCheckedListener);
+        mCustomSyncConditionsSwitch.setOnCheckedChangeListener(mCheckedListener);
     }
 
     @Override
@@ -425,6 +478,7 @@ public class DeviceActivity extends SyncthingActivity implements View.OnClickLis
      * Sends the updated device info if in edit mode.
      */
     private void updateDevice() {
+        // ToDo
         if (!mIsCreateMode && mDeviceNeedsToUpdate && mDevice != null) {
             getApi().editDevice(mDevice);
         }
