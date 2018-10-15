@@ -60,7 +60,8 @@ public class SyncConditionsActivity extends SyncthingActivity
     private SwitchCompat mSyncOnMobileData;
 
     /**
-     * Shared preferences names for custom per-folder settings.
+     * Shared preferences names for custom object settings.
+     * Object can e.g. be a folder or device.
      */
     private String mObjectPrefixAndId;
     private String mPrefSyncOnWifi;
@@ -124,7 +125,7 @@ public class SyncConditionsActivity extends SyncthingActivity
         Boolean globalRunOnMobileDataEnabled = mPreferences.getBoolean(Constants.PREF_RUN_ON_MOBILE_DATA, false);
 
         /**
-         * Load custom folder preferences. If unset, use global setting as default.
+         * Load custom object preferences. If unset, use global setting as default.
          */
         mSyncOnWifi.setChecked(globalRunOnWifiEnabled && mPreferences.getBoolean(mPrefSyncOnWifi, globalRunOnWifiEnabled));
         mSyncOnWifi.setEnabled(globalRunOnWifiEnabled);
@@ -224,7 +225,7 @@ public class SyncConditionsActivity extends SyncthingActivity
         if (mUnsavedChanges) {
             Log.v(TAG, "onPause: mUnsavedChanges == true. Saving prefs ...");
             /**
-             * Save custom folder preferences.
+             * Save custom object preferences.
              */
             SharedPreferences.Editor editor = mPreferences.edit();
             editor.putBoolean(mPrefSyncOnWifi, mSyncOnWifi.isChecked());
