@@ -109,7 +109,7 @@ public class SyncConditionsActivity extends SyncthingActivity
         mObjectPrefixAndId = intent.getStringExtra(EXTRA_OBJECT_PREFIX_AND_ID);
         Log.v(TAG, "Prefix is \'" + mObjectPrefixAndId + "\' (" + mObjectReadableName + ")");
         mPrefSyncOnWifi = Constants.DYN_PREF_OBJECT_SYNC_ON_WIFI(mObjectPrefixAndId);
-        mPrefSyncOnWhitelistedWifi = Constants.DYN_PREF_OBJECT_SYNC_ON_WHITELISTED_WIFI(mObjectPrefixAndId);
+        mPrefSyncOnWhitelistedWifi = Constants.DYN_PREF_OBJECT_USE_WIFI_SSID_WHITELIST(mObjectPrefixAndId);
         mPrefSelectedWhitelistSsid = Constants.DYN_PREF_OBJECT_SELECTED_WHITELIST_SSID(mObjectPrefixAndId);
         mPrefSyncOnMeteredWifi = Constants.DYN_PREF_OBJECT_SYNC_ON_METERED_WIFI(mObjectPrefixAndId);
         mPrefSyncOnMobileData = Constants.DYN_PREF_OBJECT_SYNC_ON_MOBILE_DATA(mObjectPrefixAndId);
@@ -119,7 +119,7 @@ public class SyncConditionsActivity extends SyncthingActivity
          */
         Boolean globalRunOnWifiEnabled = mPreferences.getBoolean(Constants.PREF_RUN_ON_WIFI, true);
         Set<String> globalWhitelistedSsid = mPreferences.getStringSet(Constants.PREF_WIFI_SSID_WHITELIST, new HashSet<>());
-        Boolean globalWhitelistEnabled = !globalWhitelistedSsid.isEmpty();
+        Boolean globalWhitelistEnabled = mPreferences.getBoolean(Constants.PREF_USE_WIFI_SSID_WHITELIST, false);
         Boolean globalRunOnMeteredWifiEnabled = mPreferences.getBoolean(Constants.PREF_RUN_ON_METERED_WIFI, false);
         Boolean globalRunOnMobileDataEnabled = mPreferences.getBoolean(Constants.PREF_RUN_ON_MOBILE_DATA, false);
 
@@ -162,7 +162,7 @@ public class SyncConditionsActivity extends SyncthingActivity
             setMarginEnd(params, contentInset);
             TextView emptyView = new TextView(mWifiSsidContainer.getContext());
             emptyView.setGravity(CENTER_VERTICAL);
-            emptyView.setText(R.string.wifi_ssid_whitelist_empty);
+            emptyView.setText(R.string.custom_wifi_ssid_whitelist_empty);
             mWifiSsidContainer.addView(emptyView, params);
             mWifiSsidContainer.setEnabled(false);
         } else {
