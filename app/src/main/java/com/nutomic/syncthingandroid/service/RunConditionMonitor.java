@@ -229,9 +229,9 @@ public class RunConditionMonitor {
      * Constants.PREF_WIFI_SSID_WHITELIST
      */
     private SyncConditionResult checkConditionSyncOnWhitelistedWifi(
-            String prefNameSyncOnWhitelistedWifi,
+            String prefNameUseWifiWhitelist,
             String prefNameSelectedWhitelistSsid) {
-        boolean wifiWhitelistEnabled = mPreferences.getBoolean(prefNameSyncOnWhitelistedWifi, false);
+        boolean wifiWhitelistEnabled = mPreferences.getBoolean(prefNameUseWifiWhitelist, false);
         Set<String> whitelistedWifiSsids = mPreferences.getStringSet(prefNameSelectedWhitelistSsid, new HashSet<>());
         try {
             if (wifiWhitelistConditionMet(wifiWhitelistEnabled, whitelistedWifiSsids)) {
