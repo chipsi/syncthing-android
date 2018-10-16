@@ -118,9 +118,8 @@ public class SyncConditionsActivity extends SyncthingActivity
          * Load global run conditions.
          */
         Boolean globalRunOnWifiEnabled = mPreferences.getBoolean(Constants.PREF_RUN_ON_WIFI, true);
-        Boolean globalWhitelistEnabled = !mPreferences.getStringSet(Constants.PREF_WIFI_SSID_WHITELIST, new HashSet<>())
-                .isEmpty();
         Set<String> globalWhitelistedSsid = mPreferences.getStringSet(Constants.PREF_WIFI_SSID_WHITELIST, new HashSet<>());
+        Boolean globalWhitelistEnabled = !globalWhitelistedSsid.isEmpty();
         Boolean globalRunOnMeteredWifiEnabled = mPreferences.getBoolean(Constants.PREF_RUN_ON_METERED_WIFI, false);
         Boolean globalRunOnMobileDataEnabled = mPreferences.getBoolean(Constants.PREF_RUN_ON_MOBILE_DATA, false);
 
@@ -144,7 +143,7 @@ public class SyncConditionsActivity extends SyncthingActivity
         mSyncOnMobileData.setOnCheckedChangeListener(mCheckedListener);
 
         // Read selected WiFi Ssid whitelist items.
-        Set<String> selectedWhitelistedSsid = mPreferences.getStringSet(mPrefSelectedWhitelistSsid, new HashSet<>());
+        Set<String> selectedWhitelistedSsid = mPreferences.getStringSet(mPrefSelectedWhitelistSsid, globalWhitelistedSsid);
         // Removes any network that is no longer part of the global WiFi Ssid whitelist.
         selectedWhitelistedSsid.retainAll(globalWhitelistedSsid);
 
