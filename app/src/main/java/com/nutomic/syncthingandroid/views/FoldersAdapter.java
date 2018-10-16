@@ -63,26 +63,7 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
             intent.setAction(SyncthingService.ACTION_OVERRIDE_CHANGES);
             mContext.startService(intent);
         });
-        binding.openFolder.setOnClickListener(v -> {
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setDataAndType(Uri.fromFile(new File(folder.path)), "resource/folder");
-            intent.putExtra("org.openintents.extra.ABSOLUTE_PATH", folder.path);
-            intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_ACTIVITY_NEW_TASK);
-            if (intent.resolveActivity(mContext.getPackageManager()) != null) {
-                mContext.startActivity(intent);
-            } else {
-                // Try a second way to find a compatible file explorer app.
-                Log.v(TAG, "openFolder: Fallback to application chooser to open folder.");
-                intent.setDataAndType(Uri.parse(folder.path), "application/*");
-                Intent chooserIntent = Intent.createChooser(intent, mContext.getString(R.string.open_file_manager));
-                if (chooserIntent != null) {
-                    mContext.startActivity(chooserIntent);
-                } else {
-                    Toast.makeText(mContext, R.string.toast_no_file_manager, Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
+        binding.openFolder.setOnClickListener(onOpenFolderClick);
         updateFolderStatusView(binding, folder);
         return binding.getRoot();
     }
@@ -183,4 +164,40 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
         }
     }
 
+    private void onOpenFolderClick(View view) {
+        // Try to find a compatible file manager app supporting the "resource/folder" Uri type.
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setDataAndType(Uri.fromFile(new File(folder.path)), "resource/folder");
+        intent.putExtra("org.openintents.extra.ABSOLUTE_PATH", folder.path);
+        intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_ACTIVITY_NEW_TASK);
+        if (intent.resolveActivity(mContext.getPackageManager()) != null) {
+            // Launch file manager.
+            mContext.startActivity(intent);
+            return;
+        }
+
+        /**
+         * Fallback: Let the user choose from all Uri handling apps.
+         * This allows the use of third-party file manager apps like
+         * Root Explorer as they provide non-standardized Uri handlers.
+         */
+        Log.v(TAG, "openFolder: Fallback to application chooser to open folder.");
+        intent.setDataAndType(Uri.parse(folder.path), "application/*");
+        Intent chooserIntent = Intent.createChooser(intent, mContext.getString(R.string.open_file_manager));
+        if (chooserIntent != null) {
+            // Launch potential file manager app.
+            mContext.startActivity(chooserIntent);
+            return;
+        }
+
+        // No compatible file manager app found.
+        // ToDo
+        // Toast.makeText(mContext, R.string.toast_no_file_manager, Toast.LENGTH_SHORT).show();
+        final String appPackageName = "com.simplemobiletools.filemanager";
+        try {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+        } catch (android.content.ActivityNotFoundException anfe) {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+        }
+    }
 }
