@@ -21,8 +21,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_toRightOf="@id/tip_icon"
-        android:ellipsize="marquee"
-        android:maxLines="1"
+        android:singleLine="true"
         android:textSize="12sp" />
 
     <TextView
