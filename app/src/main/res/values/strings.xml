@@ -284,7 +284,7 @@ Please report any problems you encounter via Github.</string>
     <!-- Toast show if we could not get root permissions -->
     <string name="toast_root_denied">Did not get root permissions</string>
 
-    <!-- TipsAndTricksActivity -->
+    <!-- TipsAndTricks activity -->
 
 
     <!-- Title of the Tips and Tricks activity -->
