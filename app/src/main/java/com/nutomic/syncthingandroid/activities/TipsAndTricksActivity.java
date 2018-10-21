@@ -10,7 +10,9 @@ import com.nutomic.syncthingandroid.R;
 import com.nutomic.syncthingandroid.views.TipListAdapter;
 import com.nutomic.syncthingandroid.views.TipListAdapter.ItemClickListener;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Holds a RecyclerView that shows tips and tricks.
@@ -31,12 +33,26 @@ public class TipsAndTricksActivity extends SyncthingActivity {
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
-
-        // Add adapter and tip content.
         mTipListAdapter = new TipListAdapter(this);
-        for (int i = 1; i < 100; i++) {
-            mTipListAdapter.add("Title " + i, "Text " + i + "Today I want to tell you a story about Syncthing 1.\nToday I want to tell you a story about Syncthing 2.\nToday I want to tell you a story about Syncthing 3. Today I want to tell you a story about Syncthing 4. Today I want to tell you a story about Syncthing 5. Today I want to tell you a story about Syncthing 6. Today I want to tell you a story about Syncthing 7.\nTest.");
+
+        /**
+         * Determine the app's private data folder on external storage if present.
+         * e.g. "/storage/abcd-efgh/Android/[PACKAGE_NAME]/files"
+         */
+        ArrayList<File> externalFilesDir = new ArrayList<>();
+        externalFilesDir.addAll(Arrays.asList(getExternalFilesDirs(null)));
+        externalFilesDir.remove(getExternalFilesDir(null));
+        if (externalFilesDir.size() > 0) {
+            String absExternalStorageAppFilesPath = externalFilesDir.get(0).getAbsolutePath();
+            mTipListAdapter.add(getString(R.string.tip_write_to_sdcard_title),
+                    getString(R.string.tip_write_to_sdcard_text, absExternalStorageAppFilesPath));
         }
+
+        // Fill tip title and text content.
+        mTipListAdapter.add(getString(R.string.tip_sync_on_local_network_title), getString(R.string.tip_sync_on_local_network_text));
+        mTipListAdapter.add(getString(R.string.tip_custom_sync_conditions_title), getString(R.string.tip_custom_sync_conditions_text));
+
+        // Set onClick listener and add adapter to recycler view.
         mTipListAdapter.setOnClickListener(
             new ItemClickListener() {
                 @Override
