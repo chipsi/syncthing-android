@@ -1,5 +1,6 @@
 package com.nutomic.syncthingandroid.activities;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -39,13 +40,15 @@ public class TipsAndTricksActivity extends SyncthingActivity {
          * Determine the app's private data folder on external storage if present.
          * e.g. "/storage/abcd-efgh/Android/[PACKAGE_NAME]/files"
          */
-        ArrayList<File> externalFilesDir = new ArrayList<>();
-        externalFilesDir.addAll(Arrays.asList(getExternalFilesDirs(null)));
-        externalFilesDir.remove(getExternalFilesDir(null));
-        if (externalFilesDir.size() > 0) {
-            String absExternalStorageAppFilesPath = externalFilesDir.get(0).getAbsolutePath();
-            mTipListAdapter.add(getString(R.string.tip_write_to_sdcard_title),
-                    getString(R.string.tip_write_to_sdcard_text, absExternalStorageAppFilesPath));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            ArrayList<File> externalFilesDir = new ArrayList<>();
+            externalFilesDir.addAll(Arrays.asList(getExternalFilesDirs(null)));
+            externalFilesDir.remove(getExternalFilesDir(null));
+            if (externalFilesDir.size() > 0) {
+                String absExternalStorageAppFilesPath = externalFilesDir.get(0).getAbsolutePath();
+                mTipListAdapter.add(getString(R.string.tip_write_to_sdcard_title),
+                        getString(R.string.tip_write_to_sdcard_text, absExternalStorageAppFilesPath));
+            }
         }
 
         // Fill tip title and text content.
