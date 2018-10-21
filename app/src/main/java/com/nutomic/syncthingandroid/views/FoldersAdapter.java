@@ -1,7 +1,9 @@
 package com.nutomic.syncthingandroid.views;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -41,8 +43,6 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
 
     private final Context mContext;
 
-    private Folder mFolder;
-
     public FoldersAdapter(Context context) {
         super(context, 0);
         mContext = context;
@@ -55,40 +55,40 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
                 ? DataBindingUtil.inflate(LayoutInflater.from(mContext), R.layout.item_folder_list, parent, false)
                 : DataBindingUtil.bind(convertView);
 
-        mFolder = getItem(position);
-        binding.label.setText(TextUtils.isEmpty(mFolder.label) ? mFolder.id : mFolder.label);
-        binding.directory.setText(mFolder.path);
+        Folder folder = getItem(position);
+        binding.label.setText(TextUtils.isEmpty(folder.label) ? folder.id : folder.label);
+        binding.directory.setText(folder.path);
         binding.override.setOnClickListener(v -> {
             // Send "Override changes" through our service to the REST API.
             Intent intent = new Intent(mContext, SyncthingService.class)
-                    .putExtra(SyncthingService.EXTRA_FOLDER_ID, mFolder.id);
+                    .putExtra(SyncthingService.EXTRA_FOLDER_ID, folder.id);
             intent.setAction(SyncthingService.ACTION_OVERRIDE_CHANGES);
             mContext.startService(intent);
         });
-        binding.openFolder.setOnClickListener(this::onOpenFolderClick);
-        updateFolderStatusView(binding);
+        binding.openFolder.setOnClickListener(view -> { onOpenFolderClick(view, folder); } );
+        updateFolderStatusView(binding, folder);
         return binding.getRoot();
     }
 
-    private void updateFolderStatusView(ItemFolderListBinding binding) {
-        FolderStatus folderStatus = mLocalFolderStatuses.get(mFolder.id);
+    private void updateFolderStatusView(ItemFolderListBinding binding, Folder folder) {
+        FolderStatus folderStatus = mLocalFolderStatuses.get(folder.id);
         if (folderStatus == null) {
             binding.items.setVisibility(GONE);
             binding.override.setVisibility(GONE);
             binding.size.setVisibility(GONE);
-            setTextOrHide(binding.invalid, mFolder.invalid);
+            setTextOrHide(binding.invalid, folder.invalid);
             return;
         }
 
         long neededItems = folderStatus.needFiles + folderStatus.needDirectories + folderStatus.needSymlinks + folderStatus.needDeletes;
         boolean outOfSync = folderStatus.state.equals("idle") && neededItems > 0;
-        boolean overrideButtonVisible = mFolder.type.equals(Constants.FOLDER_TYPE_SEND_ONLY) && outOfSync;
+        boolean overrideButtonVisible = folder.type.equals(Constants.FOLDER_TYPE_SEND_ONLY) && outOfSync;
         binding.override.setVisibility(overrideButtonVisible ? VISIBLE : GONE);
         if (outOfSync) {
             binding.state.setText(mContext.getString(R.string.status_outofsync));
             binding.state.setTextColor(ContextCompat.getColor(mContext, R.color.text_red));
         } else {
-            if (mFolder.paused) {
+            if (folder.paused) {
                 binding.state.setText(mContext.getString(R.string.state_paused));
                 binding.state.setTextColor(ContextCompat.getColor(mContext, R.color.text_black));
             } else {
@@ -146,9 +146,17 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
     /**
      * Requests updated folder status from the api for all visible items.
      */
-    public void updateFolderStatus(RestApi api) {
+    public void updateFolderStatus(RestApi restApi) {
+        if (restApi == null) {
+            Log.e(TAG, "updateFolderStatus: restApi == null");
+            return;
+        }
+
         for (int i = 0; i < getCount(); i++) {
-            api.getFolderStatus(getItem(i).id, this::onReceiveFolderStatus);
+            Folder folder = getItem(i);
+            if (folder != null) {
+                restApi.getFolderStatus(folder.id, this::onReceiveFolderStatus);
+            }
         }
     }
 
@@ -166,26 +174,46 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
         }
     }
 
-    private void onOpenFolderClick(View view) {
+    private void onOpenFolderClick(View view, Folder folder) {
+        PackageManager pm = mContext.getPackageManager();
+
         // Try to find a compatible file manager app supporting the "resource/folder" Uri type.
         Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setDataAndType(Uri.fromFile(new File(mFolder.path)), "resource/folder");
-        intent.putExtra("org.openintents.extra.ABSOLUTE_PATH", mFolder.path);
+        intent.setDataAndType(Uri.fromFile(new File(folder.path)), "resource/folder");
+        intent.putExtra("org.openintents.extra.ABSOLUTE_PATH", folder.path);
         intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_ACTIVITY_NEW_TASK);
-        if (intent.resolveActivity(mContext.getPackageManager()) != null) {
+        if (intent.resolveActivity(pm) != null) {
             // Launch file manager.
             mContext.startActivity(intent);
             return;
         }
+        Log.w(TAG, "No compatible file manager app not found (stage #1)");
+
+        // Try to open the folder with "Root Explorer" if it is installed.
+        intent = pm.getLaunchIntentForPackage("com.speedsoftware.rootexplorer");
+        if (intent != null) {
+            intent.setAction(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse(folder.path));
+            try {
+                mContext.startActivity(intent);
+                return;
+            } catch (android.content.ActivityNotFoundException anfe) {
+                Log.w(TAG, "Failed to launch Root Explorer (stage #2)");
+            }
+        }
+        Log.w(TAG, "Root Explorer file manager app not found (stage #2)");
+
+        // No compatible file manager app found.
+        suggestFileManagerApp();
 
         /**
          * Fallback: Let the user choose from all Uri handling apps.
-         * This allows the use of third-party file manager apps like
-         * Root Explorer as they provide non-standardized Uri handlers.
+         * This allows the use of third-party file manager apps which
+         * provide non-standardized Uri handlers.
          */
         /*
-        Log.v(TAG, "openFolder: Fallback to application chooser to open folder.");
-        intent.setDataAndType(Uri.parse(mFolder.path), "application/*");
+        Log.v(TAG, "Fallback to application chooser to open folder.");
+        intent.setDataAndType(Uri.parse(folder.path), "application/*");
         Intent chooserIntent = Intent.createChooser(intent, mContext.getString(R.string.open_file_manager));
         if (chooserIntent != null) {
             // Launch potential file manager app.
@@ -193,15 +221,21 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
             return;
         }
         */
+    }
 
-        // No compatible file manager app found.
-        // ToDo
-        // Toast.makeText(mContext, R.string.toast_no_file_manager, Toast.LENGTH_SHORT).show();
-        final String appPackageName = "com.simplemobiletools.filemanager";
-        try {
-            mContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
-        } catch (android.content.ActivityNotFoundException anfe) {
-            mContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
-        }
+    private void suggestFileManagerApp() {
+        AlertDialog mSuggestFileManagerAppDialog = new AlertDialog.Builder(mContext)
+                .setTitle(R.string.suggest_file_manager_app_dialog_title)
+                .setMessage(R.string.suggest_file_manager_app_dialog_text)
+                .setPositiveButton(R.string.yes, (d, i) -> {
+                    final String appPackageName = "com.simplemobiletools.filemanager";
+                    try {
+                        mContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+                    } catch (android.content.ActivityNotFoundException anfe) {
+                        mContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+                    }
+                })
+                .setNegativeButton(R.string.no, (d, i) -> {})
+                .show();
     }
 }
