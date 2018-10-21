@@ -41,6 +41,8 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
 
     private final Context mContext;
 
+    private Folder mFolder;
+
     public FoldersAdapter(Context context) {
         super(context, 0);
         mContext = context;
@@ -53,40 +55,40 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
                 ? DataBindingUtil.inflate(LayoutInflater.from(mContext), R.layout.item_folder_list, parent, false)
                 : DataBindingUtil.bind(convertView);
 
-        Folder folder = getItem(position);
-        binding.label.setText(TextUtils.isEmpty(folder.label) ? folder.id : folder.label);
-        binding.directory.setText(folder.path);
+        mFolder = getItem(position);
+        binding.label.setText(TextUtils.isEmpty(mFolder.label) ? mFolder.id : mFolder.label);
+        binding.directory.setText(mFolder.path);
         binding.override.setOnClickListener(v -> {
             // Send "Override changes" through our service to the REST API.
             Intent intent = new Intent(mContext, SyncthingService.class)
-                    .putExtra(SyncthingService.EXTRA_FOLDER_ID, folder.id);
+                    .putExtra(SyncthingService.EXTRA_FOLDER_ID, mFolder.id);
             intent.setAction(SyncthingService.ACTION_OVERRIDE_CHANGES);
             mContext.startService(intent);
         });
-        binding.openFolder.setOnClickListener(onOpenFolderClick);
-        updateFolderStatusView(binding, folder);
+        binding.openFolder.setOnClickListener(this::onOpenFolderClick);
+        updateFolderStatusView(binding);
         return binding.getRoot();
     }
 
-    private void updateFolderStatusView(ItemFolderListBinding binding, Folder folder) {
-        FolderStatus folderStatus = mLocalFolderStatuses.get(folder.id);
+    private void updateFolderStatusView(ItemFolderListBinding binding) {
+        FolderStatus folderStatus = mLocalFolderStatuses.get(mFolder.id);
         if (folderStatus == null) {
             binding.items.setVisibility(GONE);
             binding.override.setVisibility(GONE);
             binding.size.setVisibility(GONE);
-            setTextOrHide(binding.invalid, folder.invalid);
+            setTextOrHide(binding.invalid, mFolder.invalid);
             return;
         }
 
         long neededItems = folderStatus.needFiles + folderStatus.needDirectories + folderStatus.needSymlinks + folderStatus.needDeletes;
         boolean outOfSync = folderStatus.state.equals("idle") && neededItems > 0;
-        boolean overrideButtonVisible = folder.type.equals(Constants.FOLDER_TYPE_SEND_ONLY) && outOfSync;
+        boolean overrideButtonVisible = mFolder.type.equals(Constants.FOLDER_TYPE_SEND_ONLY) && outOfSync;
         binding.override.setVisibility(overrideButtonVisible ? VISIBLE : GONE);
         if (outOfSync) {
             binding.state.setText(mContext.getString(R.string.status_outofsync));
             binding.state.setTextColor(ContextCompat.getColor(mContext, R.color.text_red));
         } else {
-            if (folder.paused) {
+            if (mFolder.paused) {
                 binding.state.setText(mContext.getString(R.string.state_paused));
                 binding.state.setTextColor(ContextCompat.getColor(mContext, R.color.text_black));
             } else {
@@ -167,8 +169,8 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
     private void onOpenFolderClick(View view) {
         // Try to find a compatible file manager app supporting the "resource/folder" Uri type.
         Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setDataAndType(Uri.fromFile(new File(folder.path)), "resource/folder");
-        intent.putExtra("org.openintents.extra.ABSOLUTE_PATH", folder.path);
+        intent.setDataAndType(Uri.fromFile(new File(mFolder.path)), "resource/folder");
+        intent.putExtra("org.openintents.extra.ABSOLUTE_PATH", mFolder.path);
         intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_ACTIVITY_NEW_TASK);
         if (intent.resolveActivity(mContext.getPackageManager()) != null) {
             // Launch file manager.
@@ -181,23 +183,25 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
          * This allows the use of third-party file manager apps like
          * Root Explorer as they provide non-standardized Uri handlers.
          */
+        /*
         Log.v(TAG, "openFolder: Fallback to application chooser to open folder.");
-        intent.setDataAndType(Uri.parse(folder.path), "application/*");
+        intent.setDataAndType(Uri.parse(mFolder.path), "application/*");
         Intent chooserIntent = Intent.createChooser(intent, mContext.getString(R.string.open_file_manager));
         if (chooserIntent != null) {
             // Launch potential file manager app.
             mContext.startActivity(chooserIntent);
             return;
         }
+        */
 
         // No compatible file manager app found.
         // ToDo
         // Toast.makeText(mContext, R.string.toast_no_file_manager, Toast.LENGTH_SHORT).show();
         final String appPackageName = "com.simplemobiletools.filemanager";
         try {
-            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+            mContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
         } catch (android.content.ActivityNotFoundException anfe) {
-            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+            mContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
         }
     }
 }
