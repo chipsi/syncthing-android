@@ -288,7 +288,7 @@ public class MainActivity extends SyncthingActivity
                     .setPositiveButton(android.R.string.ok, (dialog, which) -> {})
                     .show();
         }
-        mViewPager.setOffscreenPageLimit(numPages - 1);
+        mViewPager.setOffscreenPageLimit(numPages);
         TabLayout tabLayout = findViewById(R.id.tabContainer);
         tabLayout.setupWithViewPager(mViewPager);
     }
