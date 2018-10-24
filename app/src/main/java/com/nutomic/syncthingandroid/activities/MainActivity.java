@@ -211,12 +211,13 @@ public class MainActivity extends SyncthingActivity
      * Updates the ViewPager to show tabs depending on the service state.
      */
     private void updateViewPager() {
+        Boolean isServiceActive = mSyncthingServiceState == SyncthingService.State.ACTIVE;
         FragmentStatePagerAdapter mSectionsPagerAdapter =
                 new FragmentStatePagerAdapter(getSupportFragmentManager()) {
 
             @Override
             public Fragment getItem(int position) {
-                if (mSyncthingServiceState == SyncthingService.State.ACTIVE) {
+                if (isServiceActive) {
                     switch (position) {
                         case 0:
                             return mFolderListFragment;
@@ -244,12 +245,12 @@ public class MainActivity extends SyncthingActivity
 
             @Override
             public int getCount() {
-                return mSyncthingServiceState == SyncthingService.State.ACTIVE ? 3 : 1;
+                return isServiceActive ? 3 : 1;
             }
 
             @Override
             public CharSequence getPageTitle(int position) {
-                if (mSyncthingServiceState == SyncthingService.State.ACTIVE) {
+                if (isServiceActive) {
                     switch (position) {
                         case 0:
                             return getResources().getString(R.string.folders_fragment_title);
