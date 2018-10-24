@@ -212,6 +212,7 @@ public class MainActivity extends SyncthingActivity
      */
     private void updateViewPager() {
         Boolean isServiceActive = mSyncthingServiceState == SyncthingService.State.ACTIVE;
+        final int numPages = (isServiceActive ? 3 : 1);
         FragmentStatePagerAdapter mSectionsPagerAdapter =
                 new FragmentStatePagerAdapter(getSupportFragmentManager()) {
 
@@ -245,7 +246,7 @@ public class MainActivity extends SyncthingActivity
 
             @Override
             public int getCount() {
-                return isServiceActive ? 3 : 1;
+                return numPages;
             }
 
             @Override
@@ -287,6 +288,7 @@ public class MainActivity extends SyncthingActivity
                     .setPositiveButton(android.R.string.ok, (dialog, which) -> {})
                     .show();
         }
+        mViewPager.setOffscreenPageLimit(numPages - 1);
         TabLayout tabLayout = findViewById(R.id.tabContainer);
         tabLayout.setupWithViewPager(mViewPager);
     }
