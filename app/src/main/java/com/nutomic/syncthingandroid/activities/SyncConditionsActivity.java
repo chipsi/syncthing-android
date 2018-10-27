@@ -185,6 +185,13 @@ public class SyncConditionsActivity extends SyncthingActivity
                 wifiSsidView.setOnCheckedChangeListener(mCheckedListener);
             }
         }
+
+        /**
+         * We should always save until we abandoned the global sync conditions
+         * as changes to the global run conditions resulting in force-disabling
+         * the switches here would else not be saved back to the prefs.
+         */
+        mUnsavedChanges = true;
     }
 
     private final CompoundButton.OnCheckedChangeListener mCheckedListener =
