@@ -1,9 +1,12 @@
 package com.nutomic.syncthingandroid.views;
 
+import android.annotation.TargetApi;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.net.Uri;
+import android.os.Build;
 // import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -90,6 +93,7 @@ public class ChangeListAdapter extends RecyclerView.Adapter<ChangeListAdapter.Vi
         return new ViewHolder(view);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
         DiskEvent diskEvent = mChangeData.get(position);
@@ -140,15 +144,27 @@ public class ChangeListAdapter extends RecyclerView.Adapter<ChangeListAdapter.Vi
         viewHolder.modifiedByDevice.setText(mResources.getString(R.string.modified_by_device, diskEvent.data.modifiedBy));
 
         // Convert dateTime to readable localized string.
-        ZonedDateTime parsedDateTime = ZonedDateTime.parse(diskEvent.time);
-        ZonedDateTime zonedDateTime = parsedDateTime.withZoneSameInstant(ZoneId.systemDefault());
-        DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).withLocale(Locale.getDefault());
-        viewHolder.dateTime.setText(mResources.getString(R.string.modification_time, formatter.format(zonedDateTime)));
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            viewHolder.dateTime.setText(mResources.getString(R.string.modification_time, diskEvent.time));
+        } else {
+            viewHolder.dateTime.setText(mResources.getString(R.string.modification_time, formatDateTime(diskEvent.time)));
+        }
     }
 
     @Override
     public int getItemCount() {
         return mChangeData.size();
+    }
+
+    /**
+     * Converts dateTime to readable localized string.
+     */
+    @TargetApi(26)
+    private String formatDateTime(String dateTime) {
+        ZonedDateTime parsedDateTime = ZonedDateTime.parse(dateTime);
+        ZonedDateTime zonedDateTime = parsedDateTime.withZoneSameInstant(ZoneId.systemDefault());
+        DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).withLocale(Locale.getDefault());
+        return formatter.format(zonedDateTime);
     }
 
     private String getPathFromFullFN(String fullFN) {
