@@ -685,7 +685,7 @@ public class RestApi {
                     List<DiskEvent> diskEvents = new ArrayList<>();
                     try {
                         JsonArray jsonDiskEvents = new JsonParser().parse(result).getAsJsonArray();
-                        for (int i = 0; i < jsonDiskEvents.size(); i++) {
+                        for (int i = jsonDiskEvents.size()-1; i >= 0; i--) {
                             JsonElement jsonDiskEvent = jsonDiskEvents.get(i);
                             diskEvents.add(new Gson().fromJson(jsonDiskEvent, DiskEvent.class));
                         }
