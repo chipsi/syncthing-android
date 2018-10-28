@@ -50,8 +50,8 @@ public class RecentChangesActivity extends SyncthingActivity
         mRecentChangeAdapter.setOnClickListener(
             new ItemClickListener() {
                 @Override
-                public void onItemClick(View view, String itemTitle, String itemText) {
-                    Log.v(TAG, "User clicked item with title \'" + itemTitle + "\'");
+                public void onItemClick(DiskEvent diskEvent) {
+                    Log.v(TAG, "User clicked item with title \'" + diskEvent.data.path + "\'");
                     /**
                      * Future improvement:
                      * Collapse texts to the first three lines and open a DialogFragment
@@ -118,7 +118,7 @@ public class RecentChangesActivity extends SyncthingActivity
         mRecentChangeAdapter.clear();
         for (DiskEvent diskEvent : diskEvents) {
             if (diskEvent.data != null) {
-                mRecentChangeAdapter.add(diskEvent.data.type, diskEvent.data.path);
+                mRecentChangeAdapter.add(diskEvent);
             }
         }
         mRecentChangeAdapter.notifyDataSetChanged();

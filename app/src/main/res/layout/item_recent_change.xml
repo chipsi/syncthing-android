@@ -6,7 +6,7 @@
     android:layout_height="wrap_content">
 
     <ImageView
-        android:id="@+id/change_icon"
+        android:id="@+id/typeIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="6dip"
@@ -16,7 +16,7 @@
         android:src="@drawable/ic_help_outline_black_24dp" />
 
     <TextView
-        android:id="@+id/change_title"
+        android:id="@+id/filename"
         android:layout_marginTop="-25dp"
         android:layout_marginLeft="30dp"
         android:layout_marginStart="30dp"
@@ -25,7 +25,23 @@
         android:textSize="16sp" />
 
     <TextView
-        android:id="@+id/change_text"
+        android:id="@+id/folderPath"
+        android:layout_marginLeft="30dp"
+        android:layout_marginStart="30dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/modifiedByDevice"
+        android:layout_marginLeft="30dp"
+        android:layout_marginStart="30dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/dateTime"
         android:layout_marginLeft="30dp"
         android:layout_marginStart="30dp"
         android:layout_width="match_parent"
