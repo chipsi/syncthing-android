@@ -172,6 +172,6 @@ public class ChangeListAdapter extends RecyclerView.Adapter<ChangeListAdapter.Vi
         if (index > 0) {
             return fullFN.substring(0, index);
         }
-        return "/";
+        return "";
     }
 }

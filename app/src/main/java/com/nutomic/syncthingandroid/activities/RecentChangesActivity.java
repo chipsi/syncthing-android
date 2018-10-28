@@ -24,7 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Holds a RecyclerView that shows tips and tricks.
+ * Holds a RecyclerView that shows recent changes to files and folders.
  */
 public class RecentChangesActivity extends SyncthingActivity
         implements SyncthingService.OnServiceStateChangeListener {
