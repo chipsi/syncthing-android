@@ -16,7 +16,13 @@ import com.nutomic.syncthingandroid.R;
 import com.nutomic.syncthingandroid.model.DiskEvent;
 
 import java.io.File;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.time.ZonedDateTime;
+import java.time.ZoneId;
+
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class ChangeListAdapter extends RecyclerView.Adapter<ChangeListAdapter.ViewHolder> {
 
@@ -132,7 +138,12 @@ public class ChangeListAdapter extends RecyclerView.Adapter<ChangeListAdapter.Vi
         viewHolder.filename.setText(filename);
         viewHolder.folderPath.setText(diskEvent.data.label + File.separator + path);
         viewHolder.modifiedByDevice.setText(mResources.getString(R.string.modified_by_device, diskEvent.data.modifiedBy));
-        viewHolder.dateTime.setText(mResources.getString(R.string.modification_time, diskEvent.time));
+
+        // Convert dateTime to readable localized string.
+        ZonedDateTime parsedDateTime = ZonedDateTime.parse(diskEvent.time);
+        ZonedDateTime zonedDateTime = parsedDateTime.withZoneSameInstant(ZoneId.systemDefault());
+        DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).withLocale(Locale.getDefault());
+        viewHolder.dateTime.setText(mResources.getString(R.string.modification_time, formatter.format(zonedDateTime)));
     }
 
     @Override
