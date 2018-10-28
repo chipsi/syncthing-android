@@ -99,10 +99,13 @@ public class ChangeListAdapter extends RecyclerView.Adapter<ChangeListAdapter.Vi
             case "dir":
                 switch (diskEvent.data.action) {
                     case "added":
+                        drawableId = R.drawable.ic_folder_add_black_24dp;
                         break;
                     case "deleted":
+                        drawableId = R.drawable.ic_folder_delete_black_24dp;
                         break;
                     case "modified":
+                        drawableId = R.drawable.ic_folder_edit_black_24dp;
                         break;
                     default:
                 }
@@ -110,10 +113,13 @@ public class ChangeListAdapter extends RecyclerView.Adapter<ChangeListAdapter.Vi
             case "file":
                 switch (diskEvent.data.action) {
                     case "added":
+                        drawableId = R.drawable.ic_file_add_black_24dp;
                         break;
                     case "deleted":
+                        drawableId = R.drawable.ic_file_remove_black_24dp;
                         break;
                     case "modified":
+                        drawableId = R.drawable.ic_file_edit_black_24dp;
                         break;
                     default:
                 }
