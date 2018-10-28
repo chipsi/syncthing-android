@@ -39,6 +39,10 @@ public class ChangeListAdapter extends RecyclerView.Adapter<ChangeListAdapter.Vi
         mLayoutInflater = LayoutInflater.from(context);
     }
 
+    public void clear() {
+        mChangeData.clear();
+    }
+
     public void add(String title, String text) {
         mChangeData.add(new ChangeEntry(title, text));
     }
