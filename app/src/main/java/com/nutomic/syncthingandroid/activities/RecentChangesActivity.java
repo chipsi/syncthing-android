@@ -5,10 +5,12 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 
 import com.nutomic.syncthingandroid.R;
+import com.nutomic.syncthingandroid.model.Device;
 import com.nutomic.syncthingandroid.model.DiskEvent;
 import com.nutomic.syncthingandroid.service.RestApi;
 import com.nutomic.syncthingandroid.service.SyncthingService;
@@ -31,8 +33,9 @@ public class RecentChangesActivity extends SyncthingActivity
 
     private static int DISK_EVENT_LIMIT = 100;
 
-    private RecyclerView mRecyclerView;
+    private List<Device> mDevices;
     private ChangeListAdapter mRecentChangeAdapter;
+    private RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
     private SyncthingService.State mServiceState = SyncthingService.State.INIT;
 
@@ -105,6 +108,7 @@ public class RecentChangesActivity extends SyncthingActivity
             Log.e(TAG, "restApi == null");
             return;
         }
+        mDevices = restApi.getDevices(true);
         Log.v(TAG, "Querying disk events");
         restApi.getDiskEvents(DISK_EVENT_LIMIT, this::onReceiveDiskEvents);
     }
@@ -118,6 +122,15 @@ public class RecentChangesActivity extends SyncthingActivity
         mRecentChangeAdapter.clear();
         for (DiskEvent diskEvent : diskEvents) {
             if (diskEvent.data != null) {
+                // Replace "modifiedBy" partial device ID by readable device name.
+                if (!TextUtils.isEmpty(diskEvent.data.modifiedBy)) {
+                    for (Device device : mDevices) {
+                        if (diskEvent.data.modifiedBy.equals(device.deviceID.substring(0, diskEvent.data.modifiedBy.length()))) {
+                            diskEvent.data.modifiedBy = device.getDisplayName();
+                            break;
+                        }
+                    }
+                }
                 mRecentChangeAdapter.add(diskEvent);
             }
         }
