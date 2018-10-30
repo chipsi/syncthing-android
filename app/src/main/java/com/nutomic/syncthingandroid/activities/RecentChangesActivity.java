@@ -1,6 +1,9 @@
 package com.nutomic.syncthingandroid.activities;
 
+import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.widget.LinearLayoutManager;
@@ -8,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 
 import com.nutomic.syncthingandroid.R;
 import com.nutomic.syncthingandroid.model.Device;
@@ -15,6 +19,7 @@ import com.nutomic.syncthingandroid.model.DiskEvent;
 import com.nutomic.syncthingandroid.service.RestApi;
 import com.nutomic.syncthingandroid.service.SyncthingService;
 import com.nutomic.syncthingandroid.service.SyncthingServiceBinder;
+import com.nutomic.syncthingandroid.util.FileUtils;
 import com.nutomic.syncthingandroid.views.ChangeListAdapter;
 import com.nutomic.syncthingandroid.views.ChangeListAdapter.ItemClickListener;
 
@@ -31,6 +36,7 @@ public class RecentChangesActivity extends SyncthingActivity
 
     private static final String TAG = "RecentChangesActivity";
 
+    private static Boolean DEBUG_MODE = true;
     private static int DISK_EVENT_LIMIT = 100;
 
     private List<Device> mDevices;
@@ -55,11 +61,29 @@ public class RecentChangesActivity extends SyncthingActivity
                 @Override
                 public void onItemClick(DiskEvent diskEvent) {
                     Log.v(TAG, "User clicked item with title \'" + diskEvent.data.path + "\'");
-                    /**
-                     * Future improvement:
-                     * Collapse texts to the first three lines and open a DialogFragment
-                     * if the user clicks an item from the list.
-                     */
+                    // ToDo
+                    String fullFN = "/storage/emulated/0/test.jpg";
+                    Uri fileUri = Uri.parse(fullFN);
+                    String fileExtension = MimeTypeMap.getFileExtensionFromUrl(fileUri.toString());
+                    String mimeType = FileUtils.getMimeTypeFromFileExtension(fileExtension);
+                    Log.v(TAG, "onItemClick: Detected mime type \'" + mimeType + "\' for file \'" + fullFN + "\'");
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setDataAndType(fileUri, mimeType);
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    try {
+                        startActivity(intent);
+                    } catch (ActivityNotFoundException anfe) {
+                        Log.w(TAG, "onItemClick", anfe);
+                        Log.v(TAG, "Fallback to application chooser to open file.");
+                        intent.setDataAndType(Uri.parse(fullFN), "application/*");
+                        Intent chooserIntent = Intent.createChooser(intent, "ToDo Choose App");
+                        try {
+                            startActivity(chooserIntent);
+                        } catch (Exception ex) {
+                            // ToDo toast
+                            Log.e(TAG, "onItemClick", ex);
+                        }
+                    }
                 }
             }
         );
@@ -111,12 +135,31 @@ public class RecentChangesActivity extends SyncthingActivity
         mDevices = restApi.getDevices(true);
         Log.v(TAG, "Querying disk events");
         restApi.getDiskEvents(DISK_EVENT_LIMIT, this::onReceiveDiskEvents);
+        if (DEBUG_MODE) {
+            onReceiveDiskEvents(new ArrayList());
+        }
     }
 
     private void onReceiveDiskEvents(List<DiskEvent> diskEvents) {
         Log.v(TAG, "onReceiveDiskEvents");
         if (isFinishing()) {
             return;
+        }
+
+        if (DEBUG_MODE) {
+            DiskEvent fakeDiskEvent = new DiskEvent();
+            fakeDiskEvent.id = 1;
+            fakeDiskEvent.globalID = 84;
+            fakeDiskEvent.time = "2018-10-28T14:08:01.6183215+01:00";
+            fakeDiskEvent.type = "RemoteChangeDetected";
+            fakeDiskEvent.data.action = "added";
+            fakeDiskEvent.data.folder = "abcd-efgh";
+            fakeDiskEvent.data.folderID = "abcd-efgh";
+            fakeDiskEvent.data.label = "label_abcd-efgh";
+            fakeDiskEvent.data.modifiedBy = "SRV01";
+            fakeDiskEvent.data.path = "testdata/document1.txt";
+            fakeDiskEvent.data.type = "file";
+            diskEvents.add(fakeDiskEvent);
         }
 
         mRecentChangeAdapter.clear();
