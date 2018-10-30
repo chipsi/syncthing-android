@@ -23,7 +23,6 @@ import com.nutomic.syncthingandroid.service.SyncthingService;
 import com.nutomic.syncthingandroid.util.FileUtils;
 import com.nutomic.syncthingandroid.util.Util;
 
-// import java.io.File;
 import java.util.HashMap;
 
 import static android.view.View.GONE;
