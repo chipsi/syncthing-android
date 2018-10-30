@@ -375,7 +375,7 @@ Please report any problems you encounter via Github.</string>
     <string name="respect_master_sync_summary">Disable Syncthing when the quick settings tile \'Auto-sync data\' is toggled off.</string>
 
     <string name="run_in_flight_mode_title">Run without network connection</string>
-    <string name="run_in_flight_mode_summary">Enable if your device has problems detecting manual Wi-Fi connections during flight mode.</string>
+    <string name="run_in_flight_mode_summary">Enabling this option will cause Syncthing to run even when you\'re offline. Enable if your device has problems detecting manual Wi-Fi connections during flight mode.</string>
 
     <!-- Preferences - Behaviour -->
     <string name="behaviour_autostart_title">Autostart</string>
