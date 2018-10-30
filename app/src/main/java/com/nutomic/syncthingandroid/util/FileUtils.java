@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Locale;
 
 /**
  * Utils for dealing with Storage Access Framework URIs.
@@ -833,7 +834,7 @@ public class FileUtils {
         mimeTypes.put("xwd", "image/x-xwindowdump");
         mimeTypes.put("z", "application/x-compress");
         mimeTypes.put("zip", "application/zip");
-        String fileMimeType = mimeTypes.get(fileExtension.toLowerCase());
+        String fileMimeType = mimeTypes.get(fileExtension.toLowerCase(Locale.ROOT));
         return (fileMimeType == null) ? "" : fileMimeType;
     }
 
