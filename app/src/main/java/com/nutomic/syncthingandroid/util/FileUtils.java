@@ -2,7 +2,11 @@ package com.nutomic.syncthingandroid.util;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -10,6 +14,10 @@ import android.os.storage.StorageManager;
 import android.provider.DocumentsContract;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.webkit.MimeTypeMap;
+import android.widget.Toast;
+
+import com.nutomic.syncthingandroid.R;
 
 import java.io.File;
 import java.io.IOException;
@@ -827,5 +835,99 @@ public class FileUtils {
         mimeTypes.put("zip", "application/zip");
         String fileMimeType = mimeTypes.get(fileExtension.toLowerCase());
         return (fileMimeType == null) ? "" : fileMimeType;
+    }
+
+    /**
+     * Open file in compatible app.
+     */
+    public static void openFile(Context context, String fullPathAndFilename) {
+        Uri fileUri = Uri.parse(fullPathAndFilename);
+        String fileExtension = MimeTypeMap.getFileExtensionFromUrl(fileUri.toString());
+        String mimeType = FileUtils.getMimeTypeFromFileExtension(fileExtension);
+        Log.v(TAG, "openFile: Detected mime type \'" + mimeType + "\' for file \'" + fullPathAndFilename + "\'");
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setDataAndType(fileUri, mimeType);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        try {
+            context.startActivity(intent);
+        } catch (ActivityNotFoundException anfe) {
+            Log.w(TAG, "openFile: ActivityNotFoundException. Falling back to app chooser...");
+            intent.setDataAndType(Uri.parse(fullPathAndFilename), "application/*");
+            Intent chooserIntent = Intent.createChooser(intent, context.getString(R.string.open_file_with));
+            try {
+                context.startActivity(chooserIntent);
+            } catch (Exception ex) {
+                Log.e(TAG, "openFile:", ex);
+                Toast.makeText(context, R.string.open_file_no_compatible_app, Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    /**
+     * Open folder in compatible file manager app.
+     */
+    public static void openFolder(Context context, String folderPath) {
+        PackageManager pm = context.getPackageManager();
+
+        // Try to find a compatible file manager app supporting the "resource/folder" Uri type.
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setDataAndType(Uri.fromFile(new File(folderPath)), "resource/folder");
+        intent.putExtra("org.openintents.extra.ABSOLUTE_PATH", folderPath);
+        intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_ACTIVITY_NEW_TASK);
+        if (intent.resolveActivity(pm) != null) {
+            // Launch file manager.
+            context.startActivity(intent);
+            return;
+        }
+        Log.w(TAG, "openFolder: No compatible file manager app not found (stage #1)");
+
+        // Try to open the folder with "Root Explorer" if it is installed.
+        intent = pm.getLaunchIntentForPackage("com.speedsoftware.rootexplorer");
+        if (intent != null) {
+            intent.setAction(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse(folderPath));
+            try {
+                context.startActivity(intent);
+                return;
+            } catch (android.content.ActivityNotFoundException anfe) {
+                Log.w(TAG, "openFolder: Failed to launch Root Explorer (stage #2)");
+            }
+        }
+        Log.w(TAG, "openFolder: Root Explorer file manager app not found (stage #2)");
+
+        // No compatible file manager app found.
+        suggestFileManagerApp(context);
+
+        /**
+         * Fallback: Let the user choose from all Uri handling apps.
+         * This allows the use of third-party file manager apps which
+         * provide non-standardized Uri handlers.
+         */
+        /*
+        Log.v(TAG, "Fallback to application chooser to open folder.");
+        intent.setDataAndType(Uri.parse(folder.path), "application/*");
+        Intent chooserIntent = Intent.createChooser(intent, mContext.getString(R.string.open_file_manager));
+        if (chooserIntent != null) {
+            // Launch potential file manager app.
+            mContext.startActivity(chooserIntent);
+            return;
+        }
+        */
+    }
+
+    private static void suggestFileManagerApp(Context context) {
+        AlertDialog mSuggestFileManagerAppDialog = new AlertDialog.Builder(context)
+                .setTitle(R.string.suggest_file_manager_app_dialog_title)
+                .setMessage(R.string.suggest_file_manager_app_dialog_text)
+                .setPositiveButton(R.string.yes, (d, i) -> {
+                    final String appPackageName = "com.simplemobiletools.filemanager";
+                    try {
+                        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+                    } catch (android.content.ActivityNotFoundException anfe) {
+                        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+                    }
+                })
+                .setNegativeButton(R.string.no, (d, i) -> {})
+                .show();
     }
 }
