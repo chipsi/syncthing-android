@@ -18,9 +18,9 @@ A wrapper of [Syncthing](https://github.com/syncthing/syncthing) for Android. He
 
 # Goal of the forked version
 - Develop and try out enhancements together
-- Release the wrapper more frequently to identify and fix bugs together caused by changes in the syncthing submodule.
+- Release the wrapper more frequently to identify and fix bugs together caused by changes in the syncthing submodule
 - Make enhancements configurable in the settings UI, e.g. users should be able to turn them on and off
-- Let's get ready for newer Android versions that put limits on background syncing tools. We need your bug reports as detailed as possible.
+- Let's get ready for newer Android versions that put limits on background syncing tools. We need your bug reports as detailed as possible
 
 # Translations
 
