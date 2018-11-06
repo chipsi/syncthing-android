@@ -100,7 +100,6 @@ public class MainActivity extends SyncthingActivity
     @Inject SharedPreferences mPreferences;
 
     private Boolean activityVisible = false;
-    private Boolean deferViewPagerUpdate = false;
 
     /**
      * Handles various dialogs based on current state.
@@ -109,11 +108,7 @@ public class MainActivity extends SyncthingActivity
     public void onServiceStateChange(SyncthingService.State currentState) {
         if (currentState != mSyncthingServiceState) {
             mSyncthingServiceState = currentState;
-            if (activityVisible) {
-                updateViewPager();
-            } else {
-                deferViewPagerUpdate = true;
-            }
+            updateViewPager();
         }
 
         switch (currentState) {
@@ -309,16 +304,11 @@ public class MainActivity extends SyncthingActivity
     @Override
     public void onResume() {
         activityVisible = true;
-
         // Check if storage permission has been revoked at runtime.
         if ((ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
             PackageManager.PERMISSION_GRANTED)) {
             startActivity(new Intent(this, FirstStartActivity.class));
             this.finish();
-        }
-
-        if (deferViewPagerUpdate) {
-            updateViewPager();
         }
 
         // Evaluate run conditions to detect changes made to the metered wifi flags.
