@@ -89,6 +89,7 @@ public class MainActivity extends SyncthingActivity
     private SyncthingService.State mSyncthingServiceState = SyncthingService.State.INIT;
 
     private ViewPager mViewPager;
+    private Integer mLastViewPagerNumPages = 0;
 
     private FolderListFragment mFolderListFragment;
     private DeviceListFragment mDeviceListFragment;
@@ -99,9 +100,6 @@ public class MainActivity extends SyncthingActivity
     private DrawerLayout          mDrawerLayout;
     @Inject SharedPreferences mPreferences;
 
-    private Boolean activityVisible = false;
-    private Boolean deferViewPagerUpdate = false;
-
     /**
      * Handles various dialogs based on current state.
      */
@@ -109,11 +107,7 @@ public class MainActivity extends SyncthingActivity
     public void onServiceStateChange(SyncthingService.State currentState) {
         if (currentState != mSyncthingServiceState) {
             mSyncthingServiceState = currentState;
-            if (activityVisible) {
-                updateViewPager();
-            } else {
-                deferViewPagerUpdate = true;
-            }
+            updateViewPager();
         }
 
         switch (currentState) {
@@ -220,6 +214,11 @@ public class MainActivity extends SyncthingActivity
     private void updateViewPager() {
         Boolean isServiceActive = mSyncthingServiceState == SyncthingService.State.ACTIVE;
         final int numPages = (isServiceActive ? 3 : 1);
+        if (numPages == mLastViewPagerNumPages) {
+            return;
+        }
+        mLastViewPagerNumPages = numPages;
+
         FragmentStatePagerAdapter mSectionsPagerAdapter =
                 new FragmentStatePagerAdapter(getSupportFragmentManager()) {
 
@@ -301,25 +300,12 @@ public class MainActivity extends SyncthingActivity
     }
 
     @Override
-    public void onPause() {
-        activityVisible = false;
-        super.onPause();
-    }
-
-    @Override
     public void onResume() {
-        activityVisible = true;
-
         // Check if storage permission has been revoked at runtime.
         if ((ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
             PackageManager.PERMISSION_GRANTED)) {
             startActivity(new Intent(this, FirstStartActivity.class));
             this.finish();
-        }
-
-        if (deferViewPagerUpdate) {
-            updateViewPager();
-            deferViewPagerUpdate = false;
         }
 
         // Evaluate run conditions to detect changes made to the metered wifi flags.
