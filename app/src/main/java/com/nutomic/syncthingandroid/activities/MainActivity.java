@@ -99,6 +99,8 @@ public class MainActivity extends SyncthingActivity
     private DrawerLayout          mDrawerLayout;
     @Inject SharedPreferences mPreferences;
 
+    private Boolean activityVisible = false;
+
     /**
      * Handles various dialogs based on current state.
      */
@@ -294,7 +296,14 @@ public class MainActivity extends SyncthingActivity
     }
 
     @Override
+    public void onPause() {
+        activityVisible = false;
+        super.onPause();
+    }
+
+    @Override
     public void onResume() {
+        activityVisible = true;
         // Check if storage permission has been revoked at runtime.
         if ((ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
             PackageManager.PERMISSION_GRANTED)) {
