@@ -8,7 +8,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
@@ -91,6 +93,12 @@ public class DeviceListFragment extends ListFragment implements SyncthingService
     @Override
     public void onServiceStateChange(SyncthingService.State currentState) {
         mServiceState = currentState;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        setRetainInstance(true);
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @Override
