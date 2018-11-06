@@ -99,6 +99,8 @@ public class MainActivity extends SyncthingActivity
     private DrawerLayout          mDrawerLayout;
     @Inject SharedPreferences mPreferences;
 
+    private Boolean activityVisible = false;
+
     /**
      * Handles various dialogs based on current state.
      */
@@ -227,26 +229,71 @@ public class MainActivity extends SyncthingActivity
                 if (isServiceActive) {
                     switch (position) {
                         case 0:
-                            return mFolderListFragment.isAdded() ? null : mFolderListFragment;
+                            return mFolderListFragment;
                         case 1:
-                            return mDeviceListFragment.isAdded() ? null : mDeviceListFragment;
+                            return mDeviceListFragment;
                         case 2:
-                            return mStatusFragment.isAdded() ? null : mStatusFragment;
+                            return mStatusFragment;
                         default:
                             return null;
                     }
                 } else {
                     switch (position) {
                         case 0:
-                            return mStatusFragment.isAdded() ? null : mStatusFragment;
+                            return mStatusFragment;
                         default:
                             return null;
                     }
                 }
             }
 
+            /*
+            @Override
+            public long getItemId(int position) {
+                Log.v(TAG, "getItemId / pos=" + position + " / isServiceActive=" + isServiceActive);
+                if (isServiceActive) {
+                    switch (position) {
+                        case 0:
+                            return 0;
+                        case 1:
+                            return 1;
+                        case 2:
+                            return 2;
+                        default:
+                            return -1;
+                    }
+                } else {
+                    switch (position) {
+                        case 0:
+                            return 2;
+                        default:
+                            return -1;
+                    }
+                }
+            }
+            */
+
             @Override
             public int getItemPosition(Object object) {
+                Log.v(TAG, "getItemPosition / object=" + object + " / isServiceActive=" + isServiceActive);
+                if (isServiceActive) {
+                    if (object == mFolderListFragment) {
+                        return 0;
+                    } else if (object == mDeviceListFragment) {
+                        return 1;
+                    } else if (object == mStatusFragment) {
+                        return 2;
+                    }
+                } else {
+                    if (object == mFolderListFragment) {
+                        return this.POSITION_NONE;
+                    } else if (object == mDeviceListFragment) {
+                        return this.POSITION_NONE;
+                    } else if (object == mStatusFragment) {
+                        return 0;
+                    }
+                }
+                Log.v(TAG, "... FAIL!");
                 return this.POSITION_NONE;
             }
 
@@ -300,7 +347,17 @@ public class MainActivity extends SyncthingActivity
     }
 
     @Override
+    public void onPause() {
+        Log.v(TAG, "onPause");
+        activityVisible = false;
+        super.onPause();
+    }
+
+    @Override
     public void onResume() {
+        Log.v(TAG, "onResume");
+        activityVisible = true;
+
         // Check if storage permission has been revoked at runtime.
         if ((ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
             PackageManager.PERMISSION_GRANTED)) {
@@ -318,6 +375,7 @@ public class MainActivity extends SyncthingActivity
 
     @Override
     public void onDestroy() {
+        Log.v(TAG, "onDestroy");
         super.onDestroy();
         SyncthingService mSyncthingService = getService();
         if (mSyncthingService != null) {
@@ -331,6 +389,7 @@ public class MainActivity extends SyncthingActivity
 
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+        Log.v(TAG, "onServiceConnected");
         super.onServiceConnected(componentName, iBinder);
         SyncthingServiceBinder syncthingServiceBinder = (SyncthingServiceBinder) iBinder;
         SyncthingService syncthingService = syncthingServiceBinder.getService();
