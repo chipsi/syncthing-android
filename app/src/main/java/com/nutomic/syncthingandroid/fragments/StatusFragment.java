@@ -118,7 +118,6 @@ public class StatusFragment extends ListFragment implements SyncthingService.OnS
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
-        setRetainInstance(true);
         return inflater.inflate(R.layout.fragment_status, container, false);
     }
 
