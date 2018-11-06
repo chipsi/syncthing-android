@@ -319,6 +319,7 @@ public class MainActivity extends SyncthingActivity
 
         if (deferViewPagerUpdate) {
             updateViewPager();
+            deferViewPagerUpdate = false;
         }
 
         // Evaluate run conditions to detect changes made to the metered wifi flags.
