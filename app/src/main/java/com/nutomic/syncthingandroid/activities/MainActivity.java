@@ -112,15 +112,6 @@ public class MainActivity extends SyncthingActivity
             mSyncthingServiceState = currentState;
             updateViewPager();
         }
-        if (mFolderListFragment != null) {
-            mFolderListFragment.onServiceStateChange(currentState);
-        }
-        if (mDeviceListFragment != null) {
-            mDeviceListFragment.onServiceStateChange(currentState);
-        }
-        if (mStatusFragment != null) {
-            mStatusFragment.onServiceStateChange(currentState);
-        }
 
         switch (currentState) {
             case STARTING:
@@ -179,10 +170,18 @@ public class MainActivity extends SyncthingActivity
             mDrawerFragment = (DrawerFragment) fm.getFragment(
                     savedInstanceState, DrawerFragment.class.getName());
         }
+        if (mFolderListFragment == null) {
+            mFolderListFragment = new FolderListFragment();
+        }
+        if (mDeviceListFragment == null) {
+            mDeviceListFragment = new DeviceListFragment();
+        }
+        if (mStatusFragment == null) {
+            mStatusFragment = new StatusFragment();
+        }
         if (mDrawerFragment == null) {
             mDrawerFragment = new DrawerFragment();
         }
-
 
         if (savedInstanceState != null) {
             Log.v(TAG, "onCreate: savedInstanceState != null 2");
@@ -231,19 +230,10 @@ public class MainActivity extends SyncthingActivity
                 if (isServiceActive) {
                     switch (position) {
                         case 0:
-                            if (mFolderListFragment == null) {
-                                mFolderListFragment = new FolderListFragment();
-                            }
                             return mFolderListFragment;
                         case 1:
-                            if (mDeviceListFragment == null) {
-                                mDeviceListFragment = new DeviceListFragment();
-                            }
                             return mDeviceListFragment;
                         case 2:
-                            if (mStatusFragment == null) {
-                                mStatusFragment = new StatusFragment();
-                            }
                             return mStatusFragment;
                         default:
                             return null;
@@ -251,9 +241,6 @@ public class MainActivity extends SyncthingActivity
                 } else {
                     switch (position) {
                         case 0:
-                            if (mStatusFragment == null) {
-                                mStatusFragment = new StatusFragment();
-                            }
                             return mStatusFragment;
                         default:
                             return null;
@@ -401,7 +388,10 @@ public class MainActivity extends SyncthingActivity
         SyncthingService mSyncthingService = getService();
         if (mSyncthingService != null) {
             mSyncthingService.unregisterOnServiceStateChangeListener(this);
+            mSyncthingService.unregisterOnServiceStateChangeListener(mFolderListFragment);
+            mSyncthingService.unregisterOnServiceStateChangeListener(mDeviceListFragment);
             mSyncthingService.unregisterOnServiceStateChangeListener(mDrawerFragment);
+            mSyncthingService.unregisterOnServiceStateChangeListener(mStatusFragment);
         }
     }
 
@@ -412,7 +402,10 @@ public class MainActivity extends SyncthingActivity
         SyncthingServiceBinder syncthingServiceBinder = (SyncthingServiceBinder) iBinder;
         SyncthingService syncthingService = syncthingServiceBinder.getService();
         syncthingService.registerOnServiceStateChangeListener(this);
+        syncthingService.registerOnServiceStateChangeListener(mFolderListFragment);
+        syncthingService.registerOnServiceStateChangeListener(mDeviceListFragment);
         syncthingService.registerOnServiceStateChangeListener(mDrawerFragment);
+        syncthingService.registerOnServiceStateChangeListener(mStatusFragment);
     }
 
     /**
