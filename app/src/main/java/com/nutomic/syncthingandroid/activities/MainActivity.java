@@ -21,7 +21,7 @@ import android.os.IBinder;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
+// import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
@@ -52,6 +52,7 @@ import com.nutomic.syncthingandroid.service.RestApi;
 import com.nutomic.syncthingandroid.service.SyncthingService;
 import com.nutomic.syncthingandroid.service.SyncthingServiceBinder;
 import com.nutomic.syncthingandroid.util.Util;
+import com.nutomic.syncthingandroid.views.FixedFragmentStatePagerAdapter;
 
 import java.lang.IllegalStateException;
 import java.util.Date;
@@ -220,8 +221,8 @@ public class MainActivity extends SyncthingActivity
     private void updateViewPager() {
         Boolean isServiceActive = mSyncthingServiceState == SyncthingService.State.ACTIVE;
         final int numPages = (isServiceActive ? 3 : 1);
-        FragmentStatePagerAdapter mSectionsPagerAdapter =
-                new FragmentStatePagerAdapter(getSupportFragmentManager()) {
+        FixedFragmentStatePagerAdapter mSectionsPagerAdapter =
+                new FixedFragmentStatePagerAdapter(getSupportFragmentManager()) {
 
             @Override
             public Fragment getItem(int position) {
@@ -273,6 +274,7 @@ public class MainActivity extends SyncthingActivity
             }
             */
 
+            /*
             @Override
             public int getItemPosition(Object object) {
                 Log.v(TAG, "getItemPosition / object=" + object + " / isServiceActive=" + isServiceActive);
@@ -294,6 +296,12 @@ public class MainActivity extends SyncthingActivity
                     }
                 }
                 Log.v(TAG, "... FAIL!");
+                return this.POSITION_NONE;
+            }
+            */
+
+            @Override
+            public int getItemPosition(Object object) {
                 return this.POSITION_NONE;
             }
 
