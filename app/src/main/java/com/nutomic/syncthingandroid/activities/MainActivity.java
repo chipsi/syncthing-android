@@ -104,7 +104,6 @@ public class MainActivity extends SyncthingActivity
      */
     @Override
     public void onServiceStateChange(SyncthingService.State currentState) {
-        Log.v(TAG, "onServiceStateChange: New state " + currentState);
         if (currentState != mSyncthingServiceState) {
             mSyncthingServiceState = currentState;
             updateViewPager();
@@ -147,7 +146,6 @@ public class MainActivity extends SyncthingActivity
      * Initializes tab navigation.
      */
     public void onCreate(Bundle savedInstanceState) {
-        Log.v(TAG, "onCreate(savedInstanceState)");
         super.onCreate(savedInstanceState);
         ((SyncthingApp) getApplication()).component().inject(this);
 
@@ -157,7 +155,6 @@ public class MainActivity extends SyncthingActivity
 
         FragmentManager fm = getSupportFragmentManager();
         if (savedInstanceState != null) {
-            Log.v(TAG, "onCreate: savedInstanceState != null 1");
             mFolderListFragment = (FolderListFragment) fm.getFragment(
                     savedInstanceState, FolderListFragment.class.getName());
             mDeviceListFragment = (DeviceListFragment) fm.getFragment(
@@ -181,7 +178,6 @@ public class MainActivity extends SyncthingActivity
         }
 
         if (savedInstanceState != null) {
-            Log.v(TAG, "onCreate: savedInstanceState != null 2");
             mViewPager.setCurrentItem(savedInstanceState.getInt("currentTab"));
             if (savedInstanceState.getBoolean(IS_SHOWING_RESTART_DIALOG)){
                 showRestartDialog();
@@ -190,7 +186,6 @@ public class MainActivity extends SyncthingActivity
                 showQrCodeDialog(savedInstanceState.getString(DEVICEID_KEY), savedInstanceState.getParcelable(QRCODE_BITMAP_KEY));
             }
         } else {
-            Log.v(TAG, "onCreate: updateViewPager");
             updateViewPager();
         }
 
@@ -223,22 +218,21 @@ public class MainActivity extends SyncthingActivity
 
             @Override
             public Fragment getItem(int position) {
-                Log.v(TAG, "getItem / pos=" + position + " / isServiceActive=" + isServiceActive);
                 if (isServiceActive) {
                     switch (position) {
                         case 0:
-                            return mFolderListFragment.isAdded() ? null : mFolderListFragment;
+                            return mFolderListFragment;
                         case 1:
-                            return mDeviceListFragment.isAdded() ? null : mDeviceListFragment;
+                            return mDeviceListFragment;
                         case 2:
-                            return mStatusFragment.isAdded() ? null : mStatusFragment;
+                            return mStatusFragment;
                         default:
                             return null;
                     }
                 } else {
                     switch (position) {
                         case 0:
-                            return mStatusFragment.isAdded() ? null : mStatusFragment;
+                            return mStatusFragment;
                         default:
                             return null;
                     }
