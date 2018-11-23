@@ -31,7 +31,6 @@ Description: |-
     * Strategy and release frequency is different
     * Only the wrapper containing the Android UI is addressed by the fork.
 
-
 RepoType: git
 Repo: https://github.com/Catfriend1/syncthing-android.git
 
