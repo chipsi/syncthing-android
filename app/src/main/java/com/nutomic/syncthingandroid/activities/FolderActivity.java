@@ -83,6 +83,7 @@ public class FolderActivity extends SyncthingActivity
     private static final int CHOOSE_FOLDER_REQUEST = 3459;
 
     private static final String FOLDER_MARKER_NAME = ".stfolder";
+    private static final String DO_NOT_DELETE_NAME = "DO_NOT_DELETE";
     // private static final String IGNORE_FILE_NAME = ".stignore";
 
     private Folder mFolder;
@@ -516,20 +517,8 @@ public class FolderActivity extends SyncthingActivity
                             .show();
                     return true;
                 }
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
-                    mFolderUri != null &&
-                    mFolder.type.equals(Constants.FOLDER_TYPE_SEND_ONLY)) {
-                    /**
-                     * Normally, syncthing takes care of creating the ".stfolder" marker.
-                     * This fails on newer android versions if the syncthing binary only has
-                     * readonly access on the path and the user tries to configure a
-                     * sendonly folder. To fix this, we'll precreate the marker using java code.
-                     */
-                    DocumentFile dfFolder = DocumentFile.fromTreeUri(this, mFolderUri);
-                    if (dfFolder != null) {
-                        Log.v(TAG, "Creating new directory " + mFolder.path + File.separator + FOLDER_MARKER_NAME);
-                        dfFolder.createDirectory(FOLDER_MARKER_NAME);
-                    }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && mFolderUri != null) {
+                    preCreateFolderMarker();
                 }
                 getApi().createFolder(mFolder);
                 finish();
@@ -542,6 +531,35 @@ public class FolderActivity extends SyncthingActivity
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void preCreateFolderMarker() {
+        Boolean createFolderMarker = mFolder.type.equals(Constants.FOLDER_TYPE_SEND_ONLY);
+        /**
+         * Create a "DO_NOT_DELETE" file below the ".stfolder" marker directory.
+         * This is a workaround for https://github.com/Catfriend1/syncthing-android/issues/131
+         * where empty directories get cleaned by Xiaomi MIUI's "Cleaner" system app. Folders
+         * are then left in "Error" state.
+         */
+        Boolean createDoNotDeleteFile = "xiaomi".equalsIgnoreCase(Build.MANUFACTURER);
+        if (createFolderMarker || createDoNotDeleteFile) {
+            /**
+             * Normally, syncthing takes care of creating the ".stfolder" marker.
+             * This fails on newer android versions if the syncthing binary only has
+             * readonly access on the path and the user tries to configure a
+             * sendonly folder. To fix this, we'll precreate the marker using java code.
+             */
+            DocumentFile dfFolder = DocumentFile.fromTreeUri(this, mFolderUri);
+            if (dfFolder != null) {
+                Log.v(TAG, "Creating new directory " + mFolder.path + File.separator + FOLDER_MARKER_NAME);
+                dfFolder.createDirectory(FOLDER_MARKER_NAME);
+                if (createDoNotDeleteFile) {
+                    Log.v(TAG, "Creating new file " + mFolder.path + File.separator + FOLDER_MARKER_NAME +
+                        File.separator + DO_NOT_DELETE_NAME);
+                    // dfFolder.createFile(FOLDER_MARKER_NAME + File.separator + DO_NOT_DELETE_NAME);
+                }
+            }
         }
     }
 
