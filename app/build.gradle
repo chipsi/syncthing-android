@@ -84,6 +84,13 @@ play {
     track = 'beta'
 }
 
+tasks.whenTaskAdded { task ->
+    if (task.name == 'compileDebugSources') {
+        task.dependsOn lint
+        task.mustRunAfter lint
+    }
+}
+
 /**
  * Some languages are not supported by Google Play, so we ignore them.
  */
