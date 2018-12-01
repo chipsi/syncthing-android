@@ -8,6 +8,7 @@ import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.nutomic.syncthingandroid.model.Folder;
 import com.nutomic.syncthingandroid.R;
 import com.nutomic.syncthingandroid.service.Constants;
 import com.nutomic.syncthingandroid.service.SyncthingRunnable;
@@ -23,6 +24,9 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -55,6 +59,16 @@ public class ConfigXml {
 
     public class OpenConfigException extends RuntimeException {
     }
+
+    /**
+     * Compares folders by labels, uses the folder ID as fallback if the label is empty
+     */
+    private final static Comparator<Folder> FOLDERS_COMPARATOR = (lhs, rhs) -> {
+        String lhsLabel = lhs.label != null && !lhs.label.isEmpty() ? lhs.label : lhs.id;
+        String rhsLabel = rhs.label != null && !rhs.label.isEmpty() ? rhs.label : rhs.id;
+
+        return lhsLabel.compareTo(rhsLabel);
+    };
 
     private static final String TAG = "ConfigXml";
     private static final int FOLDER_ID_APPENDIX_LENGTH = 4;
@@ -264,6 +278,38 @@ public class ConfigXml {
         } else {
             return false;
         }
+    }
+
+    private Boolean getAttributeOrDefault(final Element element, String attribute, Boolean defaultValue) {
+        return element.hasAttribute(attribute) ? Boolean.parseBoolean(element.getAttribute(attribute)) : defaultValue;
+    }
+
+    private Integer getAttributeOrDefault(final Element element, String attribute, Integer defaultValue) {
+        return element.hasAttribute(attribute) ? Integer.parseInt(element.getAttribute(attribute)) : defaultValue;
+    }
+
+    private String getAttributeOrDefault(final Element element, String attribute, String defaultValue) {
+        return element.hasAttribute(attribute) ? element.getAttribute(attribute) : defaultValue;
+    }
+
+    public List<Folders> getFolders() {
+        List<Folder> folders;
+        NodeList nodeFolders = mConfig.getDocumentElement().getElementsByTagName("folder");
+        for (int i = 0; i < nodeFolders.getLength(); i++) {
+            Element r = (Element) nodeFolders.item(i);
+            Folder folder = new Folder();
+            folder.id = getAttributeOrDefault(r, "id", "");
+            folder.label = getAttributeOrDefault(r, "label", "");
+            folder.path = getAttributeOrDefault(r, "path", "");
+            folder.type = getAttributeOrDefault(r, "type", Constants.FOLDER_TYPE_SEND_RECEIVE);
+            folder.paused = Boolean.parseBoolean(r.getElementsByTagName("paused").item(0));
+            // ToDo
+            Log.v(TAG, "folder.type="+folder.type+"<");
+            Log.v(TAG, "folder.paused="+folder.paused+"<");
+            folders.add(folder);
+        }
+        Collections.sort(folders, FOLDERS_COMPARATOR);
+        return folders;
     }
 
     private boolean setConfigElement(Element parent, String tagName, String textContent) {
