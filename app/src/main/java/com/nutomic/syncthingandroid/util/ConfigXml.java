@@ -24,6 +24,7 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -292,8 +293,8 @@ public class ConfigXml {
         return element.hasAttribute(attribute) ? element.getAttribute(attribute) : defaultValue;
     }
 
-    public List<Folders> getFolders() {
-        List<Folder> folders;
+    public List<Folder> getFolders() {
+        List<Folder> folders = new ArrayList<>();
         NodeList nodeFolders = mConfig.getDocumentElement().getElementsByTagName("folder");
         for (int i = 0; i < nodeFolders.getLength(); i++) {
             Element r = (Element) nodeFolders.item(i);
@@ -302,7 +303,7 @@ public class ConfigXml {
             folder.label = getAttributeOrDefault(r, "label", "");
             folder.path = getAttributeOrDefault(r, "path", "");
             folder.type = getAttributeOrDefault(r, "type", Constants.FOLDER_TYPE_SEND_RECEIVE);
-            folder.paused = Boolean.parseBoolean(r.getElementsByTagName("paused").item(0));
+            folder.paused = Boolean.parseBoolean(r.getElementsByTagName("paused").item(0).getTextContent());
             // ToDo
             Log.v(TAG, "folder.type="+folder.type+"<");
             Log.v(TAG, "folder.paused="+folder.paused+"<");
