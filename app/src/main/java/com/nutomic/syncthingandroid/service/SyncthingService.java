@@ -400,8 +400,6 @@ public class SyncthingService extends Service {
             try {
                 syncthingService.mConfig = new ConfigXml(syncthingService);
                 syncthingService.mConfig.updateIfNeeded();
-                // ToDo
-                syncthingService.mConfig.getFolders();
             } catch (SyncthingRunnable.ExecutableNotFoundException e) {
                 syncthingService.mNotificationHandler.showCrashedNotification(R.string.config_read_failed, "SycnthingRunnable.ExecutableNotFoundException");
                 synchronized (syncthingService.mStateLock) {

@@ -293,6 +293,10 @@ public class ConfigXml {
         return element.hasAttribute(attribute) ? element.getAttribute(attribute) : defaultValue;
     }
 
+    private Boolean getContentOrDefault(final Node node, Boolean defaultValue) {
+         return (node == null) ? defaultValue : Boolean.parseBoolean(node.getTextContent());
+    }
+
     public List<Folder> getFolders() {
         List<Folder> folders = new ArrayList<>();
         NodeList nodeFolders = mConfig.getDocumentElement().getElementsByTagName("folder");
@@ -303,10 +307,9 @@ public class ConfigXml {
             folder.label = getAttributeOrDefault(r, "label", "");
             folder.path = getAttributeOrDefault(r, "path", "");
             folder.type = getAttributeOrDefault(r, "type", Constants.FOLDER_TYPE_SEND_RECEIVE);
-            folder.paused = Boolean.parseBoolean(r.getElementsByTagName("paused").item(0).getTextContent());
-            // ToDo
-            Log.v(TAG, "folder.type="+folder.type+"<");
-            Log.v(TAG, "folder.paused="+folder.paused+"<");
+            folder.paused = getContentOrDefault(r.getElementsByTagName("paused").item(0), false);
+            // For testing purposes only.
+            // Log.v(TAG, "folder.label=" + folder.label + "/" +"folder.type=" + folder.type + "/" + "folder.paused=" + folder.paused);
             folders.add(folder);
         }
         Collections.sort(folders, FOLDERS_COMPARATOR);
