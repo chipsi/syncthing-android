@@ -34,7 +34,14 @@ public class DeviceListFragment extends ListFragment implements SyncthingService
 
     private final static String TAG = "DeviceListFragment";
 
-    private final static Comparator<Device> DEVICES_COMPARATOR = (lhs, rhs) -> lhs.name.compareTo(rhs.name);
+    /**
+     * Compares devices by name, uses the device ID as fallback if the name is empty
+     */
+    private final static Comparator<Device> DEVICES_COMPARATOR = (lhs, rhs) -> {
+        String lhsName = lhs.name != null && !lhs.name.isEmpty() ? lhs.name : lhs.deviceID;
+        String rhsName = rhs.name != null && !rhs.name.isEmpty() ? rhs.name : rhs.deviceID;
+        return lhsName.compareTo(rhsName);
+    }
 
     private Runnable mUpdateListRunnable = new Runnable() {
         @Override
