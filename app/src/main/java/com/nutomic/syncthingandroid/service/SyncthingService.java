@@ -349,9 +349,85 @@ public class SyncthingService extends Service {
      * unpause devices and folders as defined in per-object sync preferences.
      */
     private void onSyncPreconditionChanged() {
-        if (mRestApi != null) {
-            // Forward event.
-            mRestApi.onSyncPreconditionChanged(mRunConditionMonitor);
+        synchronized (mStateLock) {
+            if (mRestApi != null && mCurrentState == State.ACTIVE) {
+                // Forward event because syncthing is running.
+                mRestApi.onSyncPreconditionChanged(mRunConditionMonitor);
+                return;
+            }
+        }
+
+        Log.v(TAG, "onSyncPreconditionChanged: Event fired while syncthing is not running.");
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+        Boolean configChanged = false;
+        ConfigXml configXml;
+
+        // Read and parse the config from disk.
+        try {
+            configXml = new ConfigXml(this);
+        } catch (SyncthingRunnable.ExecutableNotFoundException e) {
+            mNotificationHandler.showCrashedNotification(R.string.config_read_failed, "onSyncPreconditionChanged:SycnthingRunnable.ExecutableNotFoundException");
+            synchronized (mStateLock) {
+                onServiceStateChange(State.ERROR);
+            }
+            return;
+        } catch (ConfigXml.OpenConfigException e) {
+            mNotificationHandler.showCrashedNotification(R.string.config_read_failed, "onSyncPreconditionChanged:ConfigXml.OpenConfigException");
+            synchronized (mStateLock) {
+                onServiceStateChange(State.ERROR);
+            }
+            return;
+        }
+
+        // Check if the folders are available from config.
+        List<Folder> folders = configXml.getFolders();
+        if (folders != null) {
+            for (Folder folder : folders) {
+                Boolean folderCustomSyncConditionsEnabled = sharedPreferences.getBoolean(
+                    Constants.DYN_PREF_OBJECT_CUSTOM_SYNC_CONDITIONS(Constants.PREF_OBJECT_PREFIX_FOLDER + folder.id), false
+                );
+                if (folderCustomSyncConditionsEnabled) {
+                    Boolean syncConditionsMet = runConditionMonitor.checkObjectSyncConditions(
+                        Constants.PREF_OBJECT_PREFIX_FOLDER + folder.id
+                    );
+                    Log.v(TAG, "onSyncPreconditionChanged: syncFolder(" + folder.id + ")=" + (syncConditionsMet ? "1" : "0"));
+                    if (folder.paused != !syncConditionsMet) {
+                        configXml.setFolderPause(folder.id, !syncConditionsMet);
+                        configChanged = true;
+                    }
+                }
+            }
+        } else {
+            Log.d(TAG, "onSyncPreconditionChanged: folders == null");
+            return;
+        }
+
+        // Check if the devices are available from config.
+        List<Device> devices = configXml.getDevices();
+        if (devices != null) {
+            for (Device device : devices) {
+                Boolean deviceCustomSyncConditionsEnabled = sharedPreferences.getBoolean(
+                    Constants.DYN_PREF_OBJECT_CUSTOM_SYNC_CONDITIONS(Constants.PREF_OBJECT_PREFIX_DEVICE + device.deviceID), false
+                );
+                if (deviceCustomSyncConditionsEnabled) {
+                    Boolean syncConditionsMet = runConditionMonitor.checkObjectSyncConditions(
+                        Constants.PREF_OBJECT_PREFIX_DEVICE + device.deviceID
+                    );
+                    Log.v(TAG, "onSyncPreconditionChanged: syncDevice(" + device.deviceID + ")=" + (syncConditionsMet ? "1" : "0"));
+                    if (device.paused != !syncConditionsMet) {
+                        configXml.setDevicePause(device.deviceID, !syncConditionsMet);
+                        configChanged = true;
+                    }
+                }
+            }
+        } else {
+            Log.d(TAG, "onSyncPreconditionChanged: devices == null");
+            return;
+        }
+
+        if (configChanged) {
+            Log.v(TAG, "onSyncPreconditionChanged: Saving changed config to disk ...");
+            configXml.saveChanges();
         }
     }
 
