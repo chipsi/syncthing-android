@@ -71,7 +71,6 @@ public class RestApi {
     private final static Comparator<Folder> FOLDERS_COMPARATOR = (lhs, rhs) -> {
         String lhsLabel = lhs.label != null && !lhs.label.isEmpty() ? lhs.label : lhs.id;
         String rhsLabel = rhs.label != null && !rhs.label.isEmpty() ? rhs.label : rhs.id;
-
         return lhsLabel.compareTo(rhsLabel);
     };
 
