@@ -8,6 +8,7 @@ import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.nutomic.syncthingandroid.model.Device;
 import com.nutomic.syncthingandroid.model.Folder;
 import com.nutomic.syncthingandroid.R;
 import com.nutomic.syncthingandroid.service.Constants;
@@ -62,12 +63,20 @@ public class ConfigXml {
     }
 
     /**
+     * Compares devices by name, uses the device ID as fallback if the name is empty
+     */
+    private final static Comparator<Device> DEVICES_COMPARATOR = (lhs, rhs) -> {
+        String lhsName = lhs.name != null && !lhs.name.isEmpty() ? lhs.name : lhs.deviceID;
+        String rhsName = rhs.name != null && !rhs.name.isEmpty() ? rhs.name : rhs.deviceID;
+        return lhsName.compareTo(rhsName);
+    }
+
+    /**
      * Compares folders by labels, uses the folder ID as fallback if the label is empty
      */
     private final static Comparator<Folder> FOLDERS_COMPARATOR = (lhs, rhs) -> {
         String lhsLabel = lhs.label != null && !lhs.label.isEmpty() ? lhs.label : lhs.id;
         String rhsLabel = rhs.label != null && !rhs.label.isEmpty() ? rhs.label : rhs.id;
-
         return lhsLabel.compareTo(rhsLabel);
     };
 
@@ -316,6 +325,23 @@ public class ConfigXml {
         return folders;
     }
 
+    public List<Device> getDevices() {
+        List<Device> devices = new ArrayList<>();
+        NodeList nodeDevices = mConfig.getDocumentElement().getElementsByTagName("device");
+        for (int i = 0; i < nodeDevices.getLength(); i++) {
+            Element r = (Element) nodeDevices.item(i);
+            Device device = new Device();
+            device.deviceID = getAttributeOrDefault(r, "id", "");
+            folder.name = getAttributeOrDefault(r, "name", "");
+            folder.paused = getContentOrDefault(r.getElementsByTagName("paused").item(0), false);
+            // For testing purposes only.
+            // Log.v(TAG, "device.name=" + device.name + "/" +"device.id=" + device.deviceID + "/" + "device.paused=" + device.paused);
+            devices.add(device);
+        }
+        Collections.sort(devices, DEVICES_COMPARATOR);
+        return devices;
+    }
+
     private boolean setConfigElement(Element parent, String tagName, String textContent) {
         Node element = parent.getElementsByTagName(tagName).item(0);
         if (element == null) {
@@ -393,7 +419,7 @@ public class ConfigXml {
     /**
      * Writes updated mConfig back to file.
      */
-    private void saveChanges() {
+    public void saveChanges() {
         if (!mConfigFile.canWrite() && !Util.fixAppDataPermissions(mContext)) {
             Log.w(TAG, "Failed to save updated config. Cannot change the owner of the config file.");
             return;
