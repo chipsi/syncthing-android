@@ -350,11 +350,11 @@ public class SyncthingService extends Service {
      * After sync preconditions changed, we need to inform {@link RestApi} to pause or
      * unpause devices and folders as defined in per-object sync preferences.
      */
-    private void onSyncPreconditionChanged() {
+    private void onSyncPreconditionChanged(RunConditionMonitor runConditionMonitor) {
         synchronized (mStateLock) {
             if (mRestApi != null && mCurrentState == State.ACTIVE) {
                 // Forward event because syncthing is running.
-                mRestApi.onSyncPreconditionChanged(mRunConditionMonitor);
+                mRestApi.onSyncPreconditionChanged(runConditionMonitor);
                 return;
             }
         }
@@ -384,11 +384,12 @@ public class SyncthingService extends Service {
         List<Folder> folders = configXml.getFolders();
         if (folders != null) {
             for (Folder folder : folders) {
+                // Log.v(TAG, "onSyncPreconditionChanged: Processing config of folder.id=" + folder.id);
                 Boolean folderCustomSyncConditionsEnabled = mPreferences.getBoolean(
                     Constants.DYN_PREF_OBJECT_CUSTOM_SYNC_CONDITIONS(Constants.PREF_OBJECT_PREFIX_FOLDER + folder.id), false
                 );
                 if (folderCustomSyncConditionsEnabled) {
-                    Boolean syncConditionsMet = mRunConditionMonitor.checkObjectSyncConditions(
+                    Boolean syncConditionsMet = runConditionMonitor.checkObjectSyncConditions(
                         Constants.PREF_OBJECT_PREFIX_FOLDER + folder.id
                     );
                     Log.v(TAG, "onSyncPreconditionChanged: syncFolder(" + folder.id + ")=" + (syncConditionsMet ? "1" : "0"));
@@ -407,11 +408,12 @@ public class SyncthingService extends Service {
         List<Device> devices = configXml.getDevices();
         if (devices != null) {
             for (Device device : devices) {
+                // Log.v(TAG, "onSyncPreconditionChanged: Processing config of device.id=" + device.deviceID);
                 Boolean deviceCustomSyncConditionsEnabled = mPreferences.getBoolean(
                     Constants.DYN_PREF_OBJECT_CUSTOM_SYNC_CONDITIONS(Constants.PREF_OBJECT_PREFIX_DEVICE + device.deviceID), false
                 );
                 if (deviceCustomSyncConditionsEnabled) {
-                    Boolean syncConditionsMet = mRunConditionMonitor.checkObjectSyncConditions(
+                    Boolean syncConditionsMet = runConditionMonitor.checkObjectSyncConditions(
                         Constants.PREF_OBJECT_PREFIX_DEVICE + device.deviceID
                     );
                     Log.v(TAG, "onSyncPreconditionChanged: syncDevice(" + device.deviceID + ")=" + (syncConditionsMet ? "1" : "0"));
