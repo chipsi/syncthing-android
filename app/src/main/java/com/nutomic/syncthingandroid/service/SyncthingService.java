@@ -20,6 +20,7 @@ import com.google.common.io.Files;
 import com.nutomic.syncthingandroid.R;
 import com.nutomic.syncthingandroid.SyncthingApp;
 import com.nutomic.syncthingandroid.http.PollWebGuiAvailableTask;
+import com.nutomic.syncthingandroid.model.Device;
 import com.nutomic.syncthingandroid.model.Folder;
 import com.nutomic.syncthingandroid.util.ConfigXml;
 import com.nutomic.syncthingandroid.util.FileUtils;
@@ -37,6 +38,7 @@ import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -358,7 +360,6 @@ public class SyncthingService extends Service {
         }
 
         Log.v(TAG, "onSyncPreconditionChanged: Event fired while syncthing is not running.");
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
         Boolean configChanged = false;
         ConfigXml configXml;
 
@@ -383,11 +384,11 @@ public class SyncthingService extends Service {
         List<Folder> folders = configXml.getFolders();
         if (folders != null) {
             for (Folder folder : folders) {
-                Boolean folderCustomSyncConditionsEnabled = sharedPreferences.getBoolean(
+                Boolean folderCustomSyncConditionsEnabled = mPreferences.getBoolean(
                     Constants.DYN_PREF_OBJECT_CUSTOM_SYNC_CONDITIONS(Constants.PREF_OBJECT_PREFIX_FOLDER + folder.id), false
                 );
                 if (folderCustomSyncConditionsEnabled) {
-                    Boolean syncConditionsMet = runConditionMonitor.checkObjectSyncConditions(
+                    Boolean syncConditionsMet = mRunConditionMonitor.checkObjectSyncConditions(
                         Constants.PREF_OBJECT_PREFIX_FOLDER + folder.id
                     );
                     Log.v(TAG, "onSyncPreconditionChanged: syncFolder(" + folder.id + ")=" + (syncConditionsMet ? "1" : "0"));
@@ -406,11 +407,11 @@ public class SyncthingService extends Service {
         List<Device> devices = configXml.getDevices();
         if (devices != null) {
             for (Device device : devices) {
-                Boolean deviceCustomSyncConditionsEnabled = sharedPreferences.getBoolean(
+                Boolean deviceCustomSyncConditionsEnabled = mPreferences.getBoolean(
                     Constants.DYN_PREF_OBJECT_CUSTOM_SYNC_CONDITIONS(Constants.PREF_OBJECT_PREFIX_DEVICE + device.deviceID), false
                 );
                 if (deviceCustomSyncConditionsEnabled) {
-                    Boolean syncConditionsMet = runConditionMonitor.checkObjectSyncConditions(
+                    Boolean syncConditionsMet = mRunConditionMonitor.checkObjectSyncConditions(
                         Constants.PREF_OBJECT_PREFIX_DEVICE + device.deviceID
                     );
                     Log.v(TAG, "onSyncPreconditionChanged: syncDevice(" + device.deviceID + ")=" + (syncConditionsMet ? "1" : "0"));
