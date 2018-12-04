@@ -41,7 +41,7 @@ public class DeviceListFragment extends ListFragment implements SyncthingService
         String lhsName = lhs.name != null && !lhs.name.isEmpty() ? lhs.name : lhs.deviceID;
         String rhsName = rhs.name != null && !rhs.name.isEmpty() ? rhs.name : rhs.deviceID;
         return lhsName.compareTo(rhsName);
-    }
+    };
 
     private Runnable mUpdateListRunnable = new Runnable() {
         @Override

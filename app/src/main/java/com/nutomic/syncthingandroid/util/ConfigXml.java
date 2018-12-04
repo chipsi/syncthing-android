@@ -69,7 +69,7 @@ public class ConfigXml {
         String lhsName = lhs.name != null && !lhs.name.isEmpty() ? lhs.name : lhs.deviceID;
         String rhsName = rhs.name != null && !rhs.name.isEmpty() ? rhs.name : rhs.deviceID;
         return lhsName.compareTo(rhsName);
-    }
+    };
 
     /**
      * Compares folders by labels, uses the folder ID as fallback if the label is empty
@@ -332,14 +332,22 @@ public class ConfigXml {
             Element r = (Element) nodeDevices.item(i);
             Device device = new Device();
             device.deviceID = getAttributeOrDefault(r, "id", "");
-            folder.name = getAttributeOrDefault(r, "name", "");
-            folder.paused = getContentOrDefault(r.getElementsByTagName("paused").item(0), false);
+            device.name = getAttributeOrDefault(r, "name", "");
+            device.paused = getContentOrDefault(r.getElementsByTagName("paused").item(0), false);
             // For testing purposes only.
             // Log.v(TAG, "device.name=" + device.name + "/" +"device.id=" + device.deviceID + "/" + "device.paused=" + device.paused);
             devices.add(device);
         }
         Collections.sort(devices, DEVICES_COMPARATOR);
         return devices;
+    }
+
+    public void setFolderPause(String folderId, Boolean paused) {
+        // ToDo
+    }
+
+    public void setDevicePause(String deviceId, Boolean paused) {
+        // ToDo
     }
 
     private boolean setConfigElement(Element parent, String tagName, String textContent) {
