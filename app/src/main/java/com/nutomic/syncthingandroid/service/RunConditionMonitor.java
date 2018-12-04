@@ -180,6 +180,10 @@ public class RunConditionMonitor {
         // Check if the current conditions changed the result of decideShouldRun()
         // compared to the last determined result.
         boolean newShouldRun = decideShouldRun();
+
+        // ToDo, For testing purposes only.
+        newShouldRun = true;
+
         if (newShouldRun != lastDeterminedShouldRun) {
             if (mOnShouldRunChangedListener != null) {
                 mOnShouldRunChangedListener.onShouldRunDecisionChanged(newShouldRun);
