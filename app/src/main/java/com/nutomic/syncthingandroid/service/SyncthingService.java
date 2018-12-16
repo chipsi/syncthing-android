@@ -392,9 +392,10 @@ public class SyncthingService extends Service {
                     Boolean syncConditionsMet = runConditionMonitor.checkObjectSyncConditions(
                         Constants.PREF_OBJECT_PREFIX_FOLDER + folder.id
                     );
-                    Log.v(TAG, "onSyncPreconditionChanged: syncFolder(" + folder.id + ")=" + (syncConditionsMet ? "1" : "0"));
+                    // Log.v(TAG, "onSyncPreconditionChanged: syncFolder(" + folder.id + ")=" + (syncConditionsMet ? "1" : "0"));
                     if (folder.paused != !syncConditionsMet) {
                         configXml.setFolderPause(folder.id, !syncConditionsMet);
+                        Log.v(TAG, "onSyncPreconditionChanged: syncFolder(" + folder.id + ")=" + (syncConditionsMet ? ">1" : ">0"));
                         configChanged = true;
                     }
                 }
@@ -416,9 +417,10 @@ public class SyncthingService extends Service {
                     Boolean syncConditionsMet = runConditionMonitor.checkObjectSyncConditions(
                         Constants.PREF_OBJECT_PREFIX_DEVICE + device.deviceID
                     );
-                    Log.v(TAG, "onSyncPreconditionChanged: syncDevice(" + device.deviceID + ")=" + (syncConditionsMet ? "1" : "0"));
+                    // Log.v(TAG, "onSyncPreconditionChanged: syncDevice(" + device.deviceID + ")=" + (syncConditionsMet ? "1" : "0"));
                     if (device.paused != !syncConditionsMet) {
                         configXml.setDevicePause(device.deviceID, !syncConditionsMet);
+                        Log.v(TAG, "onSyncPreconditionChanged: syncDevice(" + device.deviceID + ")=" + (syncConditionsMet ? ">1" : ">0"));
                         configChanged = true;
                     }
                 }
