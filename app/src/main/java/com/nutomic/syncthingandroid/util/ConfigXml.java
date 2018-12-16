@@ -120,6 +120,8 @@ public class ConfigXml {
                 saveChanges();
             }
         }
+
+        updateIfNeeded();
     }
 
     private void readConfig() {
@@ -165,7 +167,7 @@ public class ConfigXml {
      * username/password, and disables weak hash checking.
      */
     @SuppressWarnings("SdCardPath")
-    public void updateIfNeeded() {
+    private void updateIfNeeded() {
         boolean changed = false;
 
         /* Perform one-time migration tasks on syncthing's config file when coming from an older config version. */
