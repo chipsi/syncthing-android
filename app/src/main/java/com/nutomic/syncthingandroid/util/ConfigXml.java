@@ -197,7 +197,7 @@ public class ConfigXml {
         Boolean forceHttps = Constants.osSupportsTLS12();
         if (!gui.hasAttribute("tls") ||
                 Boolean.parseBoolean(gui.getAttribute("tls")) != forceHttps) {
-            gui.setAttribute("tls", forceHttps ? "true" : "false");
+            gui.setAttribute("tls", Boolean.toString(forceHttps));
             changed = true;
         }
 
@@ -350,11 +350,27 @@ public class ConfigXml {
     }
 
     public void setFolderPause(String folderId, Boolean paused) {
-        // ToDo
+        NodeList nodeFolders = mConfig.getDocumentElement().getElementsByTagName("folder");
+        for (int i = 0; i < nodeFolders.getLength(); i++) {
+            Element r = (Element) nodeFolders.item(i);
+            if (getAttributeOrDefault(r, "id", "").equals(folderId))
+            {
+                setConfigElement(r, "paused", Boolean.toString(paused));
+                break;
+            }
+        }
     }
 
     public void setDevicePause(String deviceId, Boolean paused) {
-        // ToDo
+        NodeList nodeDevices = mConfig.getDocumentElement().getElementsByTagName("device");
+        for (int i = 0; i < nodeDevices.getLength(); i++) {
+            Element r = (Element) nodeDevices.item(i);
+            if (getAttributeOrDefault(r, "id", "").equals(deviceId))
+            {
+                setConfigElement(r, "paused", Boolean.toString(paused));
+                break;
+            }
+        }
     }
 
     private boolean setConfigElement(Element parent, String tagName, String textContent) {
