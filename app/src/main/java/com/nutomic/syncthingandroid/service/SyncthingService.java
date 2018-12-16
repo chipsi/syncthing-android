@@ -157,7 +157,6 @@ public class SyncthingService extends Service {
      */
     private State mCurrentState = State.DISABLED;
     private ConfigXml mConfig;
-    private StartupTask mStartupTask = null;
     private Thread mSyncthingRunnableThread = null;
     private Handler mHandler;
 
@@ -440,77 +439,31 @@ public class SyncthingService extends Service {
      * Prepares to launch the syncthing binary.
      */
     private void launchStartupTask(SyncthingRunnable.Command srCommand) {
-        Log.v(TAG, "Starting syncthing");
         synchronized (mStateLock) {
             if (mCurrentState != State.DISABLED && mCurrentState != State.INIT) {
                 Log.e(TAG, "launchStartupTask: Wrong state " + mCurrentState + " detected. Cancelling.");
                 return;
             }
         }
+        Log.v(TAG, "Starting syncthing");
+        onServiceStateChange(State.STARTING);
 
-        // Safety check: Log warning if a previously launched startup task did not finish properly.
-        if (mStartupTask != null && (mStartupTask.getStatus() == AsyncTask.Status.RUNNING)) {
-            Log.w(TAG, "launchStartupTask: StartupTask is still running. Skipped starting it twice.");
+        try {
+            mConfig = new ConfigXml(this);
+        } catch (SyncthingRunnable.ExecutableNotFoundException e) {
+            mNotificationHandler.showCrashedNotification(R.string.config_read_failed, "SycnthingRunnable.ExecutableNotFoundException");
+            synchronized (mStateLock) {
+                onServiceStateChange(State.ERROR);
+            }
+            return;
+        } catch (ConfigXml.OpenConfigException e) {
+            mNotificationHandler.showCrashedNotification(R.string.config_read_failed, "ConfigXml.OpenConfigException");
+            synchronized (mStateLock) {
+                onServiceStateChange(State.ERROR);
+            }
             return;
         }
-        onServiceStateChange(State.STARTING);
-        mStartupTask = new StartupTask(this, srCommand);
-        mStartupTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
 
-    /**
-     * Sets up the initial configuration, and updates the config when coming from an old
-     * version.
-     */
-    private static class StartupTask extends AsyncTask<Void, Void, Void> {
-        private WeakReference<SyncthingService> refSyncthingService;
-        private SyncthingRunnable.Command srCommand;
-
-        StartupTask(SyncthingService context, SyncthingRunnable.Command srCommand) {
-            refSyncthingService = new WeakReference<>(context);
-            this.srCommand = srCommand;
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            SyncthingService syncthingService = refSyncthingService.get();
-            if (syncthingService == null) {
-                cancel(true);
-                return null;
-            }
-            try {
-                syncthingService.mConfig = new ConfigXml(syncthingService);
-                syncthingService.mConfig.updateIfNeeded();
-            } catch (SyncthingRunnable.ExecutableNotFoundException e) {
-                syncthingService.mNotificationHandler.showCrashedNotification(R.string.config_read_failed, "SycnthingRunnable.ExecutableNotFoundException");
-                synchronized (syncthingService.mStateLock) {
-                    syncthingService.onServiceStateChange(State.ERROR);
-                }
-                cancel(true);
-            } catch (ConfigXml.OpenConfigException e) {
-                syncthingService.mNotificationHandler.showCrashedNotification(R.string.config_read_failed, "ConfigXml.OpenConfigException");
-                synchronized (syncthingService.mStateLock) {
-                    syncthingService.onServiceStateChange(State.ERROR);
-                }
-                cancel(true);
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            // Get a reference to the service if it is still there.
-            SyncthingService syncthingService = refSyncthingService.get();
-            if (syncthingService != null) {
-                syncthingService.onStartupTaskCompleteListener(srCommand);
-            }
-        }
-    }
-
-    /**
-     * Callback on {@link StartupTask#onPostExecute}.
-     */
-    private void onStartupTaskCompleteListener(SyncthingRunnable.Command srCommand) {
         if (mRestApi == null) {
             mRestApi = new RestApi(this, mConfig.getWebGuiUrl(), mConfig.getApiKey(),
                     this::onApiAvailable, () -> onServiceStateChange(mCurrentState));
