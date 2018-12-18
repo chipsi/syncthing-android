@@ -363,14 +363,9 @@ public class SyncthingService extends Service {
         ConfigXml configXml;
 
         // Read and parse the config from disk.
+        configXml = new ConfigXml(this);
         try {
-            configXml = new ConfigXml(this);
-        } catch (SyncthingRunnable.ExecutableNotFoundException e) {
-            mNotificationHandler.showCrashedNotification(R.string.config_read_failed, "onSyncPreconditionChanged:SycnthingRunnable.ExecutableNotFoundException");
-            synchronized (mStateLock) {
-                onServiceStateChange(State.ERROR);
-            }
-            return;
+            configXml.loadConfig();
         } catch (ConfigXml.OpenConfigException e) {
             mNotificationHandler.showCrashedNotification(R.string.config_read_failed, "onSyncPreconditionChanged:ConfigXml.OpenConfigException");
             synchronized (mStateLock) {
@@ -447,15 +442,9 @@ public class SyncthingService extends Service {
         }
         Log.v(TAG, "Starting syncthing");
         onServiceStateChange(State.STARTING);
-
+        mConfig = new ConfigXml(this);
         try {
-            mConfig = new ConfigXml(this);
-        } catch (SyncthingRunnable.ExecutableNotFoundException e) {
-            mNotificationHandler.showCrashedNotification(R.string.config_read_failed, "SycnthingRunnable.ExecutableNotFoundException");
-            synchronized (mStateLock) {
-                onServiceStateChange(State.ERROR);
-            }
-            return;
+            mConfig.loadConfig();
         } catch (ConfigXml.OpenConfigException e) {
             mNotificationHandler.showCrashedNotification(R.string.config_read_failed, "ConfigXml.OpenConfigException");
             synchronized (mStateLock) {

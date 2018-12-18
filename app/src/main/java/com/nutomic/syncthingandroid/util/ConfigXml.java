@@ -92,40 +92,46 @@ public class ConfigXml {
 
     private Document mConfig;
 
-    public ConfigXml(Context context) throws OpenConfigException, SyncthingRunnable.ExecutableNotFoundException {
+    public ConfigXml(Context context) {
         mContext = context;
         mConfigFile = Constants.getConfigFile(mContext);
-        boolean isFirstStart = !mConfigFile.exists();
-        if (isFirstStart) {
-            Log.i(TAG, "App started for the first time. Generating keys and config.");
-            new SyncthingRunnable(context, SyncthingRunnable.Command.generate).run(true);
-        }
+    }
 
-        readConfig();
-
-        if (isFirstStart) {
-            boolean changed = false;
-
-            Log.i(TAG, "Starting syncthing to retrieve local device id.");
-            String logOutput = new SyncthingRunnable(context, SyncthingRunnable.Command.deviceid).run(true);
-            String localDeviceID = logOutput.replace("\n", "");
-            // Verify local device ID is correctly formatted.
-            if (localDeviceID.matches("^([A-Z0-9]{7}-){7}[A-Z0-9]{7}$")) {
-                changed = changeLocalDeviceName(localDeviceID) || changed;
-            }
-            changed = changeDefaultFolder() || changed;
-
-            // Save changes if we made any.
-            if (changed) {
-                saveChanges();
-            }
-        }
-
+    public void loadConfig() throws OpenConfigException {
+        parseConfig();
         updateIfNeeded();
     }
 
-    private void readConfig() {
+    /**
+     * This should run within an AsyncTask as it can cause a full CPU load
+     * for more than 30 seconds on older phone hardware.
+     */
+    public void generateConfig() throws OpenConfigException, SyncthingRunnable.ExecutableNotFoundException {
+        // Create new secret keys and config.
+        Log.i(TAG, "(Re)Generating keys and config.");
+        new SyncthingRunnable(mContext, SyncthingRunnable.Command.generate).run(true);
+        parseConfig();
+
+        // Set device name and default folder "camera" .
+        Log.i(TAG, "Starting syncthing to retrieve local device id.");
+        Boolean changed = false;
+        String logOutput = new SyncthingRunnable(mContext, SyncthingRunnable.Command.deviceid).run(true);
+        String localDeviceID = logOutput.replace("\n", "");
+        // Verify local device ID is correctly formatted.
+        if (localDeviceID.matches("^([A-Z0-9]{7}-){7}[A-Z0-9]{7}$")) {
+            changed = changeLocalDeviceName(localDeviceID) || changed;
+        }
+        changed = changeDefaultFolder() || changed;
+
+        // Save changes if we made any.
+        if (changed) {
+            saveChanges();
+        }
+    }
+
+    private void parseConfig() {
         if (!mConfigFile.canRead() && !Util.fixAppDataPermissions(mContext)) {
+            Log.w(TAG, "Failed to open config file '" + mConfigFile + "'");
             throw new OpenConfigException();
         }
         try {
