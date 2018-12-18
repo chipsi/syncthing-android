@@ -20,7 +20,7 @@ public class Device {
      */
     public String getDisplayName() {
         return (TextUtils.isEmpty(name))
-                ? deviceID.substring(0, 7)
+                ? (TextUtils.isEmpty(deviceID) ? "" : deviceID.substring(0, 7))
                 : name;
     }
 }

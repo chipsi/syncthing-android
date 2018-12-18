@@ -78,6 +78,8 @@ public class Folder {
 
     @Override
     public String toString() {
-        return !TextUtils.isEmpty(label) ? label : id;
+        return (TextUtils.isEmpty(label))
+                ? (TextUtils.isEmpty(id) ? "" : id)
+                : label;
     }
 }
