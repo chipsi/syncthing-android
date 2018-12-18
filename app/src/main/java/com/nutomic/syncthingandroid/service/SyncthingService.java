@@ -8,6 +8,7 @@ import android.Manifest;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -796,7 +797,14 @@ public class SyncthingService extends Service {
 
         // Start syncthing after export if run conditions apply.
         if (mLastDeterminedShouldRun) {
-            launchStartupTask(SyncthingRunnable.Command.main);
+            Handler mainLooper = new Handler(Looper.getMainLooper());
+            Runnable launchStartupTaskRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    launchStartupTask(SyncthingRunnable.Command.main);
+                }
+            };
+            mainLooper.post(launchStartupTaskRunnable);
         }
         return failSuccess;
     }
@@ -952,7 +960,14 @@ public class SyncthingService extends Service {
 
         // Start syncthing after import if run conditions apply.
         if (mLastDeterminedShouldRun) {
-            launchStartupTask(SyncthingRunnable.Command.main);
+            Handler mainLooper = new Handler(Looper.getMainLooper());
+            Runnable launchStartupTaskRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    launchStartupTask(SyncthingRunnable.Command.main);
+                }
+            };
+            mainLooper.post(launchStartupTaskRunnable);
         }
         return failSuccess;
     }
