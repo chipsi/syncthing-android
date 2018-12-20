@@ -676,13 +676,13 @@ public class SyncthingService extends Service {
         mCurrentState = newState;
         mHandler.post(() -> {
             mNotificationHandler.updatePersistentNotification(this);
-            for (Iterator<OnServiceStateChangeListener> i = mOnServiceStateChangeListeners.iterator();
-                 i.hasNext(); ) {
-                OnServiceStateChangeListener listener = i.next();
+            Iterator<OnServiceStateChangeListener> it = mOnServiceStateChangeListeners.iterator();
+            while (it.hasNext()) {
+                OnServiceStateChangeListener listener = it.next();
                 if (listener != null) {
                     listener.onServiceStateChange(mCurrentState);
                 } else {
-                    i.remove();
+                    it.remove();
                 }
             }
         });
