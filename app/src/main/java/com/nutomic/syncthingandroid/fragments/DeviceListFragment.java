@@ -162,9 +162,7 @@ public class DeviceListFragment extends ListFragment implements SyncthingService
         mAdapter.clear();
         Collections.sort(devices, DEVICES_COMPARATOR);
         mAdapter.addAll(devices);
-        if (mServiceState == SyncthingService.State.ACTIVE) {
-            mAdapter.updateDeviceStatus(restApi);
-        }
+        mAdapter.updateDeviceStatus(restApi);
         mAdapter.notifyDataSetChanged();
         setListShown(true);
     }

@@ -59,6 +59,7 @@ public class DevicesAdapter extends ArrayAdapter<Device> {
         }
 
         if (conn == null) {
+            // Syncthing is not running.
             rateInOutView.setVisibility(GONE);
             status.setVisibility(GONE);
             status.setText(r.getString(R.string.device_state_unknown));
@@ -102,7 +103,8 @@ public class DevicesAdapter extends ArrayAdapter<Device> {
      */
     public void updateDeviceStatus(RestApi restApi) {
         if (restApi == null) {
-            Log.e(TAG, "updateDeviceStatus: restApi == null");
+            // Syncthing is not running. Clear last state.
+            mConnections = null;
             return;
         }
         for (int i = 0; i < getCount(); i++) {
@@ -112,6 +114,7 @@ public class DevicesAdapter extends ArrayAdapter<Device> {
 
     private void onReceiveConnections(Connections connections) {
         mConnections = connections;
+        // This will invoke "getView" for all elements.
         notifyDataSetChanged();
     }
 }
