@@ -106,7 +106,6 @@ public class MainActivity extends SyncthingActivity
     public void onServiceStateChange(SyncthingService.State currentState) {
         if (currentState != mSyncthingServiceState) {
             mSyncthingServiceState = currentState;
-            updateViewPager();
         }
 
         switch (currentState) {
