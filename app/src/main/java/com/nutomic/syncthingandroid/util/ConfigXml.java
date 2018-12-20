@@ -254,6 +254,9 @@ public class ConfigXml {
             }
         }
 
+        // Disable "startBrowser" because it applies to desktop environments and cannot start a mobile browser app.
+        changed = setConfigElement(options, "startBrowser", "false") || changed;
+
         // Save changes if we made any.
         if (changed) {
             saveChanges();
@@ -464,7 +467,7 @@ public class ConfigXml {
             return;
         }
 
-        Log.i(TAG, "Writing updated config file");
+        Log.i(TAG, "Saving config file");
         File mConfigTempFile = Constants.getConfigTempFile(mContext);
         try {
             // Write XML header.
