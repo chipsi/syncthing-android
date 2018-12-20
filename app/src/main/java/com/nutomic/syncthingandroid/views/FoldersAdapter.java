@@ -77,6 +77,18 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
             return;
         }
 
+        int drawableId = R.drawable.ic_folder_black_24dp_active;
+        switch (folder.type) {
+            case Constants.FOLDER_TYPE_RECEIVE_ONLY:
+                drawableId = R.drawable.ic_folder_receive_only;
+                break;
+            case Constants.FOLDER_TYPE_SEND_ONLY:
+                drawableId = R.drawable.ic_folder_send_only;
+                break;
+            default:
+        }
+        binding.openFolder.setImageResource(drawableId);
+
         long neededItems = folderStatus.needFiles + folderStatus.needDirectories + folderStatus.needSymlinks + folderStatus.needDeletes;
         boolean outOfSync = folderStatus.state.equals("idle") && neededItems > 0;
         boolean overrideButtonVisible = folder.type.equals(Constants.FOLDER_TYPE_SEND_ONLY) && outOfSync;
