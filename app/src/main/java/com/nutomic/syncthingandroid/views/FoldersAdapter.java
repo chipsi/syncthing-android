@@ -145,7 +145,7 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
      * Requests updated folder status from the api for all visible items.
      */
     public void updateFolderStatus(RestApi restApi) {
-        if (restApi == null) {
+        if (restApi == null || !restApi.isConfigLoaded()) {
             // Syncthing is not running. Clear last state.
             mLocalFolderStatuses.clear();
             return;

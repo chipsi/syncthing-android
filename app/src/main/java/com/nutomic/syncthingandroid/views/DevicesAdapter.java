@@ -102,7 +102,7 @@ public class DevicesAdapter extends ArrayAdapter<Device> {
      * Requests new connection info for all devices visible in listView.
      */
     public void updateDeviceStatus(RestApi restApi) {
-        if (restApi == null) {
+        if (restApi == null || !restApi.isConfigLoaded()) {
             // Syncthing is not running. Clear last state.
             mConnections = null;
             return;
