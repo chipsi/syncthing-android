@@ -508,6 +508,15 @@ public class ConfigXml {
                 device.name = getAttributeOrDefault(r, "name", "");
                 device.paused = getContentOrDefault(r.getElementsByTagName("paused").item(0), false);
 
+                // Addresses
+                device.addresses = new ArrayList<>();
+                NodeList nodeAddresses = r.getElementsByTagName("address");
+                for (int j = 0; j < nodeAddresses.getLength(); j++) {
+                    String address = getContentOrDefault(nodeAddresses.item(j), "");
+                    device.addresses.add(address);
+                    // Log.v(TAG, "address=" + address);
+                }
+
                 // For testing purposes only.
                 // Log.v(TAG, "device.name=" + device.name + "/" +"device.id=" + device.deviceID + "/" + "device.paused=" + device.paused);
 
