@@ -499,7 +499,7 @@ public class RestApi {
      *
      * @param includeLocal True if the local device should be included in the result.
      */
-    public List<Device> getDevices(boolean includeLocal) {
+    public List<Device> getDevices(Boolean includeLocal) {
         List<Device> devices;
         synchronized (mConfigLock) {
             devices = deepCopy(mConfig.devices, new TypeToken<List<Device>>(){}.getType());

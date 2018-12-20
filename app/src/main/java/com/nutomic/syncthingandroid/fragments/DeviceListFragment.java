@@ -144,7 +144,7 @@ public class DeviceListFragment extends ListFragment implements SyncthingService
             // Syncthing is not running or REST API is not available yet.
             ConfigXml configXml = new ConfigXml(activity);
             configXml.loadConfig();
-            devices = configXml.getDevices();
+            devices = configXml.getDevices(false);
         } else {
             // Syncthing is running and REST API is available.
             devices = restApi.getDevices(false);

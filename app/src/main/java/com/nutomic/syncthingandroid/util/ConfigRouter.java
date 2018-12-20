@@ -44,15 +44,15 @@ public class ConfigRouter {
         return restApi.getFolders();
     }
 
-    public List<Device> getDevicesWithoutSelf(RestApi restApi) {
+    public List<Device> getDevices(RestApi restApi, Boolean includeLocal) {
         if (restApi == null || !restApi.isConfigLoaded()) {
             // Syncthing is not running or REST API is not (yet) available.
             configXml.loadConfig();
-            return configXml.getDevices();
+            return configXml.getDevices(includeLocal);
         }
 
         // Syncthing is running and REST API is available.
-        return restApi.getDevices(false);
+        return restApi.getDevices(includeLocal);
     }
 
     /**
