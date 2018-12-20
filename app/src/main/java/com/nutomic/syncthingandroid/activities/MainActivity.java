@@ -182,7 +182,7 @@ public class MainActivity extends SyncthingActivity
             if (savedInstanceState.getBoolean(IS_SHOWING_RESTART_DIALOG)){
                 showRestartDialog();
             }
-            if(savedInstanceState.getBoolean(IS_QRCODE_DIALOG_DISPLAYED)) {
+            if (savedInstanceState.getBoolean(IS_QRCODE_DIALOG_DISPLAYED)) {
                 showQrCodeDialog(savedInstanceState.getString(DEVICEID_KEY), savedInstanceState.getParcelable(QRCODE_BITMAP_KEY));
             }
         } else {
@@ -336,7 +336,7 @@ public class MainActivity extends SyncthingActivity
 
         outState.putInt("currentTab", mViewPager.getCurrentItem());
         outState.putBoolean(IS_SHOWING_RESTART_DIALOG, mRestartDialog != null && mRestartDialog.isShowing());
-        if(mQrCodeDialog != null && mQrCodeDialog.isShowing()) {
+        if (mQrCodeDialog != null && mQrCodeDialog.isShowing()) {
             outState.putBoolean(IS_QRCODE_DIALOG_DISPLAYED, true);
             ImageView qrCode = mQrCodeDialog.findViewById(R.id.qrcode_image_view);
             TextView deviceID = mQrCodeDialog.findViewById(R.id.device_id);
