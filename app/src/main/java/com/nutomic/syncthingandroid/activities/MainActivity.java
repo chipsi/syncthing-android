@@ -97,6 +97,9 @@ public class MainActivity extends SyncthingActivity
 
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout          mDrawerLayout;
+
+    private Boolean oneTimeShot = true;
+
     @Inject SharedPreferences mPreferences;
 
     /**
@@ -104,8 +107,10 @@ public class MainActivity extends SyncthingActivity
      */
     @Override
     public void onServiceStateChange(SyncthingService.State currentState) {
-        if (currentState != mSyncthingServiceState) {
-            mSyncthingServiceState = currentState;
+        mSyncthingServiceState = currentState;
+        if (oneTimeShot) {
+            updateViewPager();
+            oneTimeShot = false;
         }
 
         switch (currentState) {
@@ -177,15 +182,12 @@ public class MainActivity extends SyncthingActivity
         }
 
         if (savedInstanceState != null) {
-            mViewPager.setCurrentItem(savedInstanceState.getInt("currentTab"));
             if (savedInstanceState.getBoolean(IS_SHOWING_RESTART_DIALOG)){
                 showRestartDialog();
             }
             if (savedInstanceState.getBoolean(IS_QRCODE_DIALOG_DISPLAYED)) {
                 showQrCodeDialog(savedInstanceState.getString(DEVICEID_KEY), savedInstanceState.getParcelable(QRCODE_BITMAP_KEY));
             }
-        } else {
-            updateViewPager();
         }
 
         fm.beginTransaction().replace(R.id.drawer, mDrawerFragment).commit();
@@ -296,9 +298,9 @@ public class MainActivity extends SyncthingActivity
         SyncthingService mSyncthingService = getService();
         if (mSyncthingService != null) {
             mSyncthingService.unregisterOnServiceStateChangeListener(this);
+            mSyncthingService.unregisterOnServiceStateChangeListener(mDrawerFragment);
             mSyncthingService.unregisterOnServiceStateChangeListener(mFolderListFragment);
             mSyncthingService.unregisterOnServiceStateChangeListener(mDeviceListFragment);
-            mSyncthingService.unregisterOnServiceStateChangeListener(mDrawerFragment);
             mSyncthingService.unregisterOnServiceStateChangeListener(mStatusFragment);
         }
     }
@@ -309,9 +311,9 @@ public class MainActivity extends SyncthingActivity
         SyncthingServiceBinder syncthingServiceBinder = (SyncthingServiceBinder) iBinder;
         SyncthingService syncthingService = syncthingServiceBinder.getService();
         syncthingService.registerOnServiceStateChangeListener(this);
+        syncthingService.registerOnServiceStateChangeListener(mDrawerFragment);
         syncthingService.registerOnServiceStateChangeListener(mFolderListFragment);
         syncthingService.registerOnServiceStateChangeListener(mDeviceListFragment);
-        syncthingService.registerOnServiceStateChangeListener(mDrawerFragment);
         syncthingService.registerOnServiceStateChangeListener(mStatusFragment);
     }
 
@@ -331,9 +333,7 @@ public class MainActivity extends SyncthingActivity
         putFragment.accept(mFolderListFragment);
         putFragment.accept(mDeviceListFragment);
         putFragment.accept(mStatusFragment);
-        putFragment.accept(mDrawerFragment);
 
-        outState.putInt("currentTab", mViewPager.getCurrentItem());
         outState.putBoolean(IS_SHOWING_RESTART_DIALOG, mRestartDialog != null && mRestartDialog.isShowing());
         if (mQrCodeDialog != null && mQrCodeDialog.isShowing()) {
             outState.putBoolean(IS_QRCODE_DIALOG_DISPLAYED, true);
