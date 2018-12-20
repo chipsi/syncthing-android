@@ -349,7 +349,9 @@ public class ConfigXml {
         for (int i = 0; i < nodeDevices.getLength(); i++) {
             Element r = (Element) nodeDevices.item(i);
             Device device = new Device();
+            device.compression = getAttributeOrDefault(r, "compression", "metadata");
             device.deviceID = getAttributeOrDefault(r, "id", "");
+            device.introducer =  getAttributeOrDefault(r, "introducer", false);
             device.name = getAttributeOrDefault(r, "name", "");
             device.paused = getContentOrDefault(r.getElementsByTagName("paused").item(0), false);
             // For testing purposes only.
