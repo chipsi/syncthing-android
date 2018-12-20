@@ -211,31 +211,21 @@ public class MainActivity extends SyncthingActivity
      * Updates the ViewPager to show tabs depending on the service state.
      */
     private void updateViewPager() {
-        Boolean isServiceActive = mSyncthingServiceState == SyncthingService.State.ACTIVE;
-        final int numPages = (isServiceActive ? 3 : 1);
+        final int numPages = 3;
         FragmentStatePagerAdapter mSectionsPagerAdapter =
                 new FragmentStatePagerAdapter(getSupportFragmentManager()) {
 
             @Override
             public Fragment getItem(int position) {
-                if (isServiceActive) {
-                    switch (position) {
-                        case 0:
-                            return mFolderListFragment;
-                        case 1:
-                            return mDeviceListFragment;
-                        case 2:
-                            return mStatusFragment;
-                        default:
-                            return null;
-                    }
-                } else {
-                    switch (position) {
-                        case 0:
-                            return mStatusFragment;
-                        default:
-                            return null;
-                    }
+                switch (position) {
+                    case 0:
+                        return mFolderListFragment;
+                    case 1:
+                        return mDeviceListFragment;
+                    case 2:
+                        return mStatusFragment;
+                    default:
+                        return null;
                 }
             }
 
@@ -251,24 +241,15 @@ public class MainActivity extends SyncthingActivity
 
             @Override
             public CharSequence getPageTitle(int position) {
-                if (isServiceActive) {
-                    switch (position) {
-                        case 0:
-                            return getResources().getString(R.string.folders_fragment_title);
-                        case 1:
-                            return getResources().getString(R.string.devices_fragment_title);
-                        case 2:
-                            return getResources().getString(R.string.status_fragment_title);
-                        default:
-                            return String.valueOf(position);
-                    }
-                } else {
-                    switch (position) {
-                        case 0:
-                            return getResources().getString(R.string.status_fragment_title);
-                        default:
-                            return String.valueOf(position);
-                        }
+                switch (position) {
+                    case 0:
+                        return getResources().getString(R.string.folders_fragment_title);
+                    case 1:
+                        return getResources().getString(R.string.devices_fragment_title);
+                    case 2:
+                        return getResources().getString(R.string.status_fragment_title);
+                    default:
+                        return String.valueOf(position);
                 }
             }
         };
