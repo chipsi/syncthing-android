@@ -36,6 +36,7 @@ import com.nutomic.syncthingandroid.service.Constants;
 import com.nutomic.syncthingandroid.service.RestApi;
 import com.nutomic.syncthingandroid.service.SyncthingService;
 import com.nutomic.syncthingandroid.SyncthingApp;
+import com.nutomic.syncthingandroid.util.ConfigRouter;
 import com.nutomic.syncthingandroid.util.FileUtils;
 import com.nutomic.syncthingandroid.util.TextWatcherAdapter;
 import com.nutomic.syncthingandroid.util.Util;
@@ -85,6 +86,7 @@ public class FolderActivity extends SyncthingActivity
     private static final String FOLDER_MARKER_NAME = ".stfolder";
     // private static final String IGNORE_FILE_NAME = ".stignore";
 
+    private ConfigRouter mConfig;
     private Folder mFolder;
     // Contains SAF readwrite access URI on API level >= Build.VERSION_CODES.LOLLIPOP (21)
     private Uri mFolderUri = null;
@@ -166,6 +168,8 @@ public class FolderActivity extends SyncthingActivity
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        mConfig = new ConfigRouter(FolderActivity.this);
+
         super.onCreate(savedInstanceState);
         ((SyncthingApp) getApplication()).component().inject(this);
         setContentView(R.layout.fragment_folder);
@@ -384,14 +388,9 @@ public class FolderActivity extends SyncthingActivity
 
     @Override
     public void onServiceStateChange(SyncthingService.State currentState) {
-        if (currentState != ACTIVE) {
-            finish();
-            return;
-        }
-
         if (!mIsCreateMode) {
-            RestApi restApi = getApi();     // restApi != null because of State.ACTIVE
-            List<Folder> folders = restApi.getFolders();
+            RestApi restApi = getApi();
+            List<Folder> folders = mConfig.getFolders(restApi);
             String passedId = getIntent().getStringExtra(EXTRA_FOLDER_ID);
             mFolder = null;
             for (Folder currentFolder : folders) {
@@ -405,7 +404,7 @@ public class FolderActivity extends SyncthingActivity
                 finish();
                 return;
             }
-            restApi.getFolderIgnoreList(mFolder.id, this::onReceiveFolderIgnoreList);
+            mConfig.getFolderIgnoreList(restApi, mFolder, this::onReceiveFolderIgnoreList);
             checkWriteAndUpdateUI();
         }
         if (getIntent().hasExtra(EXTRA_DEVICE_ID)) {
@@ -471,13 +470,14 @@ public class FolderActivity extends SyncthingActivity
         mCustomSyncConditionsDialog.setEnabled(mCustomSyncConditionsSwitch.isChecked());
 
         // Populate devicesList.
-        List<Device> devicesList = getApi().getDevices(false);
+        RestApi restApi = getApi();
+        List<Device> devicesList = mConfig.getDevices(restApi, false);
         mDevicesContainer.removeAllViews();
         if (devicesList.isEmpty()) {
             addEmptyDeviceListView();
         } else {
-            for (Device n : devicesList) {
-                addDeviceViewAndSetListener(n, getLayoutInflater());
+            for (Device device : devicesList) {
+                addDeviceViewAndSetListener(device, getLayoutInflater());
             }
         }
 
