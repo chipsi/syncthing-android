@@ -458,8 +458,36 @@ public class ConfigXml {
      * Gets ignore list for given folder.
      */
     public void getFolderIgnoreList(Folder folder, OnResultListener1<FolderIgnoreList> listener) {
-        // ToDo Implementation.
         FolderIgnoreList folderIgnoreList = new FolderIgnoreList();
+        File file;
+        FileInputStream fileInputStream = null;
+        try {
+            file = new File(folder.path, ".stignore");
+            if (file.exists()) {
+                fileInputStream = new FileInputStream(file);
+                InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8");
+                byte[] data = new byte[(int) file.length()];
+                fileInputStream.read(data);
+                folderIgnoreList.ignore = new String(data, "UTF-8").split("\n");
+            } else {
+                // File not found.
+                Log.w(TAG, "getFolderIgnoreList: File missing " + file);
+                /**
+                 * Don't fail as the file might be expectedly missing when users didn't
+                 * set ignores in the past storyline of that folder.
+                 */
+            }
+        } catch (IOException e) {
+            Log.e(TAG, "getFolderIgnoreList: Failed to read '" + folder.path + "/.stignore' #1", e);
+        } finally {
+            try {
+                if (fileInputStream != null) {
+                    fileInputStream.close();
+                }
+            } catch (IOException e) {
+                Log.e(TAG, "getFolderIgnoreList: Failed to read '" + folder.path + "/.stignore' #2", e);
+            }
+        }
         listener.onResult(folderIgnoreList);
     }
 
