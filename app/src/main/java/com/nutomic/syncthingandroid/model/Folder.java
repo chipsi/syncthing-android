@@ -26,9 +26,9 @@ public class Folder {
     public boolean autoNormalize = true;
     public MinDiskFree minDiskFree;
     public Versioning versioning;
-    public int copiers;
+    public int copiers = 0;
     public int pullerMaxPendingKiB;
-    public int hashers;
+    public int hashers = 0;
     public String order = "random";
     public boolean ignoreDelete;
     public int scanProgressIntervalS;
