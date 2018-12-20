@@ -34,6 +34,7 @@ import com.nutomic.syncthingandroid.service.RestApi;
 import com.nutomic.syncthingandroid.service.SyncthingService;
 import com.nutomic.syncthingandroid.SyncthingApp;
 import com.nutomic.syncthingandroid.util.Compression;
+import com.nutomic.syncthingandroid.util.ConfigRouter;
 import com.nutomic.syncthingandroid.util.TextWatcherAdapter;
 import com.nutomic.syncthingandroid.util.Util;
 
@@ -74,6 +75,8 @@ public class DeviceActivity extends SyncthingActivity
     private static final String IS_SHOWING_DELETE_DIALOG = "DELETE_FOLDER_DIALOG_STATE";
 
     private static final List<String> DYNAMIC_ADDRESS = Collections.singletonList("dynamic");
+
+    private ConfigRouter mConfig;
 
     private Device mDevice;
 
@@ -186,6 +189,8 @@ public class DeviceActivity extends SyncthingActivity
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        mConfig = new ConfigRouter(DeviceActivity.this);
+
         super.onCreate(savedInstanceState);
         ((SyncthingApp) getApplication()).component().inject(this);
         setContentView(R.layout.fragment_device);
@@ -338,14 +343,9 @@ public class DeviceActivity extends SyncthingActivity
 
     @Override
     public void onServiceStateChange(SyncthingService.State currentState) {
-        if (currentState != ACTIVE) {
-            finish();
-            return;
-        }
-
         if (!mIsCreateMode) {
-            RestApi restApi = getApi();     // restApi != null because of State.ACTIVE
-            List<Device> devices = restApi.getDevices(false);
+            RestApi restApi = getApi();
+            List<Device> devices = mConfig.getDevices(restApi, false);
             String passedId = getIntent().getStringExtra(EXTRA_DEVICE_ID);
             mDevice = null;
             for (Device currentDevice : devices) {
@@ -501,7 +501,7 @@ public class DeviceActivity extends SyncthingActivity
      */
     private void updateDevice() {
         if (mIsCreateMode) {
-            // If we are about to create this folder, we cannot update via restApi.
+            // If we are about to create this device, we cannot update via restApi.
             return;
         }
         if (mDevice == null) {
@@ -534,6 +534,9 @@ public class DeviceActivity extends SyncthingActivity
     }
 
     private String displayableAddresses() {
+        if (mDevice.addresses == null) {
+            return "";
+        }
         List<String> list = DYNAMIC_ADDRESS.equals(mDevice.addresses)
                 ? DYNAMIC_ADDRESS
                 : mDevice.addresses;
