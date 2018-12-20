@@ -21,7 +21,7 @@ public class Folder {
     public boolean fsWatcherEnabled = true;
     public int fsWatcherDelayS = 10;
     private List<Device> devices = new ArrayList<>();
-    public int rescanIntervalS;
+    public int rescanIntervalS = 3600;
     public final boolean ignorePerms = true;
     public boolean autoNormalize = true;
     public MinDiskFree minDiskFree;
@@ -29,7 +29,7 @@ public class Folder {
     public int copiers;
     public int pullerMaxPendingKiB;
     public int hashers;
-    public String order;
+    public String order = "random";
     public boolean ignoreDelete;
     public int scanProgressIntervalS;
     public int pullerPauseS;
