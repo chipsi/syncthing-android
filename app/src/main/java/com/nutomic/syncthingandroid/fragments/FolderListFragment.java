@@ -149,9 +149,7 @@ public class FolderListFragment extends ListFragment implements SyncthingService
         mAdapter.setNotifyOnChange(false);
         mAdapter.clear();
         mAdapter.addAll(folders);
-        if (mServiceState == SyncthingService.State.ACTIVE) {
-            mAdapter.updateFolderStatus(restApi);
-        }
+        mAdapter.updateFolderStatus(restApi);
         mAdapter.notifyDataSetChanged();
         setListShown(true);
     }
