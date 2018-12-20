@@ -401,7 +401,7 @@ public class SyncthingService extends Service {
         }
 
         // Check if the devices are available from config.
-        List<Device> devices = configXml.getDevices();
+        List<Device> devices = configXml.getDevices(false);
         if (devices != null) {
             for (Device device : devices) {
                 // Log.v(TAG, "onSyncPreconditionChanged: Processing config of device.id=" + device.deviceID);
