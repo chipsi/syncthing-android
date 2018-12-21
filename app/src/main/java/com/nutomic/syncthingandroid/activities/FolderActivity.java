@@ -156,7 +156,7 @@ public class FolderActivity extends SyncthingActivity
                 case R.id.device_toggle:
                     Device device = (Device) view.getTag();
                     if (isChecked) {
-                        mFolder.addDevice(device.deviceID);
+                        mFolder.addDevice(device);
                     } else {
                         mFolder.removeDevice(device.deviceID);
                     }
@@ -407,8 +407,12 @@ public class FolderActivity extends SyncthingActivity
             mConfig.getFolderIgnoreList(restApi, mFolder, this::onReceiveFolderIgnoreList);
             checkWriteAndUpdateUI();
         }
+
+        // If the extra is set, we should automatically share the current folder with the given device.
         if (getIntent().hasExtra(EXTRA_DEVICE_ID)) {
-            mFolder.addDevice(getIntent().getStringExtra(EXTRA_DEVICE_ID));
+            Device device = new Device();
+            device.deviceID = getIntent().getStringExtra(EXTRA_DEVICE_ID);
+            mFolder.addDevice(device);
             mFolderNeedsToUpdate = true;
         }
 

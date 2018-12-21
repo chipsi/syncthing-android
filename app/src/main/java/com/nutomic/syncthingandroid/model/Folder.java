@@ -52,9 +52,10 @@ public class Folder {
         public String unit;
     }
 
-    public void addDevice(String deviceId) {
+    public void addDevice(final Device device) {
         Device d = new Device();
-        d.deviceID = deviceId;
+        d.deviceID = device.deviceID;
+        d.introducedBy = device.introducedBy;
         devices.add(d);
     }
 

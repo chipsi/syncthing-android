@@ -69,7 +69,7 @@ public class DeviceActivity extends SyncthingActivity
     public static final String EXTRA_IS_CREATE =
             "com.nutomic.syncthingandroid.activities.DeviceActivity.IS_CREATE";
 
-    private static final String TAG = "DeviceSettingsFragment";
+    private static final String TAG = "DeviceActivity";
     private static final String IS_SHOWING_DISCARD_DIALOG = "DISCARD_FOLDER_DIALOG_STATE";
     private static final String IS_SHOWING_COMPRESSION_DIALOG = "COMPRESSION_FOLDER_DIALOG_STATE";
     private static final String IS_SHOWING_DELETE_DIALOG = "DELETE_FOLDER_DIALOG_STATE";
@@ -427,6 +427,7 @@ public class DeviceActivity extends SyncthingActivity
                             .show();
                     return true;
                 }
+                // ToDo - Implement ConfigRouter here.
                 getApi().addDevice(mDevice, error ->
                         Toast.makeText(this, error, Toast.LENGTH_LONG).show());
                 finish();
@@ -474,6 +475,9 @@ public class DeviceActivity extends SyncthingActivity
         }
     }
 
+    /**
+     * Used in mIsCreateMode.
+     */
     private void initDevice() {
         mDevice = new Device();
         mDevice.name = getIntent().getStringExtra(EXTRA_DEVICE_NAME);
@@ -482,6 +486,7 @@ public class DeviceActivity extends SyncthingActivity
         mDevice.compression = METADATA.getValue(this);
         mDevice.introducer = false;
         mDevice.paused = false;
+        mDevice.introducedBy = "";
     }
 
     private void prepareEditMode() {
@@ -508,6 +513,7 @@ public class DeviceActivity extends SyncthingActivity
             Log.e(TAG, "updateDevice: mDevice == null");
             return;
         }
+        // Log.v(TAG, "deviceID=" + mDevice.deviceID + ", introducedBy=" + mDevice.introducedBy);
 
         // Save device specific preferences.
         Log.v(TAG, "updateDevice: mDevice.deviceID = \'" + mDevice.deviceID + "\'");
