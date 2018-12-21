@@ -442,6 +442,32 @@ public class ConfigXml {
         return folders;
     }
 
+    public void updateFolder(final Folder folder) {
+        NodeList nodeFolders = mConfig.getDocumentElement().getElementsByTagName("folder");
+        for (int i = 0; i < nodeFolders.getLength(); i++) {
+            Element r = (Element) nodeFolders.item(i);
+            if (folder.id.equals(getAttributeOrDefault(r, "id", ""))) {
+                // Found folder node to update.
+                r.setAttribute("label", folder.label);
+                r.setAttribute("path", folder.path);
+                r.setAttribute("type", folder.type);
+                r.setAttribute("fsWatcherEnabled", Boolean.toString(folder.fsWatcherEnabled));
+                r.setAttribute("rescanIntervalS", Integer.toString(folder.rescanIntervalS));
+
+                setConfigElement(r, "copiers", Integer.toString(folder.copiers));
+                setConfigElement(r, "hashers", Integer.toString(folder.hashers));
+                setConfigElement(r, "order", folder.order);
+                setConfigElement(r, "paused", Boolean.toString(folder.paused));
+
+                // ToDo : Devices
+
+                // ToDo : Versioning
+
+                break;
+            }
+        }
+    }
+
     public void setFolderPause(String folderId, Boolean paused) {
         NodeList nodeFolders = mConfig.getDocumentElement().getElementsByTagName("folder");
         for (int i = 0; i < nodeFolders.getLength(); i++) {
@@ -529,6 +555,29 @@ public class ConfigXml {
         }
         Collections.sort(devices, DEVICES_COMPARATOR);
         return devices;
+    }
+
+    public void updateDevice(Device device) {
+        // Prevent enumerating "<device>" tags below "<folder>" nodes by enumerating child nodes manually.
+        NodeList childNodes = mConfig.getDocumentElement().getChildNodes();
+        for (int i = 0; i < childNodes.getLength(); i++) {
+            Node node = childNodes.item(i);
+            if (node.getNodeName().equals("device")) {
+                Element r = (Element) node;
+                if (device.deviceID.equals(getAttributeOrDefault(r, "id", ""))) {
+                    // Found device to update.
+                    r.setAttribute("compression", device.compression);
+                    r.setAttribute("introducer", Boolean.toString(device.introducer));
+                    r.setAttribute("name", device.name);
+
+                    setConfigElement(r, "paused", Boolean.toString(device.paused));
+
+                    // ToDo : Addresses
+
+                    break;
+                }
+            }
+        }
     }
 
     public void setDevicePause(String deviceId, Boolean paused) {
