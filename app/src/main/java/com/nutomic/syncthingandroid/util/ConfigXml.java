@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -486,7 +487,36 @@ public class ConfigXml {
                     elementDevice.setAttribute("introducedBy", device.introducedBy);
                 }
 
-                // ToDo : Versioning
+                // Versioning
+                // Pass 1: Remove all versioning nodes (usually one)
+                /*
+                NodeList nlVersioning = r.getElementsByTagName("versioning");
+                for (int j = nlVersioning.getLength() - 1; j >= 0; j--) {
+                    Log.v(TAG, "updateFolder: nodeVersioning: Removing versioning node");
+                    removeChildElementFromTextNode(r, (Element) nlVersioning.item(j));
+                }
+                */
+                Element elementVersioning = (Element) r.getElementsByTagName("versioning").item(0);
+                if (elementVersioning != null) {
+                    Log.v(TAG, "updateFolder: nodeVersioning: Removing versioning node");
+                    removeChildElementFromTextNode(r, elementVersioning);
+                }
+
+                // Pass 2: Add versioning node.
+                Node nodeVersioning = mConfig.createElement("versioning");
+                r.appendChild(nodeVersioning);
+                elementVersioning = (Element) nodeVersioning;
+                if (!TextUtils.isEmpty(folder.versioning.type)) {
+                    elementVersioning.setAttribute("type", folder.versioning.type);
+                    for (Map.Entry<String, String> param : folder.versioning.params.entrySet()) {
+                        Log.v(TAG, "updateFolder: nodeVersioning: Adding param key=" + param.getKey() + ", val=" + param.getValue());
+                        Node nodeParam = mConfig.createElement("param");
+                        elementVersioning.appendChild(nodeParam);
+                        Element elementParam = (Element) nodeParam;
+                        elementParam.setAttribute("key", param.getKey());
+                        elementParam.setAttribute("val", param.getValue());
+                    }
+                }
 
                 break;
             }
