@@ -429,7 +429,8 @@ public class DeviceActivity extends SyncthingActivity
                 }
                 // ToDo - Implement ConfigRouter here.
                 getApi().addDevice(mDevice, error ->
-                        Toast.makeText(this, error, Toast.LENGTH_LONG).show());
+                    Toast.makeText(this, error, Toast.LENGTH_LONG).show()
+                );
                 finish();
                 return true;
             case R.id.share_device_id:
@@ -456,8 +457,8 @@ public class DeviceActivity extends SyncthingActivity
         return new android.app.AlertDialog.Builder(this)
                 .setMessage(R.string.remove_device_confirm)
                 .setPositiveButton(android.R.string.yes, (dialogInterface, i) -> {
-                    // ToDo - Implement ConfigRouter here.
-                    getApi().removeDevice(mDevice.deviceID);
+                    mConfig.removeDevice(getApi(), mDevice.deviceID);
+                    mDeviceNeedsToUpdate = false;
                     finish();
                 })
                 .setNegativeButton(android.R.string.no, null)

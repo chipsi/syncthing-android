@@ -523,6 +523,19 @@ public class ConfigXml {
         }
     }
 
+    public void removeFolder(String folderId) {
+        NodeList nodeFolders = mConfig.getDocumentElement().getElementsByTagName("folder");
+        for (int i = nodeFolders.getLength() - 1; i >= 0; i--) {
+            Element r = (Element) nodeFolders.item(i);
+            if (folderId.equals(getAttributeOrDefault(r, "id", ""))) {
+                // Found folder node to remove.
+                Log.v(TAG, "removeFolder: Removing folder node, folderId=" + folderId);
+                removeChildElementFromTextNode((Element) r.getParentNode(), r);
+                break;
+            }
+        }
+    }
+
     public void setFolderPause(String folderId, Boolean paused) {
         NodeList nodeFolders = mConfig.getDocumentElement().getElementsByTagName("folder");
         for (int i = 0; i < nodeFolders.getLength(); i++) {
@@ -655,6 +668,23 @@ public class ConfigXml {
                         }
                     }
 
+                    break;
+                }
+            }
+        }
+    }
+
+    public void removeDevice(String deviceID) {
+        // Prevent enumerating "<device>" tags below "<folder>" nodes by enumerating child nodes manually.
+        NodeList childNodes = mConfig.getDocumentElement().getChildNodes();
+        for (int i = 0; i < childNodes.getLength(); i++) {
+            Node node = childNodes.item(i);
+            if (node.getNodeName().equals("device")) {
+                Element r = (Element) node;
+                if (deviceID.equals(getAttributeOrDefault(r, "id", ""))) {
+                    // Found device to remove.
+                    Log.v(TAG, "removeDevice: Removing device node, deviceID=" + deviceID);
+                    removeChildElementFromTextNode((Element) r.getParentNode(), r);
                     break;
                 }
             }

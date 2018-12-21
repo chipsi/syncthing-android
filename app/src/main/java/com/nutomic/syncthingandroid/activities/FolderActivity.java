@@ -559,11 +559,7 @@ public class FolderActivity extends SyncthingActivity
         return new AlertDialog.Builder(this)
                 .setMessage(R.string.remove_folder_confirm)
                 .setPositiveButton(android.R.string.yes, (dialogInterface, i) -> {
-                    RestApi restApi = getApi();
-                    if (restApi != null) {
-                        // ToDo - Implement ConfigRouter here.
-                        restApi.removeFolder(mFolder.id);
-                    }
+                    mConfig.removeFolder(getApi(), mFolder.id);
                     mFolderNeedsToUpdate = false;
                     finish();
                 })
