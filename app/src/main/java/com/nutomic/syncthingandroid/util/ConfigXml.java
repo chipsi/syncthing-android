@@ -557,7 +557,7 @@ public class ConfigXml {
         return devices;
     }
 
-    public void updateDevice(Device device) {
+    public void updateDevice(final Device device) {
         // Prevent enumerating "<device>" tags below "<folder>" nodes by enumerating child nodes manually.
         NodeList childNodes = mConfig.getDocumentElement().getChildNodes();
         for (int i = 0; i < childNodes.getLength(); i++) {
