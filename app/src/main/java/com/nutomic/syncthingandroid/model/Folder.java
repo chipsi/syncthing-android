@@ -59,6 +59,10 @@ public class Folder {
         devices.add(d);
     }
 
+    public List<Device> getDevices() {
+        return devices;
+    }
+
     public Device getDevice(String deviceId) {
         for (Device d : devices) {
             if (d.deviceID.equals(deviceId)) {
