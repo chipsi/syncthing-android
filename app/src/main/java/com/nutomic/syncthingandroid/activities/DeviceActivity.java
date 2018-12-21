@@ -456,6 +456,7 @@ public class DeviceActivity extends SyncthingActivity
         return new android.app.AlertDialog.Builder(this)
                 .setMessage(R.string.remove_device_confirm)
                 .setPositiveButton(android.R.string.yes, (dialogInterface, i) -> {
+                    // ToDo - Implement ConfigRouter here.
                     getApi().removeDevice(mDevice.deviceID);
                     finish();
                 })

@@ -535,6 +535,7 @@ public class FolderActivity extends SyncthingActivity
                         dfFolder.createDirectory(FOLDER_MARKER_NAME);
                     }
                 }
+                // ToDo - Implement ConfigRouter here.
                 getApi().createFolder(mFolder);
                 finish();
                 return true;
@@ -560,6 +561,7 @@ public class FolderActivity extends SyncthingActivity
                 .setPositiveButton(android.R.string.yes, (dialogInterface, i) -> {
                     RestApi restApi = getApi();
                     if (restApi != null) {
+                        // ToDo - Implement ConfigRouter here.
                         restApi.removeFolder(mFolder.id);
                     }
                     mFolderNeedsToUpdate = false;
