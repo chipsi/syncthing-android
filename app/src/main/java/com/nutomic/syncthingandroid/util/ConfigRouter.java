@@ -44,15 +44,16 @@ public class ConfigRouter {
         return restApi.getFolders();
     }
 
-    public List<Device> getDevices(RestApi restApi, Boolean includeLocal) {
+    public void updateFolder(RestApi restApi, final Folder folder) {
         if (restApi == null || !restApi.isConfigLoaded()) {
             // Syncthing is not running or REST API is not (yet) available.
             configXml.loadConfig();
-            return configXml.getDevices(includeLocal);
+            configXml.updateFolder(folder);
+            configXml.saveChanges();
         }
 
         // Syncthing is running and REST API is available.
-        return restApi.getDevices(includeLocal);
+        restApi.updateFolder(folder);       // This will send the config afterwards.
     }
 
     /**
@@ -68,6 +69,29 @@ public class ConfigRouter {
 
         // Syncthing is running and REST API is available.
         restApi.getFolderIgnoreList(folder.id, folderIgnoreList -> listener.onResult(folderIgnoreList));
+    }
+
+    public List<Device> getDevices(RestApi restApi, Boolean includeLocal) {
+        if (restApi == null || !restApi.isConfigLoaded()) {
+            // Syncthing is not running or REST API is not (yet) available.
+            configXml.loadConfig();
+            return configXml.getDevices(includeLocal);
+        }
+
+        // Syncthing is running and REST API is available.
+        return restApi.getDevices(includeLocal);
+    }
+
+    public void updateDevice(RestApi restApi, final Device device) {
+        if (restApi == null || !restApi.isConfigLoaded()) {
+            // Syncthing is not running or REST API is not (yet) available.
+            configXml.loadConfig();
+            configXml.updateDevice(device);
+            configXml.saveChanges();
+        }
+
+        // Syncthing is running and REST API is available.
+        restApi.updateDevice(device);       // This will send the config afterwards.
     }
 
 }
