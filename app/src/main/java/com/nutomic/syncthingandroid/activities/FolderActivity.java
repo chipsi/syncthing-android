@@ -515,6 +515,11 @@ public class FolderActivity extends SyncthingActivity
                             .show();
                     return true;
                 }
+                if (TextUtils.isEmpty(mFolder.label)) {
+                    Toast.makeText(this, R.string.folder_label_required, Toast.LENGTH_LONG)
+                            .show();
+                    return true;
+                }
                 if (TextUtils.isEmpty(mFolder.path)) {
                     Toast.makeText(this, R.string.folder_path_required, Toast.LENGTH_LONG)
                             .show();
@@ -535,8 +540,7 @@ public class FolderActivity extends SyncthingActivity
                         dfFolder.createDirectory(FOLDER_MARKER_NAME);
                     }
                 }
-                // ToDo - Implement ConfigRouter here.
-                getApi().createFolder(mFolder);
+                mConfig.addFolder(getApi(), mFolder);
                 finish();
                 return true;
             case R.id.remove:

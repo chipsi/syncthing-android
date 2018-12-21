@@ -154,7 +154,7 @@ public class ConfigXml {
         String localDeviceID = logOutput.replace("\n", "");
 
         // Verify that local device ID is correctly formatted.
-        if (!localDeviceID.matches("^([A-Z0-9]{7}-){7}[A-Z0-9]{7}$")) {
+        if (!isDeviceIdValid(localDeviceID)) {
             Log.w(TAG, "getLocalDeviceIDandStoreToPref: Syncthing core returned a bad formatted device ID \"" + localDeviceID + "\"");
             return "";
         }
@@ -388,7 +388,10 @@ public class ConfigXml {
             folder.label = getAttributeOrDefault(r, "label", "");
             folder.path = getAttributeOrDefault(r, "path", "");
             folder.type = getAttributeOrDefault(r, "type", Constants.FOLDER_TYPE_SEND_RECEIVE);
+            folder.autoNormalize = getAttributeOrDefault(r, "autoNormalize", true);
+            folder.fsWatcherDelayS =getAttributeOrDefault(r, "fsWatcherDelayS", 10);
             folder.fsWatcherEnabled = getAttributeOrDefault(r, "fsWatcherEnabled", true);
+            folder.ignorePerms = getAttributeOrDefault(r, "ignorePerms", true);
             folder.rescanIntervalS = getAttributeOrDefault(r, "rescanIntervalS", 3600);
 
             folder.copiers = getContentOrDefault(r.getElementsByTagName("copiers").item(0), 0);
@@ -447,6 +450,16 @@ public class ConfigXml {
         return folders;
     }
 
+    public void addFolder(final Folder folder) {
+        Log.v(TAG, "addFolder: folder.id=" + folder.id);
+        Node nodeConfig = mConfig.getDocumentElement();
+        Node nodeFolder = mConfig.createElement("folder");
+        nodeConfig.appendChild(nodeFolder);
+        Element elementFolder = (Element) nodeFolder;
+        elementFolder.setAttribute("id", folder.id);
+        updateFolder(folder);
+    }
+
     public void updateFolder(final Folder folder) {
         String localDeviceID = getLocalDeviceIDfromPref();
         NodeList nodeFolders = mConfig.getDocumentElement().getElementsByTagName("folder");
@@ -457,7 +470,10 @@ public class ConfigXml {
                 r.setAttribute("label", folder.label);
                 r.setAttribute("path", folder.path);
                 r.setAttribute("type", folder.type);
+                r.setAttribute("autoNormalize", Boolean.toString(folder.autoNormalize));
+                r.setAttribute("fsWatcherDelayS", Integer.toString(folder.fsWatcherDelayS));
                 r.setAttribute("fsWatcherEnabled", Boolean.toString(folder.fsWatcherEnabled));
+                r.setAttribute("ignorePerms", Boolean.toString(folder.ignorePerms));
                 r.setAttribute("rescanIntervalS", Integer.toString(folder.rescanIntervalS));
 
                 setConfigElement(r, "copiers", Integer.toString(folder.copiers));
@@ -632,6 +648,21 @@ public class ConfigXml {
         return devices;
     }
 
+    public void addDevice(final Device device, OnResultListener1<String> errorListener) {
+        if (!isDeviceIdValid(device.deviceID)) {
+            errorListener.onResult(mContext.getString(R.string.device_id_invalid));
+            return;
+        }
+
+        Log.v(TAG, "addDevice: deviceID=" + device.deviceID);
+        Node nodeConfig = mConfig.getDocumentElement();
+        Node nodeDevice = mConfig.createElement("device");
+        nodeConfig.appendChild(nodeDevice);
+        Element elementDevice = (Element) nodeDevice;
+        elementDevice.setAttribute("id", device.deviceID);
+        updateDevice(device);
+    }
+
     public void updateDevice(final Device device) {
         // Prevent enumerating "<device>" tags below "<folder>" nodes by enumerating child nodes manually.
         NodeList childNodes = mConfig.getDocumentElement().getChildNodes();
@@ -794,6 +825,13 @@ public class ConfigXml {
             sb.append(chars[random.nextInt(chars.length)]);
         }
         return sb.toString();
+    }
+
+    /**
+     * Returns if a syncthing device ID is correctly formatted.
+     */
+    private Boolean isDeviceIdValid(final String deviceID) {
+        return deviceID.matches("^([A-Z0-9]{7}-){7}[A-Z0-9]{7}$");
     }
 
     /**

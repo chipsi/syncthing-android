@@ -22,7 +22,7 @@ public class Folder {
     public int fsWatcherDelayS = 10;
     private List<Device> devices = new ArrayList<>();
     public int rescanIntervalS = 3600;
-    public final boolean ignorePerms = true;
+    public boolean ignorePerms = true;
     public boolean autoNormalize = true;
     public MinDiskFree minDiskFree;
     public Versioning versioning;

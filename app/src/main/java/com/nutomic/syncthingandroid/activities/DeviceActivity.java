@@ -427,9 +427,15 @@ public class DeviceActivity extends SyncthingActivity
                             .show();
                     return true;
                 }
-                // ToDo - Implement ConfigRouter here.
-                getApi().addDevice(mDevice, error ->
-                    Toast.makeText(this, error, Toast.LENGTH_LONG).show()
+                if (isEmpty(mDevice.name)) {
+                    Toast.makeText(this, R.string.device_name_required, Toast.LENGTH_LONG)
+                            .show();
+                    return true;
+                }
+                mConfig.addDevice(
+                    getApi(),
+                    mDevice,
+                    error -> Toast.makeText(this, error, Toast.LENGTH_LONG).show()
                 );
                 finish();
                 return true;

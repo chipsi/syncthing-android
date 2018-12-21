@@ -452,7 +452,7 @@ public class RestApi {
     /**
      * This is only used for new folder creation, see {@link FolderActivity}.
      */
-    public void createFolder(Folder folder) {
+    public void addFolder(Folder folder) {
         synchronized (mConfigLock) {
             // Add the new folder to the model.
             mConfig.folders.add(folder);
