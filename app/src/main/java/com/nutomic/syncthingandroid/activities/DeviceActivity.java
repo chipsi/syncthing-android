@@ -530,9 +530,27 @@ public class DeviceActivity extends SyncthingActivity
     }
 
     private List<String> persistableAddresses(CharSequence userInput) {
-        return isEmpty(userInput)
-                ? DYNAMIC_ADDRESS
-                : Arrays.asList(userInput.toString().split(" "));
+        if (isEmpty(userInput)) {
+            return DYNAMIC_ADDRESS;
+        }
+
+        /**
+         * Be fault-tolerant here.
+         * The user can write like this:
+         * tcp4://192.168.1.67:2222, dynamic
+         * tcp4://192.168.1.67:2222; dynamic
+         * tcp4://192.168.1.67:2222,dynamic
+         * tcp4://192.168.1.67:2222;dynamic
+         * tcp4://192.168.1.67:2222 dynamic
+         */
+        String input = userInput.toString();
+        input = input.replace(",", " ");
+        input = input.replace(";", " ");
+        input = input.replaceAll("\\s+", ", ");
+        // Log.v(TAG, "persistableAddresses: Cleaned user input=" + input);
+
+        // Split and return the addresses as String[].
+        return Arrays.asList(input.split(", "));
     }
 
     private String displayableAddresses() {
@@ -542,7 +560,7 @@ public class DeviceActivity extends SyncthingActivity
         List<String> list = DYNAMIC_ADDRESS.equals(mDevice.addresses)
                 ? DYNAMIC_ADDRESS
                 : mDevice.addresses;
-        return TextUtils.join(" ", list);
+        return TextUtils.join(", ", list);
     }
 
     @Override
