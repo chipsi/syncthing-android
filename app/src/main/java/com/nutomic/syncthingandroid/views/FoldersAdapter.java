@@ -62,6 +62,20 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
             mContext.startService(intent);
         });
         binding.openFolder.setOnClickListener(view -> { FileUtils.openFolder(mContext, folder.path); } );
+
+        // Update folder icon.
+        int drawableId = R.drawable.ic_folder_black_24dp_active;
+        switch (folder.type) {
+            case Constants.FOLDER_TYPE_RECEIVE_ONLY:
+                drawableId = R.drawable.ic_folder_receive_only;
+                break;
+            case Constants.FOLDER_TYPE_SEND_ONLY:
+                drawableId = R.drawable.ic_folder_send_only;
+                break;
+            default:
+        }
+        binding.openFolder.setImageResource(drawableId);
+
         updateFolderStatusView(binding, folder);
         return binding.getRoot();
     }
@@ -76,18 +90,6 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
             setTextOrHide(binding.invalid, folder.invalid);
             return;
         }
-
-        int drawableId = R.drawable.ic_folder_black_24dp_active;
-        switch (folder.type) {
-            case Constants.FOLDER_TYPE_RECEIVE_ONLY:
-                drawableId = R.drawable.ic_folder_receive_only;
-                break;
-            case Constants.FOLDER_TYPE_SEND_ONLY:
-                drawableId = R.drawable.ic_folder_send_only;
-                break;
-            default:
-        }
-        binding.openFolder.setImageResource(drawableId);
 
         long neededItems = folderStatus.needFiles + folderStatus.needDirectories + folderStatus.needSymlinks + folderStatus.needDeletes;
         boolean outOfSync = folderStatus.state.equals("idle") && neededItems > 0;
