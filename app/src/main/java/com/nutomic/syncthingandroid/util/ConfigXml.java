@@ -176,7 +176,8 @@ public class ConfigXml {
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "UTF-8");
             InputSource inputSource = new InputSource(inputStreamReader);
             inputSource.setEncoding("UTF-8");
-            DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            DocumentBuilderFactory dbfactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder db = dbfactory.newDocumentBuilder();
             if (ENABLE_VERBOSE_LOG) {
                 Log.v(TAG, "Parsing config file '" + mConfigFile + "'");
             }
@@ -401,11 +402,14 @@ public class ConfigXml {
             NodeList nodeDevices = r.getElementsByTagName("device");
             for (int j = 0; j < nodeDevices.getLength(); j++) {
                 Element elementDevice = (Element) nodeDevices.item(j);
-                String deviceID = getAttributeOrDefault(elementDevice, "id", "");
+                Device device = new Device();
+                device.deviceID = getAttributeOrDefault(elementDevice, "id", "");
 
                 // Exclude self.
-                if (!TextUtils.isEmpty(deviceID) && !deviceID.equals(localDeviceID)) {
-                    folder.addDevice(deviceID);
+                if (!TextUtils.isEmpty(device.deviceID) && !device.deviceID.equals(localDeviceID)) {
+                    device.introducedBy = getAttributeOrDefault(elementDevice, "introducedBy", "");
+                    // Log.v(TAG, "getFolders: deviceID=" + device.deviceID + ", introducedBy=" + device.introducedBy);
+                    folder.addDevice(device);
                 }
             }
 
@@ -443,6 +447,7 @@ public class ConfigXml {
     }
 
     public void updateFolder(final Folder folder) {
+        String localDeviceID = getLocalDeviceIDfromPref();
         NodeList nodeFolders = mConfig.getDocumentElement().getElementsByTagName("folder");
         for (int i = 0; i < nodeFolders.getLength(); i++) {
             Element r = (Element) nodeFolders.item(i);
@@ -459,7 +464,27 @@ public class ConfigXml {
                 setConfigElement(r, "order", folder.order);
                 setConfigElement(r, "paused", Boolean.toString(folder.paused));
 
-                // ToDo : Devices
+                // Update devices that share this folder.
+                // Pass 1: Remove all devices below that folder in XML except the local device.
+                NodeList nodeDevices = r.getElementsByTagName("device");
+                for (int j = nodeDevices.getLength() - 1; j >= 0; j--) {
+                    Element elementDevice = (Element) nodeDevices.item(j);
+                    if (!getAttributeOrDefault(elementDevice, "id", "").equals(localDeviceID)) {
+                        Log.v(TAG, "updateFolder: nodeDevices: Removing deviceID=" + getAttributeOrDefault(elementDevice, "id", ""));
+                        removeChildElementFromTextNode(r, elementDevice);
+                    }
+                }
+
+                // Pass 2: Add devices below that folder from the POJO model.
+                final List<Device> devices = folder.getDevices();
+                for (Device device : devices) {
+                    Log.v(TAG, "updateFolder: nodeDevices: Adding deviceID=" + device.deviceID);
+                    Node nodeDevice = mConfig.createElement("device");
+                    r.appendChild(nodeDevice);
+                    Element elementDevice = (Element) nodeDevice;
+                    elementDevice.setAttribute("id", device.deviceID);
+                    elementDevice.setAttribute("introducedBy", device.introducedBy);
+                }
 
                 // ToDo : Versioning
 
@@ -530,6 +555,7 @@ public class ConfigXml {
                 Device device = new Device();
                 device.compression = getAttributeOrDefault(r, "compression", "metadata");
                 device.deviceID = getAttributeOrDefault(r, "id", "");
+                device.introducedBy = getAttributeOrDefault(r, "introducedBy", "");
                 device.introducer =  getAttributeOrDefault(r, "introducer", false);
                 device.name = getAttributeOrDefault(r, "name", "");
                 device.paused = getContentOrDefault(r.getElementsByTagName("paused").item(0), false);
@@ -540,11 +566,11 @@ public class ConfigXml {
                 for (int j = 0; j < nodeAddresses.getLength(); j++) {
                     String address = getContentOrDefault(nodeAddresses.item(j), "");
                     device.addresses.add(address);
-                    // Log.v(TAG, "address=" + address);
+                    // Log.v(TAG, "getDevices: address=" + address);
                 }
 
                 // For testing purposes only.
-                // Log.v(TAG, "device.name=" + device.name + "/" +"device.id=" + device.deviceID + "/" + "device.paused=" + device.paused);
+                // Log.v(TAG, "getDevices: device.name=" + device.name + "/" +"device.id=" + device.deviceID + "/" + "device.paused=" + device.paused);
 
                 // Exclude self if requested.
                 Boolean isLocalDevice = !TextUtils.isEmpty(device.deviceID) && device.deviceID.equals(localDeviceID);
@@ -567,6 +593,7 @@ public class ConfigXml {
                 if (device.deviceID.equals(getAttributeOrDefault(r, "id", ""))) {
                     // Found device to update.
                     r.setAttribute("compression", device.compression);
+                    r.setAttribute("introducedBy", device.introducedBy);
                     r.setAttribute("introducer", Boolean.toString(device.introducer));
                     r.setAttribute("name", device.name);
 
@@ -594,6 +621,21 @@ public class ConfigXml {
                 }
             }
         }
+    }
+
+    /**
+     * If an indented child element is removed, whitespace and line break will be left by
+     * Element.removeChild().
+     * See https://stackoverflow.com/questions/14255064/removechild-how-to-remove-indent-too
+     */
+    private void removeChildElementFromTextNode(Element parentElement, Element childElement) {
+        Node prev = childElement.getPreviousSibling();
+        if (prev != null &&
+                prev.getNodeType() == Node.TEXT_NODE &&
+                prev.getNodeValue().trim().length() == 0) {
+            parentElement.removeChild(prev);
+        }
+        parentElement.removeChild(childElement);
     }
 
     private boolean setConfigElement(Element parent, String tagName, String textContent) {
