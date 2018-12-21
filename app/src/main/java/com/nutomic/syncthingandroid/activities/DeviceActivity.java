@@ -518,13 +518,8 @@ public class DeviceActivity extends SyncthingActivity
         );
         editor.apply();
 
-        // Update device via restApi and send the config to REST endpoint.
-        RestApi restApi = getApi();
-        if (restApi == null) {
-            Log.e(TAG, "updateDevice: restApi == null");
-            return;
-        }
-        restApi.updateDevice(mDevice);
+        // Update device using RestApi or ConfigXml.
+        mConfig.updateDevice(getApi(), mDevice);
     }
 
     private List<String> persistableAddresses(CharSequence userInput) {
