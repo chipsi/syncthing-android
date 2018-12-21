@@ -50,6 +50,7 @@ public class ConfigRouter {
             configXml.loadConfig();
             configXml.updateFolder(folder);
             configXml.saveChanges();
+            return;
         }
 
         // Syncthing is running and REST API is available.
@@ -88,6 +89,7 @@ public class ConfigRouter {
             configXml.loadConfig();
             configXml.updateDevice(device);
             configXml.saveChanges();
+            return;
         }
 
         // Syncthing is running and REST API is available.
