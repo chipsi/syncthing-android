@@ -488,7 +488,7 @@ public class ConfigXml {
                 }
 
                 // Versioning
-                // Pass 1: Remove all versioning nodes (usually one)
+                // Pass 1: Remove all versioning nodes in XML (usually one)
                 /*
                 NodeList nlVersioning = r.getElementsByTagName("versioning");
                 for (int j = nlVersioning.getLength() - 1; j >= 0; j--) {
@@ -502,7 +502,7 @@ public class ConfigXml {
                     removeChildElementFromTextNode(r, elementVersioning);
                 }
 
-                // Pass 2: Add versioning node.
+                // Pass 2: Add versioning node from the POJO model.
                 Node nodeVersioning = mConfig.createElement("versioning");
                 r.appendChild(nodeVersioning);
                 elementVersioning = (Element) nodeVersioning;
@@ -591,6 +591,12 @@ public class ConfigXml {
                 device.paused = getContentOrDefault(r.getElementsByTagName("paused").item(0), false);
 
                 // Addresses
+                /*
+                <device ...>
+                    <address>dynamic</address>
+                    <address>tcp4://192.168.1.67:2222</address>
+                </device>
+                */
                 device.addresses = new ArrayList<>();
                 NodeList nodeAddresses = r.getElementsByTagName("address");
                 for (int j = 0; j < nodeAddresses.getLength(); j++) {
@@ -629,7 +635,25 @@ public class ConfigXml {
 
                     setConfigElement(r, "paused", Boolean.toString(device.paused));
 
-                    // ToDo : Addresses
+                    // Addresses
+                    // Pass 1: Remove all addresses in XML.
+                    NodeList nodeAddresses = r.getElementsByTagName("address");
+                    for (int j = nodeAddresses.getLength() - 1; j >= 0; j--) {
+                        Element elementAddress = (Element) nodeAddresses.item(j);
+                        Log.v(TAG, "updateDevice: nodeAddresses: Removing address=" + getContentOrDefault(elementAddress, ""));
+                        removeChildElementFromTextNode(r, elementAddress);
+                    }
+
+                    // Pass 2: Add addresses from the POJO model.
+                    if (device.addresses != null) {
+                        for (String address : device.addresses) {
+                            Log.v(TAG, "updateDevice: nodeAddresses: Adding address=" + address);
+                            Node nodeAddress = mConfig.createElement("address");
+                            r.appendChild(nodeAddress);
+                            Element elementAddress = (Element) nodeAddress;
+                            elementAddress.setTextContent(address);
+                        }
+                    }
 
                     break;
                 }
