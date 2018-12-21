@@ -115,6 +115,13 @@ public class SyncthingService extends Service {
     public static final String EXTRA_FOLDER_ID =
             "com.nutomic.syncthingandroid.service.SyncthingService.EXTRA_FOLDER_ID";
 
+    /**
+     * Extra used together with ACTION_STOP.
+     */
+    public static final String EXTRA_STOP_AFTER_CRASHED_NATIVE =
+            "com.nutomic.syncthingandroid.service.SyncthingService.EXTRA_STOP_AFTER_CRASHED_NATIVE";
+
+
     public interface OnSyncthingKilled {
         void onKilled();
     }
@@ -278,9 +285,23 @@ public class SyncthingService extends Service {
 
         if (ACTION_RESTART.equals(intent.getAction()) && mCurrentState == State.ACTIVE) {
             shutdown(State.INIT, () -> launchStartupTask(SyncthingRunnable.Command.main));
-        } else if (ACTION_STOP.equals(intent.getAction()) && mCurrentState == State.ACTIVE) {
-            shutdown(State.DISABLED, () -> {
-            });
+        } else if (ACTION_STOP.equals(intent.getAction())) {
+            if (intent.getBooleanExtra(EXTRA_STOP_AFTER_CRASHED_NATIVE, false)) {
+                /**
+                 * We were requested to stop the service because the syncthing native binary crashed.
+                 * Changing mCurrentState prevents the "defer until syncthing is started" routine we normally
+                 * use for clean shutdown to take place. Instead, we will immediately shutdown the crashed
+                 * instance forcefully.
+                 */
+                mCurrentState = State.ERROR;
+                shutdown(State.DISABLED, () -> {});
+            } else {
+                // Graceful shutdown.
+                if (mCurrentState == State.STARTING ||
+                        mCurrentState == State.ACTIVE) {
+                    shutdown(State.DISABLED, () -> {});
+                }
+            }
         } else if (ACTION_RESET_DATABASE.equals(intent.getAction())) {
             Log.i(TAG, "Invoking reset of database");
             shutdown(State.INIT, () -> {
