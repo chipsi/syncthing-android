@@ -738,11 +738,9 @@ public class FolderActivity extends SyncthingActivity
         // Update folder via restApi and send the config to REST endpoint.
         RestApi restApi = getApi();
 
-        // Update ignore list. / ToDo: Implement ConfigRouter here.
+        // Update ignore list.
         String[] ignore = mEditIgnoreListContent.getText().toString().split("\n");
-        /*
-        mConfig.postFolderIgnoreList(restApi, mFolder.id, ignore);
-        */
+        mConfig.postFolderIgnoreList(restApi, mFolder, ignore);
 
         // Update folder using RestApi or ConfigXml.
         mConfig.updateFolder(restApi, mFolder);

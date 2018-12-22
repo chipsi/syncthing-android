@@ -98,6 +98,21 @@ public class ConfigRouter {
         restApi.getFolderIgnoreList(folder.id, folderIgnoreList -> listener.onResult(folderIgnoreList));
     }
 
+    /**
+     * Stores ignore list for given folder.
+     */
+    public void postFolderIgnoreList(RestApi restApi, Folder folder, String[] ignore) {
+        if (restApi == null || !restApi.isConfigLoaded()) {
+            // Syncthing is not running or REST API is not (yet) available.
+            configXml.loadConfig();
+            configXml.postFolderIgnoreList(folder, ignore);
+            return;
+        }
+
+        // Syncthing is running and REST API is available.
+        restApi.postFolderIgnoreList(folder.id, ignore);
+    }
+
     public List<Device> getDevices(RestApi restApi, Boolean includeLocal) {
         if (restApi == null || !restApi.isConfigLoaded()) {
             // Syncthing is not running or REST API is not (yet) available.

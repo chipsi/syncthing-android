@@ -601,6 +601,38 @@ public class ConfigXml {
         listener.onResult(folderIgnoreList);
     }
 
+    /**
+     * Stores ignore list for given folder.
+     */
+    public void postFolderIgnoreList(Folder folder, String[] ignore) {
+        File file;
+        FileOutputStream fileOutputStream = null;
+        try {
+            file = new File(folder.path, ".stignore");
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            fileOutputStream = new FileOutputStream(file);
+            // Log.v(TAG, "postFolderIgnoreList: Writing .stignore content=" + TextUtils.join("\n", ignore));
+            fileOutputStream.write(TextUtils.join("\n", ignore).getBytes("UTF-8"));
+            fileOutputStream.flush();
+        } catch (IOException e) {
+            /**
+             * This will happen on external storage folders which exist outside the
+             * "/Android/data/[package_name]/files" folder on Android 5+.
+             */
+            Log.w(TAG, "postFolderIgnoreList: Failed to write '" + folder.path + "/.stignore' #1", e);
+        } finally {
+            try {
+                if (fileOutputStream != null) {
+                    fileOutputStream.close();
+                }
+            } catch (IOException e) {
+                Log.e(TAG, "postFolderIgnoreList: Failed to write '" + folder.path + "/.stignore' #2", e);
+            }
+        }
+    }
+
     public List<Device> getDevices(Boolean includeLocal) {
         String localDeviceID = getLocalDeviceIDfromPref();
         List<Device> devices = new ArrayList<>();
