@@ -1,6 +1,7 @@
 package com.nutomic.syncthingandroid.model;
 
 import android.text.TextUtils;
+import java.util.Locale;
 // import android.util.Log;
 
 import com.google.common.io.BaseEncoding;
@@ -58,7 +59,7 @@ public class Device {
         deviceID = deviceID.replaceAll("=", "");
 
         // Convert to upper case.
-        deviceID = deviceID.toUpperCase();
+        deviceID = deviceID.toUpperCase(Locale.ROOT);
 
         // untypeoify
         deviceID = deviceID.replaceAll("1", "I");
