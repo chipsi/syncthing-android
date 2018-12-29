@@ -8,11 +8,11 @@ public class Device {
     public String deviceID;
     public String name = "";
     public List<String> addresses;
-    public String compression;
+    public String compression = "metadata";
     public String certName;
     public String introducedBy = "";
     public boolean introducer = false;
-    public boolean paused;
+    public boolean paused = false;
     public List<PendingFolder> pendingFolders;
     public List<IgnoredFolder> ignoredFolders;
 
