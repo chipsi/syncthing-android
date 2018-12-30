@@ -212,7 +212,8 @@ public class SyncthingService extends Service {
     /**
      * True if experimental option PREF_BROADCAST_SERVICE_CONTROL is set.
      * Disables run condition monitor completely because the user chose to
-     * control the service by sending broadcasts, e.g. from "Tasker".
+     * control the service by sending broadcasts, e.g. from third-party
+     * automation apps.
      */
     private boolean mPrefBroadcastServiceControl = false;
 
