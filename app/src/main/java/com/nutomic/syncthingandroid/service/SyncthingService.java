@@ -3,6 +3,7 @@ package com.nutomic.syncthingandroid.service;
 import android.app.Service;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.content.SharedPreferences;
 import android.Manifest;
 import android.os.AsyncTask;
@@ -272,7 +273,7 @@ public class SyncthingService extends Service {
         }
 
         if (mPrefBroadcastServiceControl) {
-            Log.i(TAG, "onStartCommand: mBroadcastServiceControl == true, RunConditionMonitor is disabled.");
+            Log.i(TAG, "onStartCommand: mPrefBroadcastServiceControl == true, RunConditionMonitor is disabled.");
             /**
              * Directly use the callback which normally is invoked by RunConditionMonitor to start the
              * syncthing native unconditionally.
@@ -762,10 +763,17 @@ public class SyncthingService extends Service {
     }
 
     public String getRunDecisionExplanation() {
-        if (mRunConditionMonitor == null) {
-            return "This should not happen: mRunConditionMonitor is not instantiated.";
+        if (mRunConditionMonitor != null) {
+            return mRunConditionMonitor.getRunDecisionExplanation();
         }
-        return mRunConditionMonitor.getRunDecisionExplanation();
+
+        Resources res = getResources();
+        if (mPrefBroadcastServiceControl) {
+            return res.getString(R.string.reason_broadcast_controlled);
+        }
+
+        // mRunConditionMonitor == null
+        return res.getString(R.string.reason_run_condition_monitor_not_instantiated);
     }
 
     /**
