@@ -334,7 +334,9 @@ public class SyncthingService extends Service {
                 shutdown(State.DISABLED);
             }
         } else if (ACTION_REFRESH_NETWORK_INFO.equals(intent.getAction())) {
-            mRunConditionMonitor.updateShouldRunDecision();
+            if (mRunConditionMonitor != null) {
+                mRunConditionMonitor.updateShouldRunDecision();
+            }
         } else if (ACTION_IGNORE_DEVICE.equals(intent.getAction()) && mCurrentState == State.ACTIVE) {
             // mRestApi is not null due to State.ACTIVE
             mRestApi.ignoreDevice(intent.getStringExtra(EXTRA_DEVICE_ID));
