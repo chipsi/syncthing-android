@@ -493,6 +493,10 @@ Please report any problems you encounter via Github.</string>
 
     <string name="use_legacy_hashing_summary">Force Syncthing to use legacy hashing package for compatibility purposes</string>
 
+    <string name="broadcast_service_control_title">Service Control by Broadcast</string>
+
+    <string name="broadcast_service_control_summary">Default: Disabled. Enable this option to start and stop the service by sending broadcasts, e.g. from tools like Tasker.</string>
+
     <string name="restart_on_wakeup_title">Restart on Wakeup</string>
 
     <string name="restart_on_wakeup_summary">Default: Enabled. Disabling this feature may result in folder scans and device reconnects being delayed to save battery.</string>
