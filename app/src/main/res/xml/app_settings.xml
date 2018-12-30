@@ -289,7 +289,7 @@
 
         <Preference
             android:persistent="false"
-            android:selectable="false"
+            android:selectable="true"
             android:key="syncthing_api_key"
             android:title="@string/syncthing_api_key" />
 
