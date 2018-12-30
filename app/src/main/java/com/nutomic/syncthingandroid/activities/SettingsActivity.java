@@ -147,6 +147,7 @@ public class SettingsActivity extends SyncthingActivity {
         private EditTextPreference mHttpProxyAddress;
 
         private Preference mSyncthingVersion;
+        private Preference mSyncthingApiKey;
 
         private SyncthingService mSyncthingService;
         private RestApi mRestApi;
@@ -239,8 +240,9 @@ public class SettingsActivity extends SyncthingActivity {
             mSocksProxyAddress              = (EditTextPreference) findPreference(Constants.PREF_SOCKS_PROXY_ADDRESS);
             mHttpProxyAddress               = (EditTextPreference) findPreference(Constants.PREF_HTTP_PROXY_ADDRESS);
 
+            Preference appVersion   = findPreference("app_version");
             mSyncthingVersion       = findPreference("syncthing_version");
-            Preference appVersion   = screen.findPreference("app_version");
+            mSyncthingApiKey        = findPreference("syncthing_api_key");
 
             mRunOnMeteredWifi.setEnabled(mRunOnWifi.isChecked());
             mUseWifiWhitelist.setEnabled(mRunOnWifi.isChecked());
@@ -288,8 +290,9 @@ public class SettingsActivity extends SyncthingActivity {
             handleHttpProxyPreferenceChange(screen.findPreference(Constants.PREF_HTTP_PROXY_ADDRESS), mPreferences.getString(Constants.PREF_HTTP_PROXY_ADDRESS, ""));
 
             try {
-                appVersion.setSummary(getActivity().getPackageManager()
-                        .getPackageInfo(getActivity().getPackageName(), 0).versionName);
+                String versionName = getActivity().getPackageManager()
+                        .getPackageInfo(getActivity().getPackageName(), 0).versionName;
+                appVersion.setSummary("v" + versionName);
             } catch (PackageManager.NameNotFoundException e) {
                 Log.d(TAG, "Failed to get app version name");
             }
@@ -331,10 +334,12 @@ public class SettingsActivity extends SyncthingActivity {
                         (currentState == SyncthingService.State.ACTIVE);
             mCategorySyncthingOptions.setEnabled(isSyncthingRunning);
 
-            if (!isSyncthingRunning)
+            if (!isSyncthingRunning) {
                 return;
+            }
 
             mSyncthingVersion.setSummary(mRestApi.getVersion());
+            mSyncthingApiKey.setSummary(mRestApi.getApiKey());
             mOptions = mRestApi.getOptions();
             mGui = mRestApi.getGui();
 
