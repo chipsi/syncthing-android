@@ -56,70 +56,70 @@ public class SyncthingService extends Service {
      * Intent action to perform a Syncthing restart.
      */
     public static final String ACTION_RESTART =
-            "com.nutomic.syncthingandroid.service.SyncthingService.RESTART";
+            "com.github.catfriend1.syncthingandroid.SyncthingService.RESTART";
 
     /**
      * Intent action to perform a Syncthing stop.
      */
     public static final String ACTION_STOP =
-            "com.nutomic.syncthingandroid.service.SyncthingService.STOP";
+            "com.github.catfriend1.syncthingandroid.SyncthingService.STOP";
 
     /**
      * Intent action to reset Syncthing's database.
      */
     public static final String ACTION_RESET_DATABASE =
-            "com.nutomic.syncthingandroid.service.SyncthingService.RESET_DATABASE";
+            "com.github.catfriend1.syncthingandroid.SyncthingService.RESET_DATABASE";
 
     /**
      * Intent action to reset Syncthing's delta indexes.
      */
     public static final String ACTION_RESET_DELTAS =
-            "com.nutomic.syncthingandroid.service.SyncthingService.RESET_DELTAS";
+            "com.github.catfriend1.syncthingandroid.SyncthingService.RESET_DELTAS";
 
     public static final String ACTION_REFRESH_NETWORK_INFO =
-            "com.nutomic.syncthingandroid.service.SyncthingService.REFRESH_NETWORK_INFO";
+            "com.github.catfriend1.syncthingandroid.SyncthingService.REFRESH_NETWORK_INFO";
 
     /**
      * Intent action to permanently ignore a device connection request.
      */
     public static final String ACTION_IGNORE_DEVICE =
-            "com.nutomic.syncthingandroid.service.SyncthingService.IGNORE_DEVICE";
+            "com.github.catfriend1.syncthingandroid.SyncthingService.IGNORE_DEVICE";
 
     /**
      * Intent action to permanently ignore a folder share request.
      */
     public static final String ACTION_IGNORE_FOLDER =
-            "com.nutomic.syncthingandroid.service.SyncthingService.IGNORE_FOLDER";
+            "com.github.catfriend1.syncthingandroid.SyncthingService.IGNORE_FOLDER";
 
     /**
      * Intent action to override folder changes.
      */
     public static final String ACTION_OVERRIDE_CHANGES =
-            "com.nutomic.syncthingandroid.service.SyncthingService.OVERRIDE_CHANGES";
+            "com.github.catfriend1.syncthingandroid.SyncthingService.OVERRIDE_CHANGES";
 
     /**
      * Extra used together with ACTION_IGNORE_DEVICE, ACTION_IGNORE_FOLDER.
      */
     public static final String EXTRA_NOTIFICATION_ID =
-            "com.nutomic.syncthingandroid.service.SyncthingService.EXTRA_NOTIFICATION_ID";
+            "com.github.catfriend1.syncthingandroid.SyncthingService.EXTRA_NOTIFICATION_ID";
 
     /**
      * Extra used together with ACTION_IGNORE_DEVICE
      */
     public static final String EXTRA_DEVICE_ID =
-            "com.nutomic.syncthingandroid.service.SyncthingService.EXTRA_DEVICE_ID";
+            "com.github.catfriend1.syncthingandroid.SyncthingService.EXTRA_DEVICE_ID";
 
     /**
      * Extra used together with ACTION_IGNORE_FOLDER
      */
     public static final String EXTRA_FOLDER_ID =
-            "com.nutomic.syncthingandroid.service.SyncthingService.EXTRA_FOLDER_ID";
+            "com.github.catfriend1.syncthingandroid.SyncthingService.EXTRA_FOLDER_ID";
 
     /**
      * Extra used together with ACTION_STOP.
      */
     public static final String EXTRA_STOP_AFTER_CRASHED_NATIVE =
-            "com.nutomic.syncthingandroid.service.SyncthingService.EXTRA_STOP_AFTER_CRASHED_NATIVE";
+            "com.github.catfriend1.syncthingandroid.SyncthingService.EXTRA_STOP_AFTER_CRASHED_NATIVE";
 
     public interface OnServiceStateChangeListener {
         void onServiceStateChange(State currentState);
