@@ -209,6 +209,13 @@ public class SyncthingService extends Service {
     private boolean mStoragePermissionGranted = false;
 
     /**
+     * True if experimental option PREF_BROADCAST_SERVICE_CONTROL is set.
+     * Disables run condition monitor completely because the user chose to
+     * control the service by sending broadcasts, e.g. from "Tasker".
+     */
+    private boolean mPrefBroadcastServiceControl = false;
+
+    /**
      * Starts the native binary.
      */
     @Override
@@ -231,6 +238,9 @@ public class SyncthingService extends Service {
         if (mNotificationHandler != null) {
             mNotificationHandler.setAppShutdownInProgress(false);
         }
+
+        // Read pref.
+        mPrefBroadcastServiceControl = mPreferences.getBoolean(Constants.PREF_BROADCAST_SERVICE_CONTROL, false);
     }
 
     /**
@@ -260,17 +270,28 @@ public class SyncthingService extends Service {
                 onServiceStateChange(mCurrentState);
             }
         }
-        if (mRunConditionMonitor == null) {
+
+        if (mPrefBroadcastServiceControl) {
+            Log.i(TAG, "onStartCommand: mBroadcastServiceControl == true, RunConditionMonitor is disabled.");
             /**
-             * Instantiate the run condition monitor on first onStartCommand and
-             * enable callback on run condition change affecting the final decision to
-             * run/terminate syncthing. After initial run conditions are collected
-             * the first decision is sent to {@link onShouldRunDecisionChanged}.
+             * Directly use the callback which normally is invoked by RunConditionMonitor to start the
+             * syncthing native unconditionally.
              */
-            mRunConditionMonitor = new RunConditionMonitor(SyncthingService.this,
-                this::onShouldRunDecisionChanged,
-                this::onSyncPreconditionChanged
-            );
+            onShouldRunDecisionChanged(true);
+        } else {
+            // Run condition monitor is enabled.
+            if (mRunConditionMonitor == null) {
+                /**
+                 * Instantiate the run condition monitor on first onStartCommand and
+                 * enable callback on run condition change affecting the final decision to
+                 * run/terminate syncthing. After initial run conditions are collected
+                 * the first decision is sent to {@link onShouldRunDecisionChanged}.
+                 */
+                mRunConditionMonitor = new RunConditionMonitor(SyncthingService.this,
+                    this::onShouldRunDecisionChanged,
+                    this::onSyncPreconditionChanged
+                );
+            }
         }
         mNotificationHandler.updatePersistentNotification(this);
 
