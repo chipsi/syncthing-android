@@ -71,7 +71,7 @@ public class ShareActivity extends SyncthingActivity
         super.onServiceConnected(componentName, iBinder);
         SyncthingServiceBinder syncthingServiceBinder = (SyncthingServiceBinder) iBinder;
         SyncthingService syncthingService = (SyncthingService) syncthingServiceBinder.getService();
-        syncthingService.registerOnServiceStateChangeListener(this);
+        syncthingService.registerOnServiceStateChangeListener(ShareActivity.this);
         mSyncthingService = syncthingService;
     }
 
