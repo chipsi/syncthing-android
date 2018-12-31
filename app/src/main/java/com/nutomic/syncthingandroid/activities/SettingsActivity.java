@@ -158,6 +158,7 @@ public class SettingsActivity extends SyncthingActivity {
         private Preference mSyncthingVersion;
         private Preference mSyncthingApiKey;
 
+        private Context mContext;
         private SyncthingService mSyncthingService;
         private RestApi mRestApi;
 
@@ -185,6 +186,7 @@ public class SettingsActivity extends SyncthingActivity {
          */
         @Override
         public void onActivityCreated(Bundle savedInstanceState) {
+            mContext = getActivity().getApplicationContext();
             super.onActivityCreated(savedInstanceState);
 
             addPreferencesFromResource(R.xml.app_settings);
@@ -641,7 +643,7 @@ public class SettingsActivity extends SyncthingActivity {
                     return true;
                 case KEY_SYNCTHING_API_KEY:
                     // Copy syncthing's API key to clipboard.
-                    ClipboardManager clipboard = (ClipboardManager) getActivity().getApplicationContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                    ClipboardManager clipboard = (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
                     ClipData clip = ClipData.newPlainText(getString(R.string.syncthing_api_key), mSyncthingApiKey.getSummary());
                     clipboard.setPrimaryClip(clip);
                     Toast.makeText(getActivity(), R.string.api_key_copied_to_clipboard, Toast.LENGTH_SHORT)
@@ -826,7 +828,7 @@ public class SettingsActivity extends SyncthingActivity {
          * Calculates the size of the syncthing database on disk.
          */
         private String getDatabaseSize() {
-            String dbPath = getContext().getFilesDir() + "/" + Constants.INDEX_DB_FOLDER;
+            String dbPath = mContext.getFilesDir() + "/" + Constants.INDEX_DB_FOLDER;
             String result = Util.runShellCommandGetOutput("/system/bin/du -sh " + dbPath, false);
             if (TextUtils.isEmpty(result)) {
                 return "N/A";
