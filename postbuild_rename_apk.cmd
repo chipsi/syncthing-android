@@ -1,30 +1,38 @@
 @echo off
-title %~x0
+title %~nx0
 setlocal enabledelayedexpansion
 cls
 SET SCRIPT_PATH=%~dps0
+SET TEMP_OUTPUT_FOLDER=X:\
+SET GIT_INSTALL_DIR=%ProgramFiles%\Git
+SET GIT_BIN="%GIT_INSTALL_DIR%\bin\git.exe"
 REM 
-SET PATH=%PATH%;"%ProgramFiles%\Git\bin"
+SET PATH=%PATH%;"%GIT_INSTALL_DIR%\bin"
 REM 
 REM Get "applicationId"
 FOR /F "tokens=2 delims= " %%A IN ('type "app\build.gradle" 2^>^&1 ^| findstr "applicationId"') DO SET APPLICATION_ID=%%A
 SET APPLICATION_ID=%APPLICATION_ID:"=%
-echo applicationId="%APPLICATION_ID%"
+echo [INFO] applicationId="%APPLICATION_ID%"
 REM 
 REM Get "versionName"
 FOR /F "tokens=2 delims= " %%A IN ('type "app\build.gradle" 2^>^&1 ^| findstr "versionName"') DO SET VERSION_NAME=%%A
 SET VERSION_NAME=%VERSION_NAME:"=%
-echo versionName="%VERSION_NAME%"
+echo [INFO] versionName="%VERSION_NAME%"
 REM 
 REM Get short hash of last commit.
+IF NOT EXIST %GIT_BIN% echo [ERROR] git.exe not found. & pause & goto :eof
 FOR /F "tokens=1" %%A IN ('git rev-parse --short --verify HEAD 2^>NUL:') DO SET COMMIT_SHORT_HASH=%%A
-echo commit="%COMMIT_SHORT_HASH%"
+echo [INFO] commit="%COMMIT_SHORT_HASH%"
 REM 
 REM Rename APK to be ready for upload to the GitHub release page.
-call :renIfExist %SCRIPT_PATH%app\build\outputs\apk\debug\app-debug.apk com.github.catfriend1.syncthingandroid_%VERSION_NAME%_%COMMIT_SHORT_HASH%.apk
-call :renIfExist %SCRIPT_PATH%app\build\outputs\apk\release\app-release-unsigned.apk com.github.catfriend1.syncthingandroid_%VERSION_NAME%_%COMMIT_SHORT_HASH%.apk
+call :renIfExist %SCRIPT_PATH%app\build\outputs\apk\debug\app-debug.apk %APPLICATION_ID%_%VERSION_NAME%_%COMMIT_SHORT_HASH%.apk
+call :renIfExist %SCRIPT_PATH%app\build\outputs\apk\release\app-release-unsigned.apk %APPLICATION_ID%_%VERSION_NAME%_%COMMIT_SHORT_HASH%.apk
+echo [INFO] APK file rename step complete.
 REM 
-echo [INFO] APK files renamed.
+REM Copy debug APK to temporary storage location if the storage is available.
+IF EXIST %TEMP_OUTPUT_FOLDER% copy /y %SCRIPT_PATH%app\build\outputs\apk\debug\%APPLICATION_ID%_%VERSION_NAME%_%COMMIT_SHORT_HASH%.apk %TEMP_OUTPUT_FOLDER% 2> NUL:
+REM 
+echo [INFO] End of Script.
 timeout 3
 goto :eof
 
