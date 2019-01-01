@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
+import android.os.Debug;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
@@ -282,5 +283,27 @@ public class Util {
      */
     public static String formatPath(String path) {
         return new File(path).toURI().normalize().getPath();
+    }
+
+    /**
+     * Get amount of memory used as a percentage of the maximum memory
+     * amount the OS allocates for our app.
+     */
+    public static long getNativeHeapUsedPercentage() {
+        final long usedMemInPercentage;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            final Runtime runtime = Runtime.getRuntime();
+            final long usedMemInMB=(runtime.totalMemory() - runtime.freeMemory()) / 1048576L;
+            final long maxHeapSizeInMB=runtime.maxMemory() / 1048576L;
+            final long availHeapSizeInMB = maxHeapSizeInMB - usedMemInMB;
+            usedMemInPercentage = usedMemInMB * 100 / maxHeapSizeInMB;
+        } else {
+            // Android 8+
+            final long nativeHeapSize = Debug.getNativeHeapSize();
+            final long nativeHeapFreeSize = Debug.getNativeHeapFreeSize();
+            final long usedMemInBytes = nativeHeapSize - nativeHeapFreeSize;
+            usedMemInPercentage = usedMemInBytes * 100 / nativeHeapSize;
+        }
+        return usedMemInPercentage;
     }
 }
