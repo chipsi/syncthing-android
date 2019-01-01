@@ -366,7 +366,7 @@ public class FolderActivity extends SyncthingActivity
         // We don't want to update every time a TextView's character changes,
         // so we hold off until the view stops being visible to the user.
         if (mFolderNeedsToUpdate) {
-            Log.v(TAG, "onPause: mFolderNeedsToUpdate == true");
+            Log.v(TAG, "onPause: mFolderNeedsToUpdate=true, mIgnoreListNeedsToUpdate=" + Boolean.toString(mIgnoreListNeedsToUpdate));
             updateFolder();
         }
     }
@@ -444,14 +444,12 @@ public class FolderActivity extends SyncthingActivity
     }
 
     private void onReceiveFolderIgnoreList(FolderIgnoreList folderIgnoreList) {
-        if (folderIgnoreList.ignore == null) {
-            Log.w(TAG, "onReceiveFolderIgnoreList: folderIgnoreList == null.");
-            return;
-        }
-        String ignoreList = TextUtils.join("\n", folderIgnoreList.ignore);
         mEditIgnoreListContent.setMaxLines(Integer.MAX_VALUE);
         mEditIgnoreListContent.removeTextChangedListener(mIgnoreListContentTextWatcher);
-        mEditIgnoreListContent.setText(ignoreList);
+        if (folderIgnoreList.ignore != null) {
+            String ignoreList = TextUtils.join("\n", folderIgnoreList.ignore);
+            mEditIgnoreListContent.setText(ignoreList);
+        }
         mEditIgnoreListContent.addTextChangedListener(mIgnoreListContentTextWatcher);
     }
 
