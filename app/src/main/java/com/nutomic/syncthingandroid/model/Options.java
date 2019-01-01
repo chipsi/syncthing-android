@@ -37,7 +37,7 @@ public class Options {
     public String defaultFolderPath;
 
     // Since v1.0.0, see https://github.com/syncthing/syncthing/pull/4888
-    public int MaxConcurrentScans;
+    public int maxConcurrentScans;
 
     public static final int USAGE_REPORTING_UNDECIDED = 0;
     public static final int USAGE_REPORTING_DENIED    = -1;
