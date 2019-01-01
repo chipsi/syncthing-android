@@ -197,7 +197,7 @@ public class StatusFragment extends ListFragment implements SyncthingService.OnS
                     statusItems.add(getString(R.string.uptime) + ": " + mUptime);
                 }
                 if (!TextUtils.isEmpty(mRamUsage)) {
-                    statusItems.add(getString(R.string.ram_usage) + ": " + mRamUsage);
+                    statusItems.add(getString(R.string.ram_usage) + ": " + mRamUsage + " (" + Long.toString(Util.getNativeHeapUsedPercentage()) + "%)");
                 }
                 if (!TextUtils.isEmpty(mCpuUsage)) {
                     statusItems.add(getString(R.string.cpu_usage) + ": " + mCpuUsage);
