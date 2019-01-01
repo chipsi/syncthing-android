@@ -121,6 +121,7 @@ public class FolderActivity extends SyncthingActivity
 
     private boolean mIsCreateMode;
     private boolean mFolderNeedsToUpdate = false;
+    private boolean mIgnoreListNeedsToUpdate = false;
 
     private Dialog mDeleteDialog;
     private Dialog mDiscardDialog;
@@ -134,6 +135,14 @@ public class FolderActivity extends SyncthingActivity
             mFolder.id           = mIdView.getText().toString();;
             // mPathView must not be handled here as it's handled by {@link onActivityResult}
             // mEditIgnoreListContent must not be handled here as it's written back when the dialog ends.
+            mFolderNeedsToUpdate = true;
+        }
+    };
+
+    private final TextWatcher mIgnoreListContentTextWatcher = new TextWatcherAdapter() {
+        @Override
+        public void afterTextChanged(Editable s) {
+            mIgnoreListNeedsToUpdate = true;
             mFolderNeedsToUpdate = true;
         }
     };
@@ -352,12 +361,6 @@ public class FolderActivity extends SyncthingActivity
 
     @Override
     public void onPause() {
-        try {
-            // This should trigger {@link #mTextWatcher} if the element still has the focus.
-            mEditIgnoreListContent.clearFocus();
-        } catch (Exception e) {
-            Log.e(TAG, "onPause: mEditIgnoreListContent", e);
-        }
         super.onPause();
 
         // We don't want to update every time a TextView's character changes,
@@ -378,7 +381,7 @@ public class FolderActivity extends SyncthingActivity
         }
         mLabelView.removeTextChangedListener(mTextWatcher);
         mIdView.removeTextChangedListener(mTextWatcher);
-        mEditIgnoreListContent.removeTextChangedListener(mTextWatcher);
+        mEditIgnoreListContent.removeTextChangedListener(mIgnoreListContentTextWatcher);
     }
 
     @Override
@@ -447,9 +450,9 @@ public class FolderActivity extends SyncthingActivity
         }
         String ignoreList = TextUtils.join("\n", folderIgnoreList.ignore);
         mEditIgnoreListContent.setMaxLines(Integer.MAX_VALUE);
-        mEditIgnoreListContent.removeTextChangedListener(mTextWatcher);
+        mEditIgnoreListContent.removeTextChangedListener(mIgnoreListContentTextWatcher);
         mEditIgnoreListContent.setText(ignoreList);
-        mEditIgnoreListContent.addTextChangedListener(mTextWatcher);
+        mEditIgnoreListContent.addTextChangedListener(mIgnoreListContentTextWatcher);
     }
 
     // If the FolderActivity gets recreated after the VersioningDialogActivity is closed, then the result from the VersioningDialogActivity will be received before
@@ -736,7 +739,9 @@ public class FolderActivity extends SyncthingActivity
 
     /**
      * Sends the updated folder info if in edit mode.
-     * Preconditions: mFolderNeedsToUpdate == true
+     * Preconditions:
+     *  mFolderNeedsToUpdate == true
+     *  mIgnoreListNeedsToUpdate == true (Optional)
      */
     private void updateFolder() {
         if (mIsCreateMode) {
@@ -759,10 +764,11 @@ public class FolderActivity extends SyncthingActivity
 
         // Update folder via restApi and send the config to REST endpoint.
         RestApi restApi = getApi();
-
-        // Update ignore list.
-        String[] ignore = mEditIgnoreListContent.getText().toString().split("\n");
-        mConfig.postFolderIgnoreList(restApi, mFolder, ignore);
+        if (mIgnoreListNeedsToUpdate) {
+            // Update ignore list.
+            String[] ignore = mEditIgnoreListContent.getText().toString().split("\n");
+            mConfig.postFolderIgnoreList(restApi, mFolder, ignore);
+        }
 
         // Update folder using RestApi or ConfigXml.
         mConfig.updateFolder(restApi, mFolder);
