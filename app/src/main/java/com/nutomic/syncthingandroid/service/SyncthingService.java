@@ -286,7 +286,7 @@ public class SyncthingService extends Service {
                  */
                 mRunConditionMonitor = new RunConditionMonitor(SyncthingService.this,
                     this::onShouldRunDecisionChanged,
-                    this::onSyncPreconditionChanged
+                    this::applyCustomRunConditions
                 );
             }
         }
@@ -410,16 +410,16 @@ public class SyncthingService extends Service {
      * After sync preconditions changed, we need to inform {@link RestApi} to pause or
      * unpause devices and folders as defined in per-object sync preferences.
      */
-    private void onSyncPreconditionChanged(RunConditionMonitor runConditionMonitor) {
+    private void applyCustomRunConditions(RunConditionMonitor runConditionMonitor) {
         synchronized (mStateLock) {
             if (mRestApi != null && mCurrentState == State.ACTIVE) {
                 // Forward event because syncthing is running.
-                mRestApi.onSyncPreconditionChanged(runConditionMonitor);
+                mRestApi.applyCustomRunConditions(runConditionMonitor);
                 return;
             }
         }
 
-        Log.v(TAG, "onSyncPreconditionChanged: Event fired while syncthing is not running.");
+        Log.v(TAG, "applyCustomRunConditions: Event fired while syncthing is not running.");
         Boolean configChanged = false;
         ConfigXml configXml;
 
@@ -428,7 +428,7 @@ public class SyncthingService extends Service {
         try {
             configXml.loadConfig();
         } catch (ConfigXml.OpenConfigException e) {
-            mNotificationHandler.showCrashedNotification(R.string.config_read_failed, "onSyncPreconditionChanged:ConfigXml.OpenConfigException");
+            mNotificationHandler.showCrashedNotification(R.string.config_read_failed, "applyCustomRunConditions:ConfigXml.OpenConfigException");
             synchronized (mStateLock) {
                 onServiceStateChange(State.ERROR);
             }
@@ -439,7 +439,7 @@ public class SyncthingService extends Service {
         List<Folder> folders = configXml.getFolders();
         if (folders != null) {
             for (Folder folder : folders) {
-                // Log.v(TAG, "onSyncPreconditionChanged: Processing config of folder.id=" + folder.id);
+                // Log.v(TAG, "applyCustomRunConditions: Processing config of folder(" + folder.label + ")");
                 Boolean folderCustomSyncConditionsEnabled = mPreferences.getBoolean(
                     Constants.DYN_PREF_OBJECT_CUSTOM_SYNC_CONDITIONS(Constants.PREF_OBJECT_PREFIX_FOLDER + folder.id), false
                 );
@@ -447,16 +447,16 @@ public class SyncthingService extends Service {
                     Boolean syncConditionsMet = runConditionMonitor.checkObjectSyncConditions(
                         Constants.PREF_OBJECT_PREFIX_FOLDER + folder.id
                     );
-                    Log.v(TAG, "onSyncPreconditionChanged: syncFolder(" + folder.id + ")=" + (syncConditionsMet ? "1" : "0"));
+                    Log.v(TAG, "applyCustomRunConditions: f(" + folder.label + ")=" + (syncConditionsMet ? "1" : "0"));
                     if (folder.paused != !syncConditionsMet) {
                         configXml.setFolderPause(folder.id, !syncConditionsMet);
-                        Log.d(TAG, "onSyncPreconditionChanged: syncFolder(" + folder.id + ")=" + (syncConditionsMet ? ">1" : ">0"));
+                        Log.d(TAG, "applyCustomRunConditions: f(" + folder.label + ")=" + (syncConditionsMet ? ">1" : ">0"));
                         configChanged = true;
                     }
                 }
             }
         } else {
-            Log.d(TAG, "onSyncPreconditionChanged: folders == null");
+            Log.d(TAG, "applyCustomRunConditions: folders == null");
             return;
         }
 
@@ -464,7 +464,7 @@ public class SyncthingService extends Service {
         List<Device> devices = configXml.getDevices(false);
         if (devices != null) {
             for (Device device : devices) {
-                // Log.v(TAG, "onSyncPreconditionChanged: Processing config of device.id=" + device.deviceID);
+                // Log.v(TAG, "applyCustomRunConditions: Processing config of device(" + device.name + ")");
                 Boolean deviceCustomSyncConditionsEnabled = mPreferences.getBoolean(
                     Constants.DYN_PREF_OBJECT_CUSTOM_SYNC_CONDITIONS(Constants.PREF_OBJECT_PREFIX_DEVICE + device.deviceID), false
                 );
@@ -472,21 +472,21 @@ public class SyncthingService extends Service {
                     Boolean syncConditionsMet = runConditionMonitor.checkObjectSyncConditions(
                         Constants.PREF_OBJECT_PREFIX_DEVICE + device.deviceID
                     );
-                    Log.v(TAG, "onSyncPreconditionChanged: syncDevice(" + device.deviceID + ")=" + (syncConditionsMet ? "1" : "0"));
+                    Log.v(TAG, "applyCustomRunConditions: d(" + device.name + ")=" + (syncConditionsMet ? "1" : "0"));
                     if (device.paused != !syncConditionsMet) {
                         configXml.setDevicePause(device.deviceID, !syncConditionsMet);
-                        Log.d(TAG, "onSyncPreconditionChanged: syncDevice(" + device.deviceID + ")=" + (syncConditionsMet ? ">1" : ">0"));
+                        Log.d(TAG, "applyCustomRunConditions: d(" + device.name + ")=" + (syncConditionsMet ? ">1" : ">0"));
                         configChanged = true;
                     }
                 }
             }
         } else {
-            Log.d(TAG, "onSyncPreconditionChanged: devices == null");
+            Log.d(TAG, "applyCustomRunConditions: devices == null");
             return;
         }
 
         if (configChanged) {
-            Log.v(TAG, "onSyncPreconditionChanged: Saving changed config to disk ...");
+            Log.v(TAG, "applyCustomRunConditions: Saving changed config to disk ...");
             configXml.saveChanges();
         }
     }
@@ -587,7 +587,7 @@ public class SyncthingService extends Service {
             onServiceStateChange(State.ACTIVE);
         }
         if (mRestApi != null && mRunConditionMonitor != null) {
-            mRestApi.onSyncPreconditionChanged(mRunConditionMonitor);
+            mRestApi.applyCustomRunConditions(mRunConditionMonitor);
         }
 
         /**
