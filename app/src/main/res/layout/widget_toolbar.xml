@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:checked="true"
             android:visibility="gone"
-            app:buttonTint="#b2ff59"/>
+            app:buttonTint="#76ff03"/>
 
         <android.support.v7.widget.AppCompatRadioButton
             android:id="@+id/btnStarting"
@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:checked="true"
             android:visibility="gone"
-            app:buttonTint="#fff159"/>
+            app:buttonTint="#fff103"/>
 
         <android.support.v7.widget.AppCompatRadioButton
             android:id="@+id/btnDisabled"
@@ -38,7 +38,7 @@
             android:layout_height="wrap_content"
             android:checked="true"
             android:visibility="gone"
-            app:buttonTint="#c62828"/>
+            app:buttonTint="#ffae03"/>
 
     </RelativeLayout>
 
