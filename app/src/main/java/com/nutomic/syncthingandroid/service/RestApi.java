@@ -64,6 +64,8 @@ public class RestApi {
 
     private static final String TAG = "RestApi";
 
+    private static final Boolean ENABLE_VERBOSE_LOG = false;
+
     /**
      * Compares folders by labels, uses the folder ID as fallback if the label is empty
      */
@@ -166,7 +168,7 @@ public class RestApi {
      * Gets local device ID, syncthing version and config, then calls all OnApiAvailableListeners.
      */
     public void readConfigFromRestApi() {
-        Log.v(TAG, "Reading config from REST ...");
+        Log.d(TAG, "Reading config from REST ...");
         synchronized (mAsyncQueryCompleteLock) {
             asyncQueryVersionComplete = false;
             asyncQueryConfigComplete = false;
@@ -201,7 +203,7 @@ public class RestApi {
 
     private void checkReadConfigFromRestApiCompleted() {
         if (asyncQueryVersionComplete && asyncQueryConfigComplete && asyncQuerySystemStatusComplete) {
-            Log.v(TAG, "Reading config from REST completed.");
+            Log.d(TAG, "Reading config from REST completed.");
             mOnApiAvailableListener.onApiAvailable();
         }
     }
@@ -219,11 +221,9 @@ public class RestApi {
         if (!configParseSuccess) {
             throw new RuntimeException("config is null: " + result);
         }
-        Log.v(TAG, "onReloadConfigComplete: Successfully parsed configuration.");
-        if (BuildConfig.DEBUG) {
-            Log.v(TAG, "mConfig.pendingDevices = " + new Gson().toJson(mConfig.pendingDevices));
-            Log.v(TAG, "mConfig.remoteIgnoredDevices = " + new Gson().toJson(mConfig.remoteIgnoredDevices));
-        }
+        Log.d(TAG, "onReloadConfigComplete: Successfully parsed configuration.");
+        LogV("mConfig.pendingDevices = " + new Gson().toJson(mConfig.pendingDevices));
+        LogV("mConfig.remoteIgnoredDevices = " + new Gson().toJson(mConfig.remoteIgnoredDevices));
 
         // Update cached device and folder information stored in the mCompletion model.
         mCompletion.updateFromConfig(getDevices(true), getFolders());
@@ -340,10 +340,8 @@ public class RestApi {
                         }
                     }
                     device.ignoredFolders.add(ignoredFolder);
-                    if (BuildConfig.DEBUG) {
-                        Log.v(TAG, "device.pendingFolders = " + new Gson().toJson(device.pendingFolders));
-                        Log.v(TAG, "device.ignoredFolders = " + new Gson().toJson(device.ignoredFolders));
-                    }
+                    LogV("device.pendingFolders = " + new Gson().toJson(device.pendingFolders));
+                    LogV("device.ignoredFolders = " + new Gson().toJson(device.ignoredFolders));
                     sendConfig();
                     Log.d(TAG, "Ignored folder [" + folderId + "] announced by device [" + deviceId + "]");
 
@@ -521,7 +519,7 @@ public class RestApi {
         if (devices.isEmpty()) {
             throw new RuntimeException("RestApi.getLocalDevice: devices is empty.");
         }
-        Log.v(TAG, "getLocalDevice: Looking for local device ID " + mLocalDeviceId);
+        LogV("getLocalDevice: Looking for local device ID " + mLocalDeviceId);
         for (Device d : devices) {
             if (d.deviceID.equals(mLocalDeviceId)) {
                 return deepCopy(d, Device.class);
@@ -880,6 +878,12 @@ public class RestApi {
                 Log.v(TAG, "applyCustomRunConditions: Sending changed config ...");
                 sendConfig();
             }
+        }
+    }
+
+    private void LogV(String logMessage) {
+        if (ENABLE_VERBOSE_LOG) {
+            Log.v(TAG, logMessage);
         }
     }
 }
