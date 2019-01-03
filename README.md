@@ -19,7 +19,7 @@ A wrapper of [Syncthing](https://github.com/syncthing/syncthing) for Android. He
 <img src="app/src/main/play/en-GB/listing/phoneScreenshots/screenshot_phone_12.png" alt="screenshot 1" width="200" /> <img src="app/src/main/play/en-GB/listing/phoneScreenshots/screenshot_phone_11.png" alt="screenshot 2" width="200" /> <img src="app/src/main/play/en-GB/listing/phoneScreenshots/screenshot_phone_09.png" alt="screenshot 3" width="200" />
 
 # Privacy Policy
-See our document on privacy: [privacy-policy.md](https://github.com/Catfriend1/syncthing-android/privacy-policy.md).
+See our document on privacy: [privacy-policy.md](https://github.com/Catfriend1/syncthing-android/blob/master/privacy-policy.md).
 
 # Goal of the forked version
 - Develop and try out enhancements together
