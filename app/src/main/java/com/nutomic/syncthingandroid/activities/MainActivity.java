@@ -116,11 +116,13 @@ public class MainActivity extends SyncthingActivity
         }
 
         // Update status light indicating if syncthing is running.
-        Button btnRunning = (Button) findViewById(R.id.btnRunning);
-        Button btnNotRunning = (Button) findViewById(R.id.btnNotRunning);
-        if (btnRunning != null && btnNotRunning != null) {
-            btnRunning.setVisibility(currentState == SyncthingService.State.ACTIVE ? View.VISIBLE : View.GONE);
-            btnNotRunning.setVisibility(currentState != SyncthingService.State.ACTIVE ? View.VISIBLE : View.GONE);
+        Button btnDisabled = (Button) findViewById(R.id.btnDisabled);
+        Button btnStarting = (Button) findViewById(R.id.btnStarting);
+        Button btnActive = (Button) findViewById(R.id.btnActive);
+        if (btnDisabled != null && btnStarting != null && btnActive != null) {
+            btnActive.setVisibility(currentState == SyncthingService.State.ACTIVE ? View.VISIBLE : View.GONE);
+            btnStarting.setVisibility(currentState == SyncthingService.State.STARTING ? View.VISIBLE : View.GONE);
+            btnDisabled.setVisibility(currentState != SyncthingService.State.ACTIVE && currentState != SyncthingService.State.STARTING ? View.VISIBLE : View.GONE);
         }
 
         switch (currentState) {
