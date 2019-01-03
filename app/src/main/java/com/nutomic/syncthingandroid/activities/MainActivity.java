@@ -492,6 +492,7 @@ public class MainActivity extends SyncthingActivity
      * Displays dialog asking user to accept/deny usage reporting.
      */
     private void showUsageReportingDialog(RestApi restApi) {
+        Log.v(TAG, "showUsageReportingDialog triggered.");
         final DialogInterface.OnClickListener listener = (dialog, which) -> {
             try {
                 switch (which) {
