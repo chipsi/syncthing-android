@@ -15,7 +15,9 @@ You can choose if Syncthing-Fork is allowed to use Android's "location" permissi
 
 ## Information Collection and Use
 **The developer of the Syncthing-Fork Wrapper doesn't have access to or gather any form of data from users of the application.** "data" for example refers to personal data, configuration files, unique IDs, files synchronized by Syncthing. As the Syncthing-Fork Android app is a wrapper and graphical user interface for Syncthing, it contains and uses the "third party" Syncthing module built from the official source code at [https://github.com/syncthing/syncthing/releases](https://github.com/syncthing/syncthing/releases). Syncthing as the "synchronization functionality core" may gather data from users, for example, it generates unique ID's for usage reporting and it may upload usage reports.
-**To state this clearly: Syncthing is a different project and you should look up their privacy policy at [https://www.syncthing.net](https://www.syncthing.net).**
+
+**To state this clearly:
+[Syncthing](https://www.syncthing.net) is a different project and you should look up their privacy policy at [https://www.syncthing.net](https://www.syncthing.net).**
 
 
 ## Personal Data
