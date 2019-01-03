@@ -83,8 +83,8 @@ public class MainActivity extends SyncthingActivity
      */
     private static final long USAGE_REPORTING_DIALOG_DELAY = TimeUnit.DAYS.toMillis(3);
 
-    private AlertDialog mBatteryOptimizationsDialog;
     private AlertDialog mQrCodeDialog;
+    private AlertDialog mUsageReportingDialog;
     private Dialog mRestartDialog;
 
     private SyncthingService.State mSyncthingServiceState = SyncthingService.State.INIT;
@@ -350,6 +350,7 @@ public class MainActivity extends SyncthingActivity
             outState.putString(DEVICEID_KEY, deviceID.getText().toString());
         }
         Util.dismissDialogSafe(mRestartDialog, this);
+        Util.dismissDialogSafe(mUsageReportingDialog, this);
     }
 
     @Override
@@ -371,17 +372,13 @@ public class MainActivity extends SyncthingActivity
     }
 
     public void showRestartDialog(){
-        mRestartDialog = createRestartDialog();
-        mRestartDialog.show();
-    }
-
-    private Dialog createRestartDialog(){
-        return  new AlertDialog.Builder(this)
+        mRestartDialog = new AlertDialog.Builder(this)
                 .setMessage(R.string.dialog_confirm_restart)
                 .setPositiveButton(android.R.string.yes, (dialogInterface, i1) -> this.startService(new Intent(this, SyncthingService.class)
                         .setAction(SyncthingService.ACTION_RESTART)))
                 .setNegativeButton(android.R.string.no, null)
                 .create();
+        mRestartDialog.show();
     }
 
     public void showQrCodeDialog(String deviceId, Bitmap qrCode) {
@@ -520,7 +517,8 @@ public class MainActivity extends SyncthingActivity
                     .inflate(R.layout.dialog_usage_reporting, null);
             TextView tv = v.findViewById(R.id.example);
             tv.setText(report);
-            new AlertDialog.Builder(MainActivity.this)
+            Util.dismissDialogSafe(mUsageReportingDialog, MainActivity.this);
+            mUsageReportingDialog = new AlertDialog.Builder(MainActivity.this)
                     .setTitle(R.string.usage_reporting_dialog_title)
                     .setView(v)
                     .setPositiveButton(R.string.yes, listener)
