@@ -420,7 +420,6 @@ public class SyncthingService extends Service {
             }
         }
 
-        Log.v(TAG, "applyCustomRunConditions: Event fired while syncthing is not running.");
         Boolean configChanged = false;
         ConfigXml configXml;
 
@@ -487,8 +486,10 @@ public class SyncthingService extends Service {
         }
 
         if (configChanged) {
-            LogV("applyCustomRunConditions: Saving changed config to disk ...");
+            LogV("applyCustomRunConditions: Saving changed config ...");
             configXml.saveChanges();
+        } else {
+            LogV("applyCustomRunConditions: No action was necessary.");
         }
     }
 
