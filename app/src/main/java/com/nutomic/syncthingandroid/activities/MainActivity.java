@@ -121,7 +121,7 @@ public class MainActivity extends SyncthingActivity
                 // Check if the usage reporting minimum delay passed by.
                 Boolean usageReportingDelayPassed = (new Date().getTime() > getFirstStartTime() + USAGE_REPORTING_DIALOG_DELAY);
                 RestApi restApi = getApi();
-                if (usageReportingDelayPassed && restApi != null && !restApi.isUsageReportingDecided()) {
+                if (usageReportingDelayPassed && restApi != null && restApi.isConfigLoaded() && !restApi.isUsageReportingDecided()) {
                     showUsageReportingDialog(restApi);
                 }
                 break;
