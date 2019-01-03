@@ -36,6 +36,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -114,9 +115,15 @@ public class MainActivity extends SyncthingActivity
             oneTimeShot = false;
         }
 
+        // Update status light indicating if syncthing is running.
+        Button btnRunning = (Button) findViewById(R.id.btnRunning);
+        Button btnNotRunning = (Button) findViewById(R.id.btnNotRunning);
+        if (btnRunning != null && btnNotRunning != null) {
+            btnRunning.setVisibility(currentState == SyncthingService.State.ACTIVE ? View.VISIBLE : View.GONE);
+            btnNotRunning.setVisibility(currentState != SyncthingService.State.ACTIVE ? View.VISIBLE : View.GONE);
+        }
+
         switch (currentState) {
-            case STARTING:
-                break;
             case ACTIVE:
                 // Check if the usage reporting minimum delay passed by.
                 Boolean usageReportingDelayPassed = (new Date().getTime() > getFirstStartTime() + USAGE_REPORTING_DIALOG_DELAY);
@@ -127,8 +134,6 @@ public class MainActivity extends SyncthingActivity
                 break;
             case ERROR:
                 finish();
-                break;
-            case DISABLED:
                 break;
         }
     }
