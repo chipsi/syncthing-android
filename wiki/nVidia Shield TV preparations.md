@@ -7,16 +7,23 @@ The following instructions to solve the problem by preparing the Android TV for 
 * Wait for ip:port to show
 * Locate / Download Google platform-tools, navigate to folder where adb.exe resides. Open Command Prompt here
 * Type the following:
+
     *adb start-server*
+
     *adb connect ip:port* (example: *adb connect 192.168.1.76:5555*)
 * Enable "Allow Network debugging" on the prompt that pops up on the nVidia Shield Android TV
 * Then type the following to check weather you are successfully connected. Should state one device, and "connected"
+
     *adb devices*
 * To whitelist Syncthing-Fork from doze / Android Battery Optimization, type the following
+
     *adb shell dumpsys deviceidle whitelist +com.github.catfriend1.syncthingandroid*
+
     *adb shell dumpsys deviceidle whitelist +com.github.catfriend1.syncthingandroid.debug*
 * If you ever want to revert this change, type the following in ADB
+
     *adb shell dumpsys deviceidle whitelist -com.github.catfriend1.syncthingandroid*
+
     *adb shell dumpsys deviceidle whitelist -com.github.catfriend1.syncthingandroid.debug*
 
 Related:
