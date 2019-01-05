@@ -50,10 +50,10 @@
             android:contentDescription="@string/grant_permission"
             android:drawableStart="@android:drawable/ic_menu_save"
             android:drawableLeft="@android:drawable/ic_menu_save"
-            android:paddingStart="40dp"
-            android:paddingLeft="40dp"
-            android:paddingEnd="40dp"
-            android:paddingRight="40dp"
+            android:paddingStart="@dimen/grant_button_padding"
+            android:paddingLeft="@dimen/grant_button_padding"
+            android:paddingEnd="@dimen/grant_button_padding"
+            android:paddingRight="@dimen/grant_button_padding"
             android:text="@string/grant_permission"
             android:textSize="12sp" />
 
