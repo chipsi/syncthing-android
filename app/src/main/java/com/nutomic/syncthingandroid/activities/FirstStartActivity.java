@@ -5,6 +5,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.UiModeManager;
 import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -431,14 +432,29 @@ public class FirstStartActivity extends Activity {
     @SuppressLint("InlinedApi")
     @TargetApi(23)
     private void requestIgnoreDozePermission() {
+        Boolean intentFailed = false;
         Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
         intent.setData(Uri.parse("package:" + getPackageName()));
         try {
-            startActivity(intent);
+            ComponentName componentName = intent.resolveActivity(getPackageManager());
+            if (componentName != null) {
+                String className = componentName.getClassName();
+                if (className != null && !className.equalsIgnoreCase("com.android.tv.settings.EmptyStubActivity")) {
+                    // Launch "Exempt from doze mode?" dialog.
+                    startActivity(intent);
+                    return;
+                }
+                intentFailed = true;
+            } else {
+                Log.w(TAG, "Request ignore battery optimizations not supported");
+                intentFailed = true;
+            }
         } catch (ActivityNotFoundException e) {
-            // Some devices dont seem to support this request (according to Google Play
-            // crash reports).
             Log.w(TAG, "Request ignore battery optimizations not supported", e);
+            intentFailed = true;
+        }
+        if (intentFailed) {
+            // Some devices don't support this request.
             Toast.makeText(this, R.string.dialog_disable_battery_optimizations_not_supported, Toast.LENGTH_LONG).show();
         }
     }
