@@ -24,6 +24,7 @@
             android:paddingRight="@dimen/desc_padding"
             android:text="@string/welcome_title"
             android:textColor="@android:color/white"
+            android:textSize="@dimen/welcome_title"
             app:autoSizeTextType="uniform" />
 
         <TextView

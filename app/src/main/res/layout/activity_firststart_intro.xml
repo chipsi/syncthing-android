@@ -23,7 +23,7 @@
             android:paddingRight="@dimen/desc_padding"
             android:text="@string/welcome_title"
             android:textColor="@android:color/white"
-            android:textSize="18sp" />
+            android:textSize="@dimen/welcome_title" />
 
         <RelativeLayout
             android:id="@+id/inner"
