@@ -43,6 +43,7 @@ import com.nutomic.syncthingandroid.SyncthingApp;
 import com.nutomic.syncthingandroid.service.Constants;
 import com.nutomic.syncthingandroid.service.SyncthingRunnable.ExecutableNotFoundException;
 import com.nutomic.syncthingandroid.util.ConfigXml;
+import com.nutomic.syncthingandroid.util.Util;
 
 import java.lang.ref.WeakReference;
 
@@ -237,7 +238,14 @@ public class FirstStartActivity extends Activity {
             if (!haveIgnoreDozePermission()) {
                 Toast.makeText(this, R.string.toast_ignore_doze_permission_required,
                         Toast.LENGTH_LONG).show();
-                return;
+                /**
+                 * a) Phones, tablets: The ignore doze permission is mandatory.
+                 * b) TVs: The ignore doze permission is optional as it can only set by ADB on Android 8+.
+                 */
+                if (!mRunningOnTV) {
+                    // Case a) - Prevent user moving on with the slides.
+                    return;
+                }
             }
         }
 
@@ -246,7 +254,18 @@ public class FirstStartActivity extends Activity {
             // Move to next slide.
             mViewPager.setCurrentItem(current);
             mBackButton.setVisibility(View.VISIBLE);
-            if (current == mSlidePosKeyGeneration) {
+            if (current == mSlidePosIgnoreDozePermission) {
+                if (mRunningOnTV) {
+                    /**
+                     * Display workaround notice: Without workaround SyncthingNative can't run reliably on TV's running Android 8+.
+                     * See issue https://github.com/Catfriend1/syncthing-android/issues/192
+                     */
+                    TextView ignoreDozeOsNotice = (TextView) findViewById(R.id.tvIgnoreDozePermissionOsNotice);
+                    ignoreDozeOsNotice.setText(getString(R.string.ignore_doze_permission_os_notice, getString(R.string.wiki_url), "Android-TV-preparations"));
+                    ignoreDozeOsNotice.setVisibility(View.VISIBLE);
+                }
+            }
+            else if (current == mSlidePosKeyGeneration) {
                 onKeyGenerationSlideShown();
             }
         } else {
