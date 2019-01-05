@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg_screen3">
@@ -24,8 +23,7 @@
             android:paddingRight="@dimen/desc_padding"
             android:text="@string/welcome_title"
             android:textColor="@android:color/white"
-            android:textSize="@dimen/welcome_title"
-            app:autoSizeTextType="uniform" />
+            android:textSize="@dimen/welcome_title" />
 
         <TextView
             android:id="@+id/slide_title"
@@ -84,9 +82,7 @@
             android:text="@string/location_permission_desc"
             android:textAlignment="center"
             android:textColor="@android:color/white"
-            app:autoSizeMaxTextSize="@dimen/slide_desc_min"
-            app:autoSizeMinTextSize="@dimen/slide_desc_max"
-            app:autoSizeTextType="uniform"/>
+            android:textSize="@dimen/slide_desc" />
 
     </LinearLayout>
 
