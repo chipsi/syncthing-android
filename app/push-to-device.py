@@ -48,15 +48,31 @@ print ('')
 current_dir = os.path.dirname(os.path.realpath(__file__))
 enable_push_to_device = os.path.realpath(os.path.join(current_dir, "..", "#enable_push_to_device"))
 
-# Check if push to device is enabled.
-if not enable_push_to_device or not os.path.isfile(enable_push_to_device):
-    print('[INFO] push-to-device after build is DISABLED. To enable it, create the file \'' + enable_push_to_device + '\'')
-    sys.exit(0)
+# Calculate certificate hash of built APKs and output if it matches a known release channel.
+# See the wiki for more details: wiki/Switch-between-releases_Verify-APK-is-genuine.md
+release_apk = os.path.realpath(os.path.join(current_dir, 'build', 'outputs', 'apk', 'release', 'app-release.apk'))
+if release_apk and os.path.isfile(release_apk):
+    print('[INFO] release_apk=' + release_apk)
+    if (sys.platform == 'linux'):
+        try:
+            subprocess.check_call('keytool -list -printcert -jarfile "' + release_apk + '" | grep "SHA1: " | cut -d " " -f 3 | xxd -r -p | openssl base64')
+        except:
+            sys.exit(0)
 
 debug_apk = os.path.realpath(os.path.join(current_dir, 'build', 'outputs', 'apk', 'debug', 'app-debug.apk'))
 if not debug_apk or not os.path.isfile(debug_apk):
     fail('[ERROR] app-debug.apk not found.');
 print('[INFO] debug_apk=' + debug_apk)
+if (sys.platform == 'linux'):
+    try:
+        subprocess.check_call('keytool -list -printcert -jarfile "' + debug_apk + '" | grep "SHA1: " | cut -d " " -f 3 | xxd -r -p | openssl base64')
+    except:
+        sys.exit(0)
+
+# Check if push to device is enabled.
+if not enable_push_to_device or not os.path.isfile(enable_push_to_device):
+    print('[INFO] push-to-device after build is DISABLED. To enable it, create the file \'' + enable_push_to_device + '\'')
+    sys.exit(0)
 
 # Check if adb is available.
 adb_bin = which("adb");
