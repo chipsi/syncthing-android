@@ -587,12 +587,7 @@ public class FolderActivity extends SyncthingActivity
     }
 
     private void showDeleteDialog(){
-        mDeleteDialog = createDeleteDialog();
-        mDeleteDialog.show();
-    }
-
-    private Dialog createDeleteDialog(){
-        return new AlertDialog.Builder(this)
+        mDeleteDialog = new AlertDialog.Builder(this)
                 .setMessage(R.string.remove_folder_confirm)
                 .setPositiveButton(android.R.string.yes, (dialogInterface, i) -> {
                     mConfig.removeFolder(getApi(), mFolder.id);
@@ -601,6 +596,7 @@ public class FolderActivity extends SyncthingActivity
                 })
                 .setNegativeButton(android.R.string.no, null)
                 .create();
+        mDeleteDialog.show();
     }
 
     @Override
