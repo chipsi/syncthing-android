@@ -225,9 +225,6 @@ public class FolderActivity extends SyncthingActivity
             if (savedInstanceState != null) {
                 mFolder = new Gson().fromJson(savedInstanceState.getString("mFolder"), Folder.class);
                 mFolderUri = savedInstanceState.getParcelable("mFolderUri");
-                if (savedInstanceState.getBoolean(IS_SHOW_DISCARD_DIALOG)){
-                    showDiscardDialog();
-                }
             }
             if (mFolder == null) {
                 initFolder();
@@ -245,15 +242,11 @@ public class FolderActivity extends SyncthingActivity
             mPathView.setEnabled(false);
         }
 
-        if (savedInstanceState != null){
-            if (savedInstanceState.getBoolean(IS_SHOWING_DELETE_DIALOG)){
+        if (savedInstanceState != null) {
+            if (savedInstanceState.getBoolean(IS_SHOWING_DELETE_DIALOG)) {
                 showDeleteDialog();
-            }
-        }
-
-        if (savedInstanceState != null){
-            if (savedInstanceState.getBoolean(IS_SHOWING_DELETE_DIALOG)){
-                showDeleteDialog();
+            } else if (savedInstanceState.getBoolean(IS_SHOW_DISCARD_DIALOG)) {
+                showDiscardDialog();
             }
         }
     }
@@ -388,13 +381,14 @@ public class FolderActivity extends SyncthingActivity
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+
         outState.putBoolean(IS_SHOWING_DELETE_DIALOG, mDeleteDialog != null && mDeleteDialog.isShowing());
         Util.dismissDialogSafe(mDeleteDialog, this);
 
-        if (mIsCreateMode){
-            outState.putBoolean(IS_SHOW_DISCARD_DIALOG, mDiscardDialog != null && mDiscardDialog.isShowing());
-            Util.dismissDialogSafe(mDiscardDialog, this);
+        outState.putBoolean(IS_SHOW_DISCARD_DIALOG, mDiscardDialog != null && mDiscardDialog.isShowing());
+        Util.dismissDialogSafe(mDiscardDialog, this);
 
+        if (mIsCreateMode) {
             outState.putString("mFolder", new Gson().toJson(mFolder));
             outState.putParcelable("mFolderUri", mFolderUri);
         }
