@@ -223,7 +223,8 @@ public class FolderActivity extends SyncthingActivity
 
         if (mIsCreateMode) {
             if (savedInstanceState != null) {
-                mFolder = new Gson().fromJson(savedInstanceState.getString("folder"), Folder.class);
+                mFolder = new Gson().fromJson(savedInstanceState.getString("mFolder"), Folder.class);
+                mFolderUri = savedInstanceState.getParcelable("mFolderUri");
                 if (savedInstanceState.getBoolean(IS_SHOW_DISCARD_DIALOG)){
                     showDiscardDialog();
                 }
@@ -393,6 +394,9 @@ public class FolderActivity extends SyncthingActivity
         if (mIsCreateMode){
             outState.putBoolean(IS_SHOW_DISCARD_DIALOG, mDiscardDialog != null && mDiscardDialog.isShowing());
             Util.dismissDialogSafe(mDiscardDialog, this);
+
+            outState.putString("mFolder", new Gson().toJson(mFolder));
+            outState.putParcelable("mFolderUri", mFolderUri);
         }
     }
 
@@ -410,7 +414,13 @@ public class FolderActivity extends SyncthingActivity
 
     @Override
     public void onServiceStateChange(SyncthingService.State currentState) {
+        if (mFolderNeedsToUpdate) {
+            Log.d(TAG, "onServiceStateChange: Suppressing reload of folder config as changes were made to that folder in the meantime.");
+            return;
+        }
+
         if (!mIsCreateMode) {
+            Log.d(TAG, "onServiceStateChange: (Re)loading folder config ...");
             RestApi restApi = getApi();
             List<Folder> folders = mConfig.getFolders(restApi);
             String passedId = getIntent().getStringExtra(EXTRA_FOLDER_ID);
@@ -427,7 +437,6 @@ public class FolderActivity extends SyncthingActivity
                 return;
             }
             mConfig.getFolderIgnoreList(restApi, mFolder, this::onReceiveFolderIgnoreList);
-            checkWriteAndUpdateUI();
         }
 
         // If the extra is set, we should automatically share the current folder with the given device.
@@ -438,8 +447,8 @@ public class FolderActivity extends SyncthingActivity
             mFolderNeedsToUpdate = true;
         }
 
+        checkWriteAndUpdateUI();
         attemptToApplyVersioningConfig();
-
         updateViewsAndSetListeners();
     }
 
