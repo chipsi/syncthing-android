@@ -295,27 +295,49 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
      * Precondition: action != null
      */
     private void onItemFinished(String action, String error, File updatedFile) {
+        String relativeFilePath = updatedFile.toString();
         if (!TextUtils.isEmpty(error)) {
-            Log.e(TAG, "onItemFinished: Error \"" + error + "\" reported on file: " + updatedFile.toString());
+            Log.e(TAG, "onItemFinished: Error \"" + error + "\" reported on file: " + relativeFilePath);
             return;
         }
 
         switch (action) {
             case "delete":          // file deleted
-                Log.i(TAG, "Deleting file from MediaStore: " + updatedFile.toString());
+                Log.i(TAG, "Deleting file from MediaStore: " + relativeFilePath);
                 Uri contentUri = MediaStore.Files.getContentUri("external");
                 ContentResolver resolver = mContext.getContentResolver();
-                resolver.delete(contentUri, MediaStore.Images.ImageColumns.DATA + " LIKE ?",
-                        new String[]{updatedFile.getPath()});
+                LoggingAsyncQueryHandler asyncQueryHandler = new LoggingAsyncQueryHandler(resolver);
+                asyncQueryHandler.startDelete(
+                    0,                          // this will be passed to "onUpdatedComplete#token"
+                    relativeFilePath,           // this will be passed to "onUpdatedComplete#cookie"
+                    contentUri,
+                    MediaStore.Images.ImageColumns.DATA + " LIKE ?",
+                    new String[]{updatedFile.getPath()}
+                );
                 break;
             case "update":          // file contents changed
             case "metadata":        // file metadata changed but not contents
-                Log.i(TAG, "Rescanning file via MediaScanner: " + updatedFile.toString());
+                Log.i(TAG, "Rescanning file via MediaScanner: " + relativeFilePath);
                 MediaScannerConnection.scanFile(mContext, new String[]{updatedFile.getPath()},
                         null, null);
                 break;
             default:
                 Log.w(TAG, "onItemFinished: Unhandled action \"" + action + "\"");
+        }
+    }
+
+    private static class LoggingAsyncQueryHandler extends AsyncQueryHandler {
+
+        public LoggingAsyncQueryHandler(ContentResolver contentResolver) {
+            super(contentResolver);
+        }
+
+        @Override
+        protected void onDeleteComplete(int token, Object cookie, int result) {
+            super.onUpdateComplete(token, cookie, result);
+            if (result == 1 && cookie != null) {
+                // ToDo Log.v(TAG, "onItemFinished: onDeleteComplete: [ok] file=" + cookie.toString() + ", token=" + Integer.toString(token));
+            }
         }
     }
 }
