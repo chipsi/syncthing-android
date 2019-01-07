@@ -489,8 +489,8 @@ public class SettingsActivity extends SyncthingActivity {
                         webUITcpPort = Integer.parseInt((String) o);
                     } catch (Exception e) {
                     }
-                    if (webUITcpPort < 1 || webUITcpPort > 65535) {
-                        Toast.makeText(getActivity(), getResources().getString(R.string.invalid_port_number, 1, 65535), Toast.LENGTH_LONG)
+                    if (webUITcpPort < 1024 || webUITcpPort > 65535) {
+                        Toast.makeText(getActivity(), getResources().getString(R.string.invalid_port_number, 1024, 65535), Toast.LENGTH_LONG)
                                 .show();
                         return false;
                     }
