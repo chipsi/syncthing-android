@@ -274,9 +274,13 @@ public class Util {
                 continue;
             }
             String[] words = line.split("\\s+");
-            if (words.length > 4) {
-                if (words[0].equals("tcp")) {
-                    if (words[3].endsWith(":" + Integer.toString(port))) {
+            if (words.length > 5) {
+                String protocol = words[0];
+                String localAddress = words[3];
+                String connState = words[5];
+                if (protocol.equals("tcp") || protocol.equals("tcp6")) {
+                    if (localAddress.endsWith(":" + Integer.toString(port)) &&
+                            connState.equalsIgnoreCase("LISTEN")) {
                         // Port is listening.
                         return true;
                     }
