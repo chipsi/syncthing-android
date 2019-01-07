@@ -34,6 +34,7 @@ import com.nutomic.syncthingandroid.R;
 import com.nutomic.syncthingandroid.SyncthingApp;
 import com.nutomic.syncthingandroid.model.Config;
 import com.nutomic.syncthingandroid.model.Device;
+import com.nutomic.syncthingandroid.model.Gui;
 import com.nutomic.syncthingandroid.model.Options;
 import com.nutomic.syncthingandroid.service.Constants;
 import com.nutomic.syncthingandroid.service.NotificationHandler;
@@ -169,7 +170,7 @@ public class SettingsActivity extends SyncthingActivity {
         private RestApi mRestApi;
 
         private Options mOptions;
-        private Config.Gui mGui;
+        private Gui mGui;
 
         private Boolean mPendingConfig = false;
 
