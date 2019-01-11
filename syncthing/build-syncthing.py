@@ -346,12 +346,12 @@ for target in BUILD_TARGETS:
     environ.update({
         'GOPATH': module_dir,
         'CGO_ENABLED': '1',
-        'CC': os.path.join(standalone_ndk_dir, 'bin', target['cc'])
     })
 
     print('Building syncthing version', syncthingVersion);
     subprocess.check_call([
                               go_bin, 'run', 'build.go', '-goos', 'android', '-goarch', target['goarch'],
+                              '-cc', os.path.join(standalone_ndk_dir, 'bin', target['cc']),
                               '-version', syncthingVersion
                           ] + pkg_argument + ['-no-upgrade', 'build'], env=environ, cwd=syncthing_dir)
 
