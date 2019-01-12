@@ -51,7 +51,7 @@ Please report any problems you encounter via Github.</string>
 
     <string name="ignore">Ignore</string>
 
-    <string name="page_x_of_y">Page %1$i of %2$i</string>
+    <string name="page_x_of_y">Page %1$s of %2$s</string>
 
     <!-- MainActivity -->
 
