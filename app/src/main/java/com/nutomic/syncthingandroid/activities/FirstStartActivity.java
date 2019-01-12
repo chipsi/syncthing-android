@@ -285,6 +285,7 @@ public class FirstStartActivity extends Activity {
             mDots[i].setText(Html.fromHtml("&#8226;"));
             mDots[i].setTextSize(35);
             mDots[i].setTextColor(mSlides[currentPage].dotColorInActive);
+            mDots[i].setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
             mDotsLayout.addView(mDots[i]);
         }
 
