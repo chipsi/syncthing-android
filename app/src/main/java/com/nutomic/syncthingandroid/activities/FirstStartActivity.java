@@ -288,7 +288,7 @@ public class FirstStartActivity extends Activity {
 
             // Prevent TalkBack from announcing a decorative TextView.
             mDots[i].setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-            mDots[i].setContentDescription("\u00A0");
+            mDots[i].setContentDescription(getString(R.string.page_x_of_y, i, mDots.length));
             mDotsLayout.addView(mDots[i]);
         }
 
