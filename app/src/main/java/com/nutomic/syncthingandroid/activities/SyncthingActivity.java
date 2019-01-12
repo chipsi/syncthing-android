@@ -43,6 +43,17 @@ public abstract class SyncthingActivity extends AppCompatActivity implements Ser
             return;
         }
         toolbar.setNavigationContentDescription(R.string.main_menu);
+        if (toolbar != null) {
+            int childrenCount = toolbar.getChildCount();
+            for (int i = 0; i < childrenCount; i++) {
+                if (toolbar.getChildAt(i) instanceof ImageButton) {
+                    // toolbar.getChildAt(i).setShowAsAction(SHOW_AS_ACTION_ALWAYS);
+                    toolbar.getChildAt(i).setFocusable(true);
+                    toolbar.getChildAt(i).setFocusableInTouchMode(true);
+                    break;
+                }
+            }
+        }
 
         setSupportActionBar(toolbar);
         //noinspection ConstantConditions
