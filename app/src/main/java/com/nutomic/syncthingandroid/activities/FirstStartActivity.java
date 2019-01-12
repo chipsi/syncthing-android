@@ -285,7 +285,10 @@ public class FirstStartActivity extends Activity {
             mDots[i].setText(Html.fromHtml("&#8226;"));
             mDots[i].setTextSize(35);
             mDots[i].setTextColor(mSlides[currentPage].dotColorInActive);
+
+            // Prevent TalkBack from announcing a decorative TextView.
             mDots[i].setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+            mDots[i].setContentDescription("\u00A0");
             mDotsLayout.addView(mDots[i]);
         }
 
