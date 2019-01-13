@@ -51,19 +51,11 @@ public abstract class SyncthingActivity extends AppCompatActivity implements Ser
         int childrenCount = toolbar.getChildCount();
         for (int i = 0; i < childrenCount; i++) {
             if (toolbar.getChildAt(i) instanceof View) {
-                //toolbar.getChildAt(i).setFocusable(true);
-                //toolbar.getChildAt(i).setFocusableInTouchMode(true);
-                //toolbar.getChildAt(i).setClickable(true);
+                toolbar.getChildAt(i).setFocusable(true);
                 Log.v(TAG, "MIP" + toolbar.getChildAt(i).getId());
                 break;
             }
         }
-
-        View subView = (View) getWindow().getDecorView().findViewById(android.R.id.home);
-        if (subView != null) {
-            Log.v(TAG, "MIP Gut");
-            subView.setFocusable(true);
-        }    
 
         setSupportActionBar(toolbar);
         //noinspection ConstantConditions
