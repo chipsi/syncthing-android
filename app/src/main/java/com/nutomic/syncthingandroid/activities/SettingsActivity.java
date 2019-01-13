@@ -26,6 +26,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.ListAdapter;
 import android.widget.Toast;
+import android.view.KeyEvent;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
@@ -102,6 +103,15 @@ public class SettingsActivity extends SyncthingActivity {
         SyncthingService syncthingService = (SyncthingService) syncthingServiceBinder.getService();
         mSettingsFragment.setService(syncthingService);
         syncthingService.registerOnServiceStateChangeListener(mSettingsFragment);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent e) {
+        if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+            finish();
+            return true;
+        }
+        return super.onKeyDown(keyCode, e);
     }
 
     public static class SettingsFragment extends PreferenceFragment
