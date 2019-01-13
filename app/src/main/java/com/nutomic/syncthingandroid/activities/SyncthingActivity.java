@@ -43,6 +43,7 @@ public abstract class SyncthingActivity extends AppCompatActivity implements Ser
             return;
         }
         toolbar.setNavigationContentDescription(R.string.main_menu);
+        toolbar.setTouchscreenBlocksFocus(false);
 
         setSupportActionBar(toolbar);
         //noinspection ConstantConditions
