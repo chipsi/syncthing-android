@@ -25,7 +25,7 @@
                 android:id="@+id/menu"
                 android:layout_width="24sp"
                 android:layout_height="24sp"
-                android:background="@drawable/ic_syncthing_logo"
+                android:background="@drawable/btn_main_menu"
                 android:contentDescription="@null"
                 android:clickable="true"
                 android:focusable="true"
