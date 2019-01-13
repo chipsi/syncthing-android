@@ -11,8 +11,11 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <include layout="@layout/widget_toolbar" />
+
         <RelativeLayout
-            android:id="@+id/inner"
+            android:visibility="gone"
+            android:id="@+id/tvToolbar"
             android:background="?colorPrimary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

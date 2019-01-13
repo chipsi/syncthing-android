@@ -9,12 +9,14 @@ import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 // import android.util.Log;
+import android.view.View;
 
 import com.annimon.stream.Stream;
 import com.nutomic.syncthingandroid.R;
 import com.nutomic.syncthingandroid.service.RestApi;
 import com.nutomic.syncthingandroid.service.SyncthingService;
 import com.nutomic.syncthingandroid.service.SyncthingServiceBinder;
+import com.nutomic.syncthingandroid.util.Util;
 
 import java.util.LinkedList;
 
@@ -47,6 +49,10 @@ public abstract class SyncthingActivity extends AppCompatActivity implements Ser
         setSupportActionBar(toolbar);
         //noinspection ConstantConditions
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        if (Util.isRunningOnTV(this)) {
+            toolbar.setVisibility(View.GONE);
+        }
     }
 
     @Override
