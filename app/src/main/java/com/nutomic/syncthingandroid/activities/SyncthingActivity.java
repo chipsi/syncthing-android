@@ -8,11 +8,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.view.View;
-import android.util.Log;
+// import android.util.Log;
 
 import com.annimon.stream.Stream;
 import com.nutomic.syncthingandroid.R;
@@ -47,17 +43,6 @@ public abstract class SyncthingActivity extends AppCompatActivity implements Ser
             return;
         }
         toolbar.setNavigationContentDescription(R.string.main_menu);
-        // ((View) getWindow().getDecorView().findViewById(android.R.id.home).getParent().getParent()).setContentDescription("blablabla");
-        int childrenCount = toolbar.getChildCount();
-        for (int i = 0; i < childrenCount; i++) {
-            if (toolbar.getChildAt(i) instanceof View) {
-                toolbar.getChildAt(i).setClickable(true);
-                toolbar.getChildAt(i).setFocusable(true);
-                toolbar.getChildAt(i).setFocusableInTouchMode(true);
-                Log.v(TAG, "MIP" + toolbar.getChildAt(i).getId());
-                break;
-            }
-        }
 
         setSupportActionBar(toolbar);
         //noinspection ConstantConditions
