@@ -37,6 +37,7 @@ Please report any problems you encounter via Github.</string>
     <string name="key_generation_success">Secure keys for private data exchange have been successfully generated.</string>
 
     <!-- Generic texts used everywhere -->
+    <string name="go_back">\u25c0 Go back</string>
     <string name="back">Back</string>
     <string name="cont">Continue</string>
     <string name="finish">Finish</string>
