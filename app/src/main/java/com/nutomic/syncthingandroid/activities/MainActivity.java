@@ -77,6 +77,10 @@ public class MainActivity extends SyncthingActivity
     private static final String QRCODE_BITMAP_KEY = "QRCODE_BITMAP";
     private static final String DEVICEID_KEY = "DEVICEID";
 
+    private static final int FOLDER_FRAGMENT_ID = 0;
+    private static final int DEVICE_FRAGMENT_ID = 1;
+    private static final int STATUS_FRAGMENT_ID = 2;
+
     /**
      * Time after first start when usage reporting dialog should be shown.
      *
@@ -233,11 +237,11 @@ public class MainActivity extends SyncthingActivity
             @Override
             public Fragment getItem(int position) {
                 switch (position) {
-                    case 0:
+                    case FOLDER_FRAGMENT_ID:
                         return mFolderListFragment;
-                    case 1:
+                    case DEVICE_FRAGMENT_ID:
                         return mDeviceListFragment;
-                    case 2:
+                    case STATUS_FRAGMENT_ID:
                         return mStatusFragment;
                     default:
                         return null;
@@ -257,11 +261,11 @@ public class MainActivity extends SyncthingActivity
             @Override
             public CharSequence getPageTitle(int position) {
                 switch (position) {
-                    case 0:
+                    case FOLDER_FRAGMENT_ID:
                         return getResources().getString(R.string.folders_fragment_title);
-                    case 1:
+                    case DEVICE_FRAGMENT_ID:
                         return getResources().getString(R.string.devices_fragment_title);
-                    case 2:
+                    case STATUS_FRAGMENT_ID:
                         return getResources().getString(R.string.status_fragment_title);
                     default:
                         return String.valueOf(position);
@@ -447,14 +451,28 @@ public class MainActivity extends SyncthingActivity
      */
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent e) {
-        if (keyCode == KeyEvent.KEYCODE_MENU) {
-            if (!mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
-                mDrawerLayout.openDrawer(GravityCompat.START);
-            } else {
-                closeDrawer();
-            }
-
-            return true;
+        int currentTab = mViewPager == null ? 0 : mViewPager.getCurrentItem();
+        switch(keyCode) {
+            // adb shell input keyevent KEYCODE_MENU
+            case KeyEvent.KEYCODE_MENU:
+                if (!mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    mDrawerLayout.openDrawer(GravityCompat.START);
+                } else {
+                    closeDrawer();
+                }
+                return true;
+            case KeyEvent.KEYCODE_DPAD_LEFT:
+                if (currentTab == FOLDER_FRAGMENT_ID && !mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    mDrawerLayout.openDrawer(GravityCompat.START);
+                    return true;
+                }
+                break;
+            case KeyEvent.KEYCODE_DPAD_RIGHT:
+                if (currentTab == FOLDER_FRAGMENT_ID && mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    closeDrawer();
+                    return true;
+                }
+                break;
         }
         return super.onKeyDown(keyCode, e);
     }
