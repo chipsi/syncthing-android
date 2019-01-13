@@ -457,7 +457,9 @@ public class MainActivity extends SyncthingActivity
             } else {
                 closeDrawer();
             }
-
+            return true;
+        } else if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT && mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+            closeDrawer();
             return true;
         }
         return super.onKeyDown(keyCode, e);
