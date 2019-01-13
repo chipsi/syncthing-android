@@ -3,14 +3,12 @@ package com.nutomic.syncthingandroid.activities;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.UiModeManager;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.graphics.Color;
 import android.Manifest;
 import android.net.Uri;
@@ -97,7 +95,7 @@ public class FirstStartActivity extends Activity {
         super.onCreate(savedInstanceState);
         ((SyncthingApp) getApplication()).component().inject(this);
 
-        mRunningOnTV = isRunningOnTV();
+        mRunningOnTV = Util.isRunningOnTV(this);
         Log.d(TAG, mRunningOnTV ? "Running on a TV Device" : "Running on a non-TV Device");
 
         /**
@@ -571,10 +569,5 @@ public class FirstStartActivity extends Activity {
             Button nextButton = (Button) firstStartActivity.findViewById(R.id.btn_next);
             nextButton.setVisibility(View.VISIBLE);
         }
-    }
-
-    private Boolean isRunningOnTV() {
-        UiModeManager uiModeManager = (UiModeManager) getSystemService(UI_MODE_SERVICE);
-        return uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION;
     }
 }
