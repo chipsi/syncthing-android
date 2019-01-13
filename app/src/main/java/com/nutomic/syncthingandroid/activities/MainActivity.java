@@ -451,28 +451,14 @@ public class MainActivity extends SyncthingActivity
      */
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent e) {
-        int currentTab = mViewPager == null ? 0 : mViewPager.getCurrentItem();
-        switch(keyCode) {
+        if (keyCode == KeyEvent.KEYCODE_MENU) {
             // adb shell input keyevent KEYCODE_MENU
-            case KeyEvent.KEYCODE_MENU:
-                if (!mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
-                    mDrawerLayout.openDrawer(GravityCompat.START);
-                } else {
-                    closeDrawer();
-                }
-                return true;
-            case KeyEvent.KEYCODE_DPAD_LEFT:
-                if (currentTab == FOLDER_FRAGMENT_ID && !mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
-                    mDrawerLayout.openDrawer(GravityCompat.START);
-                    return true;
-                }
-                break;
-            case KeyEvent.KEYCODE_DPAD_RIGHT:
-                if (currentTab == FOLDER_FRAGMENT_ID && mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
-                    closeDrawer();
-                    return true;
-                }
-                break;
+            if (!mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+                mDrawerLayout.openDrawer(GravityCompat.START);
+            } else {
+                closeDrawer();
+            }
+            return true;
         }
         return super.onKeyDown(keyCode, e);
     }
