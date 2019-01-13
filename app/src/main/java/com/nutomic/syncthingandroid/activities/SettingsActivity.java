@@ -67,12 +67,13 @@ public class SettingsActivity extends SyncthingActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_settings);
         mSettingsFragment = new SettingsFragment();
         Bundle bundle = new Bundle();
         bundle.putString(EXTRA_OPEN_SUB_PREF_SCREEN, getIntent().getStringExtra(EXTRA_OPEN_SUB_PREF_SCREEN));
         mSettingsFragment.setArguments(bundle);
         getFragmentManager().beginTransaction()
-                .replace(android.R.id.content, mSettingsFragment)
+                .replace(R.id.prefFragmentContainer, mSettingsFragment)
                 .commit();
     }
 
