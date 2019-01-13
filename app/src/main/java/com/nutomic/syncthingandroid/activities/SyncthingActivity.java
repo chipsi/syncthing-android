@@ -51,7 +51,9 @@ public abstract class SyncthingActivity extends AppCompatActivity implements Ser
         int childrenCount = toolbar.getChildCount();
         for (int i = 0; i < childrenCount; i++) {
             if (toolbar.getChildAt(i) instanceof View) {
+                toolbar.getChildAt(i).setClickable(true);
                 toolbar.getChildAt(i).setFocusable(true);
+                toolbar.getChildAt(i).setFocusableInTouchMode(true);
                 Log.v(TAG, "MIP" + toolbar.getChildAt(i).getId());
                 break;
             }
