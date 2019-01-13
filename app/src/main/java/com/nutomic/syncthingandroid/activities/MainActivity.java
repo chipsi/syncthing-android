@@ -227,6 +227,18 @@ public class MainActivity extends SyncthingActivity
                 onKeyDown(KeyEvent.KEYCODE_MENU, null);
         });
 
+        findViewById(R.id.add_folder).setOnClickListener(v -> {
+                Intent intent = new Intent(this, FolderActivity.class)
+                        .putExtra(FolderActivity.EXTRA_IS_CREATE, true);
+                startActivity(intent);
+        });
+
+        findViewById(R.id.add_device).setOnClickListener(v -> {
+                Intent intent = new Intent(this, DeviceActivity.class)
+                        .putExtra(DeviceActivity.EXTRA_IS_CREATE, true);
+                startActivity(intent);
+        });
+
         onNewIntent(getIntent());
     }
 

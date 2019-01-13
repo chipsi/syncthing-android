@@ -25,7 +25,7 @@
                 android:id="@+id/menu"
                 android:layout_width="24sp"
                 android:layout_height="24sp"
-                android:background="@drawable/btn_main_menu"
+                android:background="@drawable/btn_syncthing_logo"
                 android:contentDescription="@null"
                 android:clickable="true"
                 android:focusable="true"
@@ -52,7 +52,7 @@
                 android:layout_toEndOf="@+id/app_name"
                 android:checked="true"
                 android:focusable="false"
-                android:visibility="visible"
+                android:visibility="gone"
                 app:buttonTint="#76ff03" />
 
             <android.support.v7.widget.AppCompatRadioButton
@@ -76,6 +76,57 @@
                 android:focusable="false"
                 android:visibility="gone"
                 app:buttonTint="#ffae03"/>
+
+            <ImageButton
+                android:id="@+id/add_folder"
+                android:layout_width="24sp"
+                android:layout_height="24sp"
+                android:background="@drawable/btn_add_folder"
+                android:contentDescription="@null"
+                android:layout_toLeftOf="@+id/add_folder_text"
+                android:layout_toStartOf="@+id/add_folder_text"
+                android:clickable="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"  />
+
+            <TextView
+                android:id="@+id/add_folder_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@+id/add_device"
+                android:layout_toStartOf="@+id/add_device"
+                android:layout_marginTop="-5dp"
+                android:paddingEnd="25dp"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:text="@string/add_folder"
+                android:textColor="@android:color/white"
+                android:textSize="22sp" />
+
+            <ImageButton
+                android:id="@+id/add_device"
+                android:layout_width="24sp"
+                android:layout_height="24sp"
+                android:background="@drawable/btn_add_device"
+                android:layout_toLeftOf="@+id/add_device_text"
+                android:layout_toStartOf="@+id/add_device_text"
+                android:contentDescription="@null"
+                android:clickable="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"  />
+
+            <TextView
+                android:id="@+id/add_device_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-5dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:text="@string/add_device"
+                android:textColor="@android:color/white"
+                android:textSize="22sp" />
 
         </RelativeLayout>
 
