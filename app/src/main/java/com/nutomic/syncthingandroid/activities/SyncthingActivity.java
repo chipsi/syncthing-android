@@ -8,7 +8,11 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-// import android.util.Log;
+import android.view.MenuItem;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.view.View;
+import android.util.Log;
 
 import com.annimon.stream.Stream;
 import com.nutomic.syncthingandroid.R;
@@ -43,17 +47,23 @@ public abstract class SyncthingActivity extends AppCompatActivity implements Ser
             return;
         }
         toolbar.setNavigationContentDescription(R.string.main_menu);
-        if (toolbar != null) {
-            int childrenCount = toolbar.getChildCount();
-            for (int i = 0; i < childrenCount; i++) {
-                if (toolbar.getChildAt(i) instanceof ImageButton) {
-                    // toolbar.getChildAt(i).setShowAsAction(SHOW_AS_ACTION_ALWAYS);
-                    toolbar.getChildAt(i).setFocusable(true);
-                    toolbar.getChildAt(i).setFocusableInTouchMode(true);
-                    break;
-                }
+        // ((View) getWindow().getDecorView().findViewById(android.R.id.home).getParent().getParent()).setContentDescription("blablabla");
+        int childrenCount = toolbar.getChildCount();
+        for (int i = 0; i < childrenCount; i++) {
+            if (toolbar.getChildAt(i) instanceof View) {
+                //toolbar.getChildAt(i).setFocusable(true);
+                //toolbar.getChildAt(i).setFocusableInTouchMode(true);
+                //toolbar.getChildAt(i).setClickable(true);
+                Log.v(TAG, "MIP" + toolbar.getChildAt(i).getId());
+                break;
             }
         }
+
+        View subView = (View) getWindow().getDecorView().findViewById(android.R.id.home);
+        if (subView != null) {
+            Log.v(TAG, "MIP Gut");
+            subView.setFocusable(true);
+        }    
 
         setSupportActionBar(toolbar);
         //noinspection ConstantConditions
