@@ -6,12 +6,6 @@
         android:key="category_run_conditions">
 
         <Preference
-            android:title="@string/go_back">
-            <intent
-                android:action=".activities.SettingsActivity" />
-        </Preference>
-
-        <Preference
             android:key="static_run_conditions"
             android:persistent="false"
             android:selectable="false"
@@ -84,12 +78,6 @@
         android:key="category_behaviour"
         android:title="@string/category_behaviour">
 
-        <Preference
-            android:title="@string/go_back">
-            <intent
-                android:action=".activities.SettingsActivity" />
-        </Preference>
-
         <CheckBoxPreference
             android:key="always_run_in_background"
             android:title="@string/behaviour_autostart_title"
@@ -118,12 +106,6 @@
     <PreferenceScreen
         android:key="category_syncthing_options"
         android:title="@string/category_syncthing_options">
-
-        <Preference
-            android:title="@string/go_back">
-            <intent
-                android:action=".activities.SettingsActivity" />
-        </Preference>
 
         <EditTextPreference
             android:key="deviceName"
@@ -219,12 +201,6 @@
         android:title="@string/category_backup">
 
         <Preference
-            android:title="@string/go_back">
-            <intent
-                android:action=".activities.SettingsActivity" />
-        </Preference>
-
-        <Preference
             android:key="export_config"
             android:title="@string/export_config" />
 
@@ -236,12 +212,6 @@
 
     <PreferenceScreen
         android:title="@string/category_debug">
-
-        <Preference
-            android:title="@string/go_back">
-            <intent
-                android:action=".activities.SettingsActivity" />
-        </Preference>
 
         <Preference
             android:title="@string/open_log"
@@ -275,12 +245,6 @@
     <PreferenceScreen
         android:title="@string/category_experimental"
         android:key="category_experimental">
-
-        <Preference
-            android:title="@string/go_back">
-            <intent
-                android:action=".activities.SettingsActivity" />
-        </Preference>
 
         <CheckBoxPreference
             android:key="use_tor"
@@ -320,12 +284,6 @@
 
     <PreferenceScreen
         android:title="@string/category_about">
-
-        <Preference
-            android:title="@string/go_back">
-            <intent
-                android:action=".activities.SettingsActivity" />
-        </Preference>
 
         <Preference
             android:title="@string/report_issue_title"
