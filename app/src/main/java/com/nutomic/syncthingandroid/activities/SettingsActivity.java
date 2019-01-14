@@ -2,6 +2,7 @@ package com.nutomic.syncthingandroid.activities;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.ComponentName;
@@ -22,13 +23,12 @@ import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.Toast;
 
@@ -201,20 +201,19 @@ public class SettingsActivity extends SyncthingActivity {
             ((SyncthingApp) getActivity().getApplication()).component().inject(this);
         }
 
+        @SuppressWarnings("deprecation")
         @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            View view = super.onCreateView(inflater, container, savedInstanceState);
-            int horizontalMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics());
-            int verticalMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics());
-
-            TypedValue tv = new TypedValue();
-            if (container.getContext().getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
-            {
-                // Calculate ActionBar height
-                int actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
-                view.setPadding(horizontalMargin, 1000, horizontalMargin, verticalMargin);
+        public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
+            super.onPreferenceTreeClick(preferenceScreen, preference);
+            if (preference instanceof PreferenceScreen) {
+                // If the user has clicked on a nested preference screen, setup the toolbar on top.
+                final Dialog dialog = ((PreferenceScreen) preference).getDialog();
+                LinearLayout root = (LinearLayout) dialog.findViewById(android.R.id.list).getParent().getParent();
+                Toolbar toolbar = (Toolbar) LayoutInflater.from(getContext()).inflate(R.layout.widget_toolbar, root, false);
+                root.addView(toolbar, 0);
+                toolbar.setTitle(((PreferenceScreen) preference).getTitle());
             }
-            return view;
+            return false;
         }
 
         /**
@@ -226,6 +225,19 @@ public class SettingsActivity extends SyncthingActivity {
         public void onActivityCreated(Bundle savedInstanceState) {
             mContext = getActivity().getApplicationContext();
             super.onActivityCreated(savedInstanceState);
+
+            /*
+            LinearLayout root = (LinearLayout) getView().findViewById(android.R.id.list).getParent().getParent();
+            Toolbar toolbar = (Toolbar) LayoutInflater.from(getContext()).inflate(R.layout.widget_toolbar, root, false);
+            root.addView(toolbar, 0);
+            bar.setTitle("Settings");
+            bar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                }
+            });
+            */
+
             addPreferencesFromResource(R.xml.app_settings);
             mPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
