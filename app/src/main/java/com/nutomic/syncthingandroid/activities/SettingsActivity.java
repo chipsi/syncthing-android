@@ -24,9 +24,13 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ListAdapter;
 import android.widget.Toast;
-import android.view.KeyEvent;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
@@ -195,6 +199,22 @@ public class SettingsActivity extends SyncthingActivity {
         public void onCreate(@Nullable Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             ((SyncthingApp) getActivity().getApplication()).component().inject(this);
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            View view = super.onCreateView(inflater, container, savedInstanceState);
+            int horizontalMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics());
+            int verticalMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics());
+
+            TypedValue tv = new TypedValue();
+            if (container.getContext().getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
+            {
+                // Calculate ActionBar height
+                int actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
+                view.setPadding(horizontalMargin, 1000, horizontalMargin, verticalMargin);
+            }
+            return view;
         }
 
         /**
