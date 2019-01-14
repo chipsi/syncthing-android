@@ -226,18 +226,6 @@ public class SettingsActivity extends SyncthingActivity {
             mContext = getActivity().getApplicationContext();
             super.onActivityCreated(savedInstanceState);
 
-            /*
-            LinearLayout root = (LinearLayout) getView().findViewById(android.R.id.list).getParent().getParent();
-            Toolbar toolbar = (Toolbar) LayoutInflater.from(getContext()).inflate(R.layout.widget_toolbar, root, false);
-            root.addView(toolbar, 0);
-            bar.setTitle("Settings");
-            bar.setNavigationOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                }
-            });
-            */
-
             addPreferencesFromResource(R.xml.app_settings);
             mPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
