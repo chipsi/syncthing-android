@@ -46,7 +46,7 @@ import java.lang.ref.WeakReference;
 
 import javax.inject.Inject;
 
-public class FirstStartActivity extends Activity {
+public class FirstStartActivity extends AppCompatActivity {
 
     private static String TAG = "FirstStartActivity";
     private static final int REQUEST_COARSE_LOCATION = 141;
