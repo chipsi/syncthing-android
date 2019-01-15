@@ -487,6 +487,7 @@ public class FirstStartActivity extends Activity {
                 } else {
                     Toast.makeText(this, R.string.permission_granted, Toast.LENGTH_SHORT).show();
                     Log.i(TAG, "User granted ACCESS_COARSE_LOCATION permission.");
+                    mNextButton.requestFocus();
                 }
                 break;
             case REQUEST_WRITE_STORAGE:
@@ -496,6 +497,7 @@ public class FirstStartActivity extends Activity {
                 } else {
                     Toast.makeText(this, R.string.permission_granted, Toast.LENGTH_SHORT).show();
                     Log.i(TAG, "User granted WRITE_EXTERNAL_STORAGE permission.");
+                    mNextButton.requestFocus();
                 }
                 break;
             default:
@@ -568,6 +570,7 @@ public class FirstStartActivity extends Activity {
             keygenStatus.setText(firstStartActivity.getString(R.string.key_generation_success));
             Button nextButton = (Button) firstStartActivity.findViewById(R.id.btn_next);
             nextButton.setVisibility(View.VISIBLE);
+            nextButton.requestFocus();
         }
     }
 }
