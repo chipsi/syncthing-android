@@ -205,52 +205,6 @@ public class SettingsActivity extends SyncthingActivity {
             setHasOptionsMenu(true);
         }
 
-        @SuppressWarnings("deprecation")
-        @Override
-        public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
-            super.onPreferenceTreeClick(preferenceScreen, preference);
-            if (preference instanceof PreferenceScreen) {
-                // User has clicked on a sub-preferences screen.
-                try {
-                    mCurrentPrefScreenDialog = ((PreferenceScreen) preference).getDialog();
-                    LinearLayout root = (LinearLayout) mCurrentPrefScreenDialog.findViewById(android.R.id.list).getParent().getParent();
-                    Toolbar toolbar = (Toolbar) LayoutInflater.from(getContext()).inflate(R.layout.widget_toolbar, root, false);
-                    root.addView(toolbar, 0);
-                    toolbar.setTitle(((PreferenceScreen) preference).getTitle());
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        toolbar.setTouchscreenBlocksFocus(false);
-                    }
-                    SyncthingActivity syncthingActivity = (SyncthingActivity) getActivity();
-                    syncthingActivity.setSupportActionBar(toolbar);
-                    syncthingActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-                } catch (Exception e) {
-                    /**
-                     * The above code has been verified working but due to known bugs in the
-                     * support library on different Android versions better be safe in case
-                     * it breaks.
-                     */
-                    Log.e(TAG, "onPreferenceTreeClick", e);
-                }
-            }
-            return false;
-        }
-
-        @Override
-        public boolean onOptionsItemSelected(MenuItem item) {
-            if (item.getItemId() == android.R.id.home) {
-                if (mCurrentPrefScreenDialog == null) {
-                    // User is on the top preferences screen.
-                    getActivity().onBackPressed();
-                } else {
-                    // User is on a sub-preferences screen.
-                    mCurrentPrefScreenDialog.dismiss();
-                    mCurrentPrefScreenDialog = null;
-                }
-                return true;
-            }
-            return super.onOptionsItemSelected(item);
-        }
-
         /**
          * Loads layout, sets version from Rest API.
          *
@@ -413,6 +367,52 @@ public class SettingsActivity extends SyncthingActivity {
                     }
                 }
             }
+        }
+
+        @SuppressWarnings("deprecation")
+        @Override
+        public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
+            super.onPreferenceTreeClick(preferenceScreen, preference);
+            if (preference instanceof PreferenceScreen) {
+                // User has clicked on a sub-preferences screen.
+                try {
+                    mCurrentPrefScreenDialog = ((PreferenceScreen) preference).getDialog();
+                    LinearLayout root = (LinearLayout) mCurrentPrefScreenDialog.findViewById(android.R.id.list).getParent().getParent();
+                    Toolbar toolbar = (Toolbar) LayoutInflater.from(getContext()).inflate(R.layout.widget_toolbar, root, false);
+                    root.addView(toolbar, 0);
+                    toolbar.setTitle(((PreferenceScreen) preference).getTitle());
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        toolbar.setTouchscreenBlocksFocus(false);
+                    }
+                    SyncthingActivity syncthingActivity = (SyncthingActivity) getActivity();
+                    syncthingActivity.setSupportActionBar(toolbar);
+                    syncthingActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                } catch (Exception e) {
+                    /**
+                     * The above code has been verified working but due to known bugs in the
+                     * support library on different Android versions better be safe in case
+                     * it breaks.
+                     */
+                    Log.e(TAG, "onPreferenceTreeClick", e);
+                }
+            }
+            return false;
+        }
+
+        @Override
+        public boolean onOptionsItemSelected(MenuItem item) {
+            if (item.getItemId() == android.R.id.home) {
+                if (mCurrentPrefScreenDialog == null) {
+                    // User is on the top preferences screen.
+                    getActivity().onBackPressed();
+                } else {
+                    // User is on a sub-preferences screen.
+                    mCurrentPrefScreenDialog.dismiss();
+                    mCurrentPrefScreenDialog = null;
+                }
+                return true;
+            }
+            return super.onOptionsItemSelected(item);
         }
 
         public void setService(SyncthingService syncthingService) {
