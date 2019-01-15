@@ -31,9 +31,9 @@
             android:layout_marginBottom="8dp"
             android:gravity="center"
             android:text="@string/ignore_doze_permission_title"
-            android:textColor="@android:color/white"
             android:textSize="@dimen/slide_title"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            style="@style/Theme.Syncthing.GreyButton" />
 
         <ImageView
             android:layout_width="58dp"
