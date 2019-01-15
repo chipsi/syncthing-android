@@ -45,12 +45,16 @@
 
         <Button
                 android:id="@+id/btn_next"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
                 android:text="@string/cont"
-                style="@style/Theme.Syncthing.GreyButton" />
+                style="@style/Theme.Syncthing.GreyButton" >
+                <requestFocus />
+        </Button>
 
 </RelativeLayout>
