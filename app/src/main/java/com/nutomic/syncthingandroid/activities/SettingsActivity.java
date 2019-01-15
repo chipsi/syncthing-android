@@ -28,6 +28,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.Toast;
@@ -145,6 +146,8 @@ public class SettingsActivity extends SyncthingActivity {
         @Inject NotificationHandler mNotificationHandler;
         @Inject SharedPreferences mPreferences;
 
+        private Dialog             mCurrentPrefScreenDialog = null;
+
         private Preference         mCategoryRunConditions;
         private CheckBoxPreference mStartServiceOnBoot;
         private ListPreference     mPowerSource;
@@ -199,6 +202,7 @@ public class SettingsActivity extends SyncthingActivity {
         public void onCreate(@Nullable Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             ((SyncthingApp) getActivity().getApplication()).component().inject(this);
+            setHasOptionsMenu(true);
         }
 
         @SuppressWarnings("deprecation")
@@ -206,14 +210,45 @@ public class SettingsActivity extends SyncthingActivity {
         public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
             super.onPreferenceTreeClick(preferenceScreen, preference);
             if (preference instanceof PreferenceScreen) {
-                // If the user has clicked on a nested preference screen, setup the toolbar on top.
-                final Dialog dialog = ((PreferenceScreen) preference).getDialog();
-                LinearLayout root = (LinearLayout) dialog.findViewById(android.R.id.list).getParent().getParent();
-                Toolbar toolbar = (Toolbar) LayoutInflater.from(getContext()).inflate(R.layout.widget_toolbar, root, false);
-                root.addView(toolbar, 0);
-                toolbar.setTitle(((PreferenceScreen) preference).getTitle());
+                // User has clicked on a sub-preferences screen.
+                try {
+                    mCurrentPrefScreenDialog = ((PreferenceScreen) preference).getDialog();
+                    LinearLayout root = (LinearLayout) mCurrentPrefScreenDialog.findViewById(android.R.id.list).getParent().getParent();
+                    Toolbar toolbar = (Toolbar) LayoutInflater.from(getContext()).inflate(R.layout.widget_toolbar, root, false);
+                    root.addView(toolbar, 0);
+                    toolbar.setTitle(((PreferenceScreen) preference).getTitle());
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        toolbar.setTouchscreenBlocksFocus(false);
+                    }
+                    SyncthingActivity syncthingActivity = (SyncthingActivity) getActivity();
+                    syncthingActivity.setSupportActionBar(toolbar);
+                    syncthingActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                } catch (Exception e) {
+                    /**
+                     * The above code has been verified working but due to known bugs in the
+                     * support library on different Android versions better be safe in case
+                     * it breaks.
+                     */
+                    Log.e(TAG, "onPreferenceTreeClick", e);
+                }
             }
             return false;
+        }
+
+        @Override
+        public boolean onOptionsItemSelected(MenuItem item) {
+            if (item.getItemId() == android.R.id.home) {
+                if (mCurrentPrefScreenDialog == null) {
+                    // User is on the top preferences screen.
+                    getActivity().onBackPressed();
+                } else {
+                    // User is on a sub-preferences screen.
+                    mCurrentPrefScreenDialog.dismiss();
+                    mCurrentPrefScreenDialog = null;
+                }
+                return true;
+            }
+            return super.onOptionsItemSelected(item);
         }
 
         /**
@@ -243,9 +278,9 @@ public class SettingsActivity extends SyncthingActivity {
                     return false;
                 });
             }
+            PreferenceScreen screen = getPreferenceScreen();
 
             /* Run conditions */
-            PreferenceScreen screen = getPreferenceScreen();
             mRunOnWifi =
                     (CheckBoxPreference) findPreference(Constants.PREF_RUN_ON_WIFI);
             mRunOnMeteredWifi =
