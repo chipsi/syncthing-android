@@ -402,13 +402,14 @@ public class SettingsActivity extends SyncthingActivity {
                 try {
                     mCurrentPrefScreenDialog = ((PreferenceScreen) preference).getDialog();
                     LinearLayout root = (LinearLayout) mCurrentPrefScreenDialog.findViewById(android.R.id.list).getParent().getParent();
-                    Toolbar toolbar = (Toolbar) LayoutInflater.from(getContext()).inflate(R.layout.widget_toolbar, root, false);
+                    SyncthingActivity syncthingActivity = (SyncthingActivity) getActivity();
+                    LayoutInflater layoutInflater = syncthingActivity.getLayoutInflater();
+                    Toolbar toolbar = (Toolbar) layoutInflater.inflate(R.layout.widget_toolbar, root, false);
                     root.addView(toolbar, 0);
                     toolbar.setTitle(((PreferenceScreen) preference).getTitle());
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         toolbar.setTouchscreenBlocksFocus(false);
                     }
-                    SyncthingActivity syncthingActivity = (SyncthingActivity) getActivity();
                     syncthingActivity.setSupportActionBar(toolbar);
                     syncthingActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 } catch (Exception e) {
