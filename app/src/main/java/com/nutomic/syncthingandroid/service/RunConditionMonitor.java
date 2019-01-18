@@ -33,8 +33,7 @@ import javax.inject.Inject;
 /**
  * Holds information about the current wifi and charging state of the device.
  *
- * This information is actively read on instance creation, and then updated from intents
- * that are passed with {@link #ACTION_DEVICE_STATE_CHANGED}.
+ * This information is actively read on instance creation, and then updated from intents.
  */
 public class RunConditionMonitor {
 
@@ -93,17 +92,17 @@ public class RunConditionMonitor {
     SharedPreferences mPreferences;
 
     /**
-     * Sending callback notifications through {@link #OnShouldRunChangedListener} is enabled if not null.
+     * Sending callback notifications through OnShouldRunChangedListener is enabled if not null.
      */
     private @Nullable OnShouldRunChangedListener mOnShouldRunChangedListener = null;
 
     /**
-     * Sending callback notifications through {@link #OnSyncPreconditionChangedListener} is enabled if not null.
+     * Sending callback notifications through OnSyncPreconditionChangedListener is enabled if not null.
      */
     private @Nullable OnSyncPreconditionChangedListener mOnSyncPreconditionChangedListener = null;
 
     /**
-     * Stores the result of the last call to {@link decideShouldRun}.
+     * Stores the result of the last call to {@link #decideShouldRun}.
      */
     private boolean lastDeterminedShouldRun = false;
 

@@ -80,8 +80,7 @@ public class MainActivity extends SyncthingActivity
 
     /**
      * Time after first start when usage reporting dialog should be shown.
-     *
-     * @see #showUsageReportingDialog()
+     * See {@link #showUsageReportingDialog}
      */
     private static final long USAGE_REPORTING_DIALOG_DELAY = TimeUnit.DAYS.toMillis(3);
 

@@ -251,7 +251,7 @@ public class FolderActivity extends SyncthingActivity
     }
 
     /**
-     * Invoked after user clicked on the {@link mPathView} label.
+     * Invoked after user clicked on the {@link #mPathView} label.
      */
     @SuppressLint("InlinedAPI")
     private void onPathViewClick() {
@@ -281,7 +281,7 @@ public class FolderActivity extends SyncthingActivity
     }
 
     /**
-     * Invoked after user clicked on the {@link mCustomSyncConditionsDialog} label.
+     * Invoked after user clicked on the {@link #mCustomSyncConditionsDialog} label.
      */
     private void onCustomSyncConditionsDialogClick() {
         startActivityForResult(
