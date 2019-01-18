@@ -42,7 +42,7 @@ public class Completion {
         HashMap<String, CompletionInfo> folderMap;
 
         // Handle devices that were removed from the config.
-        List<String> removedDevices = new ArrayList<>();;
+        List<String> removedDevices = new ArrayList<>();
         Boolean deviceFound;
         for (String deviceId : deviceFolderMap.keySet()) {
             deviceFound = false;
