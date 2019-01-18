@@ -57,7 +57,6 @@ import static android.support.v4.view.MarginLayoutParamsCompat.setMarginStart;
 import static android.util.TypedValue.COMPLEX_UNIT_DIP;
 import static android.view.Gravity.CENTER_VERTICAL;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
-import static com.nutomic.syncthingandroid.service.SyncthingService.State.ACTIVE;
 
 /**
  * Shows folder details and allows changing them.
