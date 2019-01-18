@@ -241,7 +241,6 @@ public class DeviceActivity extends SyncthingActivity
             ),
             0
         );
-        return;
     }
 
     private void restoreDialogStates(Bundle savedInstanceState) {
