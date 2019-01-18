@@ -59,7 +59,6 @@ import static com.nutomic.syncthingandroid.util.Compression.METADATA;
  */
 public class DeviceActivity extends SyncthingActivity
         implements
-            View.OnClickListener,
             SyncthingService.OnServiceStateChangeListener {
 
     public static final String EXTRA_NOTIFICATION_ID =
@@ -81,34 +80,20 @@ public class DeviceActivity extends SyncthingActivity
     private ConfigRouter mConfig;
 
     private Device mDevice;
-
     private View mIdContainer;
-
     private EditText mIdView;
-
     private View mQrButton;
-
     private EditText mNameView;
-
     private EditText mAddressesView;
-
     private TextView mCurrentAddressView;
-
-    private TextView mCompressionValueView;
-
-    private SwitchCompat mIntroducerView;
-
-    private SwitchCompat mDevicePaused;
-
-    private SwitchCompat mCustomSyncConditionsSwitch;
-
-    private TextView mCustomSyncConditionsDescription;
-
-    private TextView mCustomSyncConditionsDialog;
-
-    private TextView mSyncthingVersionView;
-
     private View mCompressionContainer;
+    private TextView mCompressionValueView;
+    private SwitchCompat mIntroducerView;
+    private SwitchCompat mDevicePaused;
+    private SwitchCompat mCustomSyncConditionsSwitch;
+    private TextView mCustomSyncConditionsDescription;
+    private TextView mCustomSyncConditionsDialog;
+    private TextView mSyncthingVersionView;
 
     @Inject
     SharedPreferences mPreferences;
@@ -219,9 +204,9 @@ public class DeviceActivity extends SyncthingActivity
         if (Util.isRunningOnTV(this)) {
             mQrButton.setVisibility(View.GONE);
         }
-        mQrButton.setOnClickListener(this);
+        mQrButton.setOnClickListener(view -> onQrButtonClick());
         mCustomSyncConditionsDialog.setOnClickListener(view -> onCustomSyncConditionsDialogClick());
-        mCompressionContainer.setOnClickListener(this);
+        mCompressionContainer.setOnClickListener(view -> onCompressionContainerClick());
 
         if (savedInstanceState != null){
             if (mDevice == null) {
@@ -241,22 +226,9 @@ public class DeviceActivity extends SyncthingActivity
             mIdView.setCompoundDrawablesWithIntrinsicBounds(null, null, dr, null);
             mIdView.setEnabled(false);
             mQrButton.setVisibility(GONE);
-            mIdContainer.setOnClickListener(this);
+            mIdContainer.setOnClickListener(view -> onCopyDeviceIdClick());
             mNameView.requestFocus();
         }
-    }
-
-    /**
-     * Invoked after user clicked on the {@link mCustomSyncConditionsDialog} label.
-     */
-    private void onCustomSyncConditionsDialogClick() {
-        startActivityForResult(
-            SyncConditionsActivity.createIntent(
-                this, Constants.PREF_OBJECT_PREFIX_DEVICE + mDevice.deviceID, mDevice.name
-            ),
-            0
-        );
-        return;
     }
 
     private void restoreDialogStates(Bundle savedInstanceState) {
@@ -584,16 +556,30 @@ public class DeviceActivity extends SyncthingActivity
         return TextUtils.join(", ", list);
     }
 
-    @Override
-    public void onClick(View v) {
-        if (v.equals(mCompressionContainer)) {
-            showCompressionDialog();
-        } else if (v.equals(mQrButton)){
-            IntentIntegrator integrator = new IntentIntegrator(DeviceActivity.this);
-            integrator.initiateScan();
-        } else if (v.equals(mIdContainer)) {
-            Util.copyDeviceId(this, mDevice.deviceID);
-        }
+    private void onCompressionContainerClick() {
+        showCompressionDialog();
+    }
+
+    /**
+     * Invoked after user clicked on the {@link mCustomSyncConditionsDialog} label.
+     */
+    private void onCustomSyncConditionsDialogClick() {
+        startActivityForResult(
+            SyncConditionsActivity.createIntent(
+                this, Constants.PREF_OBJECT_PREFIX_DEVICE + mDevice.deviceID, mDevice.name
+            ),
+            0
+        );
+        return;
+    }
+
+    private void onCopyDeviceIdClick() {
+        Util.copyDeviceId(this, mDevice.deviceID);
+    }
+
+    private void onQrButtonClick() {
+        IntentIntegrator integrator = new IntentIntegrator(DeviceActivity.this);
+        integrator.initiateScan();
     }
 
     private void showCompressionDialog(){
@@ -619,15 +605,11 @@ public class DeviceActivity extends SyncthingActivity
     }
 
     private void showDiscardDialog(){
-        mDiscardDialog = createDiscardDialog();
-        mDiscardDialog.show();
-    }
-
-    private Dialog createDiscardDialog() {
-        return new android.app.AlertDialog.Builder(this)
+        mDiscardDialog = new android.app.AlertDialog.Builder(this)
                 .setMessage(R.string.dialog_discard_changes)
                 .setPositiveButton(android.R.string.ok, (dialog, which) -> finish())
                 .setNegativeButton(android.R.string.cancel, null)
                 .create();
+        mDiscardDialog.show();
     }
 }
