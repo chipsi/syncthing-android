@@ -132,7 +132,7 @@ public class FolderActivity extends SyncthingActivity
         @Override
         public void afterTextChanged(Editable s) {
             mFolder.label        = mLabelView.getText().toString();
-            mFolder.id           = mIdView.getText().toString();;
+            mFolder.id           = mIdView.getText().toString();
             // mPathView must not be handled here as it's handled by {@link onActivityResult}
             // mEditIgnoreListContent must not be handled here as it's written back when the dialog ends.
             mFolderNeedsToUpdate = true;

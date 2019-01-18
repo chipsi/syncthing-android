@@ -74,7 +74,7 @@ public class Completion {
         }
 
         // Handle folders that were removed from the config.
-        List<String> removedFolders = new ArrayList<>();;
+        List<String> removedFolders = new ArrayList<>();
         Boolean folderFound;
         for (Map.Entry<String, HashMap<String, CompletionInfo>> device : deviceFolderMap.entrySet()) {
             for (String folderId : device.getValue().keySet()) {
