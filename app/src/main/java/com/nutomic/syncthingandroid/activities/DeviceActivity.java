@@ -228,13 +228,20 @@ public class DeviceActivity extends SyncthingActivity
             }
             restoreDialogStates(savedInstanceState);
         }
+
         if (mIsCreateMode) {
-           if (mDevice == null) {
+            if (mDevice == null) {
                 initDevice();
             }
-        }
-        else {
-            prepareEditMode();
+            mIdView.requestFocus();
+        } else {
+            getWindow().setSoftInputMode(SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+            Drawable dr = ContextCompat.getDrawable(this, R.drawable.ic_content_copy_black_24dp);
+            mIdView.setCompoundDrawablesWithIntrinsicBounds(null, null, dr, null);
+            mIdView.setEnabled(false);
+            mQrButton.setVisibility(GONE);
+            mIdContainer.setOnClickListener(this);
+            mNameView.requestFocus();
         }
     }
 
@@ -511,17 +518,6 @@ public class DeviceActivity extends SyncthingActivity
         mDevice.introducer = false;
         mDevice.paused = false;
         mDevice.introducedBy = "";
-    }
-
-    private void prepareEditMode() {
-        getWindow().setSoftInputMode(SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
-        Drawable dr = ContextCompat.getDrawable(this, R.drawable.ic_content_copy_black_24dp);
-        mIdView.setCompoundDrawablesWithIntrinsicBounds(null, null, dr, null);
-        mIdView.setEnabled(false);
-        mQrButton.setVisibility(GONE);
-
-        mIdContainer.setOnClickListener(this);
     }
 
     /**
