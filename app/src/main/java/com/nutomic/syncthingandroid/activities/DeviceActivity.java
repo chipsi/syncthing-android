@@ -6,8 +6,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SwitchCompat;
 import android.text.Editable;
@@ -511,7 +513,7 @@ public class DeviceActivity extends SyncthingActivity
         Drawable dr = ContextCompat.getDrawable(this, R.drawable.ic_content_copy_black_24dp);
         mIdView.setCompoundDrawablesWithIntrinsicBounds(null, null, dr, null);
         mIdView.setEnabled(false);
-        mQrButton.setVisibility(GONE);
+        mQrButton.setVisibility(View.GONE);
 
         mIdContainer.setOnClickListener(this);
     }
