@@ -181,6 +181,7 @@ public class DeviceActivity extends SyncthingActivity
                     break;
                 case R.id.customSyncConditionsSwitch:
                     mCustomSyncConditionsDescription.setEnabled(isChecked);
+                    mCustomSyncConditionsDialog.setFocusable(isChecked);
                     mCustomSyncConditionsDialog.setEnabled(isChecked);
                     // This is needed to display the "discard changes dialog".
                     mDeviceNeedsToUpdate = true;
@@ -415,6 +416,7 @@ public class DeviceActivity extends SyncthingActivity
         }
         mCustomSyncConditionsSwitch.setEnabled(!mIsCreateMode);
         mCustomSyncConditionsDescription.setEnabled(mCustomSyncConditionsSwitch.isChecked());
+        mCustomSyncConditionsDialog.setFocusable(mCustomSyncConditionsSwitch.isChecked());
         mCustomSyncConditionsDialog.setEnabled(mCustomSyncConditionsSwitch.isChecked());
 
         // Keep state updated
