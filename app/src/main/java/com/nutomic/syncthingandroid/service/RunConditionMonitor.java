@@ -19,16 +19,13 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.PowerManager;
 import android.support.annotation.Nullable;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.google.common.collect.Lists;
 import com.nutomic.syncthingandroid.R;
 import com.nutomic.syncthingandroid.SyncthingApp;
 import com.nutomic.syncthingandroid.service.ReceiverManager;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;

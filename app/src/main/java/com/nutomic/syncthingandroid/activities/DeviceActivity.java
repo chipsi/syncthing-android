@@ -6,10 +6,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SwitchCompat;
 import android.text.Editable;
@@ -48,10 +46,8 @@ import java.util.List;
 import javax.inject.Inject;
 
 import static android.text.TextUtils.isEmpty;
-import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN;
-import static com.nutomic.syncthingandroid.service.SyncthingService.State.ACTIVE;
 import static com.nutomic.syncthingandroid.util.Compression.METADATA;
 
 /**
