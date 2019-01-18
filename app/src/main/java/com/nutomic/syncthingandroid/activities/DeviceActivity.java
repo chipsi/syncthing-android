@@ -80,8 +80,9 @@ public class DeviceActivity extends SyncthingActivity
     private ConfigRouter mConfig;
 
     private Device mDevice;
-    private View mIdContainer;
-    private EditText mIdView;
+    private EditText mEditDeviceId;
+    private View mShowDeviceIdContainer;
+    private EditText mShowDeviceId;
     private View mQrButton;
     private EditText mNameView;
     private EditText mAddressesView;
@@ -186,8 +187,9 @@ public class DeviceActivity extends SyncthingActivity
         mIsCreateMode = getIntent().getBooleanExtra(EXTRA_IS_CREATE, false);
         setTitle(mIsCreateMode ? R.string.add_device : R.string.edit_device);
 
-        mIdContainer = findViewById(R.id.idContainer);
-        mIdView = findViewById(R.id.id);
+        mEditDeviceId = findViewById(R.id.editDeviceId);
+        mShowDeviceIdContainer = findViewById(R.id.showDeviceIdContainer);
+        mShowDeviceId = findViewById(R.id.showDeviceId);
         mQrButton = findViewById(R.id.qrButton);
         mNameView = findViewById(R.id.name);
         mAddressesView = findViewById(R.id.addresses);
@@ -205,8 +207,9 @@ public class DeviceActivity extends SyncthingActivity
             mQrButton.setVisibility(View.GONE);
         }
         mQrButton.setOnClickListener(view -> onQrButtonClick());
-        mCustomSyncConditionsDialog.setOnClickListener(view -> onCustomSyncConditionsDialogClick());
+        mShowDeviceIdContainer.setOnClickListener(view -> onCopyDeviceIdClick());
         mCompressionContainer.setOnClickListener(view -> onCompressionContainerClick());
+        mCustomSyncConditionsDialog.setOnClickListener(view -> onCustomSyncConditionsDialogClick());
 
         if (savedInstanceState != null){
             if (mDevice == null) {
@@ -215,18 +218,15 @@ public class DeviceActivity extends SyncthingActivity
             restoreDialogStates(savedInstanceState);
         }
 
+        findViewById(R.id.editDeviceIdContainer).setVisibility(mIsCreateMode ? View.VISIBLE : View.GONE);
+        mShowDeviceIdContainer.setVisibility(!mIsCreateMode ? View.VISIBLE : View.GONE);
         if (mIsCreateMode) {
             if (mDevice == null) {
                 initDevice();
             }
-            mIdView.requestFocus();
+            mEditDeviceId.requestFocus();
         } else {
             getWindow().setSoftInputMode(SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-            Drawable dr = ContextCompat.getDrawable(this, R.drawable.ic_content_copy_black_24dp);
-            mIdView.setCompoundDrawablesWithIntrinsicBounds(null, null, dr, null);
-            mIdView.setEnabled(false);
-            mQrButton.setVisibility(GONE);
-            mIdContainer.setOnClickListener(view -> onCopyDeviceIdClick());
             mNameView.requestFocus();
         }
     }
@@ -313,7 +313,7 @@ public class DeviceActivity extends SyncthingActivity
             syncthingService.getNotificationHandler().cancelConsentNotification(getIntent().getIntExtra(EXTRA_NOTIFICATION_ID, 0));
             syncthingService.unregisterOnServiceStateChangeListener(DeviceActivity.this);
         }
-        mIdView.removeTextChangedListener(mIdTextWatcher);
+        mEditDeviceId.removeTextChangedListener(mIdTextWatcher);
         mNameView.removeTextChangedListener(mNameTextWatcher);
         mAddressesView.removeTextChangedListener(mAddressesTextWatcher);
     }
@@ -362,7 +362,7 @@ public class DeviceActivity extends SyncthingActivity
     }
 
     private void updateViewsAndSetListeners() {
-        mIdView.removeTextChangedListener(mIdTextWatcher);
+        mEditDeviceId.removeTextChangedListener(mIdTextWatcher);
         mNameView.removeTextChangedListener(mNameTextWatcher);
         mAddressesView.removeTextChangedListener(mAddressesTextWatcher);
         mIntroducerView.setOnCheckedChangeListener(null);
@@ -370,7 +370,8 @@ public class DeviceActivity extends SyncthingActivity
         mCustomSyncConditionsSwitch.setOnCheckedChangeListener(null);
 
         // Update views
-        mIdView.setText(mDevice.deviceID);
+        mEditDeviceId.setText(mDevice.deviceID);
+        mShowDeviceId.setText(mDevice.deviceID);
         mNameView.setText(mDevice.name);
         mAddressesView.setText(displayableAddresses());
         mCompressionValueView.setText(Compression.fromValue(this, mDevice.compression).getTitle(this));
@@ -392,7 +393,7 @@ public class DeviceActivity extends SyncthingActivity
         mCustomSyncConditionsDialog.setEnabled(mCustomSyncConditionsSwitch.isChecked());
 
         // Keep state updated
-        mIdView.addTextChangedListener(mIdTextWatcher);
+        mEditDeviceId.addTextChangedListener(mIdTextWatcher);
         mNameView.addTextChangedListener(mNameTextWatcher);
         mAddressesView.addTextChangedListener(mAddressesTextWatcher);
         mIntroducerView.setOnCheckedChangeListener(mCheckedListener);
@@ -476,7 +477,7 @@ public class DeviceActivity extends SyncthingActivity
         IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
         if (scanResult != null) {
             mDevice.deviceID = scanResult.getContents();
-            mIdView.setText(mDevice.deviceID);
+            mEditDeviceId.setText(mDevice.deviceID);
         }
     }
 
