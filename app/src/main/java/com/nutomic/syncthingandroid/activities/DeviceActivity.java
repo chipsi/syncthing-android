@@ -215,6 +215,9 @@ public class DeviceActivity extends SyncthingActivity
         mCustomSyncConditionsDialog = findViewById(R.id.customSyncConditionsDialog);
         mSyncthingVersionView = findViewById(R.id.syncthingVersion);
 
+        if (Util.isRunningOnTV(this)) {
+            mQrButton.setVisibility(View.GONE);
+        }
         mQrButton.setOnClickListener(this);
         mCustomSyncConditionsDialog.setOnClickListener(view -> onCustomSyncConditionsDialogClick());
         mCompressionContainer.setOnClickListener(this);
