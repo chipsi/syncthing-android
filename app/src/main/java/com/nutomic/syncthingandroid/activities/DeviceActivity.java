@@ -558,7 +558,7 @@ public class DeviceActivity extends SyncthingActivity
     }
 
     /**
-     * Invoked after user clicked on the {@link mCustomSyncConditionsDialog} label.
+     * Invoked after user clicked on the {@link #mCustomSyncConditionsDialog} label.
      */
     private void onCustomSyncConditionsDialogClick() {
         startActivityForResult(

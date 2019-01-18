@@ -9,7 +9,7 @@ import java.util.Map;
 
 /**
  * This class caches remote folder and device synchronization
- * completion indicators defined in {@link CompletionInfo#CompletionInfo}
+ * completion indicators defined in {@link CompletionInfo}
  * according to syncthing's REST "/completion" JSON result schema.
  * Completion model of syncthing's web UI is completion[deviceId][folderId]
  */

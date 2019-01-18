@@ -880,7 +880,7 @@ public class SettingsActivity extends SyncthingActivity {
         }
 
         /**
-         * Calley by {@link #ImportConfigTask} after config import.
+         * Calley by {@link SyncthingService#importConfig} after config import.
          */
         private void afterConfigImport(Boolean actionSucceeded) {
             if (!actionSucceeded) {

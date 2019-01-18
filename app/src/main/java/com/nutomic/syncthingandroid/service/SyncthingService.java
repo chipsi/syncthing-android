@@ -152,7 +152,7 @@ public class SyncthingService extends Service {
     /**
      * Initialize the service with State.DISABLED as {@link RunConditionMonitor} will
      * send an update if we should run the binary after it got instantiated in
-     * {@link onStartCommand}.
+     * {@link #onStartCommand}.
      */
     private State mCurrentState = State.DISABLED;
     private ConfigXml mConfig;
@@ -194,8 +194,8 @@ public class SyncthingService extends Service {
     private boolean mLastDeterminedShouldRun = false;
 
     /**
-     * True if a service {@link onDestroy} was requested while syncthing is starting,
-     * in that case, perform stop in {@link onApiAvailable}.
+     * True if a service {@link #onDestroy} was requested while syncthing is starting,
+     * in that case, perform stop in {@link #onApiAvailable}.
      */
     private boolean mDestroyScheduled = false;
 
@@ -705,7 +705,7 @@ public class SyncthingService extends Service {
 
     /**
      * Force re-evaluating run conditions immediately e.g. after
-     * preferences were modified by {@link SettingsActivity}.
+     * preferences were modified by {@link ../activities/SettingsActivity#onStop}.
      */
     public void evaluateRunConditions() {
         if (mRunConditionMonitor == null) {
