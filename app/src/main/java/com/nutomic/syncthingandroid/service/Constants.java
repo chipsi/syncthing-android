@@ -180,7 +180,7 @@ public class Constants {
      * fall back to an unencrypted HTTP connection to localhost. This applies
      * to syncthing core v0.14.53+.
      */
-    public static final Boolean osSupportsTLS12() {
+    public static Boolean osSupportsTLS12() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
     }
 }
