@@ -567,7 +567,6 @@ public class DeviceActivity extends SyncthingActivity
             ),
             0
         );
-        return;
     }
 
     private void onCopyDeviceIdClick() {

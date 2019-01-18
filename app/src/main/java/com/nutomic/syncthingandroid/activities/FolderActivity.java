@@ -292,7 +292,6 @@ public class FolderActivity extends SyncthingActivity
             ),
             0
         );
-        return;
     }
 
     private void showFolderTypeDialog() {
