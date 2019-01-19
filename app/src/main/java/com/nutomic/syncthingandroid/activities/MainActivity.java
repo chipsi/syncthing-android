@@ -372,7 +372,7 @@ public class MainActivity extends SyncthingActivity
             toolbar.setNavigationOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        mDrawerLayout.openDrawer(Gravity.LEFT);
+                        mDrawerLayout.openDrawer(Gravity.START);
                     }
             });
         }
