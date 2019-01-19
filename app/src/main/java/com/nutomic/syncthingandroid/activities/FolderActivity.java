@@ -57,7 +57,6 @@ import static android.support.v4.view.MarginLayoutParamsCompat.setMarginStart;
 import static android.util.TypedValue.COMPLEX_UNIT_DIP;
 import static android.view.Gravity.CENTER_VERTICAL;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
-import static com.nutomic.syncthingandroid.service.SyncthingService.State.ACTIVE;
 
 /**
  * Shows folder details and allows changing them.
@@ -132,7 +131,7 @@ public class FolderActivity extends SyncthingActivity
         @Override
         public void afterTextChanged(Editable s) {
             mFolder.label        = mLabelView.getText().toString();
-            mFolder.id           = mIdView.getText().toString();;
+            mFolder.id           = mIdView.getText().toString();
             // mPathView must not be handled here as it's handled by {@link onActivityResult}
             // mEditIgnoreListContent must not be handled here as it's written back when the dialog ends.
             mFolderNeedsToUpdate = true;
@@ -162,6 +161,7 @@ public class FolderActivity extends SyncthingActivity
                     break;
                 case R.id.customSyncConditionsSwitch:
                     mCustomSyncConditionsDescription.setEnabled(isChecked);
+                    mCustomSyncConditionsDialog.setFocusable(isChecked);
                     mCustomSyncConditionsDialog.setEnabled(isChecked);
                     // This is needed to display the "discard changes dialog".
                     mFolderNeedsToUpdate = true;
@@ -229,18 +229,19 @@ public class FolderActivity extends SyncthingActivity
             if (mFolder == null) {
                 initFolder();
             }
-            // Open keyboard on label view in edit mode.
-            mLabelView.requestFocus();
             mEditIgnoreListTitle.setEnabled(false);
             mEditIgnoreListContent.setEnabled(false);
         }
         else {
             // Prepare edit mode.
-            mIdView.clearFocus();
             mIdView.setFocusable(false);
             mIdView.setEnabled(false);
+            mPathView.setFocusable(false);
             mPathView.setEnabled(false);
         }
+
+        // Open keyboard on label view in edit mode.
+        mLabelView.requestFocus();
 
         if (savedInstanceState != null) {
             if (savedInstanceState.getBoolean(IS_SHOWING_DELETE_DIALOG)) {
@@ -252,7 +253,7 @@ public class FolderActivity extends SyncthingActivity
     }
 
     /**
-     * Invoked after user clicked on the {@link mPathView} label.
+     * Invoked after user clicked on the {@link #mPathView} label.
      */
     @SuppressLint("InlinedAPI")
     private void onPathViewClick() {
@@ -282,7 +283,7 @@ public class FolderActivity extends SyncthingActivity
     }
 
     /**
-     * Invoked after user clicked on the {@link mCustomSyncConditionsDialog} label.
+     * Invoked after user clicked on the {@link #mCustomSyncConditionsDialog} label.
      */
     private void onCustomSyncConditionsDialogClick() {
         startActivityForResult(
@@ -291,7 +292,6 @@ public class FolderActivity extends SyncthingActivity
             ),
             0
         );
-        return;
     }
 
     private void showFolderTypeDialog() {
@@ -496,6 +496,7 @@ public class FolderActivity extends SyncthingActivity
         }
         mCustomSyncConditionsSwitch.setEnabled(!mIsCreateMode);
         mCustomSyncConditionsDescription.setEnabled(mCustomSyncConditionsSwitch.isChecked());
+        mCustomSyncConditionsDialog.setFocusable(mCustomSyncConditionsSwitch.isChecked());
         mCustomSyncConditionsDialog.setEnabled(mCustomSyncConditionsSwitch.isChecked());
 
         // Populate devicesList.
