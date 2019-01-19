@@ -352,6 +352,11 @@ Please report any problems you encounter via Github.</string>
     <!-- Dialog message if an invalid ssl certificate was detected -->
     <string name="ssl_cert_invalid_text">Website at %1$s appears to have an invalid certificate for SSL encryption. Proceed?</string>
 
+    <!-- Text for WebViewActivity loading page -->
+    <string name="web_page_loading">Loading webpage:\n%1$s ...</string>
+
+    <!-- Text for WebViewActivity openBrowser action button -->
+    <string name="open_in_browser">Open in browser</string>
 
     <!-- SettingsFragment -->
 
