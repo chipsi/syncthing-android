@@ -79,6 +79,10 @@
             android:label="@string/report_issue_title"
             android:parentActivityName=".activities.MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize">
+            <intent-filter>
+                <action android:name=".activities.WebViewActivity" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.MainActivity" />
