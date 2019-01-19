@@ -426,7 +426,7 @@ public class MainActivity extends SyncthingActivity
      */
     private class Toggle extends ActionBarDrawerToggle {
         public Toggle(Activity activity, DrawerLayout drawerLayout) {
-            super(activity, drawerLayout, R.string.app_name, R.string.app_name);
+            super(activity, drawerLayout, R.string.open_main_menu, R.string.close_main_menu);
         }
 
         @Override
