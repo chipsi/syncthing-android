@@ -21,7 +21,7 @@
             android:paddingTop="8dp"
             android:showDividers="middle">
 
-            <!-- Input or edit device ID -->
+            <!-- Option 1: Input or edit device ID -->
             <LinearLayout
                 android:id="@+id/editDeviceIdContainer"
                 android:layout_width="match_parent"
@@ -54,14 +54,15 @@
 
             </LinearLayout>
 
-            <!-- Show or copy device ID -->
+            <!-- Option 2: Show or copy device ID -->
             <LinearLayout
                 android:id="@+id/showDeviceIdContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="?selectableItemBackground"
                 android:orientation="horizontal"
-                android:focusable="true">
+                android:focusable="true"
+                android:nextFocusDown="@+id/name" >
 
                 <com.nutomic.syncthingandroid.views.EnhancedEditText
                     android:id="@+id/showDeviceId"
@@ -89,6 +90,7 @@
 
             </LinearLayout>
 
+            <!-- Device Name -->
             <EditText
                 android:id="@+id/name"
                 style="@style/Widget.Syncthing.TextView.Label.Details.Field"
@@ -102,27 +104,17 @@
                 android:importantForAutofill="no" />
 
             <!-- Device Addresses-->
-            <LinearLayout
-                android:id="@+id/addressesContainer"
+            <EditText
+                android:id="@+id/addresses"
+                style="@style/Widget.Syncthing.TextView.Label.Details.Field"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?selectableItemBackground"
-                android:orientation="vertical"
-                android:gravity="center_vertical">
-
-                <EditText
-                    android:id="@+id/addresses"
-                    style="@style/Widget.Syncthing.TextView.Label.Details.Field"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:drawableLeft="@drawable/ic_link_black_24dp_active"
-                    android:drawableStart="@drawable/ic_link_black_24dp_active"
-                    android:hint="@string/addresses"
-                    android:imeOptions="actionDone"
-                    android:inputType="textNoSuggestions"
-                    android:importantForAutofill="no" />
-
-            </LinearLayout>
+                android:drawableLeft="@drawable/ic_link_black_24dp_active"
+                android:drawableStart="@drawable/ic_link_black_24dp_active"
+                android:hint="@string/addresses"
+                android:imeOptions="actionDone"
+                android:inputType="textNoSuggestions"
+                android:importantForAutofill="no" />
 
             <LinearLayout
                 android:id="@+id/compressionContainer"
