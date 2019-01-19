@@ -31,6 +31,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -201,7 +202,6 @@ public class MainActivity extends SyncthingActivity
 
         fm.beginTransaction().replace(R.id.drawer, mDrawerFragment).commit();
         mDrawerToggle = new Toggle(this, mDrawerLayout);
-        mDrawerToggle.setDrawerIndicatorEnabled(false);
         mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
         mDrawerLayout.addDrawerListener(mDrawerToggle);
         setOptimalDrawerWidth(findViewById(R.id.drawer));
@@ -369,6 +369,12 @@ public class MainActivity extends SyncthingActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) {
             toolbar.setNavigationIcon(R.drawable.btn_menu);
+            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        mDrawerLayout.openDrawer(Gravity.LEFT);
+                    }
+            });
         }
 
         mDrawerToggle.syncState();
@@ -437,7 +443,17 @@ public class MainActivity extends SyncthingActivity
              * Note how the toolbar instance is not being sent to the ActionBarDrawerToggle constructor.
              * See https://stackoverflow.com/a/27116116
              */
-            super(activity, drawerLayout, null, R.string.open_main_menu, R.string.close_main_menu);
+            super(activity, drawerLayout, findViewById(R.id.toolbar), R.string.open_main_menu, R.string.close_main_menu);
+
+            setHomeAsUpIndicator(R.drawable.btn_menu);
+            setDrawerIndicatorEnabled(false);
+
+            setToolbarNavigationClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        drawerLayout.openDrawer(Gravity.LEFT);
+                    }
+            });
         }
 
         @Override
