@@ -39,7 +39,9 @@
                     android:drawableStart="@drawable/ic_cellphone_black_24dp"
                     android:hint="@string/device_id"
                     android:imeOptions="actionNext"
-                    android:inputType="textNoSuggestions|textMultiLine" />
+                    android:inputType="textNoSuggestions|textMultiLine"
+                    android:focusable="true"
+                    android:nextFocusDown="@+id/name" />
 
                 <ImageView
                     android:id="@+id/qrButton"
