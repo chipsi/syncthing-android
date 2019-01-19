@@ -10,10 +10,13 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.TextView;
 
 import com.nutomic.syncthingandroid.R;
 import com.nutomic.syncthingandroid.util.Util;
@@ -31,6 +34,7 @@ public class WebViewActivity extends SyncthingActivity {
     private WebView mWebView;
     private View mLoadingView;
 
+    private Boolean isRunningOnTV = false;
     private String webPageUrl = "";
 
     /**
@@ -53,7 +57,10 @@ public class WebViewActivity extends SyncthingActivity {
                             break;
                         case DialogInterface.BUTTON_NEGATIVE:
                             handler.cancel();
-                            finish();
+                            if (isRunningOnTV) {
+                                // Finish as there is no other way to display the website.
+                                finish();
+                            }
                             break;
                     }
                 } catch (Exception e) {
@@ -82,17 +89,16 @@ public class WebViewActivity extends SyncthingActivity {
     @SuppressLint("SetJavaScriptEnabled")
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        isRunningOnTV = Util.isRunningOnTV(WebViewActivity.this);
         setContentView(R.layout.activity_web_gui);
-
         webPageUrl = getString(R.string.issue_tracker_url);
-
         mLoadingView = findViewById(R.id.loading);
+        ((TextView) findViewById(R.id.loading_text)).setText(getString(R.string.web_page_loading, webPageUrl));
         mWebView = findViewById(R.id.webview);
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.getSettings().setDomStorageEnabled(true);
         mWebView.setWebViewClient(mWebViewClient);
         mWebView.clearCache(true);
-
         if (mWebView.getUrl() == null) {
             mWebView.stopLoading();
             mWebView.loadUrl(webPageUrl);
@@ -108,6 +114,30 @@ public class WebViewActivity extends SyncthingActivity {
         Util.dismissDialogSafe(mSecurityNoticeDialog, this);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.webview_options, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.openBrowser).setVisible(!isRunningOnTV);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.openBrowser:
+                // This can only be triggered on a non-TV device.
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(webPageUrl)));
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
     @Override
     public void onBackPressed() {
