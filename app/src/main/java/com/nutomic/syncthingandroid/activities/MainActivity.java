@@ -439,21 +439,8 @@ public class MainActivity extends SyncthingActivity
      */
     private class Toggle extends ActionBarDrawerToggle {
         public Toggle(Activity activity, DrawerLayout drawerLayout) {
-            /**
-             * Note how the toolbar instance is not being sent to the ActionBarDrawerToggle constructor.
-             * See https://stackoverflow.com/a/27116116
-             */
-            super(activity, drawerLayout, findViewById(R.id.toolbar), R.string.open_main_menu, R.string.close_main_menu);
-
-            setHomeAsUpIndicator(R.drawable.btn_menu);
+            super(activity, drawerLayout, R.string.open_main_menu, R.string.close_main_menu);
             setDrawerIndicatorEnabled(false);
-
-            setToolbarNavigationClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        drawerLayout.openDrawer(Gravity.LEFT);
-                    }
-            });
         }
 
         @Override
