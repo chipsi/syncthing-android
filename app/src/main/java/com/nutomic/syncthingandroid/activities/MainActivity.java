@@ -25,6 +25,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.widget.Toolbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.util.DisplayMetrics;
@@ -200,6 +201,7 @@ public class MainActivity extends SyncthingActivity
 
         fm.beginTransaction().replace(R.id.drawer, mDrawerFragment).commit();
         mDrawerToggle = new Toggle(this, mDrawerLayout);
+        mDrawerToggle.setDrawerIndicatorEnabled(false);
         mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
         mDrawerLayout.addDrawerListener(mDrawerToggle);
         setOptimalDrawerWidth(findViewById(R.id.drawer));
@@ -364,6 +366,11 @@ public class MainActivity extends SyncthingActivity
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        if (toolbar != null) {
+            toolbar.setNavigationIcon(R.drawable.btn_menu);
+        }
+
         mDrawerToggle.syncState();
 
         ActionBar actionBar = getSupportActionBar();
@@ -426,7 +433,11 @@ public class MainActivity extends SyncthingActivity
      */
     private class Toggle extends ActionBarDrawerToggle {
         public Toggle(Activity activity, DrawerLayout drawerLayout) {
-            super(activity, drawerLayout, R.string.open_main_menu, R.string.close_main_menu);
+            /**
+             * Note how the toolbar instance is not being sent to the ActionBarDrawerToggle constructor.
+             * See https://stackoverflow.com/a/27116116
+             */
+            super(activity, drawerLayout, null, R.string.open_main_menu, R.string.close_main_menu);
         }
 
         @Override
