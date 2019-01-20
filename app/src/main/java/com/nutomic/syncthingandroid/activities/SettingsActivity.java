@@ -202,6 +202,7 @@ public class SettingsActivity extends SyncthingActivity {
 
         @Override
         public void onCreate(@Nullable Bundle savedInstanceState) {
+            Log.v(TAG, "onCreate");
             super.onCreate(savedInstanceState);
             ((SyncthingApp) getActivity().getApplication()).component().inject(this);
             setHasOptionsMenu(true);
@@ -213,6 +214,7 @@ public class SettingsActivity extends SyncthingActivity {
          */
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            Log.v(TAG, "onCreateView");
             View view = super.onCreateView(inflater, container, savedInstanceState);
             int horizontalMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics());
             int verticalMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics());
@@ -233,6 +235,7 @@ public class SettingsActivity extends SyncthingActivity {
          */
         @Override
         public void onActivityCreated(Bundle savedInstanceState) {
+            Log.v(TAG, "onActivityCreated");
             mContext = getActivity().getApplicationContext();
             super.onActivityCreated(savedInstanceState);
 
@@ -371,6 +374,7 @@ public class SettingsActivity extends SyncthingActivity {
         }
 
         private void openSubPrefScreen(PreferenceScreen prefScreen) {
+            Log.v(TAG, "openSubPrefScreen");
             Bundle bundle = getArguments();
             if (bundle == null) {
                 return;
@@ -395,6 +399,7 @@ public class SettingsActivity extends SyncthingActivity {
         @SuppressWarnings("deprecation")
         @Override
         public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
+            Log.v(TAG, "onPreferenceTreeClick");
             super.onPreferenceTreeClick(preferenceScreen, preference);
             if (preference instanceof PreferenceScreen) {
                 // User has clicked on a sub-preferences screen.
