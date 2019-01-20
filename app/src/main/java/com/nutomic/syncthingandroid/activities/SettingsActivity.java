@@ -379,11 +379,11 @@ public class SettingsActivity extends SyncthingActivity {
             // Open sub preferences screen if EXTRA_OPEN_SUB_PREF_SCREEN was passed in bundle.
             if (openSubPrefScreen != null && !TextUtils.isEmpty(openSubPrefScreen)) {
                 Log.v(TAG, "Transitioning to pref screen " + openSubPrefScreen);
-                PreferenceScreen categoryRunConditions = (PreferenceScreen) findPreference(openSubPrefScreen);
+                PreferenceScreen desiredSubPrefScreen = (PreferenceScreen) findPreference(openSubPrefScreen);
                 final ListAdapter listAdapter = prefScreen.getRootAdapter();
                 final int itemsCount = listAdapter.getCount();
                 for (int itemNumber = 0; itemNumber < itemsCount; ++itemNumber) {
-                    if (listAdapter.getItem(itemNumber).equals(categoryRunConditions)) {
+                    if (listAdapter.getItem(itemNumber).equals(desiredSubPrefScreen)) {
                         // Simulates click on the sub-preference
                         prefScreen.onItemClick(null, null, itemNumber, 0);
                         break;
