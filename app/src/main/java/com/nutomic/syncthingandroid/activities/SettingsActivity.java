@@ -13,6 +13,7 @@ import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
@@ -192,6 +193,7 @@ public class SettingsActivity extends SyncthingActivity {
         private Options mOptions;
         private Gui mGui;
 
+        private Handler mHandler;
         private Boolean mPendingConfig = false;
 
         /**
@@ -202,7 +204,6 @@ public class SettingsActivity extends SyncthingActivity {
 
         @Override
         public void onCreate(@Nullable Bundle savedInstanceState) {
-            Log.v(TAG, "onCreate");
             super.onCreate(savedInstanceState);
             ((SyncthingApp) getActivity().getApplication()).component().inject(this);
             setHasOptionsMenu(true);
@@ -214,7 +215,6 @@ public class SettingsActivity extends SyncthingActivity {
          */
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            Log.v(TAG, "onCreateView");
             View view = super.onCreateView(inflater, container, savedInstanceState);
             int horizontalMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics());
             int verticalMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics());
@@ -235,7 +235,6 @@ public class SettingsActivity extends SyncthingActivity {
          */
         @Override
         public void onActivityCreated(Bundle savedInstanceState) {
-            Log.v(TAG, "onActivityCreated");
             mContext = getActivity().getApplicationContext();
             super.onActivityCreated(savedInstanceState);
 
@@ -370,28 +369,33 @@ public class SettingsActivity extends SyncthingActivity {
             }
             screen.findPreference(KEY_SYNCTHING_DATABASE_SIZE).setSummary(getDatabaseSize());
 
-            openSubPrefScreen(screen);
+            // Check if we should directly show a sub preference screen.
+            Bundle bundle = getArguments();
+            if (bundle != null) {
+                // Fix issue #247: "Calling sub pref screen directly won't show toolbar on top"
+                mHandler =  new Handler();
+                mHandler.post(() -> {
+                    // Open sub preferences screen if EXTRA_OPEN_SUB_PREF_SCREEN was passed in bundle.
+                    openSubPrefScreen(screen, bundle.getString(EXTRA_OPEN_SUB_PREF_SCREEN, ""));
+                });
+            }
         }
 
-        private void openSubPrefScreen(PreferenceScreen prefScreen) {
-            Log.v(TAG, "openSubPrefScreen");
-            Bundle bundle = getArguments();
-            if (bundle == null) {
+        private void openSubPrefScreen(PreferenceScreen parentPrefScreen, String subPrefScreenId) {
+            if (parentPrefScreen == null ||
+                    subPrefScreenId == null ||
+                    TextUtils.isEmpty(subPrefScreenId)) {
                 return;
             }
-            String openSubPrefScreen = bundle.getString(EXTRA_OPEN_SUB_PREF_SCREEN, "");
-            // Open sub preferences screen if EXTRA_OPEN_SUB_PREF_SCREEN was passed in bundle.
-            if (openSubPrefScreen != null && !TextUtils.isEmpty(openSubPrefScreen)) {
-                Log.v(TAG, "Transitioning to pref screen " + openSubPrefScreen);
-                PreferenceScreen desiredSubPrefScreen = (PreferenceScreen) findPreference(openSubPrefScreen);
-                final ListAdapter listAdapter = prefScreen.getRootAdapter();
-                final int itemsCount = listAdapter.getCount();
-                for (int itemNumber = 0; itemNumber < itemsCount; ++itemNumber) {
-                    if (listAdapter.getItem(itemNumber).equals(desiredSubPrefScreen)) {
-                        // Simulates click on the sub-preference
-                        prefScreen.onItemClick(null, null, itemNumber, 0);
-                        break;
-                    }
+            Log.v(TAG, "Transitioning to pref screen " + subPrefScreenId);
+            PreferenceScreen desiredSubPrefScreen = (PreferenceScreen) findPreference(subPrefScreenId);
+            final ListAdapter listAdapter = parentPrefScreen.getRootAdapter();
+            final int itemsCount = listAdapter.getCount();
+            for (int itemNumber = 0; itemNumber < itemsCount; ++itemNumber) {
+                if (listAdapter.getItem(itemNumber).equals(desiredSubPrefScreen)) {
+                    // Simulates click on the sub-preference. This will invoke {@link #onPreferenceTreeClick} subsequently.
+                    parentPrefScreen.onItemClick(null, null, itemNumber, 0);
+                    break;
                 }
             }
         }
@@ -399,7 +403,6 @@ public class SettingsActivity extends SyncthingActivity {
         @SuppressWarnings("deprecation")
         @Override
         public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
-            Log.v(TAG, "onPreferenceTreeClick");
             super.onPreferenceTreeClick(preferenceScreen, preference);
             if (preference instanceof PreferenceScreen) {
                 // User has clicked on a sub-preferences screen.
