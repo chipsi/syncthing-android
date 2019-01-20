@@ -414,11 +414,7 @@ public class SettingsActivity extends SyncthingActivity {
                     Toolbar toolbar = (Toolbar) layoutInflater.inflate(R.layout.widget_toolbar, root, false);
                     root.addView(toolbar, 0);
                     toolbar.setTitle(((PreferenceScreen) preference).getTitle());
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        toolbar.setTouchscreenBlocksFocus(false);
-                    }
-                    syncthingActivity.setSupportActionBar(toolbar);
-                    syncthingActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                    registerActionBar(toolbar);
                 } catch (Exception e) {
                     /**
                      * The above code has been verified working but due to known bugs in the
@@ -441,15 +437,29 @@ public class SettingsActivity extends SyncthingActivity {
                     // User is on a sub-preferences screen.
                     mCurrentPrefScreenDialog.dismiss();
                     mCurrentPrefScreenDialog = null;
-                    SyncthingActivity syncthingActivity = (SyncthingActivity) getActivity();
-                    Toolbar toolbar = (Toolbar) syncthingActivity.findViewById(R.id.toolbar);
-                    if (toolbar != null) {
-                        syncthingActivity.setSupportActionBar(toolbar);
-                    }
+
+                    // We need to re-register the action bar, see issue #247.
+                    registerActionBar(null);
                 }
                 return true;
             }
             return super.onOptionsItemSelected(item);
+        }
+
+        private void registerActionBar(Toolbar toolbar) {
+            SyncthingActivity syncthingActivity = (SyncthingActivity) getActivity();
+            if (toolbar == null) {
+                toolbar = (Toolbar) syncthingActivity.findViewById(R.id.toolbar);
+            }
+            if (toolbar == null) {
+                Log.w(TAG, "registerActionBar: toolbar == null");
+                return;
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                toolbar.setTouchscreenBlocksFocus(false);
+            }
+            syncthingActivity.setSupportActionBar(toolbar);
+            syncthingActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
         public void setService(SyncthingService syncthingService) {
