@@ -445,6 +445,11 @@ public class SettingsActivity extends SyncthingActivity {
                     Log.v(TAG, "onOptionsItemSelected ... mCurrentPrefScreenDialog.dismiss()");
                     mCurrentPrefScreenDialog.dismiss();
                     mCurrentPrefScreenDialog = null;
+                    SyncthingActivity syncthingActivity = (SyncthingActivity) getActivity();
+                    Toolbar toolbar = (Toolbar) syncthingActivity.findViewById(R.id.toolbar);
+                    if (toolbar != null) {
+                        syncthingActivity.setSupportActionBar(toolbar);
+                    }
                 }
                 return true;
             }
