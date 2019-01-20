@@ -403,7 +403,6 @@ public class SettingsActivity extends SyncthingActivity {
         @SuppressWarnings("deprecation")
         @Override
         public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
-            Log.v(TAG, "onPreferenceTreeClick");
             super.onPreferenceTreeClick(preferenceScreen, preference);
             if (preference instanceof PreferenceScreen) {
                 // User has clicked on a sub-preferences screen.
@@ -434,15 +433,12 @@ public class SettingsActivity extends SyncthingActivity {
 
         @Override
         public boolean onOptionsItemSelected(MenuItem item) {
-            Log.v(TAG, "onOptionsItemSelected ...");
             if (item.getItemId() == android.R.id.home) {
                 if (mCurrentPrefScreenDialog == null) {
                     // User is on the top preferences screen.
-                    Log.v(TAG, "onOptionsItemSelected ... getActivity().onBackPressed()");
                     getActivity().onBackPressed();
                 } else {
                     // User is on a sub-preferences screen.
-                    Log.v(TAG, "onOptionsItemSelected ... mCurrentPrefScreenDialog.dismiss()");
                     mCurrentPrefScreenDialog.dismiss();
                     mCurrentPrefScreenDialog = null;
                     SyncthingActivity syncthingActivity = (SyncthingActivity) getActivity();
