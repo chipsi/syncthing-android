@@ -23,12 +23,17 @@ import android.util.Log;
 
 import com.nutomic.syncthingandroid.R;
 import com.nutomic.syncthingandroid.SyncthingApp;
-import com.nutomic.syncthingandroid.service.ReceiverManager;
+import com.nutomic.syncthingandroid.model.RunConditionCheckResult;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;
+
+import static com.nutomic.syncthingandroid.model.RunConditionCheckResult.*;
+import static com.nutomic.syncthingandroid.model.RunConditionCheckResult.BlockerReason.*;
 
 /**
  * Holds information about the current wifi and charging state of the device.
@@ -64,7 +69,7 @@ public class RunConditionMonitor {
     };
 
     public interface OnShouldRunChangedListener {
-        void onShouldRunDecisionChanged(boolean shouldRun);
+        void onShouldRunDecisionChanged(RunConditionCheckResult shouldRun);
     }
 
     public interface OnSyncPreconditionChangedListener {
@@ -106,7 +111,7 @@ public class RunConditionMonitor {
     /**
      * Stores the result of the last call to {@link #decideShouldRun}.
      */
-    private boolean lastDeterminedShouldRun = false;
+    private RunConditionCheckResult lastRunConditionCheckResult;
 
     public RunConditionMonitor(Context context,
             OnShouldRunChangedListener onShouldRunChangedListener,
@@ -187,14 +192,18 @@ public class RunConditionMonitor {
      * We then need to decide if syncthing should run.
      */
     public void updateShouldRunDecision() {
-        // Check if the current conditions changed the result of decideShouldRun()
+        // Reason if the current conditions changed the result of decideShouldRun()
         // compared to the last determined result.
-        boolean newShouldRun = decideShouldRun();
-        if (newShouldRun != lastDeterminedShouldRun) {
+        RunConditionCheckResult result = decideShouldRun();
+        boolean change;
+        synchronized (this) {
+            change = lastRunConditionCheckResult == null || !lastRunConditionCheckResult.equals(result);
+            lastRunConditionCheckResult = result;
+        }
+        if (change) {
             if (mOnShouldRunChangedListener != null) {
-                mOnShouldRunChangedListener.onShouldRunDecisionChanged(newShouldRun);
+                mOnShouldRunChangedListener.onShouldRunDecisionChanged(result);
             }
-            lastDeterminedShouldRun = newShouldRun;
         }
 
         // Notify about changed preconditions.
@@ -292,7 +301,7 @@ public class RunConditionMonitor {
      * Determines if Syncthing should currently run.
      * Updates mRunDecisionExplanation.
      */
-    private boolean decideShouldRun() {
+    private RunConditionCheckResult decideShouldRun() {
         mRunDecisionExplanation = "";
 
         // Get sync condition preferences.
@@ -301,20 +310,20 @@ public class RunConditionMonitor {
         boolean prefRespectMasterSync = mPreferences.getBoolean(Constants.PREF_RESPECT_MASTER_SYNC, false);
         boolean prefRunInFlightMode = mPreferences.getBoolean(Constants.PREF_RUN_IN_FLIGHT_MODE, false);
 
+        List<BlockerReason> blockerReasons = new ArrayList<>();
+
         // PREF_POWER_SOURCE
         switch (prefPowerSource) {
             case POWER_SOURCE_CHARGER:
                 if (!isCharging()) {
                     LogV("decideShouldRun: POWER_SOURCE_AC && !isCharging");
-                    mRunDecisionExplanation = res.getString(R.string.reason_not_charging);
-                    return false;
+                    blockerReasons.add(ON_BATTERY);
                 }
                 break;
             case POWER_SOURCE_BATTERY:
                 if (isCharging()) {
                     LogV("decideShouldRun: POWER_SOURCE_BATTERY && isCharging");
-                    mRunDecisionExplanation = res.getString(R.string.reason_not_on_battery_power);
-                    return false;
+                    blockerReasons.add(ON_CHARGER);
                 }
                 break;
             case POWER_SOURCE_CHARGER_BATTERY:
@@ -326,25 +335,22 @@ public class RunConditionMonitor {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             if (prefRespectPowerSaving && isPowerSaving()) {
                 LogV("decideShouldRun: prefRespectPowerSaving && isPowerSaving");
-                mRunDecisionExplanation = res.getString(R.string.reason_not_while_power_saving);
-                return false;
+                blockerReasons.add(POWERSAVING_ENABLED);
             }
         }
 
         // Android global AutoSync setting.
         if (prefRespectMasterSync && !ContentResolver.getMasterSyncAutomatically()) {
             LogV("decideShouldRun: prefRespectMasterSync && !getMasterSyncAutomatically");
-            mRunDecisionExplanation = res.getString(R.string.reason_not_while_auto_sync_data_disabled);
-            return false;
+            blockerReasons.add(GLOBAL_SYNC_DISABLED);
         }
 
         // Run on mobile data?
         SyncConditionResult scr = checkConditionSyncOnMobileData(Constants.PREF_RUN_ON_MOBILE_DATA);
-        mRunDecisionExplanation += scr.explanation;
-        if (scr.conditionMet) {
+        if (blockerReasons.isEmpty() && scr.conditionMet) {
             // Mobile data is connected.
             LogV("decideShouldRun: checkConditionSyncOnMobileData");
-            return true;
+            return SHOULD_RUN;
         }
 
         // Run on WiFi?
@@ -365,7 +371,7 @@ public class RunConditionMonitor {
                 if (scr.conditionMet) {
                     // Wifi is whitelisted.
                     LogV("decideShouldRun: checkConditionSyncOnWifi && checkConditionSyncOnMeteredWifi && checkConditionSyncOnWhitelistedWifi");
-                    return true;
+                    if (blockerReasons.isEmpty()) return SHOULD_RUN;
                 }
             }
         }
@@ -373,15 +379,17 @@ public class RunConditionMonitor {
         // Run in flight mode.
         if (prefRunInFlightMode && isFlightMode()) {
             LogV("decideShouldRun: prefRunInFlightMode && isFlightMode");
-            mRunDecisionExplanation += "\n" + res.getString(R.string.reason_on_flight_mode);
-            return true;
+            if (blockerReasons.isEmpty()) return SHOULD_RUN;
         }
 
         /**
          * If none of the above run conditions matched, don't run.
          */
         LogV("decideShouldRun: return false");
-        return false;
+        if (blockerReasons.isEmpty()) {
+            blockerReasons.add(NO_NETWORK_OR_FLIGHTMODE);
+        }
+        return new RunConditionCheckResult(blockerReasons);
     }
 
     /**

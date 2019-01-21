@@ -1,5 +1,6 @@
 package com.nutomic.syncthingandroid.service;
 
+import android.Manifest;
 import android.app.Service;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -20,6 +21,7 @@ import com.nutomic.syncthingandroid.SyncthingApp;
 import com.nutomic.syncthingandroid.http.PollWebGuiAvailableTask;
 import com.nutomic.syncthingandroid.model.Device;
 import com.nutomic.syncthingandroid.model.Folder;
+import com.nutomic.syncthingandroid.model.RunConditionCheckResult;
 import com.nutomic.syncthingandroid.util.ConfigXml;
 import com.nutomic.syncthingandroid.util.FileUtils;
 import com.nutomic.syncthingandroid.util.Util;
@@ -38,6 +40,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.inject.Inject;
 
@@ -123,6 +126,10 @@ public class SyncthingService extends Service {
         void onServiceStateChange(State currentState);
     }
 
+    public interface OnRunConditionCheckResultListener {
+        void onRunConditionCheckResultChanged(RunConditionCheckResult result);
+    }
+
     /**
      * Indicates the current state of SyncthingService and of Syncthing itself.
      */
@@ -157,11 +164,14 @@ public class SyncthingService extends Service {
      * {@link #onStartCommand}.
      */
     private State mCurrentState = State.DISABLED;
+    private AtomicReference<RunConditionCheckResult> mCurrentCheckResult = new AtomicReference<>(RunConditionCheckResult.SHOULD_RUN);
+
     private ConfigXml mConfig;
     private Thread mSyncthingRunnableThread = null;
     private Handler mHandler;
 
     private final HashSet<OnServiceStateChangeListener> mOnServiceStateChangeListeners = new HashSet<>();
+    private final HashSet<OnRunConditionCheckResultListener> mOnRunConditionCheckResultListeners = new HashSet<>();
     private final SyncthingServiceBinder mBinder = new SyncthingServiceBinder(this);
 
     private @Nullable
@@ -270,7 +280,7 @@ public class SyncthingService extends Service {
              * Directly use the callback which normally is invoked by RunConditionMonitor to start the
              * syncthing native unconditionally.
              */
-            onShouldRunDecisionChanged(true);
+            onShouldRunDecisionChanged(RunConditionCheckResult.SHOULD_RUN);
         } else {
             // Run condition monitor is enabled.
             if (mRunConditionMonitor == null) {
@@ -371,7 +381,9 @@ public class SyncthingService extends Service {
      * function is called to notify this class to run/terminate the syncthing binary.
      * {@link #onServiceStateChange} is called while applying the decision change.
      */
-    private void onShouldRunDecisionChanged(boolean newShouldRunDecision) {
+    private void onShouldRunDecisionChanged(RunConditionCheckResult result) {
+        boolean newShouldRunDecision = result.isShouldRun();
+        // boolean reasonsChanged = !mCurrentCheckResult.getAndSet(result).equals(result);
         if (newShouldRunDecision != mLastDeterminedShouldRun) {
             Log.i(TAG, "shouldRun decision changed to " + newShouldRunDecision + " according to configured run conditions.");
             mLastDeterminedShouldRun = newShouldRunDecision;
@@ -734,12 +746,40 @@ public class SyncthingService extends Service {
         });
     }
 
+    public void registerOnRunConditionCheckResultChange(OnRunConditionCheckResultListener listener) {
+        listener.onRunConditionCheckResultChanged(mCurrentCheckResult.get());
+        mOnRunConditionCheckResultListeners.add(listener);
+    }
+
+    public void unregisterOnRunConditionCheckResultChange(OnRunConditionCheckResultListener listener) {
+        mOnRunConditionCheckResultListeners.remove(listener);
+    }
+
+    private void onRunConditionCheckResultChange(RunConditionCheckResult result) {
+        mHandler.post(() -> {
+            for (Iterator<OnRunConditionCheckResultListener> i = mOnRunConditionCheckResultListeners.iterator();
+                 i.hasNext(); ) {
+                OnRunConditionCheckResultListener listener = i.next();
+                if (listener != null) {
+                    listener.onRunConditionCheckResultChanged(result);
+                } else {
+                    i.remove();
+                }
+            }
+        });
+    }
+
+
     public URL getWebGuiUrl() {
         return mConfig.getWebGuiUrl();
     }
 
     public State getCurrentState() {
         return mCurrentState;
+    }
+
+    public RunConditionCheckResult getCurrentRunConditionCheckResult() {
+        return mCurrentCheckResult.get();
     }
 
     public NotificationHandler getNotificationHandler() {
