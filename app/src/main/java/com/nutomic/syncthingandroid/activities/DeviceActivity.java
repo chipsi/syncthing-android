@@ -221,9 +221,11 @@ public class DeviceActivity extends SyncthingActivity
                 initDevice();
             }
             mEditDeviceId.requestFocus();
+            mDeviceNeedsToUpdate = true;
         } else {
             getWindow().setSoftInputMode(SOFT_INPUT_STATE_ALWAYS_HIDDEN);
             mNameView.requestFocus();
+            mDeviceNeedsToUpdate = false;
         }
     }
 
@@ -236,10 +238,8 @@ public class DeviceActivity extends SyncthingActivity
             showDeleteDialog();
         }
 
-        if (mIsCreateMode){
-            if (savedInstanceState.getBoolean(IS_SHOWING_DISCARD_DIALOG)){
-                showDiscardDialog();
-            }
+        if (savedInstanceState.getBoolean(IS_SHOWING_DISCARD_DIALOG)){
+            showDiscardDialog();
         }
     }
 
@@ -282,22 +282,11 @@ public class DeviceActivity extends SyncthingActivity
 
     @Override
     public void onBackPressed() {
-        if (mIsCreateMode) {
+        if (mDeviceNeedsToUpdate) {
             showDiscardDialog();
         }
         else {
             super.onBackPressed();
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        // We don't want to update every time a TextView's character changes,
-        // so we hold off until the view stops being visible to the user.
-        if (mDeviceNeedsToUpdate) {
-            updateDevice();
         }
     }
 
@@ -321,10 +310,9 @@ public class DeviceActivity extends SyncthingActivity
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString("device", new Gson().toJson(mDevice));
-        if (mIsCreateMode){
-            outState.putBoolean(IS_SHOWING_DISCARD_DIALOG, mDiscardDialog != null && mDiscardDialog.isShowing());
-            Util.dismissDialogSafe(mDiscardDialog, this);
-        }
+
+        outState.putBoolean(IS_SHOWING_DISCARD_DIALOG, mDiscardDialog != null && mDiscardDialog.isShowing());
+        Util.dismissDialogSafe(mDiscardDialog, this);
 
         outState.putBoolean(IS_SHOWING_COMPRESSION_DIALOG, mCompressionDialog != null && mCompressionDialog.isShowing());
         Util.dismissDialogSafe(mCompressionDialog, this);
@@ -405,7 +393,6 @@ public class DeviceActivity extends SyncthingActivity
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        menu.findItem(R.id.create).setVisible(mIsCreateMode);
         menu.findItem(R.id.share_device_id).setVisible(!mIsCreateMode);
         menu.findItem(R.id.remove).setVisible(!mIsCreateMode);
         return true;
@@ -414,29 +401,8 @@ public class DeviceActivity extends SyncthingActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.create:
-                if (isEmpty(mDevice.deviceID)) {
-                    Toast.makeText(this, R.string.device_id_required, Toast.LENGTH_LONG)
-                            .show();
-                    return true;
-                }
-                if (!mDevice.checkDeviceID()) {
-                    Toast.makeText(this, R.string.device_id_invalid, Toast.LENGTH_LONG)
-                            .show();
-                    return true;
-                }
-                if (isEmpty(mDevice.name)) {
-                    Toast.makeText(this, R.string.device_name_required, Toast.LENGTH_LONG)
-                            .show();
-                    return true;
-                }
-                if (!mDevice.checkDeviceAddresses()) {
-                    Toast.makeText(this, R.string.device_addresses_invalid, Toast.LENGTH_LONG)
-                            .show();
-                    return true;
-                }
-                mConfig.addDevice(getApi(), mDevice);
-                finish();
+            case R.id.save:
+                onSave();
                 return true;
             case R.id.share_device_id:
                 shareDeviceId(this, mDevice.deviceID);
@@ -496,23 +462,51 @@ public class DeviceActivity extends SyncthingActivity
         mDevice.introducedBy = "";
     }
 
-    /**
-     * Sends the updated device info if in edit mode.
-     * Preconditions: mDeviceNeedsToUpdate == true
-     */
-    private void updateDevice() {
-        if (mIsCreateMode) {
-            // If we are about to create this device, we cannot update via restApi.
+    private void onSave() {
+        // Validate fields.
+        if (isEmpty(mDevice.deviceID)) {
+            Toast.makeText(this, R.string.device_id_required, Toast.LENGTH_LONG)
+                    .show();
             return;
         }
+        if (!mDevice.checkDeviceID()) {
+            Toast.makeText(this, R.string.device_id_invalid, Toast.LENGTH_LONG)
+                    .show();
+            return;
+        }
+        if (isEmpty(mDevice.name)) {
+            Toast.makeText(this, R.string.device_name_required, Toast.LENGTH_LONG)
+                    .show();
+            return;
+        }
+        if (!mDevice.checkDeviceAddresses()) {
+            Toast.makeText(this, R.string.device_addresses_invalid, Toast.LENGTH_LONG)
+                    .show();
+            return;
+        }
+
+        if (mIsCreateMode) {
+            Log.v(TAG, "onSave: Adding device with ID = \'" + mDevice.deviceID + "\'");
+            mConfig.addDevice(getApi(), mDevice);
+            finish();
+            return;
+        }
+
+        // Edit mode.
+        if (!mDeviceNeedsToUpdate) {
+            // We've got nothing to save.
+            finish();
+            return;
+        }
+
         if (mDevice == null) {
-            Log.e(TAG, "updateDevice: mDevice == null");
+            Log.e(TAG, "onSave: mDevice == null");
             return;
         }
         // Log.v(TAG, "deviceID=" + mDevice.deviceID + ", introducedBy=" + mDevice.introducedBy);
 
         // Save device specific preferences.
-        Log.v(TAG, "updateDevice: mDevice.deviceID = \'" + mDevice.deviceID + "\'");
+        Log.v(TAG, "onSave: Updating device with ID = \'" + mDevice.deviceID + "\'");
         SharedPreferences.Editor editor = mPreferences.edit();
         editor.putBoolean(
             Constants.DYN_PREF_OBJECT_CUSTOM_SYNC_CONDITIONS(Constants.PREF_OBJECT_PREFIX_DEVICE + mDevice.deviceID),
@@ -522,6 +516,8 @@ public class DeviceActivity extends SyncthingActivity
 
         // Update device using RestApi or ConfigXml.
         mConfig.updateDevice(getApi(), mDevice);
+        finish();
+        return;
     }
 
     /**
