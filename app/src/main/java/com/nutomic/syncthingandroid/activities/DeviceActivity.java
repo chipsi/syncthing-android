@@ -519,6 +519,9 @@ public class DeviceActivity extends SyncthingActivity
         mConfig.updateDevice(getApi(), mDevice);
     }
 
+    /**
+     * Convert text line to addresses array.
+     */
     private List<String> persistableAddresses(CharSequence userInput) {
         if (isEmpty(userInput)) {
             return DYNAMIC_ADDRESS;
@@ -543,6 +546,9 @@ public class DeviceActivity extends SyncthingActivity
         return Arrays.asList(input.split(", "));
     }
 
+    /**
+     * Converts addresses array to a text line.
+     */
     private String displayableAddresses() {
         if (mDevice.addresses == null) {
             return "";
