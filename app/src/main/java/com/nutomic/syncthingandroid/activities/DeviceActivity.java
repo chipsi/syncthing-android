@@ -430,6 +430,11 @@ public class DeviceActivity extends SyncthingActivity
                             .show();
                     return true;
                 }
+                if (!mDevice.checkDeviceAddresses()) {
+                    Toast.makeText(this, R.string.device_addresses_invalid, Toast.LENGTH_LONG)
+                            .show();
+                    return true;
+                }
                 mConfig.addDevice(getApi(), mDevice);
                 finish();
                 return true;
