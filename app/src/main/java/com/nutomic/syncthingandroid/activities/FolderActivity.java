@@ -773,16 +773,12 @@ public class FolderActivity extends SyncthingActivity
     }
 
     private void showDiscardDialog(){
-        mDiscardDialog = createDiscardDialog();
-        mDiscardDialog.show();
-    }
-
-    private Dialog createDiscardDialog() {
-        return new AlertDialog.Builder(this)
+        mDiscardDialog = new AlertDialog.Builder(this)
                 .setMessage(R.string.dialog_discard_changes)
                 .setPositiveButton(android.R.string.ok, (dialog, which) -> finish())
                 .setNegativeButton(android.R.string.cancel, null)
                 .create();
+        mDiscardDialog.show();
     }
 
     private void updateVersioning(Bundle arguments) {
