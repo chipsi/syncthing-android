@@ -184,9 +184,18 @@ public class Constants {
             return false;
         }
 
-        if ("huawei".equalsIgnoreCase(Build.MANUFACTURER)) {
-            if (com.nutomic.syncthingandroid.util.Util.containsIgnoreCase(Build.MODEL, "CAN")) {
-                return false;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N &&
+                Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
+            if ("huawei".equalsIgnoreCase(Build.MANUFACTURER)) {
+                if (com.nutomic.syncthingandroid.util.Util.containsIgnoreCase(Build.MODEL, "CAN")) {
+                    // See issue #262: Android 7 / Huawei / Nova (CAN-L01\L11)
+                    return false;
+                }
+            } else if ("elephone".equalsIgnoreCase(Build.MANUFACTURER)) {
+                if (com.nutomic.syncthingandroid.util.Util.containsIgnoreCase(Build.MODEL, "P8")) {
+                    // See issue #266: Android 7.0 / P8_Mini / Elephone_P8_Mini_20171104
+                    return false;
+                }
             }
         }
 
