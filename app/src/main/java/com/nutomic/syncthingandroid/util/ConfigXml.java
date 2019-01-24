@@ -11,6 +11,7 @@ import com.nutomic.syncthingandroid.model.Device;
 import com.nutomic.syncthingandroid.model.Folder;
 import com.nutomic.syncthingandroid.model.FolderIgnoreList;
 import com.nutomic.syncthingandroid.model.Gui;
+import com.nutomic.syncthingandroid.model.Versioning;
 import com.nutomic.syncthingandroid.R;
 import com.nutomic.syncthingandroid.service.Constants;
 import com.nutomic.syncthingandroid.service.SyncthingRunnable;
@@ -437,7 +438,7 @@ public class ConfigXml {
                 <param key="cleanoutDays" val="90"></param>
             </versioning>
             */
-            folder.versioning = new Folder.Versioning();
+            folder.versioning = new Versioning();
             Element elementVersioning = (Element) r.getElementsByTagName("versioning").item(0);
             folder.versioning.type = getAttributeOrDefault(elementVersioning, "type", "");
             NodeList nodeVersioningParam = elementVersioning.getElementsByTagName("param");

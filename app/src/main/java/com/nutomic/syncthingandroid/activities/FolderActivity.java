@@ -34,6 +34,8 @@ import com.nutomic.syncthingandroid.R;
 import com.nutomic.syncthingandroid.model.Device;
 import com.nutomic.syncthingandroid.model.Folder;
 import com.nutomic.syncthingandroid.model.FolderIgnoreList;
+import com.nutomic.syncthingandroid.model.MinDiskFree;
+import com.nutomic.syncthingandroid.model.Versioning;
 import com.nutomic.syncthingandroid.service.Constants;
 import com.nutomic.syncthingandroid.service.RestApi;
 import com.nutomic.syncthingandroid.service.SyncthingService;
@@ -251,6 +253,11 @@ public class FolderActivity extends SyncthingActivity {
                 }
                 mConfig.getFolderIgnoreList(restApi, mFolder, this::onReceiveFolderIgnoreList);
                 mFolderNeedsToUpdate = false;
+
+                if (mFolder.minDiskFree != null) {
+                    Log.d(TAG, "minDiskFree: unit= " + mFolder.minDiskFree.unit);
+                    Log.d(TAG, "minDiskFree: value= " + mFolder.minDiskFree.value);
+                }
             }
 
             // If the extra is set, we should automatically share the current folder with the given device.
@@ -655,7 +662,7 @@ public class FolderActivity extends SyncthingActivity {
         mFolder.rescanIntervalS = 3600;
         mFolder.paused = false;
         mFolder.type = Constants.FOLDER_TYPE_SEND_RECEIVE;      // Default for {@link #checkWriteAndUpdateUI}.
-        mFolder.versioning = new Folder.Versioning();
+        mFolder.versioning = new Versioning();
     }
 
     private void addEmptyDeviceListView() {
@@ -771,14 +778,14 @@ public class FolderActivity extends SyncthingActivity {
             return;
         }
         if (mFolder.versioning == null) {
-            mFolder.versioning = new Folder.Versioning();
+            mFolder.versioning = new Versioning();
         }
 
         String type = arguments.getString("type");
         arguments.remove("type");
 
         if (type.equals("none")) {
-            mFolder.versioning = new Folder.Versioning();
+            mFolder.versioning = new Versioning();
         } else {
             for (String key : arguments.keySet()) {
                 mFolder.versioning.params.put(key, arguments.getString(key));
