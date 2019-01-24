@@ -601,8 +601,12 @@ public class FolderActivity extends SyncthingActivity {
                  * because the user most probably intentionally chose a special folder like
                  * "[storage]/Android/data/com.nutomic.syncthingandroid/files"
                  * or enabled root mode thus having write access.
+                 * Default from {@link #initFolder} was already set in {@link #onCreate}.
+                 *      mFolder.type = Constants.FOLDER_TYPE_SEND_RECEIVE;
+                 * We won't set it again here as this would cause user selection to be reset on
+                 * screen rotation - as we don't know if we restored the activity or created
+                 * a fresh one.
                  */
-                mFolder.type = Constants.FOLDER_TYPE_SEND_RECEIVE;
                 updateFolderTypeDescription();
             } else {
                 mEditIgnoreListTitle.setEnabled(true);
@@ -633,6 +637,9 @@ public class FolderActivity extends SyncthingActivity {
         return sb.toString();
     }
 
+    /**
+     * Init a new folder in mIsCreateMode, used in {@link #onCreate}.
+     */
     private void initFolder() {
         mFolder = new Folder();
         mFolder.id = (getIntent().hasExtra(EXTRA_FOLDER_ID))
@@ -647,7 +654,7 @@ public class FolderActivity extends SyncthingActivity {
          */
         mFolder.rescanIntervalS = 3600;
         mFolder.paused = false;
-        mFolder.type = Constants.FOLDER_TYPE_SEND_RECEIVE;
+        mFolder.type = Constants.FOLDER_TYPE_SEND_RECEIVE;      // Default for {@link #checkWriteAndUpdateUI}.
         mFolder.versioning = new Folder.Versioning();
     }
 
