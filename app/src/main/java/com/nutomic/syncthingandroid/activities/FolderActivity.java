@@ -251,14 +251,14 @@ public class FolderActivity extends SyncthingActivity {
                 }
                 mConfig.getFolderIgnoreList(restApi, mFolder, this::onReceiveFolderIgnoreList);
                 mFolderNeedsToUpdate = false;
+            }
 
-                // If the extra is set, we should automatically share the current folder with the given device.
-                if (getIntent().hasExtra(EXTRA_DEVICE_ID)) {
-                    Device device = new Device();
-                    device.deviceID = getIntent().getStringExtra(EXTRA_DEVICE_ID);
-                    mFolder.addDevice(device);
-                    mFolderNeedsToUpdate = true;
-                }
+            // If the extra is set, we should automatically share the current folder with the given device.
+            if (getIntent().hasExtra(EXTRA_DEVICE_ID)) {
+                Device device = new Device();
+                device.deviceID = getIntent().getStringExtra(EXTRA_DEVICE_ID);
+                mFolder.addDevice(device);
+                mFolderNeedsToUpdate = true;
             }
         }
 
