@@ -214,7 +214,7 @@ public class DeviceActivity extends SyncthingActivity {
             mDeviceNeedsToUpdate = savedInstanceState.getBoolean("deviceNeedsToUpdate");
             restoreDialogStates(savedInstanceState);
         } else {
-            // Fresh initialiation of the edit or create mode.
+            // Fresh init of the edit or create mode.
             if (mIsCreateMode) {
                 Log.d(TAG, "Initializing create mode ...");
                 initDevice();
