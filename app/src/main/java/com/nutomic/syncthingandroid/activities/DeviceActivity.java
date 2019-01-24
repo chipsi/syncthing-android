@@ -520,7 +520,7 @@ public class DeviceActivity extends SyncthingActivity {
     }
 
     /**
-     * Convert text line to addresses array.
+     * Converts text line to addresses array.
      */
     private List<String> persistableAddresses(CharSequence userInput) {
         if (isEmpty(userInput)) {
