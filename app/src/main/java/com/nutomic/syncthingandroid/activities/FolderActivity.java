@@ -511,6 +511,7 @@ public class FolderActivity extends SyncthingActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.save).setTitle(mIsCreateMode ? R.string.create : R.string.save_title);
         menu.findItem(R.id.remove).setVisible(!mIsCreateMode);
         return true;
     }
