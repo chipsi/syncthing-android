@@ -226,7 +226,7 @@ public class FolderActivity extends SyncthingActivity {
             mFolderUri = savedInstanceState.getParcelable("mFolderUri");
             restoreDialogStates(savedInstanceState);
         } else {
-            // Fresh initialiation of the edit or create mode.
+            // Fresh init of the edit or create mode.
             if (mIsCreateMode) {
                 Log.d(TAG, "Initializing create mode ...");
                 initFolder();
