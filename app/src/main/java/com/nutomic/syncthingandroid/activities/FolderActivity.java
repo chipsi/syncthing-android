@@ -682,6 +682,11 @@ public class FolderActivity extends SyncthingActivity {
     }
 
     private void onSave() {
+        if (mFolder == null) {
+            Log.e(TAG, "onSave: mFolder == null");
+            return;
+        }
+
         // Validate fields.
         if (TextUtils.isEmpty(mFolder.id)) {
             Toast.makeText(this, R.string.folder_id_required, Toast.LENGTH_LONG)
@@ -725,11 +730,6 @@ public class FolderActivity extends SyncthingActivity {
         if (!mFolderNeedsToUpdate) {
             // We've got nothing to save.
             finish();
-            return;
-        }
-
-        if (mFolder == null) {
-            Log.e(TAG, "onSave: mFolder == null");
             return;
         }
 

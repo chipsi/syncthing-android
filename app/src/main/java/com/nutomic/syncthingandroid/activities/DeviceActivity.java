@@ -462,6 +462,11 @@ public class DeviceActivity extends SyncthingActivity {
     }
 
     private void onSave() {
+        if (mDevice == null) {
+            Log.e(TAG, "onSave: mDevice == null");
+            return;
+        }
+
         // Validate fields.
         if (isEmpty(mDevice.deviceID)) {
             Toast.makeText(this, R.string.device_id_required, Toast.LENGTH_LONG)
@@ -495,11 +500,6 @@ public class DeviceActivity extends SyncthingActivity {
         if (!mDeviceNeedsToUpdate) {
             // We've got nothing to save.
             finish();
-            return;
-        }
-
-        if (mDevice == null) {
-            Log.e(TAG, "onSave: mDevice == null");
             return;
         }
         // Log.v(TAG, "deviceID=" + mDevice.deviceID + ", introducedBy=" + mDevice.introducedBy);
