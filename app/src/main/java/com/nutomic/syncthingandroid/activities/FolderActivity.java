@@ -124,8 +124,6 @@ public class FolderActivity extends SyncthingActivity {
     private Dialog mDeleteDialog;
     private Dialog mDiscardDialog;
 
-    private Folder.Versioning mVersioning;
-
     private final TextWatcher mTextWatcher = new TextWatcherAdapter() {
         @Override
         public void afterTextChanged(Editable s) {
@@ -275,7 +273,6 @@ public class FolderActivity extends SyncthingActivity {
             mPathView.setEnabled(false);
         }
         checkWriteAndUpdateUI();
-        attemptToApplyVersioningConfig();
         updateViewsAndSetListeners();
 
         // Open keyboard on label view in edit mode.
@@ -437,16 +434,6 @@ public class FolderActivity extends SyncthingActivity {
             mEditIgnoreListContent.setText(ignoreList);
         }
         mEditIgnoreListContent.addTextChangedListener(mIgnoreListContentTextWatcher);
-    }
-
-    // If the FolderActivity gets recreated after the VersioningDialogActivity is closed, then the result from the VersioningDialogActivity will be received before
-    // the mFolder variable has been recreated, so the versioning config will be stored in the mVersioning variable until the mFolder variable has been
-    // recreated in the onServiceStateChange(). This has been observed to happen after the screen orientation has changed while the VersioningDialogActivity was open.
-    private void attemptToApplyVersioningConfig() {
-        if (mFolder != null && mVersioning != null){
-            mFolder.versioning = mVersioning;
-            mVersioning = null;
-        }
     }
 
     private void updateViewsAndSetListeners() {
@@ -772,25 +759,25 @@ public class FolderActivity extends SyncthingActivity {
     }
 
     private void updateVersioning(Bundle arguments) {
-        if (mFolder != null){
-            mVersioning = mFolder.versioning;
-        } else {
-            mVersioning = new Folder.Versioning();
+        if (mFolder == null) {
+            Log.e(TAG, "updateVersioning: mFolder == null");
+            return;
+        }
+        if (mFolder.versioning == null) {
+            mFolder.versioning = new Folder.Versioning();
         }
 
         String type = arguments.getString("type");
         arguments.remove("type");
 
-        if (type.equals("none")){
-            mVersioning = new Folder.Versioning();
+        if (type.equals("none")) {
+            mFolder.versioning = new Folder.Versioning();
         } else {
             for (String key : arguments.keySet()) {
-                mVersioning.params.put(key, arguments.getString(key));
+                mFolder.versioning.params.put(key, arguments.getString(key));
             }
-            mVersioning.type = type;
+            mFolder.versioning.type = type;
         }
-
-        attemptToApplyVersioningConfig();
         updateVersioningDescription();
         mFolderNeedsToUpdate = true;
     }
