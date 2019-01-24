@@ -53,9 +53,7 @@ import static com.nutomic.syncthingandroid.util.Compression.METADATA;
 /**
  * Shows device details and allows changing them.
  */
-public class DeviceActivity extends SyncthingActivity
-        implements
-            SyncthingService.OnServiceStateChangeListener {
+public class DeviceActivity extends SyncthingActivity {
 
     public static final String EXTRA_NOTIFICATION_ID =
             "com.github.catfriend1.syncthingandroid.activities.DeviceActivity.NOTIFICATION_ID";
@@ -207,25 +205,51 @@ public class DeviceActivity extends SyncthingActivity
         mCompressionContainer.setOnClickListener(view -> onCompressionContainerClick());
         mCustomSyncConditionsDialog.setOnClickListener(view -> onCustomSyncConditionsDialogClick());
 
-        if (savedInstanceState != null){
-            if (mDevice == null) {
-                mDevice = new Gson().fromJson(savedInstanceState.getString("device"), Device.class);
-            }
-            restoreDialogStates(savedInstanceState);
-        }
-
         findViewById(R.id.editDeviceIdContainer).setVisibility(mIsCreateMode ? View.VISIBLE : View.GONE);
         mShowDeviceIdContainer.setVisibility(!mIsCreateMode ? View.VISIBLE : View.GONE);
-        if (mIsCreateMode) {
-            if (mDevice == null) {
+
+        if (savedInstanceState != null) {
+            Log.d(TAG, "Retrieving state from savedInstanceState ...");
+            mDevice = new Gson().fromJson(savedInstanceState.getString("device"), Device.class);
+            mDeviceNeedsToUpdate = savedInstanceState.getBoolean("deviceNeedsToUpdate");
+            restoreDialogStates(savedInstanceState);
+        } else {
+            // Fresh initialiation of the edit or create mode.
+            if (mIsCreateMode) {
+                Log.d(TAG, "Initializing create mode ...");
                 initDevice();
+                mDeviceNeedsToUpdate = true;
+            } else {
+                // Edit mode.
+                String passedId = getIntent().getStringExtra(EXTRA_DEVICE_ID);
+                Log.d(TAG, "Initializing edit mode: deviceID=" + passedId);
+                RestApi restApi = getApi();
+                List<Device> devices = mConfig.getDevices(restApi, false);
+                mDevice = null;
+                for (Device currentDevice : devices) {
+                    if (currentDevice.deviceID.equals(passedId)) {
+                        mDevice = currentDevice;
+                        break;
+                    }
+                }
+                if (mDevice == null) {
+                    Log.w(TAG, "Device not found in API update, maybe it was deleted?");
+                    finish();
+                    return;
+                }
+                if (restApi != null) {
+                    restApi.getConnections(this::onReceiveConnections);
+                }
+                mDeviceNeedsToUpdate = false;
             }
+        }
+        updateViewsAndSetListeners();
+
+        if (mIsCreateMode) {
             mEditDeviceId.requestFocus();
-            mDeviceNeedsToUpdate = true;
         } else {
             getWindow().setSoftInputMode(SOFT_INPUT_STATE_ALWAYS_HIDDEN);
             mNameView.requestFocus();
-            mDeviceNeedsToUpdate = false;
         }
     }
 
@@ -252,32 +276,6 @@ public class DeviceActivity extends SyncthingActivity
         SyncthingServiceBinder syncthingServiceBinder = (SyncthingServiceBinder) iBinder;
         SyncthingService syncthingService = (SyncthingService) syncthingServiceBinder.getService();
         syncthingService.getNotificationHandler().cancelConsentNotification(getIntent().getIntExtra(EXTRA_NOTIFICATION_ID, 0));
-        syncthingService.registerOnServiceStateChangeListener(DeviceActivity.this);
-    }
-
-    @Override
-    public void onServiceStateChange(SyncthingService.State currentState) {
-        if (!mIsCreateMode) {
-            RestApi restApi = getApi();
-            List<Device> devices = mConfig.getDevices(restApi, false);
-            String passedId = getIntent().getStringExtra(EXTRA_DEVICE_ID);
-            mDevice = null;
-            for (Device currentDevice : devices) {
-                if (currentDevice.deviceID.equals(passedId)) {
-                    mDevice = currentDevice;
-                    break;
-                }
-            }
-            if (mDevice == null) {
-                Log.w(TAG, "Device not found in API update, maybe it was deleted?");
-                finish();
-                return;
-            }
-            if (restApi != null) {
-                restApi.getConnections(this::onReceiveConnections);
-            }
-        }
-        updateViewsAndSetListeners();
     }
 
     @Override
@@ -296,7 +294,6 @@ public class DeviceActivity extends SyncthingActivity
         SyncthingService syncthingService = getService();
         if (syncthingService != null) {
             syncthingService.getNotificationHandler().cancelConsentNotification(getIntent().getIntExtra(EXTRA_NOTIFICATION_ID, 0));
-            syncthingService.unregisterOnServiceStateChangeListener(DeviceActivity.this);
         }
         mEditDeviceId.removeTextChangedListener(mIdTextWatcher);
         mNameView.removeTextChangedListener(mNameTextWatcher);
@@ -310,6 +307,7 @@ public class DeviceActivity extends SyncthingActivity
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString("device", new Gson().toJson(mDevice));
+        outState.putBoolean("deviceNeedsToUpdate", mDeviceNeedsToUpdate);
 
         outState.putBoolean(IS_SHOWING_DISCARD_DIALOG, mDiscardDialog != null && mDiscardDialog.isShowing());
         Util.dismissDialogSafe(mDiscardDialog, this);
