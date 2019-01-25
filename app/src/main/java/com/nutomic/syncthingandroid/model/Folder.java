@@ -4,9 +4,12 @@ import android.text.TextUtils;
 
 import com.nutomic.syncthingandroid.service.Constants;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class Folder {
 
@@ -41,6 +44,16 @@ public class Folder {
 
     // Folder Status
     public String invalid;
+
+    public static class Versioning implements Serializable {
+        public String type;
+        public Map<String, String> params = new HashMap<>();
+    }
+
+    public static class MinDiskFree {
+        public float value;
+        public String unit;
+    }
 
     public void addDevice(final Device device) {
         Device d = new Device();
