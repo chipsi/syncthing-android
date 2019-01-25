@@ -2,6 +2,8 @@ package com.nutomic.syncthingandroid.model;
 
 import android.text.TextUtils;
 
+import com.google.gson.annotations.SerializedName;
+
 import com.nutomic.syncthingandroid.service.Constants;
 
 import java.io.Serializable;
@@ -51,8 +53,11 @@ public class Folder {
     }
 
     public static class MinDiskFree {
-        public float value;
-        public String unit;
+        @SerializedName("value")
+        public Number val;
+
+        @SerializedName("unit")
+        public String uni;
     }
 
     public void addDevice(final Device device) {
