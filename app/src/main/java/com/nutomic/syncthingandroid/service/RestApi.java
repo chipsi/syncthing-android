@@ -33,6 +33,9 @@ import com.nutomic.syncthingandroid.model.FolderIgnoreList;
 import com.nutomic.syncthingandroid.model.FolderStatus;
 import com.nutomic.syncthingandroid.model.Gui;
 import com.nutomic.syncthingandroid.model.IgnoredFolder;
+import com.nutomic.syncthingandroid.model.MinDiskFree;
+import com.nutomic.syncthingandroid.model.MinDiskFreeDeserializer;
+import com.nutomic.syncthingandroid.model.MinDiskFreeSerializer;
 import com.nutomic.syncthingandroid.model.Options;
 import com.nutomic.syncthingandroid.model.PendingDevice;
 import com.nutomic.syncthingandroid.model.PendingFolder;
@@ -215,7 +218,11 @@ public class RestApi {
     private void onReloadConfigComplete(String result) {
         Boolean configParseSuccess;
         synchronized(mConfigLock) {
-            mConfig = new Gson().fromJson(result, Config.class);
+            Gson gson = new GsonBuilder()
+                .registerTypeAdapter(MinDiskFree.class, new MinDiskFreeDeserializer())
+                .registerTypeAdapter(MinDiskFree.class, new MinDiskFreeSerializer())
+                .create();
+            mConfig = gson.fromJson(result, Config.class);
             configParseSuccess = mConfig != null;
         }
         if (!configParseSuccess) {
@@ -420,10 +427,20 @@ public class RestApi {
 
     public List<Folder> getFolders() {
         List<Folder> folders;
+        if (mConfig.folders.size() > 0) {
+            if (mConfig.folders.get(0).minDiskFree != null) {
+                Log.v(TAG, "A " + mConfig.folders.get(0).minDiskFree.unit);
+            }
+        }
         synchronized (mConfigLock) {
             folders = deepCopy(mConfig.folders, new TypeToken<List<Folder>>(){}.getType());
         }
         Collections.sort(folders, FOLDERS_COMPARATOR);
+        if (folders.size() > 0) {
+            if (folders.get(0).minDiskFree != null) {
+                Log.v(TAG, "B" + folders.get(0).minDiskFree.unit);
+            }
+        }
         return folders;
     }
 
@@ -589,7 +606,10 @@ public class RestApi {
      * This method uses Gson and only works with objects that can be converted with Gson.
      */
     private <T> T deepCopy(T object, Type type) {
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder()
+            //.registerTypeAdapter(MinDiskFree.class, new MinDiskFreeSerializer())
+            //.registerTypeAdapter(MinDiskFree.class, new MinDiskFreeDeserializer())
+            .create();
         return gson.fromJson(gson.toJson(object, type), type);
     }
 
