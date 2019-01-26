@@ -25,7 +25,7 @@ public class Folder {
     public int rescanIntervalS = 3600;
     public boolean ignorePerms = true;
     public boolean autoNormalize = true;
-    public MinDiskFree minDiskFree;
+    public static MinDiskFree minDiskFree;
     public Versioning versioning;
     public int copiers = 0;
     public int pullerMaxPendingKiB;
