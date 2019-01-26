@@ -385,6 +385,10 @@ public class ConfigXml {
          return (node == null) ? defaultValue : Integer.parseInt(node.getTextContent());
     }
 
+    private Float getContentOrDefault(final Node node, Float defaultValue) {
+         return (node == null) ? defaultValue : Float.parseFloat(node.getTextContent());
+    }
+
     private String getContentOrDefault(final Node node, String defaultValue) {
          return (node == null) ? defaultValue : node.getTextContent();
     }
@@ -437,7 +441,7 @@ public class ConfigXml {
             folder.minDiskFree = new Folder.MinDiskFree();
             Element elementMinDiskFree = (Element) r.getElementsByTagName("minDiskFree").item(0);
             folder.minDiskFree.unit = getAttributeOrDefault(elementMinDiskFree, "unit", "%");
-            folder.minDiskFree.value = getContentOrDefault(elementMinDiskFree, 1);
+            folder.minDiskFree.value = getContentOrDefault(elementMinDiskFree, 1f);
             // Log.v(TAG, "folder.minDiskFree.unit=" + folder.minDiskFree.unit + ", folder.minDiskFree.value=" + folder.minDiskFree.value);
 
             // Versioning
@@ -527,8 +531,25 @@ public class ConfigXml {
                     elementDevice.setAttribute("introducedBy", device.introducedBy);
                 }
 
+                // minDiskFree
+                // Pass 1: Remove all minDiskFree nodes from XML (usually one)
+                Element elementMinDiskFree = (Element) r.getElementsByTagName("minDiskFree").item(0);
+                if (elementMinDiskFree != null) {
+                    Log.v(TAG, "updateFolder: nodeMinDiskFree: Removing minDiskFree node");
+                    removeChildElementFromTextNode(r, elementMinDiskFree);
+                }
+
+                // Pass 2: Add minDiskFree node from the POJO model to XML.
+                Node nodeMinDiskFree = mConfig.createElement("minDiskFree");
+                r.appendChild(nodeMinDiskFree);
+                elementMinDiskFree = (Element) nodeMinDiskFree;
+                if (!TextUtils.isEmpty(folder.minDiskFree.unit)) {
+                    elementMinDiskFree.setAttribute("unit", folder.minDiskFree.unit);
+                    setConfigElement(r, "minDiskFree", Float.toString(folder.minDiskFree.value));
+                }
+
                 // Versioning
-                // Pass 1: Remove all versioning nodes in XML (usually one)
+                // Pass 1: Remove all versioning nodes from XML (usually one)
                 /*
                 NodeList nlVersioning = r.getElementsByTagName("versioning");
                 for (int j = nlVersioning.getLength() - 1; j >= 0; j--) {
@@ -542,7 +563,7 @@ public class ConfigXml {
                     removeChildElementFromTextNode(r, elementVersioning);
                 }
 
-                // Pass 2: Add versioning node from the POJO model.
+                // Pass 2: Add versioning node from the POJO model to XML.
                 Node nodeVersioning = mConfig.createElement("versioning");
                 r.appendChild(nodeVersioning);
                 elementVersioning = (Element) nodeVersioning;
