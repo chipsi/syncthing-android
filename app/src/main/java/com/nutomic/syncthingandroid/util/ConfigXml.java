@@ -370,7 +370,11 @@ public class ConfigXml {
     }
 
     private Integer getAttributeOrDefault(final Element element, String attribute, Integer defaultValue) {
-        return element.hasAttribute(attribute) ? Integer.parseInt(element.getAttribute(attribute)) : defaultValue;
+        try {
+            return element.hasAttribute(attribute) ? Integer.parseInt(element.getAttribute(attribute)) : defaultValue;
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
     }
 
     private String getAttributeOrDefault(final Element element, String attribute, String defaultValue) {
@@ -378,15 +382,23 @@ public class ConfigXml {
     }
 
     private Boolean getContentOrDefault(final Node node, Boolean defaultValue) {
-         return (node == null) ? defaultValue : Boolean.parseBoolean(node.getTextContent());
+        return (node == null) ? defaultValue : Boolean.parseBoolean(node.getTextContent());
     }
 
     private Integer getContentOrDefault(final Node node, Integer defaultValue) {
-         return (node == null) ? defaultValue : Integer.parseInt(node.getTextContent());
+        try {
+            return (node == null) ? defaultValue : Integer.parseInt(node.getTextContent());
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
     }
 
     private Float getContentOrDefault(final Node node, Float defaultValue) {
-         return (node == null) ? defaultValue : Float.parseFloat(node.getTextContent());
+        try {
+            return (node == null) ? defaultValue : Float.parseFloat(node.getTextContent());
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
     }
 
     private String getContentOrDefault(final Node node, String defaultValue) {
@@ -532,18 +544,18 @@ public class ConfigXml {
                 }
 
                 // minDiskFree
-                // Pass 1: Remove all minDiskFree nodes from XML (usually one)
-                Element elementMinDiskFree = (Element) r.getElementsByTagName("minDiskFree").item(0);
-                if (elementMinDiskFree != null) {
-                    Log.v(TAG, "updateFolder: nodeMinDiskFree: Removing minDiskFree node");
-                    removeChildElementFromTextNode(r, elementMinDiskFree);
-                }
+                if (folder.minDiskFree != null) {
+                    // Pass 1: Remove all minDiskFree nodes from XML (usually one)
+                    Element elementMinDiskFree = (Element) r.getElementsByTagName("minDiskFree").item(0);
+                    if (elementMinDiskFree != null) {
+                        Log.v(TAG, "updateFolder: nodeMinDiskFree: Removing minDiskFree node");
+                        removeChildElementFromTextNode(r, elementMinDiskFree);
+                    }
 
-                // Pass 2: Add minDiskFree node from the POJO model to XML.
-                Node nodeMinDiskFree = mConfig.createElement("minDiskFree");
-                r.appendChild(nodeMinDiskFree);
-                elementMinDiskFree = (Element) nodeMinDiskFree;
-                if (!TextUtils.isEmpty(folder.minDiskFree.unit)) {
+                    // Pass 2: Add minDiskFree node from the POJO model to XML.
+                    Node nodeMinDiskFree = mConfig.createElement("minDiskFree");
+                    r.appendChild(nodeMinDiskFree);
+                    elementMinDiskFree = (Element) nodeMinDiskFree;
                     elementMinDiskFree.setAttribute("unit", folder.minDiskFree.unit);
                     setConfigElement(r, "minDiskFree", Float.toString(folder.minDiskFree.value));
                 }
