@@ -262,9 +262,6 @@ public class FolderActivity extends SyncthingActivity {
             }
         }
 
-        Log.d(TAG, "minDiskFree: unit= " + mFolder.minDiskFree.uni);
-        Log.d(TAG, "minDiskFree: value= " + mFolder.minDiskFree.val);
-
         if (mIsCreateMode) {
             mEditIgnoreListTitle.setEnabled(false);
             mEditIgnoreListContent.setEnabled(false);
