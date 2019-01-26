@@ -51,7 +51,7 @@ public class Folder {
     }
 
     public static class MinDiskFree {
-        public Long value = 1l;
+        public Integer value = 1;
         public String unit = "%";
     }
 
