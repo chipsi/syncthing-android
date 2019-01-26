@@ -51,7 +51,7 @@ public class Folder {
     }
 
     public static class MinDiskFree {
-        public float value = 1;
+        public String value = "1";
         public String unit = "%";
     }
 
