@@ -253,6 +253,9 @@ public class FolderActivity extends SyncthingActivity {
                 mFolderNeedsToUpdate = false;
             }
 
+            //Log.d(TAG, "minDiskFree: unit= " + mFolder.minDiskFree.unit);
+            //Log.d(TAG, "minDiskFree: value= " + mFolder.minDiskFree.value);
+
             // If the extra is set, we should automatically share the current folder with the given device.
             if (getIntent().hasExtra(EXTRA_DEVICE_ID)) {
                 Device device = new Device();
@@ -260,6 +263,7 @@ public class FolderActivity extends SyncthingActivity {
                 mFolder.addDevice(device);
                 mFolderNeedsToUpdate = true;
             }
+            Log.v(TAG, "onCreate");
         }
 
         if (mIsCreateMode) {
@@ -420,10 +424,19 @@ public class FolderActivity extends SyncthingActivity {
      */
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+        Log.v(TAG, "onServiceConnected");
         super.onServiceConnected(componentName, iBinder);
         SyncthingServiceBinder syncthingServiceBinder = (SyncthingServiceBinder) iBinder;
         SyncthingService syncthingService = (SyncthingService) syncthingServiceBinder.getService();
         syncthingService.getNotificationHandler().cancelConsentNotification(getIntent().getIntExtra(EXTRA_NOTIFICATION_ID, 0));
+
+        RestApi restApi = syncthingService.getApi();
+        List<Folder> folders = restApi.getFolders();
+        for (Folder currentFolder : folders) {
+            Log.d(TAG, "folderLabel " + currentFolder.label);
+            Log.d(TAG, "minDiskFree: unit= " + currentFolder.minDiskFree.unit);
+            Log.d(TAG, "minDiskFree: value= " + currentFolder.minDiskFree.value);
+        }
     }
 
     private void onReceiveFolderIgnoreList(FolderIgnoreList folderIgnoreList) {
