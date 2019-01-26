@@ -25,7 +25,7 @@ public class Folder {
     public int rescanIntervalS = 3600;
     public boolean ignorePerms = true;
     public boolean autoNormalize = true;
-    public MinDiskFree minDiskFree;
+    public static MinDiskFree minDiskFree;
     public Versioning versioning;
     public int copiers = 0;
     public int pullerMaxPendingKiB;
@@ -48,11 +48,6 @@ public class Folder {
     public static class Versioning implements Serializable {
         public String type;
         public Map<String, String> params = new HashMap<>();
-    }
-
-    public static class MinDiskFree {
-        public float value;
-        public String unit;
     }
 
     public void addDevice(final Device device) {
