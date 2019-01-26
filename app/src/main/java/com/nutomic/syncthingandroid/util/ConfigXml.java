@@ -453,7 +453,7 @@ public class ConfigXml {
             folder.minDiskFree = new Folder.MinDiskFree();
             Element elementMinDiskFree = (Element) r.getElementsByTagName("minDiskFree").item(0);
             folder.minDiskFree.unit = getAttributeOrDefault(elementMinDiskFree, "unit", "%");
-            folder.minDiskFree.value = getContentOrDefault(elementMinDiskFree, 1);
+            folder.minDiskFree.value = getContentOrDefault(elementMinDiskFree, 1f);
             // Log.v(TAG, "folder.minDiskFree.unit=" + folder.minDiskFree.unit + ", folder.minDiskFree.value=" + folder.minDiskFree.value);
 
             // Versioning
@@ -557,7 +557,7 @@ public class ConfigXml {
                     r.appendChild(nodeMinDiskFree);
                     elementMinDiskFree = (Element) nodeMinDiskFree;
                     elementMinDiskFree.setAttribute("unit", folder.minDiskFree.unit);
-                    setConfigElement(r, "minDiskFree", Integer.toString(folder.minDiskFree.value));
+                    setConfigElement(r, "minDiskFree", Float.toString(folder.minDiskFree.value));
                 }
 
                 // Versioning
