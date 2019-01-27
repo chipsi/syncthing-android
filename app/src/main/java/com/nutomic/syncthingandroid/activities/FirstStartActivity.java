@@ -199,6 +199,9 @@ public class FirstStartActivity extends AppCompatActivity {
             }
         });
 
+        if (mRunningOnTV) {
+            mNextButton.setFocusableInTouchMode(true);
+        }
         if (savedInstanceState != null) {
             mBackButton.setVisibility(savedInstanceState.getBoolean("mBackButton") ? View.VISIBLE : View.GONE);
             mNextButton.setVisibility(savedInstanceState.getBoolean("mNextButton") ? View.VISIBLE : View.GONE);
