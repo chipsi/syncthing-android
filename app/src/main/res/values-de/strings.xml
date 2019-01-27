@@ -385,7 +385,7 @@ Bitte melden Sie auftretende Probleme via GitHub.</string>
     <string name="run_on_mobile_data_summary">Starte, wenn das Gerät über das mobile Datennetzwerk verbunden ist. Warnung: Wenn Du große Datenmengen synchronisierst, kann dies einen hohen Verbrauch deines mobilen Datentarifs verursachen.</string>
 
     <string name="run_on_wifi_title">Starte bei WLAN-Verbindung</string>
-    <string name="run_on_wifi_summary">Starte, wenn das Gerät mit einem WLAN-Netzwerk verbunden ist.</string>
+    <string name="run_on_wifi_summary">Starte, wenn das Gerät mit einem WLAN- oder Kabel-Netzwerk verbunden ist.</string>
 
     <string name="run_on_metered_wifi_title">Starte bei getakteter WLAN-Verbindung</string>
     <string name="run_on_metered_wifi_summary">Starte, wenn das Gerät mit einem getakteten WLAN-Netzwerk wie z. B. einem Hotspot- oder Tethering-Netzwerk verbunden ist. Achtung: Dies kann einen großen Anteil des mobilen Datenvolumens verbrauchen, wenn Du viele Dateien synchronisierst.</string>
