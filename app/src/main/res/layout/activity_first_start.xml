@@ -10,7 +10,9 @@
         <com.nutomic.syncthingandroid.views.CustomViewPager
                 android:id="@+id/view_pager"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:nextFocusLeft="@+id/btn_back"
+                android:nextFocusRight="@+id/btn_next" />
 
         <LinearLayout
                 android:id="@+id/layoutDots"
