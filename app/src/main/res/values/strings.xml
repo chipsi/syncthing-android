@@ -705,7 +705,7 @@ Please report any problems you encounter via Github.</string>
     <string name="reason_mobile_data_disallowed">Syncthing is not allowed to run on mobile data connection.</string>
     <string name="reason_on_mobile_data">Syncthing is running as mobile data is currently connected.</string>
     <string name="reason_not_on_mobile_data">Syncthing is allowed to run on mobile data connection but mobile data isn\'t connected.</string>
-    <string name="reason_wifi_disallowed">Syncthing is not allowed to run on WiFi.</string>
+    <string name="reason_wifi_disallowed">Syncthing is not allowed to run on WiFi or ethernet.</string>
     <string name="reason_on_wifi">Syncthing is allowed to run on WiFi and WiFi is currently connected.</string>
     <string name="reason_not_on_wifi">Syncthing is allowed to run on WiFi but WiFi isn\'t connected or the phone is in flight mode.</string>
     <string name="reason_on_metered_nonmetered_wifi">Syncthing is allowed to run on metered and non-metered WiFi connections.</string>
