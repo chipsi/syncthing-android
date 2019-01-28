@@ -290,7 +290,7 @@ public class SyncthingRunnable implements Runnable {
     private List<String> getSyncthingPIDs(Boolean enableLog) {
         List<String> syncthingPIDs = new ArrayList<String>();
         String output = Util.runShellCommandGetOutput("ps\n", mUseRoot);
-        if (!TextUtils.isEmpty(output)) {
+        if (TextUtils.isEmpty(output)) {
             Log.w(TAG, "Failed to list SyncthingNative processes. ps command returned empty.");
             return syncthingPIDs;
         }
@@ -305,7 +305,7 @@ public class SyncthingRunnable implements Runnable {
             String line = lines[i];
             if (line.contains(Constants.FILENAME_SYNCTHING_BINARY)) {
                 String syncthingPID = line.trim().split("\\s+")[1];
-                if (enableLog || true) {
+                if (enableLog) {
                     Log.v(TAG, "getSyncthingPIDs: Found process PID [" + syncthingPID + "]");
                 }
                 syncthingPIDs.add(syncthingPID);
