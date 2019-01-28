@@ -42,6 +42,9 @@ public class Folder {
     public int weakHashThresholdPct = 25;
     public String markerName = ".stfolder";
 
+    // Since v1.0.1, see Issue #5445, PR #5479
+    public Boolean CopyOwnershipFromParent = false;
+
     // Folder Status
     public String invalid;
 
