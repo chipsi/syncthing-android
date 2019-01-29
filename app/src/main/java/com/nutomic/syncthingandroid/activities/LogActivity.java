@@ -13,6 +13,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.nutomic.syncthingandroid.R;
+import com.nutomic.syncthingandroid.util.Util;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -143,34 +144,11 @@ public class LogActivity extends SyncthingActivity {
          * @param syncthingLog Filter on Syncthing's native messages.
          */
         private String getLog(final boolean syncthingLog) {
-            Process process = null;
-            try {
-                ProcessBuilder pb;
-                if (syncthingLog) {
-                    pb = new ProcessBuilder("/system/bin/logcat", "-t", "300", "-v", "time", "-s", "SyncthingNativeCode");
-                } else {
-                    pb = new ProcessBuilder("/system/bin/logcat", "-t", "300", "-v", "time", "*:i ps:s art:s");
-                }
-                pb.redirectErrorStream(true);
-                process = pb.start();
-                BufferedReader bufferedReader = new BufferedReader(
-                        new InputStreamReader(process.getInputStream(), "UTF-8"), 8192);
-                StringBuilder log = new StringBuilder();
-                String line;
-                String sep = System.getProperty("line.separator");
-                while ((line = bufferedReader.readLine()) != null) {
-                    log.append(line);
-                    log.append(sep);
-                }
-                return log.toString();
-            } catch (IOException e) {
-                Log.w(TAG, "Error reading Android log", e);
-            } finally {
-                if (process != null) {
-                    process.destroy();
-                }
+            if (syncthingLog) {
+                return Util.runShellCommandGetOutput("/system/bin/logcat -t 300 -v time -s SyncthingNativeCode", false);
+            } else {
+                return Util.runShellCommandGetOutput("/system/bin/logcat -t 300 -v time *:i ps:s art:s", false);
             }
-            return "";
         }
     }
 
