@@ -27,8 +27,12 @@ public class LogActivity extends SyncthingActivity {
 
     private final static String TAG = "LogActivity";
 
+    /**
+     * Show Android Log by default.
+     */
+    private boolean mSyncthingLog = false;
+
     private TextView mLog;
-    private boolean mSyncthingLog = true;
     private AsyncTask mFetchLogTask = null;
     private ScrollView mScrollView;
     private Intent mShareIntent;
@@ -41,7 +45,7 @@ public class LogActivity extends SyncthingActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_log);
-        setTitle(R.string.syncthing_log_title);
+        setTitle(R.string.android_log_title);
 
         if (savedInstanceState != null) {
             mSyncthingLog = savedInstanceState.getBoolean("syncthingLog");
