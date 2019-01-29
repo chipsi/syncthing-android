@@ -33,7 +33,7 @@ import eu.chainfire.libsuperuser.Shell;
 
 public class Util {
 
-    private static final String TAG = "SyncthingUtil";
+    private static final String TAG = "Util";
 
     private Util() {
     }
