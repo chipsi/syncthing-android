@@ -181,6 +181,7 @@ public class Util {
      */
     public static int runShellCommand(String cmd, Boolean useRoot) {
         // Assume "failure" exit code if an error is caught.
+        // Note: redirectErrorStream(true); System.getProperty("line.separator");
         int exitCode = 255;
         Process shellProc = null;
         DataOutputStream shellOut = null;
@@ -226,6 +227,7 @@ public class Util {
     }
 
     public static String runShellCommandGetOutput(String cmd, Boolean useRoot) {
+        // Note: redirectErrorStream(true); System.getProperty("line.separator");
         int exitCode = 255;
         String capturedStdOut = "";
         Process shellProc = null;
