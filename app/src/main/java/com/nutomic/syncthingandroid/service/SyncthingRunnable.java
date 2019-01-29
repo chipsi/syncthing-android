@@ -133,7 +133,7 @@ public class SyncthingRunnable implements Runnable {
         // Make sure Syncthing is executable
         exitCode = Util.runShellCommand("chmod 500 " + mSyncthingBinary.getPath(), false);
         if (exitCode != 0) {
-            Log.w(TAG, "Failed to chmod SyncthingNative, exit code = " + Integer.toString(exitCode));
+            Log.d(TAG, "chmod SyncthingNative exited with code " + Integer.toString(exitCode) + ". This may not be an error.");
         }
 
         /**
