@@ -193,6 +193,20 @@ public class Util {
             bufferedWriter.flush();
             shellOut.close();
             shellOut = null;
+            BufferedReader bufferedReader = null;
+            try {
+                bufferedReader = new BufferedReader(new InputStreamReader(shellProc.getInputStream(), Charsets.UTF_8));
+                String line;
+                while ((line = bufferedReader.readLine()) != null) {
+                    Log.v(TAG, "runShellCommand: " + line);
+                }
+            } catch (IOException e) {
+                Log.w(TAG, "runShellCommand: Failed to read output", e);
+            } finally {
+                if (bufferedReader != null) {
+                    bufferedReader.close();
+                }
+            }
             exitCode = shellProc.waitFor();
         } catch (IOException | InterruptedException e) {
             Log.w(TAG, "runShellCommand: Exception", e);
@@ -236,8 +250,9 @@ public class Util {
             } catch (IOException e) {
                 Log.w(TAG, "runShellCommandGetOutput: Failed to read output", e);
             } finally {
-                if (bufferedReader != null)
+                if (bufferedReader != null) {
                     bufferedReader.close();
+                }
             }
             exitCode = shellProc.waitFor();
             Log.i(TAG, "runShellCommandGetOutput: Exited with code " + exitCode);
