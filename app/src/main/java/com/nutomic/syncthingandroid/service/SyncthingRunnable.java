@@ -131,12 +131,9 @@ public class SyncthingRunnable implements Runnable {
         trimLogFile();
 
         // Make sure Syncthing is executable
-        try {
-            ProcessBuilder pb = new ProcessBuilder("chmod", "500", mSyncthingBinary.getPath());
-            Process p = pb.start();
-            p.waitFor();
-        } catch (IOException | InterruptedException e) {
-            Log.w(TAG, "Failed to chmod Syncthing", e);
+        exitCode = Util.runShellCommand("chmod 500 " + mSyncthingBinary.getPath(), false);
+        if (exitCode != 0) {
+            Log.w(TAG, "Failed to chmod SyncthingNative, exit code = " + Integer.toString(exitCode));
         }
 
         /**
