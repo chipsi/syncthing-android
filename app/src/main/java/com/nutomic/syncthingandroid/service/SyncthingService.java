@@ -509,7 +509,6 @@ public class SyncthingService extends Service {
         try {
             mConfig.loadConfig();
         } catch (ConfigXml.OpenConfigException e) {
-            Log.v(TAG,"MIP0");
             mNotificationHandler.showCrashedNotification(R.string.config_read_failed, "launchStartupTask:OpenConfigException");
             synchronized (mStateLock) {
                 onServiceStateChange(State.ERROR);
