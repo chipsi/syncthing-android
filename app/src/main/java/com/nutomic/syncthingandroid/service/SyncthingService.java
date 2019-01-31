@@ -428,10 +428,11 @@ public class SyncthingService extends Service {
         try {
             configXml.loadConfig();
         } catch (ConfigXml.OpenConfigException e) {
-            mNotificationHandler.showCrashedNotification(R.string.config_read_failed, "applyCustomRunConditions:ConfigXml.OpenConfigException");
+            mNotificationHandler.showCrashedNotification(R.string.config_read_failed, "applyCustomRunConditions:OpenConfigException");
             synchronized (mStateLock) {
                 onServiceStateChange(State.ERROR);
             }
+            stopSelf();
             return;
         }
 
@@ -508,10 +509,12 @@ public class SyncthingService extends Service {
         try {
             mConfig.loadConfig();
         } catch (ConfigXml.OpenConfigException e) {
-            mNotificationHandler.showCrashedNotification(R.string.config_read_failed, "ConfigXml.OpenConfigException");
+            Log.v(TAG,"MIP0");
+            mNotificationHandler.showCrashedNotification(R.string.config_read_failed, "launchStartupTask:OpenConfigException");
             synchronized (mStateLock) {
                 onServiceStateChange(State.ERROR);
             }
+            stopSelf();
             return;
         }
 
