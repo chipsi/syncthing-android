@@ -28,13 +28,19 @@ public class Constants {
 
     // Preferences - Behaviour
     public static final String PREF_USE_ROOT                    = "use_root";
+    public static final String PREF_EXPERT_MODE                 = "expert_mode";
+
+    // Preferences - Troubleshooting
+    public static final String PREF_VERBOSE_LOG                 = "verbose_log";
     public static final String PREF_ENVIRONMENT_VARIABLES       = "environment_variables";
     public static final String PREF_DEBUG_FACILITIES_ENABLED    = "debug_facilities_enabled";
-    public static final String PREF_USE_WAKE_LOCK               = "wakelock_while_binary_running";
+
+    // Preferences - Experimental
     public static final String PREF_USE_TOR                     = "use_tor";
     public static final String PREF_SOCKS_PROXY_ADDRESS         = "socks_proxy_address";
     public static final String PREF_HTTP_PROXY_ADDRESS          = "http_proxy_address";
     public static final String PREF_BROADCAST_SERVICE_CONTROL   = "broadcast_service_control";
+    public static final String PREF_USE_WAKE_LOCK               = "wakelock_while_binary_running";
 
     // Preferences - per Folder and Device Sync Conditions
     public static final String PREF_OBJECT_PREFIX_FOLDER        = "sc_folder_";
