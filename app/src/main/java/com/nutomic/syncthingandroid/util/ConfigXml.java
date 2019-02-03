@@ -12,6 +12,7 @@ import com.nutomic.syncthingandroid.model.Folder;
 import com.nutomic.syncthingandroid.model.FolderIgnoreList;
 import com.nutomic.syncthingandroid.model.Gui;
 import com.nutomic.syncthingandroid.R;
+import com.nutomic.syncthingandroid.service.AppPrefs;
 import com.nutomic.syncthingandroid.service.Constants;
 import com.nutomic.syncthingandroid.service.SyncthingRunnable;
 
@@ -60,7 +61,7 @@ public class ConfigXml {
 
     private static final String TAG = "ConfigXml";
 
-    private static final Boolean ENABLE_VERBOSE_LOG = false;
+    private Boolean ENABLE_VERBOSE_LOG = false;
 
     public class OpenConfigException extends RuntimeException {
     }
@@ -97,6 +98,7 @@ public class ConfigXml {
 
     public ConfigXml(Context context) {
         mContext = context;
+        ENABLE_VERBOSE_LOG = AppPrefs.getPrefVerboseLog(context);
         mConfigFile = Constants.getConfigFile(mContext);
     }
 

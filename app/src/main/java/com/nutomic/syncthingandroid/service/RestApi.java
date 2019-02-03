@@ -64,7 +64,7 @@ public class RestApi {
 
     private static final String TAG = "RestApi";
 
-    private static final Boolean ENABLE_VERBOSE_LOG = false;
+    private Boolean ENABLE_VERBOSE_LOG = false;
 
     /**
      * Compares folders by labels, uses the folder ID as fallback if the label is empty
@@ -151,6 +151,7 @@ public class RestApi {
     public RestApi(Context context, URL url, String apiKey, OnApiAvailableListener apiListener,
                    OnConfigChangedListener configListener) {
         ((SyncthingApp) context.getApplicationContext()).component().inject(this);
+        ENABLE_VERBOSE_LOG = AppPrefs.getPrefVerboseLog(context);
         mContext = context;
         mUrl = url;
         mApiKey = apiKey;
