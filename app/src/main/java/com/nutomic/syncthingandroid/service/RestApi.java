@@ -142,7 +142,7 @@ public class RestApi {
     /**
      * Stores the latest result of device and folder completion events.
      */
-    private Completion mCompletion = new Completion();
+    private Completion mCompletion;
 
     private Gson mGson;
 
@@ -157,6 +157,7 @@ public class RestApi {
         mApiKey = apiKey;
         mOnApiAvailableListener = apiListener;
         mOnConfigChangedListener = configListener;
+        mCompletion = new Completion(ENABLE_VERBOSE_LOG);
         mGson = getGson();
     }
 
