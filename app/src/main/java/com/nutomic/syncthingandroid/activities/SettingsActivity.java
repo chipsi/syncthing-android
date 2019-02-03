@@ -70,6 +70,8 @@ public class SettingsActivity extends SyncthingActivity {
 
     private SettingsFragment mSettingsFragment;
 
+    public static final int RESULT_RESTART_APP = 3461;
+
     public static final String EXTRA_OPEN_SUB_PREF_SCREEN =
             "com.github.catfriend1.syncthingandroid.activities.SettingsActivity.OPEN_SUB_PREF_SCREEN";
 
@@ -153,6 +155,7 @@ public class SettingsActivity extends SyncthingActivity {
 
         private Dialog             mCurrentPrefScreenDialog = null;
 
+        /* Run conditions */
         private Preference         mCategoryRunConditions;
         private CheckBoxPreference mStartServiceOnBoot;
         private ListPreference     mPowerSource;
@@ -163,6 +166,7 @@ public class SettingsActivity extends SyncthingActivity {
         private WifiSsidPreference mWifiSsidWhitelist;
         private CheckBoxPreference mRunInFlightMode;
 
+        /* Syncthing options */
         private Preference         mCategorySyncthingOptions;
         private EditTextPreference mDeviceName;
         private EditTextPreference mListenAddresses;
@@ -323,13 +327,15 @@ public class SettingsActivity extends SyncthingActivity {
             exportConfig.setOnPreferenceClickListener(this);
             importConfig.setOnPreferenceClickListener(this);
 
-            /* Debugging */
+            /* Troubleshooting */
+            Preference verboseLog                   = findPreference(Constants.PREF_VERBOSE_LOG);
             Preference openIssueTracker             = findPreference(KEY_OPEN_ISSUE_TRACKER);
             Preference debugFacilitiesEnabled       = findPreference(Constants.PREF_DEBUG_FACILITIES_ENABLED);
             Preference environmentVariables         = findPreference("environment_variables");
             Preference stResetDatabase              = findPreference("st_reset_database");
             Preference stResetDeltas                = findPreference("st_reset_deltas");
 
+            verboseLog.setOnPreferenceClickListener(this);
             openIssueTracker.setOnPreferenceClickListener(this);
             debugFacilitiesEnabled.setOnPreferenceChangeListener(this);
             environmentVariables.setOnPreferenceChangeListener(this);
@@ -714,6 +720,20 @@ public class SettingsActivity extends SyncthingActivity {
                         new Thread(() -> Util.fixAppDataPermissions(getActivity())).start();
                         mPendingConfig = true;
                     }
+                    return true;
+                case Constants.PREF_VERBOSE_LOG:
+                    new AlertDialog.Builder(getActivity())
+                            .setTitle(R.string.dialog_settings_restart_app_title)
+                            .setMessage(R.string.dialog_settings_restart_app_question)
+                            .setPositiveButton(android.R.string.ok, (dialogInterface, i) -> {
+                                getActivity().setResult(RESULT_RESTART_APP);
+                                getActivity().finish();
+                            })
+                            .setNegativeButton(android.R.string.no, (dialogInterface, i) -> {
+                                // Revert.
+                                ((CheckBoxPreference) preference).setChecked(!((CheckBoxPreference) preference).isChecked());
+                            })
+                            .show();
                     return true;
                 case KEY_OPEN_ISSUE_TRACKER:
                     intent = new Intent(getActivity(), WebViewActivity.class);
