@@ -433,6 +433,10 @@ Please report any problems you encounter via Github.</string>
 
     <string name="use_root_summary">Running Syncthing as root allows it to write to folders Android normally restricts to be readonly accessed. Use this feature cautious.</string>
 
+    <string name="expert_mode_title">Expert mode</string>
+
+    <string name="expert_mode_summary">Enabling this option will show advanced configuration options. You should have a look at the Syncthing Docs first to make sure you know how to use them correctly. Incorrect settings may cause battery drain, system resource exhaust or incomplete synchronization.</string>
+
     <string name="preference_language_title">Language</string>
 
     <string name="preference_language_summary">Change the app language</string>
@@ -584,6 +588,10 @@ Please report any problems you encounter via Github.</string>
     <string name="st_reset_deltas_done">Successfully reset Syncthing\'s delta indexes</string>
 
     <string name="category_about">About</string>
+
+    <string name="verbose_log_title">Verbose log</string>
+
+    <string name="verbose_log_summary">Enabling this option will help to generate debug logs at a very detailed level.</string>
 
     <!-- Settings item that opens the log activity -->
     <string name="open_log">Open Log</string>
