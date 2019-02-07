@@ -29,6 +29,7 @@ import com.google.zxing.integration.android.IntentResult;
 import com.nutomic.syncthingandroid.R;
 import com.nutomic.syncthingandroid.model.Connections;
 import com.nutomic.syncthingandroid.model.Device;
+import com.nutomic.syncthingandroid.model.DiscoveredDevice;
 import com.nutomic.syncthingandroid.service.Constants;
 import com.nutomic.syncthingandroid.service.RestApi;
 import com.nutomic.syncthingandroid.service.SyncthingService;
@@ -42,6 +43,7 @@ import com.nutomic.syncthingandroid.util.Util;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -276,6 +278,9 @@ public class DeviceActivity extends SyncthingActivity {
         RestApi restApi = syncthingService.getApi();
         if (restApi != null) {
             restApi.getConnections(this::onReceiveConnections);
+            if (mIsCreateMode) {
+                asyncQueryDiscoveredDevices(restApi);
+            }
         }
     }
 
@@ -614,5 +619,44 @@ public class DeviceActivity extends SyncthingActivity {
                 .setNegativeButton(android.R.string.cancel, null)
                 .create();
         mDiscardDialog.show();
+    }
+
+    /**
+     * Perform asynchronous query via REST to retrieve locally discovered devices.
+     * Precondition:
+     *      restApi != null
+     *      mIsCreateMode == true
+     */
+    private void asyncQueryDiscoveredDevices(RestApi restApi) {
+        if (!restApi.isConfigLoaded()) {
+            return;
+        }
+        restApi.getDiscoveredDevices(this::onReceiveDiscoveredDevices);
+    }
+
+    /**
+     * Callback after {@link asyncQueryDiscoveredDevices}.
+     * Precondition:
+     *      mIsCreateMode == true
+     */
+    private void onReceiveDiscoveredDevices(Map<String, DiscoveredDevice> discoveredDevices) {
+        if (discoveredDevices == null) {
+            Log.e(TAG, "onReceiveDiscoveredDevices: discoveredDevices == null");
+            return;
+        }
+        for (String deviceId : discoveredDevices.keySet()) {
+            if (deviceId != null) {
+                // For testing purposes only.
+                /*
+                DiscoveredDevice discoveredDevice = discoveredDevices.get(deviceId);
+                if (discoveredDevice != null && discoveredDevice.addresses != null) {
+                    for (String address : discoveredDevice.addresses) {
+                        Log.v(TAG, "onReceiveDiscoveredDevices: deviceID = '" + deviceId + "' has address '" + address + "'");
+                    }
+                }
+                */
+                // ToDo Fill views.
+            }
+        }
     }
 }
