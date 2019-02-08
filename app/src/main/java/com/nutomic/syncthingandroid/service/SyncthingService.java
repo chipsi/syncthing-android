@@ -30,6 +30,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.ref.WeakReference;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -161,7 +162,7 @@ public class SyncthingService extends Service {
     private Thread mSyncthingRunnableThread = null;
     private Handler mHandler;
 
-    private final HashSet<OnServiceStateChangeListener> mOnServiceStateChangeListeners = new HashSet<>();
+    private final HashSet<WeakReference<OnServiceStateChangeListener>> mOnServiceStateChangeListeners = new HashSet<>();
     private final SyncthingServiceBinder mBinder = new SyncthingServiceBinder(this);
 
     private @Nullable
@@ -702,7 +703,7 @@ public class SyncthingService extends Service {
         // Make sure we don't send an invalid state or syncthing might show a "disabled" message
         // when it's just starting up.
         listener.onServiceStateChange(mCurrentState);
-        mOnServiceStateChangeListeners.add(listener);
+        mOnServiceStateChangeListeners.add(new WeakReference<>(listener));
     }
 
     /**
@@ -710,8 +711,14 @@ public class SyncthingService extends Service {
      *
      * @see #registerOnServiceStateChangeListener
      */
-    public void unregisterOnServiceStateChangeListener(OnServiceStateChangeListener listener) {
-        mOnServiceStateChangeListeners.remove(listener);
+    public void unregisterOnServiceStateChangeListener(OnServiceStateChangeListener listenerToRemove) {
+        Iterator<WeakReference<OnServiceStateChangeListener>> it = mOnServiceStateChangeListeners.iterator();
+        while (it.hasNext()) {
+            OnServiceStateChangeListener listener = it.next().get();
+            if (listener == null || listener == listenerToRemove) {
+                it.remove();
+            }
+        }
     }
 
     /**
@@ -722,9 +729,9 @@ public class SyncthingService extends Service {
         mCurrentState = newState;
         mHandler.post(() -> {
             mNotificationHandler.updatePersistentNotification(this);
-            Iterator<OnServiceStateChangeListener> it = mOnServiceStateChangeListeners.iterator();
+            Iterator<WeakReference<OnServiceStateChangeListener>> it = mOnServiceStateChangeListeners.iterator();
             while (it.hasNext()) {
-                OnServiceStateChangeListener listener = it.next();
+                OnServiceStateChangeListener listener = it.next().get();
                 if (listener != null) {
                     listener.onServiceStateChange(mCurrentState);
                 } else {
