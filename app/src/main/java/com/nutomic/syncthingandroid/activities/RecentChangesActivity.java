@@ -43,6 +43,7 @@ public class RecentChangesActivity extends SyncthingActivity
     private ChangeListAdapter mRecentChangeAdapter;
     private RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
+    private SyncthingService mSyncthingService = null;
     private SyncthingService.State mServiceState = SyncthingService.State.INIT;
 
     @Override
@@ -68,12 +69,11 @@ public class RecentChangesActivity extends SyncthingActivity
                     if (mServiceState != SyncthingService.State.ACTIVE) {
                         return;
                     }
-                    SyncthingService syncthingService = getService();
-                    if (syncthingService == null) {
-                        Log.e(TAG, "onItemClick: syncthingService == null");
+                    if (mSyncthingService == null) {
+                        Log.e(TAG, "onItemClick: mSyncthingService == null");
                         return;
                     }
-                    RestApi restApi = syncthingService.getApi();
+                    RestApi restApi = mSyncthingService.getApi();
                     if (restApi == null) {
                         Log.e(TAG, "onItemClick: restApi == null");
                         return;
@@ -103,7 +103,9 @@ public class RecentChangesActivity extends SyncthingActivity
     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
         super.onServiceConnected(componentName, iBinder);
         SyncthingServiceBinder syncthingServiceBinder = (SyncthingServiceBinder) iBinder;
-        syncthingServiceBinder.getService().registerOnServiceStateChangeListener(this);
+        SyncthingService syncthingService = syncthingServiceBinder.getService();
+        syncthingService.registerOnServiceStateChangeListener(RecentChangesActivity.this);
+        mSyncthingService = syncthingService;
     }
 
     @Override
@@ -117,11 +119,10 @@ public class RecentChangesActivity extends SyncthingActivity
 
     @Override
     protected void onDestroy() {
-        SyncthingService syncthingService = getService();
-        if (syncthingService != null) {
-            syncthingService.unregisterOnServiceStateChangeListener(this);
-        }
         super.onDestroy();
+        if (mSyncthingService != null) {
+            mSyncthingService.unregisterOnServiceStateChangeListener(RecentChangesActivity.this);
+        }
     }
 
     private void onTimerEvent() {
