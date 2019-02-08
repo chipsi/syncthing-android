@@ -684,11 +684,12 @@ public class DeviceActivity extends SyncthingActivity {
                     readableAddresses = TextUtils.join(", ", discoveredDevice.addresses);
                     // Log.v(TAG, "onReceiveDiscoveredDevices: deviceID = '" + deviceId + "' has addresses '" + readableAddresses + "'");
                 }
+                String caption = deviceId + (TextUtils.isEmpty(readableAddresses) ? "" : " (" + readableAddresses + ")");
                 LayoutInflater inflater = getLayoutInflater();
                 inflater.inflate(R.layout.item_discovered_device_form, mDiscoveredDevicesContainer);
                 TextView deviceIdView = (TextView) mDiscoveredDevicesContainer.getChildAt(mDiscoveredDevicesContainer.getChildCount()-1);
                 deviceIdView.setOnClickListener(null);
-                deviceIdView.setText(deviceId + (TextUtils.isEmpty(readableAddresses) ? "" : " (" + readableAddresses + ")"));
+                deviceIdView.setText(caption);
                 deviceIdView.setTag(deviceId);
                 deviceIdView.setOnClickListener(v -> onDeviceIdViewClick(v));
             }
