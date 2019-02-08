@@ -703,6 +703,7 @@ public class SyncthingService extends Service {
         // Make sure we don't send an invalid state or syncthing might show a "disabled" message
         // when it's just starting up.
         listener.onServiceStateChange(mCurrentState);
+        Log.v(TAG, "registerOnServiceStateChangeListener " + listener);
         mOnServiceStateChangeListeners.add(new WeakReference<>(listener));
     }
 
@@ -712,10 +713,12 @@ public class SyncthingService extends Service {
      * @see #registerOnServiceStateChangeListener
      */
     public void unregisterOnServiceStateChangeListener(OnServiceStateChangeListener listenerToRemove) {
+        Log.v(TAG, "unregisterOnServiceStateChangeListener " + listenerToRemove);
         Iterator<WeakReference<OnServiceStateChangeListener>> it = mOnServiceStateChangeListeners.iterator();
         while (it.hasNext()) {
             OnServiceStateChangeListener listener = it.next().get();
             if (listener == null || listener == listenerToRemove) {
+                Log.v(TAG, "unregisterOnServiceStateChangeListener ... REMOVED");
                 it.remove();
             }
         }
