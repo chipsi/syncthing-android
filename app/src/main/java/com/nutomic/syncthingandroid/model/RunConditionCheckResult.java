@@ -16,7 +16,7 @@ public class RunConditionCheckResult {
         WIFI_WIFI_IS_METERED(R.string.reason_not_nonmetered_wifi),
         NO_NETWORK_OR_FLIGHTMODE(R.string.reason_on_flight_mode),
         NO_MOBILE_CONNECTION(R.string.reason_not_on_mobile_data),
-        NO_WIFI_CONNECTION(R.string.reason_not_on_wifi),
+        NO_WIFI_CONNECTION(R.string.reason_not_on_wifi);
 
         private final int resId;
 
