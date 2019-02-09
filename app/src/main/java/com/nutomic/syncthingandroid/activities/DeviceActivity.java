@@ -34,6 +34,7 @@ import com.nutomic.syncthingandroid.R;
 import com.nutomic.syncthingandroid.model.Connections;
 import com.nutomic.syncthingandroid.model.Device;
 import com.nutomic.syncthingandroid.model.DiscoveredDevice;
+import com.nutomic.syncthingandroid.model.Options;
 import com.nutomic.syncthingandroid.service.Constants;
 import com.nutomic.syncthingandroid.service.RestApi;
 import com.nutomic.syncthingandroid.service.SyncthingService;
@@ -674,7 +675,8 @@ public class DeviceActivity extends SyncthingActivity {
 
         mDiscoveredDevicesContainer.removeAllViews();
         if (discoveredDevices.size() == 0) {
-            // No discovered devices.
+            // No discovered devices. Determine if local discovery is enabled.
+            Options options = mConfig.getOptions(null);
             int height = (int) TypedValue.applyDimension(COMPLEX_UNIT_DIP, 48, getResources().getDisplayMetrics());
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(WRAP_CONTENT, height);
             int dividerInset = getResources().getDimensionPixelOffset(R.dimen.material_divider_inset);
@@ -683,7 +685,7 @@ public class DeviceActivity extends SyncthingActivity {
             setMarginEnd(params, contentInset);
             TextView emptyView = new TextView(mDiscoveredDevicesContainer.getContext());
             emptyView.setGravity(CENTER_VERTICAL);
-            emptyView.setText(R.string.discovered_device_list_empty);
+            emptyView.setText(options.localAnnounceEnabled ? R.string.discovered_device_list_empty : R.string.local_discovery_disabled);
             mDiscoveredDevicesContainer.addView(emptyView, params);
             return;
         }
