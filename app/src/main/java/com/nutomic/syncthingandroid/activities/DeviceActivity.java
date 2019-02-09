@@ -293,6 +293,11 @@ public class DeviceActivity extends SyncthingActivity {
         if (restApi != null) {
             restApi.getConnections(this::onReceiveConnections);
             if (mIsCreateMode) {
+                mDiscoveredDevicesTitle.setOnClickListener(view -> {
+                    if (restApi != null) {
+                        asyncQueryDiscoveredDevices(restApi);
+                    }
+                });
                 asyncQueryDiscoveredDevices(restApi);
             }
         }
@@ -659,6 +664,14 @@ public class DeviceActivity extends SyncthingActivity {
             return;
         }
 
+        /**
+         * If "mEditDeviceId" already contains content, don't show local discovery results.
+         * This also suppresses the results being shown a second time after the user chose a
+         * deviceId from the list and rotated the screen.
+         */
+        mDiscoveredDevicesTitle.setVisibility(TextUtils.isEmpty(mEditDeviceId.getText()) ? View.VISIBLE : View.GONE);
+        mDiscoveredDevicesContainer.setVisibility(TextUtils.isEmpty(mEditDeviceId.getText()) ? View.VISIBLE : View.GONE);
+
         mDiscoveredDevicesContainer.removeAllViews();
         if (discoveredDevices.size() == 0) {
             // No discovered devices.
@@ -682,8 +695,8 @@ public class DeviceActivity extends SyncthingActivity {
                 DiscoveredDevice discoveredDevice = discoveredDevices.get(deviceId);
                 if (discoveredDevice != null && discoveredDevice.addresses != null) {
                     readableAddresses = TextUtils.join(", ", discoveredDevice.addresses);
-                    // Log.v(TAG, "onReceiveDiscoveredDevices: deviceID = '" + deviceId + "' has addresses '" + readableAddresses + "'");
                 }
+                // Log.v(TAG, "onReceiveDiscoveredDevices: deviceID = '" + deviceId + "' has addresses '" + readableAddresses + "'");
                 String caption = deviceId + (TextUtils.isEmpty(readableAddresses) ? "" : " (" + readableAddresses + ")");
                 LayoutInflater inflater = getLayoutInflater();
                 inflater.inflate(R.layout.item_discovered_device_form, mDiscoveredDevicesContainer);
@@ -694,14 +707,6 @@ public class DeviceActivity extends SyncthingActivity {
                 deviceIdView.setOnClickListener(v -> onDeviceIdViewClick(v));
             }
         }
-
-        /**
-         * If "mEditDeviceId" already contains content, don't show local discovery results.
-         * This also suppresses the results being shown a second time after the user chose a
-         * deviceId from the list and rotated the screen.
-         */
-        mDiscoveredDevicesTitle.setVisibility(TextUtils.isEmpty(mEditDeviceId.getText()) ? View.VISIBLE : View.GONE);
-        mDiscoveredDevicesContainer.setVisibility(TextUtils.isEmpty(mEditDeviceId.getText()) ? View.VISIBLE : View.GONE);
     }
 
     /**
