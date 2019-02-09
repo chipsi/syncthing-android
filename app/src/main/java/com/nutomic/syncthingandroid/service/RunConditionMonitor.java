@@ -93,7 +93,6 @@ public class RunConditionMonitor {
     private final Context mContext;
     private ReceiverManager mReceiverManager;
     private Resources res;
-    private String mRunDecisionExplanation = "";
 
     @Inject
     SharedPreferences mPreferences;
@@ -213,7 +212,7 @@ public class RunConditionMonitor {
     }
 
     public String getRunDecisionExplanation() {
-        return mRunDecisionExplanation;
+        return "TODO";
     }
 
     /**
@@ -302,8 +301,6 @@ public class RunConditionMonitor {
      * Updates mRunDecisionExplanation.
      */
     private RunConditionCheckResult decideShouldRun() {
-        mRunDecisionExplanation = "";
-
         // Get sync condition preferences.
         String prefPowerSource = mPreferences.getString(Constants.PREF_POWER_SOURCE, POWER_SOURCE_CHARGER_BATTERY);
         boolean prefRespectPowerSaving = mPreferences.getBoolean(Constants.PREF_RESPECT_BATTERY_SAVING, true);
@@ -355,19 +352,16 @@ public class RunConditionMonitor {
 
         // Run on WiFi?
         scr = checkConditionSyncOnWifi(Constants.PREF_RUN_ON_WIFI);
-        mRunDecisionExplanation += scr.explanation;
         if (scr.conditionMet) {
             // Wifi is connected.
             LogV("decideShouldRun: checkConditionSyncOnWifi");
 
             scr = checkConditionSyncOnMeteredWifi(Constants.PREF_RUN_ON_METERED_WIFI);
-            mRunDecisionExplanation += scr.explanation;
             if (scr.conditionMet) {
                 // Wifi type is allowed.
                 LogV("decideShouldRun: checkConditionSyncOnWifi && checkConditionSyncOnMeteredWifi");
 
                 scr = checkConditionSyncOnWhitelistedWifi(Constants.PREF_USE_WIFI_SSID_WHITELIST, Constants.PREF_WIFI_SSID_WHITELIST);
-                mRunDecisionExplanation += scr.explanation;
                 if (scr.conditionMet) {
                     // Wifi is whitelisted.
                     LogV("decideShouldRun: checkConditionSyncOnWifi && checkConditionSyncOnMeteredWifi && checkConditionSyncOnWhitelistedWifi");
