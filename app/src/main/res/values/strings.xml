@@ -266,6 +266,9 @@ Please report any problems you encounter via Github.</string>
     <!-- Status text -->
     <string name="discovered_device_list_empty">Local discovery didn\'t find any devices on the local network.</string>
 
+    <!-- Status text -->
+    <string name="local_discovery_disabled">You have disabled local discovery in \'Settings\' > \'Syncthing Options\' > \'Local Discovery\'. Enable it to search for devices on the local network.</string>
+
     <!-- Setting title -->
     <string name="name">Name</string>
 
