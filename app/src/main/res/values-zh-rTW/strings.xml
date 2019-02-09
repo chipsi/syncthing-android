@@ -396,7 +396,6 @@
 
 
     <!-- Title of the "syncthing disabled" dialog -->
-    <string name="syncthing_disabled_title">Syncthing 已經停用</string>
     <!-- Button text on the "syncthing disabled" dialog, used as menu item to stop syncthing service if "always_run_in_background" is true -->
     <string name="exit">離開</string>
 
