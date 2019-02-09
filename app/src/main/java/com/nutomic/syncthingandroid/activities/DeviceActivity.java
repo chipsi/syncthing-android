@@ -14,7 +14,6 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -55,7 +54,6 @@ import javax.inject.Inject;
 import static android.support.v4.view.MarginLayoutParamsCompat.setMarginEnd;
 import static android.support.v4.view.MarginLayoutParamsCompat.setMarginStart;
 import static android.text.TextUtils.isEmpty;
-import static android.util.TypedValue.COMPLEX_UNIT_DIP;
 import static android.view.View.VISIBLE;
 import static android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN;
 import static android.view.Gravity.CENTER_VERTICAL;
@@ -677,15 +675,18 @@ public class DeviceActivity extends SyncthingActivity {
         if (discoveredDevices.size() == 0) {
             // No discovered devices. Determine if local discovery is enabled.
             Options options = mConfig.getOptions(null);
-            int height = (int) TypedValue.applyDimension(COMPLEX_UNIT_DIP, 48, getResources().getDisplayMetrics());
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(WRAP_CONTENT, height);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
             int dividerInset = getResources().getDimensionPixelOffset(R.dimen.material_divider_inset);
             int contentInset = getResources().getDimensionPixelOffset(R.dimen.abc_action_bar_content_inset_material);
             setMarginStart(params, dividerInset);
             setMarginEnd(params, contentInset);
             TextView emptyView = new TextView(mDiscoveredDevicesContainer.getContext());
             emptyView.setGravity(CENTER_VERTICAL);
-            emptyView.setText(options.localAnnounceEnabled ? R.string.discovered_device_list_empty : R.string.local_discovery_disabled);
+            if (options.localAnnounceEnabled) {
+                emptyView.setText(getString(R.string.discovered_device_list_empty, getString(R.string.url_syncthing_homepage)));
+            } else {
+                emptyView.setText(R.string.local_discovery_disabled);
+            }
             mDiscoveredDevicesContainer.addView(emptyView, params);
             return;
         }
