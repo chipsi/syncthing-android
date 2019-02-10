@@ -27,8 +27,12 @@ public class Constants {
     public static final String PREF_RUN_IN_FLIGHT_MODE          = "run_in_flight_mode";
 
     // Preferences - Behaviour
-    public static final String PREF_USE_ROOT                    = "use_root";
-    public static final String PREF_SUGGEST_NEW_FOLDER_ROOT     = "suggest_new_folder_root";
+    public static final String PREF_USE_ROOT                        = "use_root";
+
+    public static final String PREF_SUGGEST_NEW_FOLDER_ROOT         = "suggest_new_folder_root";
+    public static final String PREF_SUGGEST_NEW_FOLDER_ROOT_DATA    = "external_android_data";
+    public static final String PREF_SUGGEST_NEW_FOLDER_ROOT_MEDIA   = "external_android_media";
+
 
     // Preferences - Troubleshooting
     public static final String PREF_ENVIRONMENT_VARIABLES       = "environment_variables";
