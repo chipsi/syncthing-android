@@ -166,6 +166,7 @@ public class SettingsActivity extends SyncthingActivity {
         private CheckBoxPreference mStartServiceOnBoot;
         private CheckBoxPreference mUseRoot;
         private ListPreference     mSuggestNewFolderRoot;
+        private Languages          mLanguages;
 
         /* Syncthing Options */
         private Preference         mCategorySyncthingOptions;
@@ -252,14 +253,10 @@ public class SettingsActivity extends SyncthingActivity {
             if (Build.VERSION.SDK_INT >= 24) {
                 categoryBehaviour.removePreference(languagePref);
             } else {
-                Languages languages = new Languages(getActivity());
-                languagePref.setDefaultValue(Languages.USE_SYSTEM_DEFAULT);
-                languagePref.setEntries(languages.getAllNames());
-                languagePref.setEntryValues(languages.getSupportedLocales());
-                languagePref.setOnPreferenceChangeListener((p, o) -> {
-                    languages.forceChangeLanguage(getActivity(), (String) o);
-                    return false;
-                });
+                mLanguages = new Languages(getActivity());
+                languagePref.setDefaultValue(mLanguages.USE_SYSTEM_DEFAULT);
+                languagePref.setEntries(mLanguages.getAllNames());
+                languagePref.setEntryValues(mLanguages.getSupportedLocales());
             }
             PreferenceScreen screen = getPreferenceScreen();
 
@@ -562,9 +559,7 @@ public class SettingsActivity extends SyncthingActivity {
         public boolean onBehaviourPreferenceChange(Preference preference, Object o) {
             switch (preference.getKey()) {
                 case Constants.PREF_USE_ROOT:
-                    if (mUseRoot.isChecked()) {
-                        // Only check preference after root was granted.
-                        mUseRoot.setChecked(false);
+                    if ((Boolean) o) {
                         new TestRootTask(this).execute();
                     } else {
                         new Thread(() -> Util.fixAppDataPermissions(getActivity())).start();
@@ -575,6 +570,9 @@ public class SettingsActivity extends SyncthingActivity {
                     mSuggestNewFolderRoot.setValue(o.toString());
                     preference.setSummary(mSuggestNewFolderRoot.getEntry());
                     break;
+                case Languages.PREFERENCE_LANGUAGE:
+                    mLanguages.forceChangeLanguage(getActivity(), (String) o);
+                    return false;
             }
             return true;
         }
@@ -841,13 +839,15 @@ public class SettingsActivity extends SyncthingActivity {
                 if (settingsFragment == null) {
                     return;
                 }
+                settingsFragment.mUseRoot.setOnPreferenceChangeListener(null);
+                settingsFragment.mUseRoot.setChecked(haveRoot);
                 if (haveRoot) {
                     settingsFragment.mPendingConfig = true;
-                    settingsFragment.mUseRoot.setChecked(true);
                 } else {
                     Toast.makeText(settingsFragment.getActivity(), R.string.toast_root_denied, Toast.LENGTH_SHORT)
                             .show();
                 }
+                settingsFragment.mUseRoot.setOnPreferenceChangeListener(settingsFragment::onBehaviourPreferenceChange);
             }
         }
 
