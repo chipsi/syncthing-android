@@ -298,6 +298,10 @@ public class SettingsActivity extends SyncthingActivity {
             mSuggestNewFolderRoot =
                     (ListPreference) findPreference(Constants.PREF_SUGGEST_NEW_FOLDER_ROOT);
             screen.findPreference(Constants.PREF_SUGGEST_NEW_FOLDER_ROOT).setSummary(mSuggestNewFolderRoot.getEntry());
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                // Remove preference as FileUtils#getExternalFilesDirUri is only supported on API 21+ (LOLLIPOP+).
+                categoryBehaviour.removePreference(mSuggestNewFolderRoot);
+            }
             setPreferenceCategoryChangeListener(categoryBehaviour, this::onBehaviourPreferenceChange);
 
             /* Syncthing options */
