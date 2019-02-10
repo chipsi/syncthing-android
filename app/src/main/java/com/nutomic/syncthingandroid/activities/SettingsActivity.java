@@ -154,7 +154,6 @@ public class SettingsActivity extends SyncthingActivity {
         private Dialog             mCurrentPrefScreenDialog = null;
 
         private Preference         mCategoryRunConditions;
-        private CheckBoxPreference mStartServiceOnBoot;
         private ListPreference     mPowerSource;
         private CheckBoxPreference mRunOnMobileData;
         private CheckBoxPreference mRunOnWifi;
@@ -163,6 +162,12 @@ public class SettingsActivity extends SyncthingActivity {
         private WifiSsidPreference mWifiSsidWhitelist;
         private CheckBoxPreference mRunInFlightMode;
 
+        /* Behaviour */
+        private CheckBoxPreference mStartServiceOnBoot;
+        private CheckBoxPreference mUseRoot;
+        private ListPreference     mSuggestNewFolderRoot;
+
+        /* Syncthing Options */
         private Preference         mCategorySyncthingOptions;
         private EditTextPreference mDeviceName;
         private EditTextPreference mListenAddresses;
@@ -179,7 +184,6 @@ public class SettingsActivity extends SyncthingActivity {
         private CheckBoxPreference mUrAccepted;
 
         /* Experimental options */
-        private CheckBoxPreference mUseRoot;
         private CheckBoxPreference mUseWakelock;
         private CheckBoxPreference mUseTor;
         private EditTextPreference mSocksProxyAddress;
@@ -294,6 +298,10 @@ public class SettingsActivity extends SyncthingActivity {
                     (CheckBoxPreference) findPreference(Constants.PREF_START_SERVICE_ON_BOOT);
             mUseRoot =
                     (CheckBoxPreference) findPreference(Constants.PREF_USE_ROOT);
+            mSuggestNewFolderRoot =
+                    (ListPreference) findPreference(Constants.PREF_SUGGEST_NEW_FOLDER_ROOT);
+            screen.findPreference(Constants.PREF_SUGGEST_NEW_FOLDER_ROOT).setSummary(mSuggestNewFolderRoot.getEntry());
+            setPreferenceCategoryChangeListener(categoryBehaviour, this::onBehaviourPreferenceChange);
 
             /* Syncthing options */
             mDeviceName             = (EditTextPreference) findPreference("deviceName");
@@ -350,7 +358,6 @@ public class SettingsActivity extends SyncthingActivity {
                 mUseWakelock.setChecked(false);
             }
 
-            mUseRoot.setOnPreferenceClickListener(this);
             mUseWakelock.setOnPreferenceChangeListener(this);
             mUseTor.setOnPreferenceChangeListener(this);
 
@@ -552,6 +559,26 @@ public class SettingsActivity extends SyncthingActivity {
             return true;
         }
 
+        public boolean onBehaviourPreferenceChange(Preference preference, Object o) {
+            switch (preference.getKey()) {
+                case Constants.PREF_USE_ROOT:
+                    if (mUseRoot.isChecked()) {
+                        // Only check preference after root was granted.
+                        mUseRoot.setChecked(false);
+                        new TestRootTask(this).execute();
+                    } else {
+                        new Thread(() -> Util.fixAppDataPermissions(getActivity())).start();
+                        mPendingConfig = true;
+                    }
+                    break;
+                case Constants.PREF_SUGGEST_NEW_FOLDER_ROOT:
+                    mSuggestNewFolderRoot.setValue(o.toString());
+                    preference.setSummary(mSuggestNewFolderRoot.getEntry());
+                    break;
+            }
+            return true;
+        }
+
         public boolean onSyncthingPreferenceChange(Preference preference, Object o) {
             Splitter splitter = Splitter.on(",").trimResults().omitEmptyStrings();
             switch (preference.getKey()) {
@@ -705,16 +732,6 @@ public class SettingsActivity extends SyncthingActivity {
         public boolean onPreferenceClick(Preference preference) {
             final Intent intent;
             switch (preference.getKey()) {
-                case Constants.PREF_USE_ROOT:
-                    if (mUseRoot.isChecked()) {
-                        // Only check preference after root was granted.
-                        mUseRoot.setChecked(false);
-                        new TestRootTask(this).execute();
-                    } else {
-                        new Thread(() -> Util.fixAppDataPermissions(getActivity())).start();
-                        mPendingConfig = true;
-                    }
-                    return true;
                 case KEY_OPEN_ISSUE_TRACKER:
                     intent = new Intent(getActivity(), WebViewActivity.class);
                     intent.putExtra(WebViewActivity.EXTRA_WEB_URL, getString(R.string.issue_tracker_url));
