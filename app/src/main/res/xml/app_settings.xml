@@ -92,6 +92,15 @@
             android:summary="@string/use_root_summary"
             android:defaultValue="false" />
 
+        <!-- Select language, only visible on API < 24 -->
+        <ListPreference
+            android:key="suggest_new_folder_root"
+            android:title="@string/suggest_new_folder_root_title"
+            android:entryValues="@array/suggest_new_folder_root_values"
+            android:entries="@array/suggest_new_folder_root_entries"
+            android:summary="@null"
+            android:defaultValue="external_android_data" />
+
         <!-- Expert mode -->
         <CheckBoxPreference
             android:key="expert_mode"
@@ -99,7 +108,6 @@
             android:summary="@string/expert_mode_summary"
             android:defaultValue="false" />
 
-        <!-- Select language, only visible on API < 24 -->
         <ListPreference
             android:key="pref_current_language"
             android:title="@string/preference_language_title"
