@@ -653,8 +653,14 @@ public class SyncthingService extends Service {
             mEventProcessor = null;
         }
 
+        if (mNotificationHandler != null) {
+            mNotificationHandler.cancelRestartNotification();
+        }
+
         if (mRestApi != null) {
-            mRestApi.shutdown();
+            if (mSyncthingRunnable != null) {
+                mRestApi.shutdown();
+            }
             mRestApi = null;
         }
 

@@ -147,8 +147,6 @@ public class RestApi {
 
     private Gson mGson;
 
-    @Inject NotificationHandler mNotificationHandler;
-
     public RestApi(Context context, URL url, String apiKey, OnApiAvailableListener apiListener,
                    OnConfigChangedListener configListener) {
         ((SyncthingApp) context.getApplicationContext()).component().inject(this);
@@ -414,8 +412,13 @@ public class RestApi {
         mOnConfigChangedListener.onConfigChanged();
     }
 
+    /**
+     * Posts shutdown request.
+     * This will cause SyncthingNative to exit and not restart.
+     */
     public void shutdown() {
-        mNotificationHandler.cancelRestartNotification();
+        new PostRequest(mContext, mUrl, PostRequest.URI_SYSTEM_SHUTDOWN, mApiKey,
+                null, null, null);
     }
 
     /**
