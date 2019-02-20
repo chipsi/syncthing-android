@@ -504,6 +504,10 @@ Please report any problems you encounter via Github.</string>
 
     <string name="webui_remote_access_summary">Specify to permit accessing the Web UI from another device. If enabled, you are able to logon with user \'syncthing\' and API key as password. Default: disabled (most secure)</string>
 
+    <string name="webui_debugging_title">WebUI Debugging</string>
+
+    <string name="webui_debugging_summary">Enable to start profiling and to be able to download a support bundle.</string>
+
     <!-- Titles for the preference to undo ignored devices and folders -->
     <string name="undo_ignored_devices_folders_title">Undo ignoring devices and folders</string>
     <string name="undo_ignored_devices_folders_question">This will undo previous decisions to ignore devices and folders. Continue?</string>
