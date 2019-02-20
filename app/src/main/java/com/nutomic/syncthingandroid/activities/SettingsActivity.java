@@ -136,6 +136,7 @@ public class SettingsActivity extends SyncthingActivity {
         private static final String KEY_WEBUI_TCP_PORT = "webUITcpPort";
         private static final String KEY_WEBUI_REMOTE_ACCESS = "webUIRemoteAccess";
         private static final String KEY_WEBUI_DEBUGGING = "webUIDebugging";
+        private static final String KEY_DOWNLOAD_SUPPORT_BUNDLE = "downloadSupportBundle";
         private static final String KEY_UNDO_IGNORED_DEVICES_FOLDERS = "undo_ignored_devices_folders";
         // Settings/Import and Export
         private static final String KEY_EXPORT_CONFIG = "export_config";
@@ -188,6 +189,7 @@ public class SettingsActivity extends SyncthingActivity {
         private CheckBoxPreference mRestartOnWakeup;
         private CheckBoxPreference mUrAccepted;
         private CheckBoxPreference mWebUIDebugging;
+        private Preference mDownloadSupportBundle;
 
         /* Experimental options */
         private CheckBoxPreference mUseWakelock;
@@ -325,11 +327,13 @@ public class SettingsActivity extends SyncthingActivity {
             mRestartOnWakeup        = (CheckBoxPreference) findPreference("restartOnWakeup");
             mUrAccepted             = (CheckBoxPreference) findPreference("urAccepted");
             mWebUIDebugging         = (CheckBoxPreference) findPreference(KEY_WEBUI_DEBUGGING);
+            mDownloadSupportBundle  = findPreference(KEY_DOWNLOAD_SUPPORT_BUNDLE);
             Preference undoIgnoredDevicesFolders = findPreference(KEY_UNDO_IGNORED_DEVICES_FOLDERS);
 
             mCategorySyncthingOptions = findPreference("category_syncthing_options");
             setPreferenceCategoryChangeListener(mCategorySyncthingOptions, this::onSyncthingPreferenceChange);
             mSyncthingApiKey.setOnPreferenceClickListener(this);
+            mDownloadSupportBundle.setOnPreferenceClickListener(this);
             undoIgnoredDevicesFolders.setOnPreferenceClickListener(this);
 
             /* Import and Export */
@@ -528,6 +532,7 @@ public class SettingsActivity extends SyncthingActivity {
                 mWebUITcpPort.setSummary(mGui.getBindPort());
                 mWebUIRemoteAccess.setChecked(!BIND_LOCALHOST.equals(mGui.getBindAddress()));
                 mWebUIDebugging.setChecked(mGui.debugging);
+                mDownloadSupportBundle.setEnabled(mGui.debugging);
             }
         }
 
@@ -669,7 +674,15 @@ public class SettingsActivity extends SyncthingActivity {
                     break;
                 case KEY_WEBUI_DEBUGGING:
                     mGui.debugging = (boolean) o;
-                    break;
+
+                    // Immediately apply changes.
+                    mRestApi.editSettings(mGui, mOptions);
+                    if (mRestApi != null &&
+                            mSyncthingService.getCurrentState() != SyncthingService.State.DISABLED) {
+                        mRestApi.saveConfigAndRestart();
+                        mPendingConfig = false;
+                    }
+                    return true;
                 default: throw new InvalidParameterException();
             }
 
@@ -800,6 +813,12 @@ public class SettingsActivity extends SyncthingActivity {
                         return true;
                     default:
                         return false;
+                case KEY_DOWNLOAD_SUPPORT_BUNDLE:
+                    // ToDo
+                    intent = new Intent(getActivity(), WebViewActivity.class);
+                    intent.putExtra(WebViewActivity.EXTRA_WEB_URL, );
+                    startActivity(intent);
+                    return true;
                 case KEY_UNDO_IGNORED_DEVICES_FOLDERS:
                     new AlertDialog.Builder(getActivity())
                             .setMessage(R.string.undo_ignored_devices_folders_question)
