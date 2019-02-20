@@ -506,7 +506,7 @@ Please report any problems you encounter via Github.</string>
 
     <string name="webui_debugging_title">WebUI Debugging</string>
 
-    <string name="webui_debugging_summary">Enable to start profiling and to be able to download a support bundle.</string>
+    <string name="webui_debugging_summary">Enable to start profiling and to be able to download a support bundle. Changing this option will restart Syncthing immediately.</string>
 
     <string name="download_support_bundle_title">Download Support Bundle</string>
 
