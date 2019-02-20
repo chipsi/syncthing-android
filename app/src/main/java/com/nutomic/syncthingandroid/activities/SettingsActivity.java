@@ -132,9 +132,10 @@ public class SettingsActivity extends SyncthingActivity {
                 Preference.OnPreferenceClickListener {
 
         private static final String TAG = "SettingsFragment";
-        // Settings/Syncthing
+        // Settings/Syncthing Options
         private static final String KEY_WEBUI_TCP_PORT = "webUITcpPort";
         private static final String KEY_WEBUI_REMOTE_ACCESS = "webUIRemoteAccess";
+        private static final String KEY_WEBUI_DEBUGGING = "webUIDebugging";
         private static final String KEY_UNDO_IGNORED_DEVICES_FOLDERS = "undo_ignored_devices_folders";
         // Settings/Import and Export
         private static final String KEY_EXPORT_CONFIG = "export_config";
@@ -186,6 +187,7 @@ public class SettingsActivity extends SyncthingActivity {
         private CheckBoxPreference mWebUIRemoteAccess;
         private CheckBoxPreference mRestartOnWakeup;
         private CheckBoxPreference mUrAccepted;
+        private CheckBoxPreference mWebUIDebugging;
 
         /* Experimental options */
         private CheckBoxPreference mUseWakelock;
@@ -307,7 +309,7 @@ public class SettingsActivity extends SyncthingActivity {
             }
             setPreferenceCategoryChangeListener(categoryBehaviour, this::onBehaviourPreferenceChange);
 
-            /* Syncthing options */
+            /* Syncthing Options */
             mDeviceName             = (EditTextPreference) findPreference("deviceName");
             mListenAddresses        = (EditTextPreference) findPreference("listenAddresses");
             mMaxRecvKbps            = (EditTextPreference) findPreference("maxRecvKbps");
@@ -322,6 +324,7 @@ public class SettingsActivity extends SyncthingActivity {
             mSyncthingApiKey        = findPreference(KEY_SYNCTHING_API_KEY);
             mRestartOnWakeup        = (CheckBoxPreference) findPreference("restartOnWakeup");
             mUrAccepted             = (CheckBoxPreference) findPreference("urAccepted");
+            mWebUIDebugging         = (CheckBoxPreference) findPreference(KEY_WEBUI_DEBUGGING);
             Preference undoIgnoredDevicesFolders = findPreference(KEY_UNDO_IGNORED_DEVICES_FOLDERS);
 
             mCategorySyncthingOptions = findPreference("category_syncthing_options");
@@ -503,17 +506,20 @@ public class SettingsActivity extends SyncthingActivity {
             mSyncthingVersion.setSummary(mRestApi.getVersion());
             mSyncthingApiKey.setSummary(mRestApi.getApiKey());
             mOptions = mRestApi.getOptions();
-
-            Joiner joiner = Joiner.on(", ");
-            mDeviceName.setText(mRestApi.getLocalDevice().name);
-            mListenAddresses.setText(joiner.join(mOptions.listenAddresses));
-            mMaxRecvKbps.setText(Integer.toString(mOptions.maxRecvKbps));
-            mMaxSendKbps.setText(Integer.toString(mOptions.maxSendKbps));
-            mNatEnabled.setChecked(mOptions.natEnabled);
-            mLocalAnnounceEnabled.setChecked(mOptions.localAnnounceEnabled);
-            mGlobalAnnounceEnabled.setChecked(mOptions.globalAnnounceEnabled);
-            mRelaysEnabled.setChecked(mOptions.relaysEnabled);
-            mGlobalAnnounceServers.setText(joiner.join(mOptions.globalAnnounceServers));
+            if (mOptions != null) {
+                Joiner joiner = Joiner.on(", ");
+                mDeviceName.setText(mRestApi.getLocalDevice().name);
+                mListenAddresses.setText(joiner.join(mOptions.listenAddresses));
+                mMaxRecvKbps.setText(Integer.toString(mOptions.maxRecvKbps));
+                mMaxSendKbps.setText(Integer.toString(mOptions.maxSendKbps));
+                mNatEnabled.setChecked(mOptions.natEnabled);
+                mLocalAnnounceEnabled.setChecked(mOptions.localAnnounceEnabled);
+                mGlobalAnnounceEnabled.setChecked(mOptions.globalAnnounceEnabled);
+                mRelaysEnabled.setChecked(mOptions.relaysEnabled);
+                mGlobalAnnounceServers.setText(joiner.join(mOptions.globalAnnounceServers));
+                mRestartOnWakeup.setChecked(mOptions.restartOnWakeup);
+                mUrAccepted.setChecked(mRestApi.isUsageReportingAccepted());
+            }
 
             // Web GUI tcp port and bind ip address.
             mGui = mRestApi.getGui();
@@ -521,10 +527,8 @@ public class SettingsActivity extends SyncthingActivity {
                 mWebUITcpPort.setText(mGui.getBindPort());
                 mWebUITcpPort.setSummary(mGui.getBindPort());
                 mWebUIRemoteAccess.setChecked(!BIND_LOCALHOST.equals(mGui.getBindAddress()));
+                mWebUIDebugging.setChecked(mGui.debugging);
             }
-
-            mRestartOnWakeup.setChecked(mOptions.restartOnWakeup);
-            mUrAccepted.setChecked(mRestApi.isUsageReportingAccepted());
         }
 
         @Override
@@ -662,6 +666,9 @@ public class SettingsActivity extends SyncthingActivity {
                 case "urAccepted":
                     mRestApi.setUsageReporting((boolean) o);
                     mOptions = mRestApi.getOptions();
+                    break;
+                case KEY_WEBUI_DEBUGGING:
+                    mGui.debugging = (boolean) o;
                     break;
                 default: throw new InvalidParameterException();
             }
