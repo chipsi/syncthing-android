@@ -3,6 +3,7 @@ package com.nutomic.syncthingandroid.activities;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.DownloadManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.ComponentName;
@@ -13,6 +14,7 @@ import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.preference.CheckBoxPreference;
@@ -871,12 +873,19 @@ public class SettingsActivity extends SyncthingActivity {
         }
 
         private void onDownloadSupportBundleClick() {
-            ConfigXml configXml = new ConfigXml(getActivity());
+            ConfigXml configXml = new ConfigXml(mContext);
             configXml.loadConfig();
-            String supportBundleUrl = configXml.getWebGuiUrl() + "/" + GetRequest.URI_DEBUG_SUPPORT;
-            Intent intent = new Intent(getActivity(), WebViewActivity.class);
-            intent.putExtra(WebViewActivity.EXTRA_WEB_URL, supportBundleUrl);
-            startActivity(intent);
+            String supportBundleUrl = configXml.getWebGuiUrl() + GetRequest.URI_DEBUG_SUPPORT;
+            Log.v(TAG, "onDownloadSupportBundleClick: supportBundleUrl=" + supportBundleUrl);
+            DownloadManager.Request downloadRequest = new DownloadManager.Request(android.net.Uri.parse(supportBundleUrl));
+            downloadRequest.setTitle(getString(R.string.app_name));
+            downloadRequest.setDescription(getString(R.string.download_support_bundle_title));
+            downloadRequest.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+            downloadRequest.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "syncthing-support-bundle.zip");
+            downloadRequest.setVisibleInDownloadsUi(true);
+            downloadRequest.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+            DownloadManager downloadManager = (DownloadManager) mContext.getSystemService(Context.DOWNLOAD_SERVICE);
+            downloadManager.enqueue(downloadRequest);
         }
 
         /**
