@@ -43,6 +43,7 @@ import com.google.common.collect.Iterables;
 import com.nutomic.syncthingandroid.R;
 import com.nutomic.syncthingandroid.SyncthingApp;
 import com.nutomic.syncthingandroid.activities.WebViewActivity;
+import com.nutomic.syncthingandroid.http.GetRequest;
 import com.nutomic.syncthingandroid.model.Device;
 import com.nutomic.syncthingandroid.model.Gui;
 import com.nutomic.syncthingandroid.model.Options;
@@ -51,6 +52,7 @@ import com.nutomic.syncthingandroid.service.NotificationHandler;
 import com.nutomic.syncthingandroid.service.RestApi;
 import com.nutomic.syncthingandroid.service.SyncthingService;
 import com.nutomic.syncthingandroid.service.SyncthingServiceBinder;
+import com.nutomic.syncthingandroid.util.ConfigXml;
 import com.nutomic.syncthingandroid.util.Languages;
 import com.nutomic.syncthingandroid.util.Util;
 import com.nutomic.syncthingandroid.views.WifiSsidPreference;
@@ -814,10 +816,7 @@ public class SettingsActivity extends SyncthingActivity {
                     default:
                         return false;
                 case KEY_DOWNLOAD_SUPPORT_BUNDLE:
-                    // ToDo
-                    intent = new Intent(getActivity(), WebViewActivity.class);
-                    intent.putExtra(WebViewActivity.EXTRA_WEB_URL, );
-                    startActivity(intent);
+                    onDownloadSupportBundleClick();
                     return true;
                 case KEY_UNDO_IGNORED_DEVICES_FOLDERS:
                     new AlertDialog.Builder(getActivity())
@@ -869,6 +868,15 @@ public class SettingsActivity extends SyncthingActivity {
                             .show();
                     return true;
             }
+        }
+
+        private void onDownloadSupportBundleClick() {
+            ConfigXml configXml = new ConfigXml(getActivity());
+            configXml.loadConfig();
+            String supportBundleUrl = configXml.getWebGuiUrl() + "/" + GetRequest.URI_DEBUG_SUPPORT;
+            Intent intent = new Intent(getActivity(), WebViewActivity.class);
+            intent.putExtra(WebViewActivity.EXTRA_WEB_URL, supportBundleUrl);
+            startActivity(intent);
         }
 
         /**
