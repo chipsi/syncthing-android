@@ -874,7 +874,6 @@ public class SettingsActivity extends SyncthingActivity {
             ConfigXml configXml = new ConfigXml(getActivity());
             configXml.loadConfig();
             String supportBundleUrl = configXml.getWebGuiUrl() + "/" + GetRequest.URI_DEBUG_SUPPORT;
-            supportBundleUrl = supportBundleUrl.replace("://", "://" + configXml.getUserName() + ":" + configXml.getApiKey() + "@");
             Intent intent = new Intent(getActivity(), WebViewActivity.class);
             intent.putExtra(WebViewActivity.EXTRA_WEB_URL, supportBundleUrl);
             startActivity(intent);
