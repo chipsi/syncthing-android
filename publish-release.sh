@@ -31,6 +31,7 @@ SIGNING_PASSWORD=${password} ./gradlew assembleRelease
 # Upload apk and listing to Google Play
 ./gradlew deleteUnsupportedPlayTranslations
 SIGNING_PASSWORD=${password} ./gradlew publishRelease
+./gradlew publishListingRelease
 
 echo "
 
