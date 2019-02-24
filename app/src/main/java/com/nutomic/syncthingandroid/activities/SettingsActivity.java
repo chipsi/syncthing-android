@@ -51,6 +51,7 @@ import com.nutomic.syncthingandroid.service.NotificationHandler;
 import com.nutomic.syncthingandroid.service.RestApi;
 import com.nutomic.syncthingandroid.service.SyncthingService;
 import com.nutomic.syncthingandroid.service.SyncthingServiceBinder;
+import com.nutomic.syncthingandroid.util.FileUtils;
 import com.nutomic.syncthingandroid.util.Languages;
 import com.nutomic.syncthingandroid.util.Util;
 import com.nutomic.syncthingandroid.views.WifiSsidPreference;
@@ -876,8 +877,21 @@ public class SettingsActivity extends SyncthingActivity {
                         Toast.LENGTH_SHORT).show();
                 return;
             }
-            File targetFile = new File("/storage/emulated/0/Download" + "/syncthing-support-bundle.zip");
-            mRestApi.downloadSupportBundle(targetFile);
+            mDownloadSupportBundle.setEnabled(false);
+            mDownloadSupportBundle.setSummary(R.string.download_support_bundle_in_progress);
+            String localDeviceName = mRestApi.getLocalDevice().getDisplayName();
+            String targetFileFullFN = FileUtils.getExternalStorageDownloadsDirectory() + "/" +
+                    "syncthing-support-bundle_" + localDeviceName + ".zip";
+            File targetFile = new File(targetFileFullFN);
+
+            mRestApi.downloadSupportBundle(targetFile, failSuccess -> {
+                mDownloadSupportBundle.setEnabled(true);
+                if (!failSuccess) {
+                    mDownloadSupportBundle.setSummary(R.string.download_support_bundle_failed);
+                    return;
+                }
+                mDownloadSupportBundle.setSummary(getString(R.string.download_support_bundle_succeeded, targetFileFullFN));
+            });
         }
 
         /**
