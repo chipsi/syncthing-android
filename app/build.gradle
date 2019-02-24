@@ -80,7 +80,7 @@ android {
 
 play {
     jsonFile = file(System.getenv("SYNCTHING_RELEASE_PLAY_ACCOUNT_CONFIG_FILE") ?: 'keys.json')
-    errorOnSizeLimit = true
+    errorOnSizeLimit = false
     uploadImages = false
     track = 'beta'
 }
