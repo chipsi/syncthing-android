@@ -612,6 +612,7 @@ public class DeviceActivity extends SyncthingActivity {
         );
         IntentIntegrator integrator = new IntentIntegrator(DeviceActivity.this);
         integrator.setTargetApplications(targetApplications);
+        integrator.setMessage(getString(R.string.install_barcode_scanner_app_message));
         integrator.initiateScan();
     }
 
