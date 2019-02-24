@@ -851,7 +851,7 @@ public class RestApi {
                     targetFile.createNewFile();
                 }
                 fileOutputStream = new FileOutputStream(targetFile);
-                fileOutputStream.write(result.getBytes("ISO-8859-1"));
+                fileOutputStream.write(result.getBytes("ISO-8859-1"));  // Do not use UTF-8 here because the ZIP would be corrupted.
                 fileOutputStream.flush();
             } catch (IOException e) {
                 Log.w(TAG, "downloadSupportBundle: Failed to write '" + targetFile.getPath() + "' #1", e);
