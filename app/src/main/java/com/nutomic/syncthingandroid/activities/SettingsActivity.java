@@ -43,7 +43,6 @@ import com.google.common.collect.Iterables;
 import com.nutomic.syncthingandroid.R;
 import com.nutomic.syncthingandroid.SyncthingApp;
 import com.nutomic.syncthingandroid.activities.WebViewActivity;
-import com.nutomic.syncthingandroid.http.GetRequest;
 import com.nutomic.syncthingandroid.model.Device;
 import com.nutomic.syncthingandroid.model.Gui;
 import com.nutomic.syncthingandroid.model.Options;
@@ -52,11 +51,11 @@ import com.nutomic.syncthingandroid.service.NotificationHandler;
 import com.nutomic.syncthingandroid.service.RestApi;
 import com.nutomic.syncthingandroid.service.SyncthingService;
 import com.nutomic.syncthingandroid.service.SyncthingServiceBinder;
-import com.nutomic.syncthingandroid.util.ConfigXml;
 import com.nutomic.syncthingandroid.util.Languages;
 import com.nutomic.syncthingandroid.util.Util;
 import com.nutomic.syncthingandroid.views.WifiSsidPreference;
 
+import java.io.File;
 import java.lang.ref.WeakReference;
 import java.security.InvalidParameterException;
 import java.util.HashSet;
@@ -871,12 +870,14 @@ public class SettingsActivity extends SyncthingActivity {
         }
 
         private void onDownloadSupportBundleClick() {
-            ConfigXml configXml = new ConfigXml(getActivity());
-            configXml.loadConfig();
-            String supportBundleUrl = configXml.getWebGuiUrl() + "/" + GetRequest.URI_DEBUG_SUPPORT;
-            Intent intent = new Intent(getActivity(), WebViewActivity.class);
-            intent.putExtra(WebViewActivity.EXTRA_WEB_URL, supportBundleUrl);
-            startActivity(intent);
+            if (mRestApi == null) {
+                Toast.makeText(mContext,
+                        getString(R.string.generic_error) + getString(R.string.syncthing_disabled),
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
+            File targetFile = new File("/storage/emulated/0/Download" + "/syncthing-support-bundle.zip");
+            mRestApi.downloadSupportBundle(targetFile);
         }
 
         /**
