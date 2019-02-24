@@ -607,8 +607,8 @@ public class DeviceActivity extends SyncthingActivity {
         final List<String> targetApplications = list(
             "de.markusfisch.android.binaryeye",                 // Binary Eye
             "com.srowen.bs.android",                            // Barcode Scanner+
-            "com.srowen.bs.android.simple",                     // Barcode Scanner+ Simple
-            "com.google.zxing.client.android"                   // Barcode Scanner (2019-02-24: no longer on GPlay)
+            "com.srowen.bs.android.simple"                      // Barcode Scanner+ Simple
+            // "com.google.zxing.client.android"                // Barcode Scanner (2019-02-24: no longer on GPlay)
         );
         IntentIntegrator integrator = new IntentIntegrator(DeviceActivity.this);
         integrator.setTargetApplications(targetApplications);
