@@ -29,6 +29,7 @@ read -s -p "Enter signing password: " password
 SIGNING_PASSWORD=${password} ./gradlew assembleRelease
 
 # Upload apk and listing to Google Play
+./gradlew deleteUnsupportedPlayTranslations
 SIGNING_PASSWORD=${password} ./gradlew publishRelease
 
 echo "
