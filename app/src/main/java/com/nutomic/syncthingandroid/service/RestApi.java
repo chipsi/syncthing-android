@@ -841,8 +841,9 @@ public class RestApi {
         }
     }
 
-    public void downloadSupportBundle(File targetFile) {
+    public void downloadSupportBundle(File targetFile, final OnResultListener1<Boolean> listener) {
         new GetRequest(mContext, mUrl, GetRequest.URI_DEBUG_SUPPORT, mApiKey, null, result -> {
+            Boolean failSuccess = true;
             LogV("downloadSupportBundle: Writing '" + targetFile.getPath() + "' ...");
             FileOutputStream fileOutputStream = null;
             try {
@@ -854,6 +855,7 @@ public class RestApi {
                 fileOutputStream.flush();
             } catch (IOException e) {
                 Log.w(TAG, "downloadSupportBundle: Failed to write '" + targetFile.getPath() + "' #1", e);
+                failSuccess = false;
             } finally {
                 try {
                     if (fileOutputStream != null) {
@@ -861,7 +863,11 @@ public class RestApi {
                     }
                 } catch (IOException e) {
                     Log.e(TAG, "downloadSupportBundle: Failed to write '" + targetFile.getPath() + "' #2", e);
+                    failSuccess = false;
                 }
+            }
+            if (listener != null) {
+                listener.onResult(failSuccess);
             }
         });
     }
