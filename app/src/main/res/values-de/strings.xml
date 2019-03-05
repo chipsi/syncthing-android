@@ -135,7 +135,7 @@ Bitte melden Sie auftretende Probleme via GitHub.</string>
     <string name="devices_list_empty">Keine Geräte konfiguriert. Tippe zum Hinzufügen eines neuen Geräts.</string>
 
     <!-- Shown in ListView if no devices are configured -->
-    <string name="no_devices_configured">Keine Geräte konfiguriert. Beginne jetzt mit dem Hinzufügen eines Geräts.</string>
+    <string name="no_devices_configured">Keine Geräte konfiguriert.\nBeginne jetzt mit dem Hinzufügen eines Geräts.</string>
 
     <!-- Indicates that a folder is fully synced to the local device -->
     <string name="device_up_to_date">Aktuell</string>
