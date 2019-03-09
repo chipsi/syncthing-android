@@ -282,6 +282,10 @@ public class FolderActivity extends SyncthingActivity {
         checkWriteAndUpdateUI();
         updateViewsAndSetListeners();
 
+        // Show expert options conditionally.
+        Boolean prefExpertMode = mPreferences.getBoolean(Constants.PREF_EXPERT_MODE, false);
+        mIgnoreDelete.setVisibility(prefExpertMode ? View.VISIBLE : View.GONE);
+
         // Open keyboard on label view in edit mode.
         mLabelView.requestFocus();
     }
