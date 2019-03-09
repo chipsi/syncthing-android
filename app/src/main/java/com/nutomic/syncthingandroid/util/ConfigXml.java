@@ -198,7 +198,7 @@ public class ConfigXml {
     }
 
     public URL getWebGuiUrl() {
-        String urlProtocol = Constants.osSupportsTLS12() ? "https" : "http";
+        String urlProtocol = Util.osSupportsSyncthingTLS() ? "https" : "http";
         try {
             return new URL(urlProtocol + "://" + getGuiElement().getElementsByTagName("address").item(0).getTextContent());
         } catch (MalformedURLException e) {
@@ -263,7 +263,7 @@ public class ConfigXml {
         }
 
         // Platform-specific: Force REST API and Web UI access to use TLS 1.2 or not.
-        Boolean forceHttps = Constants.osSupportsTLS12();
+        Boolean forceHttps = Util.osSupportsSyncthingTLS();
         if (!gui.hasAttribute("tls") ||
                 Boolean.parseBoolean(gui.getAttribute("tls")) != forceHttps) {
             gui.setAttribute("tls", Boolean.toString(forceHttps));
