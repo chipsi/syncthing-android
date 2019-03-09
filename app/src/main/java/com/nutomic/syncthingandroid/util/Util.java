@@ -27,7 +27,12 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.security.NoSuchAlgorithmException;
+import java.security.KeyManagementException;
 import java.text.DecimalFormat;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
 
 import eu.chainfire.libsuperuser.Shell;
 
@@ -352,5 +357,48 @@ public class Util {
     public static Boolean isRunningOnTV(Context context) {
         UiModeManager uiModeManager = (UiModeManager) context.getSystemService(Context.UI_MODE_SERVICE);
         return uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION;
+    }
+
+    /**
+     * Checks if the current Android OS supports the required TLS
+     * ciphers for accessing the Syncthing REST API and Web UI.
+     */
+    public static Boolean osSupportsSyncthingTLS() {
+        SSLContext sslContext;
+        try {
+            sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null, null, null);
+        } catch (NoSuchAlgorithmException | KeyManagementException e) {
+            return false;
+        }
+        if (sslContext == null) {
+            return false;
+        }
+        SSLEngine sslEngine = sslContext.createSSLEngine();
+        String[] supportedProtocols = sslEngine.getSupportedProtocols();
+        /**
+         * Possible return values:
+         *  SSLv3 (AVD 5.1, 6.0, 7.0, 7.1.1)
+         *  TLSv1 (AVD 5.1, 6.0, 7.0, 7.1.1, 9.0)
+         *  TLSv1.1 (AVD 5.1, 6.0, 7.0, 7.1.1, 9.0)
+         *  TLSv1.2 (AVD 5.1, 6.0, 7.0, 7.1.1, 9.0)
+         */
+        for (int i = 0; i < supportedProtocols.length; i++) {
+            if ("TLSv1.2".equals(supportedProtocols[i])) {
+                // Log.i(TAG, "SSLEngine supported protocol: " + supportedProtocols[i]);
+                // We want to determine available ciphers of the "TLSv1.2" protocol.
+                sslEngine.setEnabledProtocols(new String[] { supportedProtocols[i] });
+            }
+        }
+        String[] supportedCipherSuites = sslEngine.getSupportedCipherSuites();
+        for (int i = 0; i < supportedCipherSuites.length; i++) {
+            Log.i(TAG, "SSLEngine supported cipher suite: " + supportedCipherSuites[i]);
+            if (supportedCipherSuites[i].contains("TLS_ECDH_ECDSA_WITH_AES")) { // ToDo - This is not correct (2019-03-09)
+                Log.d(TAG, "SSLEngine: return true");
+                return true;
+            }
+        }
+        Log.d(TAG, "SSLEngine: return false");
+        return false;
     }
 }
