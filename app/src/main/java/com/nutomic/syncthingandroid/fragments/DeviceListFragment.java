@@ -1,8 +1,10 @@
 package com.nutomic.syncthingandroid.fragments;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.Menu;
@@ -13,18 +15,23 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.nutomic.syncthingandroid.R;
+import com.nutomic.syncthingandroid.SyncthingApp;
 import com.nutomic.syncthingandroid.activities.DeviceActivity;
 import com.nutomic.syncthingandroid.activities.MainActivity;
 import com.nutomic.syncthingandroid.activities.SyncthingActivity;
 import com.nutomic.syncthingandroid.model.Device;
+import com.nutomic.syncthingandroid.service.AppPrefs;
 import com.nutomic.syncthingandroid.service.Constants;
 import com.nutomic.syncthingandroid.service.RestApi;
 import com.nutomic.syncthingandroid.service.SyncthingService;
+import com.nutomic.syncthingandroid.util.ConfigXml;
 import com.nutomic.syncthingandroid.views.DevicesAdapter;
 
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import javax.inject.Inject;
 
 /**
  * Displays a list of all existing devices.
@@ -34,7 +41,18 @@ public class DeviceListFragment extends ListFragment implements SyncthingService
 
     private final static String TAG = "DeviceListFragment";
 
-    private final static Comparator<Device> DEVICES_COMPARATOR = (lhs, rhs) -> lhs.name.compareTo(rhs.name);
+    private Boolean ENABLE_VERBOSE_LOG = false;
+
+    @Inject SharedPreferences mPreferences;
+
+    /**
+     * Compares devices by name, uses the device ID as fallback if the name is empty
+     */
+    private final static Comparator<Device> DEVICES_COMPARATOR = (lhs, rhs) -> {
+        String lhsName = lhs.name != null && !lhs.name.isEmpty() ? lhs.name : lhs.deviceID;
+        String rhsName = rhs.name != null && !rhs.name.isEmpty() ? rhs.name : rhs.deviceID;
+        return lhsName.compareTo(rhsName);
+    };
 
     private Runnable mUpdateListRunnable = new Runnable() {
         @Override
@@ -48,6 +66,13 @@ public class DeviceListFragment extends ListFragment implements SyncthingService
     private Boolean mLastVisibleToUser = false;
     private DevicesAdapter mAdapter;
     private SyncthingService.State mServiceState = SyncthingService.State.INIT;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        ((SyncthingApp) getActivity().getApplication()).component().inject(this);
+        ENABLE_VERBOSE_LOG = AppPrefs.getPrefVerboseLog(mPreferences);
+    }
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser)
@@ -78,13 +103,13 @@ public class DeviceListFragment extends ListFragment implements SyncthingService
     }
 
     private void startUpdateListHandler() {
-        Log.v(TAG, "startUpdateListHandler");
+        LogV("startUpdateListHandler");
         mUpdateListHandler.removeCallbacks(mUpdateListRunnable);
         mUpdateListHandler.post(mUpdateListRunnable);
     }
 
     private void stopUpdateListHandler() {
-        Log.v(TAG, "stopUpdateListHandler");
+        LogV("stopUpdateListHandler");
         mUpdateListHandler.removeCallbacks(mUpdateListRunnable);
     }
 
@@ -98,7 +123,7 @@ public class DeviceListFragment extends ListFragment implements SyncthingService
         super.onViewCreated(view, savedInstanceState);
 
         setHasOptionsMenu(true);
-        setEmptyText(getString(R.string.devices_list_empty));
+        setEmptyText(getString(R.string.no_devices_configured));
         getListView().setOnItemClickListener(this);
     }
 
@@ -107,9 +132,6 @@ public class DeviceListFragment extends ListFragment implements SyncthingService
      *  while the user is looking at the current tab.
      */
     private void onTimerEvent() {
-        if (mServiceState != SyncthingService.State.ACTIVE) {
-            return;
-        }
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity == null) {
             return;
@@ -117,11 +139,7 @@ public class DeviceListFragment extends ListFragment implements SyncthingService
         if (mainActivity.isFinishing()) {
             return;
         }
-        RestApi restApi = mainActivity.getApi();
-        if (restApi == null) {
-            return;
-        }
-        Log.v(TAG, "Invoking updateList on UI thread");
+        LogV("Invoking updateList on UI thread");
         mainActivity.runOnUiThread(DeviceListFragment.this::updateList);
     }
 
@@ -135,11 +153,19 @@ public class DeviceListFragment extends ListFragment implements SyncthingService
         if (activity == null || getView() == null || activity.isFinishing()) {
             return;
         }
+        List<Device> devices;
         RestApi restApi = activity.getApi();
-        if (restApi == null || !restApi.isConfigLoaded()) {
-            return;
+        if (restApi == null ||
+                !restApi.isConfigLoaded() ||
+                mServiceState != SyncthingService.State.ACTIVE) {
+            // Syncthing is not running or REST API is not available yet.
+            ConfigXml configXml = new ConfigXml(activity);
+            configXml.loadConfig();
+            devices = configXml.getDevices(false);
+        } else {
+            // Syncthing is running and REST API is available.
+            devices = restApi.getDevices(false);
         }
-        List<Device> devices = restApi.getDevices(false);
         if (devices == null) {
             return;
         }
@@ -153,7 +179,7 @@ public class DeviceListFragment extends ListFragment implements SyncthingService
         mAdapter.clear();
         Collections.sort(devices, DEVICES_COMPARATOR);
         mAdapter.addAll(devices);
-        mAdapter.updateConnections(restApi);
+        mAdapter.updateDeviceStatus(restApi);
         mAdapter.notifyDataSetChanged();
         setListShown(true);
     }
@@ -184,4 +210,9 @@ public class DeviceListFragment extends ListFragment implements SyncthingService
         }
     }
 
+    private void LogV(String logMessage) {
+        if (ENABLE_VERBOSE_LOG) {
+            Log.v(TAG, logMessage);
+        }
+    }
 }

@@ -11,9 +11,9 @@
     <!-- Title for dialog displayed on first start -->
     <string name="welcome_title">Syncthing for Android にようこそ</string>
 
-    <string name="welcome_text">Syncthing は、オープンソースのファイル同期アプリケーションです。\n\
-他のデバイスとデータを共有するには、デバイスリストにその一意のデバイス ID を追加する必要があります。その後で、そのデバイスと共有するフォルダーを選択することができます。\n\
-発生した問題は何でも Github で報告してください。</string>
+    <!-- Slide "Ignore battery optimizations" -->
+    <string name="ignore_doze_permission_title">バッテリー最適化</string>
+    <string name="dialog_disable_battery_optimizations_not_supported">お使いのデバイスはバッテリーの最適化を無効にできません</string>
 
     <string name="cont">続行</string>
     <string name="finish">完了</string>
@@ -40,10 +40,6 @@
     <string name="open_website">Web サイトを開く</string>
 
     <string name="toast_write_storage_permission_required">このアプリはストレージの書き込みアクセス許可が必要です</string>
-
-    <string name="ignore_doze_permission_title">バッテリー最適化</string>
-    <string name="ignore_doze_permission_desc">Android はしばらくすると同期を停止することがあります。 これを防ぐには、バッテリーの最適化をオフにしてください。\n\n一部のデバイスには、タスク終了アプリが別途プリインストールされています。 これらのホワイトリストにも Syncthing を追加する必要があります。</string>
-    <string name="dialog_disable_battery_optimizations_not_supported">お使いのデバイスはバッテリーの最適化を無効にできません</string>
 
     <!-- StateDialogActivity -->
 
@@ -213,6 +209,7 @@
     <!-- Text for WebGuiActivity loading view -->
     <string name="web_gui_loading">GUI を待機中</string>
 
+
     <!-- SettingsFragment -->
 
 
@@ -220,8 +217,9 @@
 
     <string name="category_run_conditions">実行条件</string>
     <string name="category_behaviour">動作</string>
+
     <string name="category_syncthing_options">同期オプション</string>
-    <string name="category_debug">デバッグ</string>
+
     <string name="category_experimental">実験的</string>
 
     <!-- Preference screen - Run conditions -->
@@ -236,10 +234,6 @@
     <string name="preference_language_title">言語</string>
 
     <string name="preference_language_summary">アプリの言語を変更します</string>
-
-    <string name="start_into_web_gui_title">Web GUI に直接起動する</string>
-
-    <string name="start_into_web_gui_summary">アプリを起動するとき、メイン画面ではなく Web GUI を開きます</string>
 
     <string name="pref_language_default">デフォルトの言語</string>
 
@@ -270,8 +264,6 @@
     <string name="enable_relaying">リレーを有効にする</string>
 
     <string name="usage_reporting">匿名での使用状況レポート</string>
-
-    <string name="gui_address">GUI 待ち受けアドレス</string>
 
     <string name="export_config">設定のエクスポート</string>
 
@@ -330,9 +322,6 @@
 
     <!-- Activity title -->
     <string name="folder_picker_title">フォルダーを選択</string>
-
-    <!-- Toast shown on devices with kitkat or higher -->
-    <string name="kitkat_external_storage_warning">警告: お使いの Android のバージョンは外部ストレージに同期することができません</string>
 
     <!-- ListView empty text -->
     <string name="directory_empty">ディレクトリーは空です</string>
@@ -408,16 +397,11 @@
 
     <!-- SyncthingService -->
 
-
-    <!-- Title of the "syncthing disabled" dialog -->
-    <string name="syncthing_disabled_title">Syncthing は無効になりました</string>
-    <!-- Button text on the "syncthing disabled" dialog, used as menu item to stop syncthing service if "always_run_in_background" is true -->
+    <!-- Text for the exit button on the drawer -->
     <string name="exit">終了</string>
 
     <!-- Title of the notification shown while syncthing is running and enabled -->
     <string name="syncthing_active">Syncthing は実行中です</string>
-
-    <string name="syncthing_disabled">Syncthing は無効になりました</string>
 
     <string name="config_create_failed">設定ファイルの作成に失敗しました</string>
     <!-- Label of the default folder created of first start (camera folder). -->
@@ -427,8 +411,6 @@
     <string name="default_folder_id">%1$s-写真</string>
 
     <string name="notification_crash_title">Syncthing がクラッシュしました %1$s</string>
-
-    <string name="notification_crash_text">クリックしてログを表示</string>
 
     <string name="notifications_other_channel">他の通知</string>
 

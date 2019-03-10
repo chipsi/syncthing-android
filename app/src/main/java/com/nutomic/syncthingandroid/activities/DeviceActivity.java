@@ -1,24 +1,28 @@
 package com.nutomic.syncthingandroid.activities;
 
+import android.app.Activity;
 import android.app.Dialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
+import android.os.IBinder;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SwitchCompat;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,81 +33,81 @@ import com.google.zxing.integration.android.IntentResult;
 import com.nutomic.syncthingandroid.R;
 import com.nutomic.syncthingandroid.model.Connections;
 import com.nutomic.syncthingandroid.model.Device;
+import com.nutomic.syncthingandroid.model.DiscoveredDevice;
+import com.nutomic.syncthingandroid.model.Options;
 import com.nutomic.syncthingandroid.service.Constants;
 import com.nutomic.syncthingandroid.service.RestApi;
 import com.nutomic.syncthingandroid.service.SyncthingService;
+import com.nutomic.syncthingandroid.service.SyncthingServiceBinder;
+import com.nutomic.syncthingandroid.service.TestData;
 import com.nutomic.syncthingandroid.SyncthingApp;
 import com.nutomic.syncthingandroid.util.Compression;
+import com.nutomic.syncthingandroid.util.ConfigRouter;
 import com.nutomic.syncthingandroid.util.TextWatcherAdapter;
 import com.nutomic.syncthingandroid.util.Util;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
+import static android.support.v4.view.MarginLayoutParamsCompat.setMarginEnd;
+import static android.support.v4.view.MarginLayoutParamsCompat.setMarginStart;
 import static android.text.TextUtils.isEmpty;
-import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN;
-import static com.nutomic.syncthingandroid.service.SyncthingService.State.ACTIVE;
+import static android.view.Gravity.CENTER_VERTICAL;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+
+import static com.nutomic.syncthingandroid.service.Constants.ENABLE_TEST_DATA;
+
 import static com.nutomic.syncthingandroid.util.Compression.METADATA;
 
 /**
  * Shows device details and allows changing them.
  */
-public class DeviceActivity extends SyncthingActivity
-        implements
-            View.OnClickListener,
-            SyncthingActivity.OnServiceConnectedListener,
-            SyncthingService.OnServiceStateChangeListener {
+public class DeviceActivity extends SyncthingActivity {
 
     public static final String EXTRA_NOTIFICATION_ID =
-            "com.nutomic.syncthingandroid.activities.DeviceActivity.NOTIFICATION_ID";
+            "com.github.catfriend1.syncthingandroid.activities.DeviceActivity.NOTIFICATION_ID";
     public static final String EXTRA_DEVICE_ID =
-            "com.nutomic.syncthingandroid.activities.DeviceActivity.DEVICE_ID";
+            "com.github.catfriend1.syncthingandroid.activities.DeviceActivity.DEVICE_ID";
     public static final String EXTRA_DEVICE_NAME =
-            "com.nutomic.syncthingandroid.activities.DeviceActivity.DEVICE_NAME";
+            "com.github.catfriend1.syncthingandroid.activities.DeviceActivity.DEVICE_NAME";
     public static final String EXTRA_IS_CREATE =
-            "com.nutomic.syncthingandroid.activities.DeviceActivity.IS_CREATE";
+            "com.github.catfriend1.syncthingandroid.activities.DeviceActivity.IS_CREATE";
 
-    private static final String TAG = "DeviceSettingsFragment";
+    private static final String TAG = "DeviceActivity";
     private static final String IS_SHOWING_DISCARD_DIALOG = "DISCARD_FOLDER_DIALOG_STATE";
     private static final String IS_SHOWING_COMPRESSION_DIALOG = "COMPRESSION_FOLDER_DIALOG_STATE";
     private static final String IS_SHOWING_DELETE_DIALOG = "DELETE_FOLDER_DIALOG_STATE";
 
     private static final List<String> DYNAMIC_ADDRESS = Collections.singletonList("dynamic");
 
+    public static final int DEVICE_ADD_CODE = 401;
+
+    private ConfigRouter mConfig;
+
     private Device mDevice;
-
-    private View mIdContainer;
-
-    private EditText mIdView;
-
+    private EditText mEditDeviceId;
+    private TextView mDiscoveredDevicesTitle;
+    private ViewGroup mDiscoveredDevicesContainer;
+    private View mShowDeviceIdContainer;
+    private EditText mShowDeviceId;
     private View mQrButton;
-
     private EditText mNameView;
-
     private EditText mAddressesView;
-
     private TextView mCurrentAddressView;
-
-    private TextView mCompressionValueView;
-
-    private SwitchCompat mIntroducerView;
-
-    private SwitchCompat mDevicePaused;
-
-    private SwitchCompat mCustomSyncConditionsSwitch;
-
-    private TextView mCustomSyncConditionsDescription;
-
-    private TextView mCustomSyncConditionsDialog;
-
-    private TextView mSyncthingVersionView;
-
     private View mCompressionContainer;
+    private TextView mCompressionValueView;
+    private SwitchCompat mIntroducerView;
+    private SwitchCompat mDevicePaused;
+    private SwitchCompat mCustomSyncConditionsSwitch;
+    private TextView mCustomSyncConditionsDescription;
+    private TextView mCustomSyncConditionsDialog;
+    private TextView mSyncthingVersionView;
 
     @Inject
     SharedPreferences mPreferences;
@@ -176,6 +180,7 @@ public class DeviceActivity extends SyncthingActivity
                     break;
                 case R.id.customSyncConditionsSwitch:
                     mCustomSyncConditionsDescription.setEnabled(isChecked);
+                    mCustomSyncConditionsDialog.setFocusable(isChecked);
                     mCustomSyncConditionsDialog.setEnabled(isChecked);
                     // This is needed to display the "discard changes dialog".
                     mDeviceNeedsToUpdate = true;
@@ -184,18 +189,28 @@ public class DeviceActivity extends SyncthingActivity
         }
     };
 
+    public static Intent createIntent(Context context) {
+        Intent intent = new Intent(context, DeviceActivity.class);
+        intent.putExtra(EXTRA_IS_CREATE, true);
+        return intent;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        mConfig = new ConfigRouter(DeviceActivity.this);
+
         super.onCreate(savedInstanceState);
         ((SyncthingApp) getApplication()).component().inject(this);
-        setContentView(R.layout.fragment_device);
+        setContentView(R.layout.activity_device);
 
         mIsCreateMode = getIntent().getBooleanExtra(EXTRA_IS_CREATE, false);
         setTitle(mIsCreateMode ? R.string.add_device : R.string.edit_device);
-        registerOnServiceConnectedListener(this);
 
-        mIdContainer = findViewById(R.id.idContainer);
-        mIdView = findViewById(R.id.id);
+        mEditDeviceId = findViewById(R.id.editDeviceId);
+        mDiscoveredDevicesTitle = findViewById(R.id.discoveredDevicesTitle);
+        mDiscoveredDevicesContainer = findViewById(R.id.discoveredDevicesContainer);
+        mShowDeviceIdContainer = findViewById(R.id.showDeviceIdContainer);
+        mShowDeviceId = findViewById(R.id.showDeviceId);
         mQrButton = findViewById(R.id.qrButton);
         mNameView = findViewById(R.id.name);
         mAddressesView = findViewById(R.id.addresses);
@@ -209,37 +224,62 @@ public class DeviceActivity extends SyncthingActivity
         mCustomSyncConditionsDialog = findViewById(R.id.customSyncConditionsDialog);
         mSyncthingVersionView = findViewById(R.id.syncthingVersion);
 
-        mQrButton.setOnClickListener(this);
+        if (Util.isRunningOnTV(this)) {
+            mQrButton.setVisibility(View.GONE);
+        }
+        mQrButton.setOnClickListener(view -> onQrButtonClick());
+        mShowDeviceIdContainer.setOnClickListener(view -> onCopyDeviceIdClick());
+        mCompressionContainer.setOnClickListener(view -> onCompressionContainerClick());
         mCustomSyncConditionsDialog.setOnClickListener(view -> onCustomSyncConditionsDialogClick());
-        mCompressionContainer.setOnClickListener(this);
 
-        if (savedInstanceState != null){
-            if (mDevice == null) {
-                mDevice = new Gson().fromJson(savedInstanceState.getString("device"), Device.class);
-            }
+        findViewById(R.id.editDeviceIdContainer).setVisibility(mIsCreateMode ? View.VISIBLE : View.GONE);
+        mShowDeviceIdContainer.setVisibility(!mIsCreateMode ? View.VISIBLE : View.GONE);
+
+        if (savedInstanceState != null) {
+            Log.d(TAG, "Retrieving state from savedInstanceState ...");
+            mDevice = new Gson().fromJson(savedInstanceState.getString("device"), Device.class);
+            mDeviceNeedsToUpdate = savedInstanceState.getBoolean("deviceNeedsToUpdate");
             restoreDialogStates(savedInstanceState);
-        }
-        if (mIsCreateMode) {
-           if (mDevice == null) {
+        } else {
+            // Fresh init of the edit or create mode.
+            if (mIsCreateMode) {
+                Log.d(TAG, "Initializing create mode ...");
                 initDevice();
+                mDeviceNeedsToUpdate = true;
+            } else {
+                // Edit mode.
+                String passedId = getIntent().getStringExtra(EXTRA_DEVICE_ID);
+                Log.d(TAG, "Initializing edit mode: deviceID=" + passedId);
+                // getApi() is unavailable (onCreate > onPostCreate > onServiceConnected)
+                List<Device> devices = mConfig.getDevices(null, false);
+                mDevice = null;
+                for (Device currentDevice : devices) {
+                    if (currentDevice.deviceID.equals(passedId)) {
+                        mDevice = currentDevice;
+                        break;
+                    }
+                }
+                if (mDevice == null) {
+                    Log.w(TAG, "Device not found in API update, maybe it was deleted?");
+                    setResult(Activity.RESULT_CANCELED);
+                    finish();
+                    return;
+                }
+                mDeviceNeedsToUpdate = false;
             }
         }
-        else {
-            prepareEditMode();
-        }
-    }
+        updateViewsAndSetListeners();
 
-    /**
-     * Invoked after user clicked on the {@link mCustomSyncConditionsDialog} label.
-     */
-    private void onCustomSyncConditionsDialogClick() {
-        startActivityForResult(
-            SyncConditionsActivity.createIntent(
-                this, Constants.PREF_OBJECT_PREFIX_DEVICE + mDevice.deviceID, mDevice.name
-            ),
-            0
-        );
-        return;
+        if (mIsCreateMode) {
+            mEditDeviceId.requestFocus();
+        } else {
+            getWindow().setSoftInputMode(SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+            mNameView.requestFocus();
+        }
+
+        // Show expert options conditionally.
+        Boolean prefExpertMode = mPreferences.getBoolean(Constants.PREF_EXPERT_MODE, false);
+        mCompressionContainer.setVisibility(prefExpertMode ? View.VISIBLE : View.GONE);
     }
 
     private void restoreDialogStates(Bundle savedInstanceState) {
@@ -251,10 +291,41 @@ public class DeviceActivity extends SyncthingActivity
             showDeleteDialog();
         }
 
-        if (mIsCreateMode){
-            if (savedInstanceState.getBoolean(IS_SHOWING_DISCARD_DIALOG)){
-                showDiscardDialog();
+        if (savedInstanceState.getBoolean(IS_SHOWING_DISCARD_DIALOG)){
+            showDiscardDialog();
+        }
+    }
+
+    /**
+     * Register for service state change events.
+     */
+    @Override
+    public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+        super.onServiceConnected(componentName, iBinder);
+        SyncthingServiceBinder syncthingServiceBinder = (SyncthingServiceBinder) iBinder;
+        SyncthingService syncthingService = (SyncthingService) syncthingServiceBinder.getService();
+        syncthingService.getNotificationHandler().cancelConsentNotification(getIntent().getIntExtra(EXTRA_NOTIFICATION_ID, 0));
+        RestApi restApi = syncthingService.getApi();
+        if (restApi != null) {
+            restApi.getConnections(this::onReceiveConnections);
+            if (mIsCreateMode) {
+                mDiscoveredDevicesTitle.setOnClickListener(view -> {
+                    if (restApi != null) {
+                        asyncQueryDiscoveredDevices(restApi);
+                    }
+                });
+                asyncQueryDiscoveredDevices(restApi);
             }
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mDeviceNeedsToUpdate) {
+            showDiscardDialog();
+        }
+        else {
+            super.onBackPressed();
         }
     }
 
@@ -264,22 +335,10 @@ public class DeviceActivity extends SyncthingActivity
         SyncthingService syncthingService = getService();
         if (syncthingService != null) {
             syncthingService.getNotificationHandler().cancelConsentNotification(getIntent().getIntExtra(EXTRA_NOTIFICATION_ID, 0));
-            syncthingService.unregisterOnServiceStateChangeListener(this::onServiceStateChange);
         }
-        mIdView.removeTextChangedListener(mIdTextWatcher);
+        mEditDeviceId.removeTextChangedListener(mIdTextWatcher);
         mNameView.removeTextChangedListener(mNameTextWatcher);
         mAddressesView.removeTextChangedListener(mAddressesTextWatcher);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        // We don't want to update every time a TextView's character changes,
-        // so we hold off until the view stops being visible to the user.
-        if (mDeviceNeedsToUpdate) {
-            updateDevice();
-        }
     }
 
     /**
@@ -289,27 +348,16 @@ public class DeviceActivity extends SyncthingActivity
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString("device", new Gson().toJson(mDevice));
-        if (mIsCreateMode){
-            outState.putBoolean(IS_SHOWING_DISCARD_DIALOG, mDiscardDialog != null && mDiscardDialog.isShowing());
-            Util.dismissDialogSafe(mDiscardDialog, this);
-        }
+        outState.putBoolean("deviceNeedsToUpdate", mDeviceNeedsToUpdate);
+
+        outState.putBoolean(IS_SHOWING_DISCARD_DIALOG, mDiscardDialog != null && mDiscardDialog.isShowing());
+        Util.dismissDialogSafe(mDiscardDialog, this);
 
         outState.putBoolean(IS_SHOWING_COMPRESSION_DIALOG, mCompressionDialog != null && mCompressionDialog.isShowing());
         Util.dismissDialogSafe(mCompressionDialog, this);
 
         outState.putBoolean(IS_SHOWING_DELETE_DIALOG, mDeleteDialog != null && mDeleteDialog.isShowing());
         Util.dismissDialogSafe(mDeleteDialog, this);
-    }
-
-    /**
-     * Register for service state change events.
-     */
-    @Override
-    public void onServiceConnected() {
-        Log.v(TAG, "onServiceConnected");
-        SyncthingService syncthingService = (SyncthingService) getService();
-        syncthingService.getNotificationHandler().cancelConsentNotification(getIntent().getIntExtra(EXTRA_NOTIFICATION_ID, 0));
-        syncthingService.registerOnServiceStateChangeListener(this);
     }
 
     /**
@@ -336,38 +384,8 @@ public class DeviceActivity extends SyncthingActivity
         }
     }
 
-    @Override
-    public void onServiceStateChange(SyncthingService.State currentState) {
-        if (currentState != ACTIVE) {
-            finish();
-            return;
-        }
-
-        if (!mIsCreateMode) {
-            RestApi restApi = getApi();     // restApi != null because of State.ACTIVE
-            List<Device> devices = restApi.getDevices(false);
-            String passedId = getIntent().getStringExtra(EXTRA_DEVICE_ID);
-            mDevice = null;
-            for (Device currentDevice : devices) {
-                if (currentDevice.deviceID.equals(passedId)) {
-                    mDevice = currentDevice;
-                    break;
-                }
-            }
-            if (mDevice == null) {
-                Log.w(TAG, "Device not found in API update, maybe it was deleted?");
-                finish();
-                return;
-            }
-            if (restApi != null) {
-                restApi.getConnections(this::onReceiveConnections);
-            }
-        }
-        updateViewsAndSetListeners();
-    }
-
     private void updateViewsAndSetListeners() {
-        mIdView.removeTextChangedListener(mIdTextWatcher);
+        mEditDeviceId.removeTextChangedListener(mIdTextWatcher);
         mNameView.removeTextChangedListener(mNameTextWatcher);
         mAddressesView.removeTextChangedListener(mAddressesTextWatcher);
         mIntroducerView.setOnCheckedChangeListener(null);
@@ -375,7 +393,8 @@ public class DeviceActivity extends SyncthingActivity
         mCustomSyncConditionsSwitch.setOnCheckedChangeListener(null);
 
         // Update views
-        mIdView.setText(mDevice.deviceID);
+        mEditDeviceId.setText(mDevice.deviceID);
+        mShowDeviceId.setText(mDevice.deviceID);
         mNameView.setText(mDevice.name);
         mAddressesView.setText(displayableAddresses());
         mCompressionValueView.setText(Compression.fromValue(this, mDevice.compression).getTitle(this));
@@ -393,10 +412,11 @@ public class DeviceActivity extends SyncthingActivity
         }
         mCustomSyncConditionsSwitch.setEnabled(!mIsCreateMode);
         mCustomSyncConditionsDescription.setEnabled(mCustomSyncConditionsSwitch.isChecked());
+        mCustomSyncConditionsDialog.setFocusable(mCustomSyncConditionsSwitch.isChecked());
         mCustomSyncConditionsDialog.setEnabled(mCustomSyncConditionsSwitch.isChecked());
 
         // Keep state updated
-        mIdView.addTextChangedListener(mIdTextWatcher);
+        mEditDeviceId.addTextChangedListener(mIdTextWatcher);
         mNameView.addTextChangedListener(mNameTextWatcher);
         mAddressesView.addTextChangedListener(mAddressesTextWatcher);
         mIntroducerView.setOnCheckedChangeListener(mCheckedListener);
@@ -412,7 +432,7 @@ public class DeviceActivity extends SyncthingActivity
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        menu.findItem(R.id.create).setVisible(mIsCreateMode);
+        menu.findItem(R.id.save).setTitle(mIsCreateMode ? R.string.create : R.string.save_title);
         menu.findItem(R.id.share_device_id).setVisible(!mIsCreateMode);
         menu.findItem(R.id.remove).setVisible(!mIsCreateMode);
         return true;
@@ -421,15 +441,8 @@ public class DeviceActivity extends SyncthingActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.create:
-                if (isEmpty(mDevice.deviceID)) {
-                    Toast.makeText(this, R.string.device_id_required, Toast.LENGTH_LONG)
-                            .show();
-                    return true;
-                }
-                getApi().addDevice(mDevice, error ->
-                        Toast.makeText(this, error, Toast.LENGTH_LONG).show());
-                finish();
+            case R.id.save:
+                onSave();
                 return true;
             case R.id.share_device_id:
                 shareDeviceId(this, mDevice.deviceID);
@@ -455,7 +468,9 @@ public class DeviceActivity extends SyncthingActivity
         return new android.app.AlertDialog.Builder(this)
                 .setMessage(R.string.remove_device_confirm)
                 .setPositiveButton(android.R.string.yes, (dialogInterface, i) -> {
-                    getApi().removeDevice(mDevice.deviceID);
+                    mConfig.removeDevice(getApi(), mDevice.deviceID);
+                    mDeviceNeedsToUpdate = false;
+                    setResult(Activity.RESULT_OK);
                     finish();
                 })
                 .setNegativeButton(android.R.string.no, null)
@@ -470,10 +485,16 @@ public class DeviceActivity extends SyncthingActivity
         IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
         if (scanResult != null) {
             mDevice.deviceID = scanResult.getContents();
-            mIdView.setText(mDevice.deviceID);
+            mEditDeviceId.setText(mDevice.deviceID);
+            if (ENABLE_TEST_DATA) {
+                mEditDeviceId.setText(TestData.DEVICE_A_ID);
+            }
         }
     }
 
+    /**
+     * Used in mIsCreateMode.
+     */
     private void initDevice() {
         mDevice = new Device();
         mDevice.name = getIntent().getStringExtra(EXTRA_DEVICE_NAME);
@@ -482,35 +503,56 @@ public class DeviceActivity extends SyncthingActivity
         mDevice.compression = METADATA.getValue(this);
         mDevice.introducer = false;
         mDevice.paused = false;
+        mDevice.introducedBy = "";
     }
 
-    private void prepareEditMode() {
-        getWindow().setSoftInputMode(SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
-        Drawable dr = ContextCompat.getDrawable(this, R.drawable.ic_content_copy_black_24dp);
-        mIdView.setCompoundDrawablesWithIntrinsicBounds(null, null, dr, null);
-        mIdView.setEnabled(false);
-        mQrButton.setVisibility(GONE);
-
-        mIdContainer.setOnClickListener(this);
-    }
-
-    /**
-     * Sends the updated device info if in edit mode.
-     * Preconditions: mDeviceNeedsToUpdate == true
-     */
-    private void updateDevice() {
-        if (mIsCreateMode) {
-            // If we are about to create this folder, we cannot update via restApi.
-            return;
-        }
+    private void onSave() {
         if (mDevice == null) {
-            Log.e(TAG, "updateDevice: mDevice == null");
+            Log.e(TAG, "onSave: mDevice == null");
             return;
         }
+
+        // Validate fields.
+        if (isEmpty(mDevice.deviceID)) {
+            Toast.makeText(this, R.string.device_id_required, Toast.LENGTH_LONG)
+                    .show();
+            return;
+        }
+        if (!mDevice.checkDeviceID()) {
+            Toast.makeText(this, R.string.device_id_invalid, Toast.LENGTH_LONG)
+                    .show();
+            return;
+        }
+        if (isEmpty(mDevice.name)) {
+            Toast.makeText(this, R.string.device_name_required, Toast.LENGTH_LONG)
+                    .show();
+            return;
+        }
+        if (!mDevice.checkDeviceAddresses()) {
+            Toast.makeText(this, R.string.device_addresses_invalid, Toast.LENGTH_LONG)
+                    .show();
+            return;
+        }
+
+        if (mIsCreateMode) {
+            Log.v(TAG, "onSave: Adding device with ID = \'" + mDevice.deviceID + "\'");
+            mConfig.addDevice(getApi(), mDevice);
+            setResult(Activity.RESULT_OK);
+            finish();
+            return;
+        }
+
+        // Edit mode.
+        if (!mDeviceNeedsToUpdate) {
+            // We've got nothing to save.
+            setResult(Activity.RESULT_CANCELED);
+            finish();
+            return;
+        }
+        // Log.v(TAG, "deviceID=" + mDevice.deviceID + ", introducedBy=" + mDevice.introducedBy);
 
         // Save device specific preferences.
-        Log.v(TAG, "updateDevice: mDevice.deviceID = \'" + mDevice.deviceID + "\'");
+        Log.v(TAG, "onSave: Updating device with ID = \'" + mDevice.deviceID + "\'");
         SharedPreferences.Editor editor = mPreferences.edit();
         editor.putBoolean(
             Constants.DYN_PREF_OBJECT_CUSTOM_SYNC_CONDITIONS(Constants.PREF_OBJECT_PREFIX_DEVICE + mDevice.deviceID),
@@ -518,52 +560,94 @@ public class DeviceActivity extends SyncthingActivity
         );
         editor.apply();
 
-        // Update device via restApi and send the config to REST endpoint.
-        RestApi restApi = getApi();
-        if (restApi == null) {
-            Log.e(TAG, "updateDevice: restApi == null");
-            return;
-        }
-        restApi.updateDevice(mDevice);
+        // Update device using RestApi or ConfigXml.
+        mConfig.updateDevice(getApi(), mDevice);
+        setResult(Activity.RESULT_OK);
+        finish();
+        return;
     }
 
+    /**
+     * Converts text line to addresses array.
+     */
     private List<String> persistableAddresses(CharSequence userInput) {
-        return isEmpty(userInput)
-                ? DYNAMIC_ADDRESS
-                : Arrays.asList(userInput.toString().split(" "));
+        if (isEmpty(userInput)) {
+            return DYNAMIC_ADDRESS;
+        }
+
+        /**
+         * Be fault-tolerant here.
+         * The user can write like this:
+         * tcp4://192.168.1.67:2222, dynamic
+         * tcp4://192.168.1.67:2222; dynamic
+         * tcp4://192.168.1.67:2222,dynamic
+         * tcp4://192.168.1.67:2222;dynamic
+         * tcp4://192.168.1.67:2222 dynamic
+         */
+        String input = userInput.toString();
+        input = input.replace(",", " ");
+        input = input.replace(";", " ");
+        input = input.replaceAll("\\s+", ", ");
+        // Log.v(TAG, "persistableAddresses: Cleaned user input=" + input);
+
+        // Split and return the addresses as String[].
+        return Arrays.asList(input.split(", "));
     }
 
+    /**
+     * Converts addresses array to a text line.
+     */
     private String displayableAddresses() {
+        if (mDevice.addresses == null) {
+            return "";
+        }
         List<String> list = DYNAMIC_ADDRESS.equals(mDevice.addresses)
                 ? DYNAMIC_ADDRESS
                 : mDevice.addresses;
-        return TextUtils.join(" ", list);
+        return TextUtils.join(", ", list);
     }
 
-    @Override
-    public void onClick(View v) {
-        if (v.equals(mCompressionContainer)) {
-            showCompressionDialog();
-        } else if (v.equals(mQrButton)){
-            IntentIntegrator integrator = new IntentIntegrator(DeviceActivity.this);
-            integrator.initiateScan();
-        } else if (v.equals(mIdContainer)) {
-            Util.copyDeviceId(this, mDevice.deviceID);
-        }
+    private void onCompressionContainerClick() {
+        showCompressionDialog();
+    }
+
+    /**
+     * Invoked after user clicked on the {@link #mCustomSyncConditionsDialog} label.
+     */
+    private void onCustomSyncConditionsDialogClick() {
+        startActivityForResult(
+            SyncConditionsActivity.createIntent(
+                this, Constants.PREF_OBJECT_PREFIX_DEVICE + mDevice.deviceID, mDevice.name
+            ),
+            0
+        );
+    }
+
+    private void onCopyDeviceIdClick() {
+        Util.copyDeviceId(this, mDevice.deviceID);
+    }
+
+    private void onQrButtonClick() {
+        final List<String> targetApplications = list(
+            "de.markusfisch.android.binaryeye",                 // Binary Eye
+            "com.srowen.bs.android",                            // Barcode Scanner+
+            "com.srowen.bs.android.simple"                      // Barcode Scanner+ Simple
+            // "com.google.zxing.client.android"                // Barcode Scanner (2019-02-24: no longer on GPlay)
+        );
+        IntentIntegrator integrator = new IntentIntegrator(DeviceActivity.this);
+        integrator.setTargetApplications(targetApplications);
+        integrator.setMessage(getString(R.string.install_barcode_scanner_app_message));
+        integrator.initiateScan();
     }
 
     private void showCompressionDialog(){
-        mCompressionDialog = createCompressionDialog();
-        mCompressionDialog.show();
-    }
-
-    private Dialog createCompressionDialog(){
-        return new AlertDialog.Builder(this)
+        mCompressionDialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.compression)
                 .setSingleChoiceItems(R.array.compress_entries,
                         Compression.fromValue(this, mDevice.compression).getIndex(),
                         mCompressionEntrySelectedListener)
                 .create();
+        mCompressionDialog.show();
     }
 
     /**
@@ -578,26 +662,102 @@ public class DeviceActivity extends SyncthingActivity
                 shareIntent, context.getString(R.string.send_device_id_to)));
     }
 
-    @Override
-    public void onBackPressed() {
-        if (mIsCreateMode) {
-            showDiscardDialog();
-        }
-        else {
-            super.onBackPressed();
-        }
-    }
-
     private void showDiscardDialog(){
-        mDiscardDialog = createDiscardDialog();
+        mDiscardDialog = new android.app.AlertDialog.Builder(this)
+                .setMessage(R.string.dialog_discard_changes)
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                        setResult(Activity.RESULT_CANCELED);
+                        finish();
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .create();
         mDiscardDialog.show();
     }
 
-    private Dialog createDiscardDialog() {
-        return new android.app.AlertDialog.Builder(this)
-                .setMessage(R.string.dialog_discard_changes)
-                .setPositiveButton(android.R.string.ok, (dialog, which) -> finish())
-                .setNegativeButton(android.R.string.cancel, null)
-                .create();
+    /**
+     * Perform asynchronous query via REST to retrieve locally discovered devices.
+     * Precondition:
+     *      restApi != null
+     *      mIsCreateMode == true
+     */
+    private void asyncQueryDiscoveredDevices(RestApi restApi) {
+        if (!restApi.isConfigLoaded()) {
+            return;
+        }
+        restApi.getDiscoveredDevices(this::onReceiveDiscoveredDevices);
+    }
+
+    /**
+     * Callback after {@link asyncQueryDiscoveredDevices}.
+     * Precondition:
+     *      mIsCreateMode == true
+     */
+    private void onReceiveDiscoveredDevices(Map<String, DiscoveredDevice> discoveredDevices) {
+        if (discoveredDevices == null) {
+            Log.e(TAG, "onReceiveDiscoveredDevices: discoveredDevices == null");
+            return;
+        }
+
+        /**
+         * If "mEditDeviceId" already contains content, don't show local discovery results.
+         * This also suppresses the results being shown a second time after the user chose a
+         * deviceId from the list and rotated the screen.
+         */
+        mDiscoveredDevicesTitle.setVisibility(TextUtils.isEmpty(mEditDeviceId.getText()) ? View.VISIBLE : View.GONE);
+        mDiscoveredDevicesContainer.setVisibility(TextUtils.isEmpty(mEditDeviceId.getText()) ? View.VISIBLE : View.GONE);
+
+        mDiscoveredDevicesContainer.removeAllViews();
+        if (discoveredDevices.size() == 0) {
+            // No discovered devices. Determine if local discovery is enabled.
+            Options options = mConfig.getOptions(null);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
+            int dividerInset = getResources().getDimensionPixelOffset(R.dimen.material_divider_inset);
+            int contentInset = getResources().getDimensionPixelOffset(R.dimen.abc_action_bar_content_inset_material);
+            setMarginStart(params, dividerInset);
+            setMarginEnd(params, contentInset);
+            TextView emptyView = new TextView(mDiscoveredDevicesContainer.getContext());
+            emptyView.setGravity(CENTER_VERTICAL);
+            if (options.localAnnounceEnabled) {
+                emptyView.setText(getString(R.string.discovered_device_list_empty, getString(R.string.url_syncthing_homepage)));
+            } else {
+                emptyView.setText(R.string.local_discovery_disabled);
+            }
+            mDiscoveredDevicesContainer.addView(emptyView, params);
+            return;
+        }
+
+        for (String deviceId : discoveredDevices.keySet()) {
+            if (deviceId != null) {
+                // Get device address.
+                String readableAddresses = "";
+                DiscoveredDevice discoveredDevice = discoveredDevices.get(deviceId);
+                if (discoveredDevice != null && discoveredDevice.addresses != null) {
+                    readableAddresses = TextUtils.join(", ", discoveredDevice.addresses);
+                }
+                // Log.v(TAG, "onReceiveDiscoveredDevices: deviceID = '" + deviceId + "' has addresses '" + readableAddresses + "'");
+                String caption = deviceId + (TextUtils.isEmpty(readableAddresses) ? "" : " (" + readableAddresses + ")");
+                LayoutInflater inflater = getLayoutInflater();
+                inflater.inflate(R.layout.item_discovered_device_form, mDiscoveredDevicesContainer);
+                TextView deviceIdView = (TextView) mDiscoveredDevicesContainer.getChildAt(mDiscoveredDevicesContainer.getChildCount()-1);
+                deviceIdView.setOnClickListener(null);
+                deviceIdView.setText(caption);
+                deviceIdView.setTag(deviceId);
+                deviceIdView.setOnClickListener(v -> onDeviceIdViewClick(v));
+            }
+        }
+    }
+
+    /**
+     * Copies the deviceId from TextView to "device_id" EditText.
+     * Hides the "mDiscoveredDevicesContainer" view afterwards.
+     */
+    private void onDeviceIdViewClick(View view) {
+        mEditDeviceId.setText((String) view.getTag());
+        mDiscoveredDevicesTitle.setVisibility(View.GONE);
+        mDiscoveredDevicesContainer.setVisibility(View.GONE);
+    }
+
+    private static List<String> list(String... values) {
+        return Collections.unmodifiableList(Arrays.asList(values));
     }
 }

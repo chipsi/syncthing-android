@@ -190,12 +190,14 @@
     <!-- Text for WebGuiActivity loading view -->
     <string name="web_gui_loading">Đang chờ GUI</string>
 
+
     <!-- SettingsFragment -->
 
 
     <string name="settings_title">Cài đặt</string>
 
     <string name="category_syncthing_options">Tuỳ chọn Syncthing</string>
+
     <string name="category_experimental">Thực nghiệm</string>
 
     <string name="sync_only_wifi_ssids_wifi_turn_on_wifi">Hãy bật WiFi để lựa chọn mạng.</string>
@@ -215,8 +217,6 @@
     <string name="local_announce_enabled">Dò tìm cục bộ</string>
 
     <string name="usage_reporting">Báo cáo sử dụng ẩn danh</string>
-
-    <string name="gui_address">Các đ.chỉ lắng nghe GUI</string>
 
     <string name="export_config">Xuất cấu hình</string>
 
@@ -262,9 +262,6 @@
     <!-- Activity title -->
     <string name="folder_picker_title">Trình chọn th.mục</string>
 
-    <!-- Toast shown on devices with kitkat or higher -->
-    <string name="kitkat_external_storage_warning">Cảnh báo: Ph.bản Android của bạn không cho phép đ.bộ vào các th.bị lưu trữ ngoại vi</string>
-
     <!-- ListView empty text -->
     <string name="directory_empty">Thư mục rỗng</string>
 
@@ -287,16 +284,11 @@
 
     <!-- SyncthingService -->
 
-
-    <!-- Title of the "syncthing disabled" dialog -->
-    <string name="syncthing_disabled_title">Đã tắt Syncthing</string>
-    <!-- Button text on the "syncthing disabled" dialog, used as menu item to stop syncthing service if "always_run_in_background" is true -->
+    <!-- Text for the exit button on the drawer -->
     <string name="exit">Thoát</string>
 
     <!-- Title of the notification shown while syncthing is running and enabled -->
     <string name="syncthing_active">Syncthing đang chạy</string>
-
-    <string name="syncthing_disabled">Đã tắt Syncthing</string>
 
     <!-- ID of the default folder created on first start (camera folder). Must only contain 'a-z0-9_-'. Parameter is the device name-->
     <string name="default_folder_id">%1$s-ảnh</string>

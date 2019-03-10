@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +24,7 @@ import com.nutomic.syncthingandroid.http.ImageGetRequest;
 import com.nutomic.syncthingandroid.service.Constants;
 import com.nutomic.syncthingandroid.service.RestApi;
 import com.nutomic.syncthingandroid.service.SyncthingService;
+import com.nutomic.syncthingandroid.util.Util;
 
 import java.net.URL;
 
@@ -38,6 +38,8 @@ public class DrawerFragment extends Fragment implements SyncthingService.OnServi
     private SyncthingService.State mServiceState = SyncthingService.State.INIT;
 
     private static final String TAG = "DrawerFragment";
+
+    private static final int SETTINGS_SCREEN_REQUEST = 3460;
 
     /**
      * These buttons might be accessible if the screen is big enough
@@ -60,17 +62,18 @@ public class DrawerFragment extends Fragment implements SyncthingService.OnServi
     private MainActivity mActivity;
     private SharedPreferences sharedPreferences = null;
 
+    private Boolean mRunningOnTV = false;
+
     @Override
     public void onServiceStateChange(SyncthingService.State currentState) {
         mServiceState = currentState;
-        updateButtons();
+        updateUI();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        updateLabels();
-        updateButtons();
+        updateUI();
     }
 
     @Override
@@ -90,6 +93,7 @@ public class DrawerFragment extends Fragment implements SyncthingService.OnServi
     public void onViewCreated(View view, Bundle savedInstanceState) {
         mActivity = (MainActivity) getActivity();
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mActivity);
+        mRunningOnTV = Util.isRunningOnTV(mActivity);
 
         mVersion                    = view.findViewById(R.id.version);
         mDrawerActionShowQrCode     = view.findViewById(R.id.drawerActionShowQrCode);
@@ -111,8 +115,8 @@ public class DrawerFragment extends Fragment implements SyncthingService.OnServi
         mDrawerActionSettings.setOnClickListener(this);
         mDrawerActionExit.setOnClickListener(this);
 
-        updateLabels();
-        updateButtons();
+        // Initially fill UI elements.
+        updateUI();
     }
 
     @Override
@@ -120,27 +124,20 @@ public class DrawerFragment extends Fragment implements SyncthingService.OnServi
         super.onActivityCreated(savedInstanceState);
     }
 
-    /**
-     * Update static info labels.
-     */
-    private void updateLabels() {
+    private void updateUI() {
+        Boolean syncthingRunning = mServiceState == SyncthingService.State.ACTIVE;
+
+        // Update static info labels.
         if (sharedPreferences != null && mVersion != null) {
             mVersion.setText(sharedPreferences.getString(Constants.PREF_LAST_BINARY_VERSION, ""));
         }
-    }
 
-    /**
-     * Update action button availability.
-     */
-    private void updateButtons() {
-        Boolean synthingRunning = mServiceState == SyncthingService.State.ACTIVE;
-
-        // Show buttons if syncthing is running.
-        mVersion.setVisibility(synthingRunning ? View.VISIBLE : View.GONE);
-        mDrawerActionShowQrCode.setVisibility(synthingRunning ? View.VISIBLE : View.GONE);
-        mDrawerRecentChanges.setVisibility(synthingRunning ? View.VISIBLE : View.GONE);
-        mDrawerActionWebGui.setVisibility(synthingRunning ? View.VISIBLE : View.GONE);
-        mDrawerActionRestart.setVisibility(synthingRunning ? View.VISIBLE : View.GONE);
+        // Update action button availability. Show buttons if syncthing is running.
+        mVersion.setVisibility(View.VISIBLE);
+        mDrawerActionShowQrCode.setVisibility(syncthingRunning ? View.VISIBLE : View.GONE);
+        mDrawerRecentChanges.setVisibility(syncthingRunning ? View.VISIBLE : View.GONE);
+        mDrawerActionWebGui.setVisibility((syncthingRunning && !mRunningOnTV) ? View.VISIBLE : View.GONE);
+        mDrawerActionRestart.setVisibility(syncthingRunning ? View.VISIBLE : View.GONE);
         mDrawerTipsAndTricks.setVisibility(View.VISIBLE);
         mDrawerActionExit.setVisibility(View.VISIBLE);
     }
@@ -158,7 +155,7 @@ public class DrawerFragment extends Fragment implements SyncthingService.OnServi
             String apiKey = restApi.getGui().apiKey;
             String deviceId = restApi.getLocalDevice().deviceID;
             URL url = restApi.getUrl();
-            //The QRCode request takes one paramteer called "text", which is the text to be converted to a QRCode.
+            // The QRCode request takes one parameter called "text", which is the text to be converted to a QRCode.
             new ImageGetRequest(mActivity, url, ImageGetRequest.QR_CODE_GENERATOR, apiKey,
                     ImmutableMap.of("text", deviceId),qrCodeBitmap -> {
                 mActivity.showQrCodeDialog(deviceId, qrCodeBitmap);
@@ -199,7 +196,7 @@ public class DrawerFragment extends Fragment implements SyncthingService.OnServi
                 mActivity.closeDrawer();
                 break;
             case R.id.drawerActionSettings:
-                startActivity(new Intent(mActivity, SettingsActivity.class));
+                startActivityForResult(new Intent(mActivity, SettingsActivity.class), SETTINGS_SCREEN_REQUEST);
                 mActivity.closeDrawer();
                 break;
             case R.id.drawerActionExit:
@@ -225,12 +222,26 @@ public class DrawerFragment extends Fragment implements SyncthingService.OnServi
         }
     }
 
-    private void doExit() {
+    private Boolean doExit() {
         if (mActivity == null || mActivity.isFinishing()) {
-            return;
+            return false;
         }
         Log.i(TAG, "Exiting app on user request");
         mActivity.stopService(new Intent(mActivity, SyncthingService.class));
         mActivity.finish();
+        return true;
+    }
+
+    /**
+     * Receives result of SettingsActivity.
+     */
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        if (requestCode == SETTINGS_SCREEN_REQUEST && resultCode == SettingsActivity.RESULT_RESTART_APP) {
+            Log.d(TAG, "Got request to restart MainActivity");
+            if (doExit()) {
+                startActivity(new Intent(getActivity(), MainActivity.class));
+            }
+        }
     }
 }

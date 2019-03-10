@@ -11,9 +11,9 @@
     <!-- Title for dialog displayed on first start -->
     <string name="welcome_title">Witamy w Syncthing dla systemu Android</string>
 
-    <string name="welcome_text">Syncthing jest programem do synchronizacji plików o otwartych źródłach.\n\
-Aby udostępnić dane innemu urządzeniu, należy dodać jego unikalny identyfikator do listy urządzeń. Następnie wymagane jest wskazanie katalogów udostępnianych urządzeniu.\n\
-Proszę zgłaszać napotkane błędy programu za pośrednictwem serwisu Github.</string>
+    <!-- Slide "Ignore battery optimizations" -->
+    <string name="ignore_doze_permission_title">Optymalizacja akumulatora</string>
+    <string name="dialog_disable_battery_optimizations_not_supported">Twoje urządzenie nie wspiera wyłączania optymalizacji baterii</string>
 
     <string name="cont">Kontynuuj</string>
     <string name="finish">Koniec</string>
@@ -40,10 +40,6 @@ Proszę zgłaszać napotkane błędy programu za pośrednictwem serwisu Github.<
     <string name="open_website">Otwórz stronę internetową</string>
 
     <string name="toast_write_storage_permission_required">Wymagane zezwolenie na zapisywanie do pamięci zewnętrznej</string>
-
-    <string name="ignore_doze_permission_title">Optymalizacja akumulatora</string>
-    <string name="ignore_doze_permission_desc">Android może wstrzymać synchronizację po pewnym czasie. By temu zapobiedz, wyłącz optymalizację baterii.\n\nNiektóre urządzenia posiadają dodatkowe preinstalowane aplikacje zatrzymujące zadania - dobrze byłoby dopisać Syncthing do listy ich wyjątków.</string>
-    <string name="dialog_disable_battery_optimizations_not_supported">Twoje urządzenie nie wspiera wyłączania optymalizacji baterii</string>
 
     <!-- StateDialogActivity -->
 
@@ -216,6 +212,7 @@ Proszę zgłaszać napotkane błędy programu za pośrednictwem serwisu Github.<
     <!-- Text for WebGuiActivity loading view -->
     <string name="web_gui_loading">Oczekiwanie na interfejs użytkownika</string>
 
+
     <!-- SettingsFragment -->
 
 
@@ -223,8 +220,9 @@ Proszę zgłaszać napotkane błędy programu za pośrednictwem serwisu Github.<
 
     <string name="category_run_conditions">Warunki działania</string>
     <string name="category_behaviour">Zachowanie</string>
+
     <string name="category_syncthing_options">Ustawienia Syncthing</string>
-    <string name="category_debug">Diagnozowanie błędów</string>
+
     <string name="category_experimental">Eksperymentalne</string>
 
     <!-- Preference screen - Run conditions -->
@@ -239,10 +237,6 @@ Proszę zgłaszać napotkane błędy programu za pośrednictwem serwisu Github.<
     <string name="preference_language_title">Język</string>
 
     <string name="preference_language_summary">Zmień język aplikacji</string>
-
-    <string name="start_into_web_gui_title">Startuj bezpośrednio do trybu web GUI</string>
-
-    <string name="start_into_web_gui_summary">Uruchamiając aplikację, otwórz web GUI zamiast głównego ekranu</string>
 
     <string name="pref_language_default">Domyślny język</string>
 
@@ -273,8 +267,6 @@ Proszę zgłaszać napotkane błędy programu za pośrednictwem serwisu Github.<
     <string name="enable_relaying">Włącz przekazywanie</string>
 
     <string name="usage_reporting">Anonimowe statystyki użycia</string>
-
-    <string name="gui_address">Adres nasłuchiwania</string>
 
     <string name="export_config">Eksportuj ustawienia</string>
 
@@ -333,9 +325,6 @@ Proszę zgłaszać napotkane błędy programu za pośrednictwem serwisu Github.<
 
     <!-- Activity title -->
     <string name="folder_picker_title">Wybieranie katalogu</string>
-
-    <!-- Toast shown on devices with kitkat or higher -->
-    <string name="kitkat_external_storage_warning">Ostrzeżenie: aktualna wersja systemu Android nie pozwala na synchronizowanie zewnętrznych pamięci masowych</string>
 
     <!-- ListView empty text -->
     <string name="directory_empty">Katalog jest pusty</string>
@@ -420,16 +409,11 @@ Proszę zgłaszać napotkane błędy programu za pośrednictwem serwisu Github.<
 
     <!-- SyncthingService -->
 
-
-    <!-- Title of the "syncthing disabled" dialog -->
-    <string name="syncthing_disabled_title">Syncthing jest wyłączony</string>
-    <!-- Button text on the "syncthing disabled" dialog, used as menu item to stop syncthing service if "always_run_in_background" is true -->
+    <!-- Text for the exit button on the drawer -->
     <string name="exit">Zakończ</string>
 
     <!-- Title of the notification shown while syncthing is running and enabled -->
     <string name="syncthing_active">Syncthing jest uruchomiony</string>
-
-    <string name="syncthing_disabled">Syncthing jest wyłączony</string>
 
     <string name="config_create_failed">Nie udało się stworzyć pliku konfiguracyjnego</string>
     <!-- Label of the default folder created of first start (camera folder). -->
@@ -439,8 +423,6 @@ Proszę zgłaszać napotkane błędy programu za pośrednictwem serwisu Github.<
     <string name="default_folder_id">%1$s-zdjęcia</string>
 
     <string name="notification_crash_title">Syncthing spadło z rowerka %1$s</string>
-
-    <string name="notification_crash_text">Dotknij, by zobaczyć logi</string>
 
     <string name="notifications_other_channel">Inne powiadomienia</string>
 

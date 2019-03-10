@@ -1,9 +1,10 @@
 package com.nutomic.syncthingandroid.fragments;
 
-import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
 import android.text.TextUtils;
 import android.util.Log;
@@ -17,12 +18,13 @@ import android.widget.ArrayAdapter;
 
 import com.google.common.base.Optional;
 import com.nutomic.syncthingandroid.R;
+import com.nutomic.syncthingandroid.SyncthingApp;
 import com.nutomic.syncthingandroid.activities.MainActivity;
 import com.nutomic.syncthingandroid.activities.SettingsActivity;
 import com.nutomic.syncthingandroid.activities.SyncthingActivity;
 import com.nutomic.syncthingandroid.model.Connections;
 import com.nutomic.syncthingandroid.model.SystemStatus;
-import com.nutomic.syncthingandroid.model.SystemVersion;
+import com.nutomic.syncthingandroid.service.AppPrefs;
 import com.nutomic.syncthingandroid.service.Constants;
 import com.nutomic.syncthingandroid.service.RestApi;
 import com.nutomic.syncthingandroid.service.SyncthingService;
@@ -34,12 +36,18 @@ import java.util.Locale;
 import java.util.Map;
 import java.text.NumberFormat;
 
+import javax.inject.Inject;
+
 /**
  * Displays why syncthing is running or disabled.
  */
 public class StatusFragment extends ListFragment implements SyncthingService.OnServiceStateChangeListener {
 
     private static final String TAG = "StatusFragment";
+
+    private Boolean ENABLE_VERBOSE_LOG = false;
+
+    @Inject SharedPreferences mPreferences;
 
     private Runnable mRestApiQueryRunnable = new Runnable() {
         @Override
@@ -71,6 +79,13 @@ public class StatusFragment extends ListFragment implements SyncthingService.OnS
     private String mUptime = "";
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        ((SyncthingApp) getActivity().getApplication()).component().inject(this);
+        ENABLE_VERBOSE_LOG = AppPrefs.getPrefVerboseLog(mPreferences);
+    }
+
+    @Override
     public void setUserVisibleHint(boolean isVisibleToUser)
     {
         super.setUserVisibleHint(isVisibleToUser);
@@ -99,13 +114,13 @@ public class StatusFragment extends ListFragment implements SyncthingService.OnS
     }
 
     private void startRestApiQueryHandler() {
-        Log.v(TAG, "startUpdateListHandler");
+        LogV("startUpdateListHandler");
         mRestApiQueryHandler.removeCallbacks(mRestApiQueryRunnable);
         mRestApiQueryHandler.post(mRestApiQueryRunnable);
     }
 
     private void stopRestApiQueryHandler() {
-        Log.v(TAG, "stopUpdateListHandler");
+        LogV("stopUpdateListHandler");
         mRestApiQueryHandler.removeCallbacks(mRestApiQueryRunnable);
     }
 
@@ -241,7 +256,7 @@ public class StatusFragment extends ListFragment implements SyncthingService.OnS
         if (restApi == null) {
             return;
         }
-        Log.v(TAG, "Invoking REST status queries");
+        LogV("Invoking REST status queries");
         restApi.getSystemStatus(this::onReceiveSystemStatus);
         restApi.getConnections(this::onReceiveConnections);
         // onReceiveSystemStatus, onReceiveConnections will call {@link #updateStatus}.
@@ -260,7 +275,7 @@ public class StatusFragment extends ListFragment implements SyncthingService.OnS
         int announceConnected =
                 announceTotal - Optional.fromNullable(systemStatus.discoveryErrors).transform(Map::size).or(0);
         synchronized (mStatusHolderLock) {
-            mCpuUsage = (systemStatus.cpuPercent / 100 < 1) ? "" : percentFormat.format(systemStatus.cpuPercent / 100);
+            mCpuUsage = (systemStatus.cpuPercent < 5) ? "" : percentFormat.format(systemStatus.cpuPercent / 100);
             mRamUsage = Util.readableFileSize(mActivity, systemStatus.sys);
             mAnnounceServer = (announceTotal == 0) ?
                     "" :
@@ -302,4 +317,9 @@ public class StatusFragment extends ListFragment implements SyncthingService.OnS
         updateStatus();
     }
 
+    private void LogV(String logMessage) {
+        if (ENABLE_VERBOSE_LOG) {
+            Log.v(TAG, logMessage);
+        }
+    }
 }

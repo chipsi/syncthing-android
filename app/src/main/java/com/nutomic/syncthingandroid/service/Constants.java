@@ -27,14 +27,25 @@ public class Constants {
     public static final String PREF_RUN_IN_FLIGHT_MODE          = "run_in_flight_mode";
 
     // Preferences - Behaviour
-    public static final String PREF_START_INTO_WEB_GUI          = "start_into_web_gui";
-    public static final String PREF_USE_ROOT                    = "use_root";
+    public static final String PREF_USE_ROOT                        = "use_root";
+
+    public static final String PREF_SUGGEST_NEW_FOLDER_ROOT         = "suggest_new_folder_root";
+    public static final String PREF_SUGGEST_NEW_FOLDER_ROOT_DATA    = "external_android_data";
+    public static final String PREF_SUGGEST_NEW_FOLDER_ROOT_MEDIA   = "external_android_media";
+
+    public static final String PREF_EXPERT_MODE                     = "expert_mode";
+
+    // Preferences - Troubleshooting
+    public static final String PREF_VERBOSE_LOG                 = "verbose_log";
     public static final String PREF_ENVIRONMENT_VARIABLES       = "environment_variables";
     public static final String PREF_DEBUG_FACILITIES_ENABLED    = "debug_facilities_enabled";
-    public static final String PREF_USE_WAKE_LOCK               = "wakelock_while_binary_running";
+
+    // Preferences - Experimental
     public static final String PREF_USE_TOR                     = "use_tor";
     public static final String PREF_SOCKS_PROXY_ADDRESS         = "socks_proxy_address";
     public static final String PREF_HTTP_PROXY_ADDRESS          = "http_proxy_address";
+    public static final String PREF_BROADCAST_SERVICE_CONTROL   = "broadcast_service_control";
+    public static final String PREF_USE_WAKE_LOCK               = "wakelock_while_binary_running";
 
     // Preferences - per Folder and Device Sync Conditions
     public static final String PREF_OBJECT_PREFIX_FOLDER        = "sc_folder_";
@@ -68,6 +79,7 @@ public class Constants {
      * Cached information which is not available on SettingsActivity.
      */
     public static final String PREF_LAST_BINARY_VERSION         = "lastBinaryVersion";
+    public static final String PREF_LOCAL_DEVICE_ID             = "localDeviceID";
 
     /**
      * {@link EventProcessor}
@@ -75,7 +87,7 @@ public class Constants {
     public static final String PREF_EVENT_PROCESSOR_LAST_SYNC_ID = "last_sync_id";
 
     /**
-     * Available options cache for preference {@link app_settings#debug_facilities_enabled}
+     * Available options cache for preference {@link com.nutomic.syncthingandroid.R.xml#app_settings#debug_facilities_enabled}
      * Read via REST API call in {@link RestApi#updateDebugFacilitiesCache} after first successful binary startup.
      */
     public static final String PREF_DEBUG_FACILITIES_AVAILABLE  = "debug_facilities_available";
@@ -88,15 +100,26 @@ public class Constants {
     public static final String FOLDER_TYPE_RECEIVE_ONLY         = "receiveonly";
 
     /**
+     * Default listening ports.
+     */
+    public static final Integer DEFAULT_WEBGUI_TCP_PORT         = 8384;
+    public static final Integer DEFAULT_DATA_TCP_PORT           = 22000;
+
+    /**
      * On Android 8.1, ACCESS_COARSE_LOCATION is required to access WiFi SSID.
      * This is the request code used when requesting the permission.
      */
     public static final int PERM_REQ_ACCESS_COARSE_LOCATION = 999; // for issue #999
 
     /**
-     * Interval in ms at which the GUI is updated (eg {@link com.nutomic.syncthingandroid.fragments.DrawerFragment}).
+     * Interval in ms at which RestAPI is polled.
+     * As a rule of thumb: Poll faster on "modern" devices.
      */
-    public static final long GUI_UPDATE_INTERVAL = TimeUnit.SECONDS.toMillis(5);
+    public static final long GUI_UPDATE_INTERVAL = TimeUnit.SECONDS.toMillis(
+            (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                    ? 3
+                    : 5
+    );
 
     /**
      * Directory where config is exported to and imported from.
@@ -144,7 +167,7 @@ public class Constants {
     /**
      * Name of the folder containing the index database.
      */
-    static final String INDEX_DB_FOLDER = "index-v0.14.0.db";
+    public static final String INDEX_DB_FOLDER = "index-v0.14.0.db";
 
     /**
      * Name of the public HTTPS CA file in the data directory.
@@ -172,7 +195,21 @@ public class Constants {
      * fall back to an unencrypted HTTP connection to localhost. This applies
      * to syncthing core v0.14.53+.
      */
-    public static final Boolean osSupportsTLS12() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
+    public static Boolean osSupportsTLS12() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            // Pre-Lollipop devices don't support TLS 1.2
+            return false;
+        }
+
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.N) {
+            /**
+             * SSLProtocolException: SSL handshake failed on Android N/7.0,
+             * missing support for elliptic curves.
+             * See https://issuetracker.google.com/issues/37122132
+             */
+            return false;
+        }
+
+        return true;
     }
 }

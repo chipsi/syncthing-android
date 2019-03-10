@@ -11,9 +11,9 @@
     <!-- Title for dialog displayed on first start -->
     <string name="welcome_title">Benvenuto in Syncthing per Android</string>
 
-    <string name="welcome_text">Syncthing è un\'applicazione open-source di sincronizzazione file.\n\
-Per condividere i dati con altri dispositivi, è necessario aggiungere il rispettivo ID Dispositivo nell\'elenco dei dispositivi. Successivamente è possibile selezionare quali cartelle condividere con quali dispositivi.\n\
-Si prega di segnalare eventuali problemi che si incontrano via Github.</string>
+    <!-- Slide "Ignore battery optimizations" -->
+    <string name="ignore_doze_permission_title">Ottimizzazione della batteria</string>
+    <string name="dialog_disable_battery_optimizations_not_supported">Il tuo dispositivo non supporta la disabilitazione delle ottimizzazioni della batteria</string>
 
     <string name="cont">Continua</string>
     <string name="finish">Completato</string>
@@ -41,10 +41,6 @@ Si prega di segnalare eventuali problemi che si incontrano via Github.</string>
     <string name="open_website">Apri sito</string>
 
     <string name="toast_write_storage_permission_required">E\' richiesto il permesso di scrittura per questa app</string>
-
-    <string name="ignore_doze_permission_title">Ottimizzazione della batteria</string>
-    <string name="ignore_doze_permission_desc">Android potrebbe interrompere la sincronizzazione dopo qualche tempo. Per evitare questo, spegnere l\'ottimizzazione della batteria.\n\nAlcuni dispositivi hanno ulteriori applicazioni preinstallate di inturruzione dei processi. Si dovrebbe aggiungere Syncthing alla loro whitelist.</string>
-    <string name="dialog_disable_battery_optimizations_not_supported">Il tuo dispositivo non supporta la disabilitazione delle ottimizzazioni della batteria</string>
 
     <!-- StateDialogActivity -->
 
@@ -229,6 +225,7 @@ Si prega di segnalare eventuali problemi che si incontrano via Github.</string>
     <!-- Text for WebGuiActivity loading view -->
     <string name="web_gui_loading">Caricamento Interfaccia Web</string>
 
+
     <!-- SettingsFragment -->
 
 
@@ -236,8 +233,9 @@ Si prega di segnalare eventuali problemi che si incontrano via Github.</string>
 
     <string name="category_run_conditions">Condizioni di funzionamento</string>
     <string name="category_behaviour">Comportamento</string>
+
     <string name="category_syncthing_options">Opzioni di Syncthing</string>
-    <string name="category_debug">Debug</string>
+
     <string name="category_experimental">Sperimentale</string>
 
     <!-- Preference screen - Run conditions -->
@@ -257,10 +255,6 @@ Si prega di segnalare eventuali problemi che si incontrano via Github.</string>
     <string name="preference_language_title">Lingua</string>
 
     <string name="preference_language_summary">Cambia la lingua dell\'app</string>
-
-    <string name="start_into_web_gui_title">Avvia direttamente nell\'Interfaccia Web</string>
-
-    <string name="start_into_web_gui_summary">Quando si avvia l\'applicazione, apre l\'Interfaccia Web invece che la schermata principale</string>
 
     <string name="pref_language_default">Lingua di default</string>
 
@@ -292,8 +286,6 @@ Si prega di segnalare eventuali problemi che si incontrano via Github.</string>
 
     <string name="usage_reporting">Statistiche Anonime Utilizzo</string>
 
-    <string name="gui_address">Indirizzi Interfaccia Grafica</string>
-
     <string name="export_config">Esporta Configurazione</string>
 
     <!-- Toast after entering invalid integer value -->
@@ -310,14 +302,10 @@ Si prega di segnalare eventuali problemi che si incontrano via Github.</string>
     <string name="use_tor_summary">Forza tutto il traffico attraverso Tor per una maggiore privacy. Richiede Orbot. Disabilita le opzioni proxy.</string>
 
     <string name="socks_proxy_address_title">Proxy SOCKS5</string>
-    <string name="socks_proxy_address_example">socks5://192.168.0.1:1080</string>
-
     <!-- Toast after entering invalid socks proxy address -->
     <string name="toast_invalid_socks_proxy_address">Il dato inserito viola la sintassi del proxy \'socks5://[IP/HOSTNAME]:[PORT]\'</string>
 
     <string name="http_proxy_address_title">Proxy HTTP(S)</string>
-    <string name="http_proxy_address_example">http://192.168.0.1:8080</string>
-
     <!-- Toast after entering invalid http proxy address -->
     <string name="toast_invalid_http_proxy_address">Il dato inserito viola la sintassi del proxy \'http://[IP/HOSTNAME]:[PORT]\'</string>
 
@@ -392,9 +380,6 @@ Si prega di segnalare eventuali problemi che si incontrano via Github.</string>
 
     <!-- Activity title -->
     <string name="folder_picker_title">Selezione Cartella</string>
-
-    <!-- Toast shown on devices with kitkat or higher -->
-    <string name="kitkat_external_storage_warning">Attenzione: La tua versione di Android non permette la sincronizzazione con dispositivi esterni di archiviazione</string>
 
     <!-- ListView empty text -->
     <string name="directory_empty">Cartella Vuota</string>
@@ -473,16 +458,11 @@ Si prega di segnalare eventuali problemi che si incontrano via Github.</string>
 
     <!-- SyncthingService -->
 
-
-    <!-- Title of the "syncthing disabled" dialog -->
-    <string name="syncthing_disabled_title">Syncthing è disabilitato</string>
-    <!-- Button text on the "syncthing disabled" dialog, used as menu item to stop syncthing service if "always_run_in_background" is true -->
+    <!-- Text for the exit button on the drawer -->
     <string name="exit">Esci</string>
 
     <!-- Title of the notification shown while syncthing is running and enabled -->
     <string name="syncthing_active">Syncthing è in esecuzione</string>
-
-    <string name="syncthing_disabled">Syncthing è disabilitato</string>
 
     <string name="syncthing_terminated">Syncthing è stato terminato</string>
 
@@ -494,8 +474,6 @@ Si prega di segnalare eventuali problemi che si incontrano via Github.</string>
     <string name="default_folder_id">%1$s-photos</string>
 
     <string name="notification_crash_title">Syncthing è andato in crash %1$s</string>
-
-    <string name="notification_crash_text">Clicca per visualizzare i log</string>
 
     <string name="notifications_persistent_channel">Syncthing attivo</string>
     <string name="notification_persistent_waiting_channel">Monitoraggio delle condizioni di esecuzione</string>

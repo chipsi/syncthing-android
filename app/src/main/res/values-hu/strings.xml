@@ -11,11 +11,9 @@
     <!-- Title for dialog displayed on first start -->
     <string name="welcome_title">Üdvözöl az androidos Syncthing.</string>
 
-    <string name="welcome_text">A Syncthing egy nyílt forráskódú fájlszinkronizáló alkalmazás.
-
-Az adatok más eszközökkel való megosztásához hozzá kell adnod egyedi eszközazonosítójukat az eszközlistához. Utána kiválaszthatod, hogy mely mappákat mely eszközökkel osztasz meg.
-
-Kérlek, hogy az esetlegesen felmerülő hibákat jelentsd be a GitHub-on.</string>
+    <!-- Slide "Ignore battery optimizations" -->
+    <string name="ignore_doze_permission_title">Akkumulátor optimalizáció</string>
+    <string name="dialog_disable_battery_optimizations_not_supported">Az eszközöd nem támogatja az akkumulátor optimalizálás letiltását</string>
 
     <string name="cont">Folytatás</string>
     <string name="finish">Befejezés</string>
@@ -43,12 +41,6 @@ Az összesített statisztika nyilvánosan elérhető a https://data.syncthing.ne
     <string name="open_website">Weblap megnyitása</string>
 
     <string name="toast_write_storage_permission_required">Az alkalmazás használatához háttértár-hozzáférési jogra van szükség</string>
-
-    <string name="ignore_doze_permission_title">Akkumulátor optimalizáció</string>
-    <string name="ignore_doze_permission_desc">Az Android idővel leállíthatja a szinkronizálást. Ennek megakadályozásához kapcsold ki az akkumulátor optimalizálást.
-
-Néhány eszközön extra alkalmazás-leállító alkalmazást telepített fel a gyártó. Ezekben szintén érdemes a Syncthinget fehérlistára tenni.</string>
-    <string name="dialog_disable_battery_optimizations_not_supported">Az eszközöd nem támogatja az akkumulátor optimalizálás letiltását</string>
 
     <!-- StateDialogActivity -->
 
@@ -233,6 +225,7 @@ Néhány eszközön extra alkalmazás-leállító alkalmazást telepített fel a
     <!-- Text for WebGuiActivity loading view -->
     <string name="web_gui_loading">Várakozás a grafikus felületre</string>
 
+
     <!-- SettingsFragment -->
 
 
@@ -240,8 +233,9 @@ Néhány eszközön extra alkalmazás-leállító alkalmazást telepített fel a
 
     <string name="category_run_conditions">Futás feltételei</string>
     <string name="category_behaviour">Viselkedés</string>
+
     <string name="category_syncthing_options">Syncthing opciók</string>
-    <string name="category_debug">Hibakeresés</string>
+
     <string name="category_experimental">Kísérleti</string>
 
     <!-- Preference screen - Run conditions -->
@@ -261,10 +255,6 @@ Néhány eszközön extra alkalmazás-leállító alkalmazást telepített fel a
     <string name="preference_language_title">Nyelv</string>
 
     <string name="preference_language_summary">Alkalmazás nyelvének megváltoztatása</string>
-
-    <string name="start_into_web_gui_title">A webes felület legyen a kezdőképernyő</string>
-
-    <string name="start_into_web_gui_summary">Az app indításakor a főképernyő helyett a webes felület jelenjen meg</string>
 
     <string name="pref_language_default">Alapértelmezett nyelv</string>
 
@@ -296,8 +286,6 @@ Néhány eszközön extra alkalmazás-leállító alkalmazást telepített fel a
 
     <string name="usage_reporting">Anonim használati statisztikák küldése</string>
 
-    <string name="gui_address">Webes felület IP címe</string>
-
     <string name="export_config">Beállítások mentése</string>
 
     <!-- Experimental options -->
@@ -309,14 +297,10 @@ Néhány eszközön extra alkalmazás-leállító alkalmazást telepített fel a
     <string name="use_tor_summary">A megnövelt biztonság érdekében minden forgalom a TOR-on keresztül. Orbot szükséges. Letiltja a proxy beállításokat.</string>
 
     <string name="socks_proxy_address_title">SOCKS5 proxy</string>
-    <string name="socks_proxy_address_example">socks5://192.168.0.1:1080</string>
-
     <!-- Toast after entering invalid socks proxy address -->
     <string name="toast_invalid_socks_proxy_address">A bemenet sérti a proxy szintaxist \'socks5://[IP/HOSTNAME]:[PORT]\'</string>
 
     <string name="http_proxy_address_title">HTTP(S) proxy</string>
-    <string name="http_proxy_address_example">http://192.168.0.1:8080</string>
-
     <!-- Toast after entering invalid http proxy address -->
     <string name="toast_invalid_http_proxy_address">A bemenet sérti a proxy szintaxist \'http://[IP/HOSTNAME]:[PORT]\'</string>
 
@@ -391,9 +375,6 @@ VIGYÁZAT! Más alkalmazások kiolvashatják a backupból a titkos kulcsot, és 
 
     <!-- Activity title -->
     <string name="folder_picker_title">Mappaválasztó</string>
-
-    <!-- Toast shown on devices with kitkat or higher -->
-    <string name="kitkat_external_storage_warning">Figyelem: Az általad használt Android verzió nem támogatja a külső eszközre (pl. memóriakártyára) történő szinkronizálást</string>
 
     <!-- ListView empty text -->
     <string name="directory_empty">A mappa üres</string>
@@ -472,16 +453,11 @@ VIGYÁZAT! Más alkalmazások kiolvashatják a backupból a titkos kulcsot, és 
 
     <!-- SyncthingService -->
 
-
-    <!-- Title of the "syncthing disabled" dialog -->
-    <string name="syncthing_disabled_title">A Syncthing le van tiltva</string>
-    <!-- Button text on the "syncthing disabled" dialog, used as menu item to stop syncthing service if "always_run_in_background" is true -->
+    <!-- Text for the exit button on the drawer -->
     <string name="exit">Kilépés</string>
 
     <!-- Title of the notification shown while syncthing is running and enabled -->
     <string name="syncthing_active">A Syncthing fut</string>
-
-    <string name="syncthing_disabled">A Syncthing le van tiltva</string>
 
     <string name="config_create_failed">Nem sikerült létrehozni a konfigurációs fájlt</string>
     <!-- Label of the default folder created of first start (camera folder). -->
@@ -491,8 +467,6 @@ VIGYÁZAT! Más alkalmazások kiolvashatják a backupból a titkos kulcsot, és 
     <string name="default_folder_id">%1$s-kepek</string>
 
     <string name="notification_crash_title">A Syncthing összeomlott %1$s</string>
-
-    <string name="notification_crash_text">Koppints a naplók megtekintéséhez</string>
 
     <string name="notifications_persistent_channel">Syncthing aktív</string>
     <string name="notification_persistent_waiting_channel">Futási feltételek monitorozása</string>

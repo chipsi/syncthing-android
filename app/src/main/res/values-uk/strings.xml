@@ -164,6 +164,7 @@
     <!-- Text for WebGuiActivity loading view -->
     <string name="web_gui_loading">Очікую на веб-інтерфейс</string>
 
+
     <!-- SettingsFragment -->
 
 
@@ -171,7 +172,7 @@
 
     <string name="category_run_conditions">Умови запуску</string>
     <string name="category_syncthing_options">Опції Syncthing</string>
-    <string name="category_debug">Відладка</string>
+
     <string name="category_experimental">Експериментальне</string>
 
     <!-- Preference screen - Run conditions -->
@@ -182,10 +183,6 @@
     <string name="preference_language_title">Мова</string>
 
     <string name="preference_language_summary">Змінити мову пристрою</string>
-
-    <string name="start_into_web_gui_title">Перехід одразу до веб-інтерфейсу</string>
-
-    <string name="start_into_web_gui_summary">При запуску додатка, відкривати веб-інтерфейс замість головного меню</string>
 
     <string name="pref_language_default">Мова по замовчанню</string>
 
@@ -285,16 +282,11 @@
 
     <!-- SyncthingService -->
 
-
-    <!-- Title of the "syncthing disabled" dialog -->
-    <string name="syncthing_disabled_title">Syncthing заборонено</string>
-    <!-- Button text on the "syncthing disabled" dialog, used as menu item to stop syncthing service if "always_run_in_background" is true -->
+    <!-- Text for the exit button on the drawer -->
     <string name="exit">Вихід</string>
 
     <!-- Title of the notification shown while syncthing is running and enabled -->
     <string name="syncthing_active">Syncthing працює</string>
-
-    <string name="syncthing_disabled">Syncthing заборонено</string>
 
     <!-- Label of the default folder created of first start (camera folder). -->
     <string name="default_folder_label">Камера</string>

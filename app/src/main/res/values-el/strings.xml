@@ -11,9 +11,9 @@
     <!-- Title for dialog displayed on first start -->
     <string name="welcome_title">Καλώς ορίσατε στο Syncthing για Android</string>
 
-    <string name="welcome_text">Το Syncthing είναι μια ανοιχτού κώδικα εφαρμογή συγχρονισμού αρχείων.\n\
-Για να μοιραστείτε δεδομένα με άλλες συσκευές, πρέπει να προσθέσετε τα μοναδικά αναγνωριστικά τους στη λίστα συσκευών. Μετά μπορείτε να επιλέξετε ποίοι φάκελοι θα διαμοιραστούν με ποιες συσκευές.\n\
-Παρακαλώ αναφέρετε τυχόν προβλήματα που αντιμετωπίσετε μέσω του Github.</string>
+    <!-- Slide "Ignore battery optimizations" -->
+    <string name="ignore_doze_permission_title">Βελτιστοποίηση μπαταρίας</string>
+    <string name="dialog_disable_battery_optimizations_not_supported">Η συσκευή σας δεν επιτρέπει την απενεργοποίηση των βελτιστοποιήσεων μπαταρίας</string>
 
     <string name="cont">Συνέχεια</string>
     <string name="finish">Τέλος</string>
@@ -38,10 +38,6 @@
     <string name="open_website">Άνοιγμα ιστοσελίδας</string>
 
     <string name="toast_write_storage_permission_required">Απαιτείται η άδεια αποθήκευσης δεδομένων για αυτή την εφαρμογή</string>
-
-    <string name="ignore_doze_permission_title">Βελτιστοποίηση μπαταρίας</string>
-    <string name="ignore_doze_permission_desc">Το Android ενδέχεται να σταματήσει τον συγχρονισμό μετά από κάποιο χρονικό διάστημα. Για να αποφευχθεί αυτό, απενεργοποιήστε τη βελτιστοποίηση μπαταρίας.\n\nΚάποιες συσκευές διαθέτουν επίσης προεγκατεστημένες εφαρμογές τερματισμού διεργασιών. Προσθέστε το Syncthing στο whitelist τους.</string>
-    <string name="dialog_disable_battery_optimizations_not_supported">Η συσκευή σας δεν επιτρέπει την απενεργοποίηση των βελτιστοποιήσεων μπαταρίας</string>
 
     <!-- StateDialogActivity -->
 
@@ -212,6 +208,7 @@
     <!-- Text for WebGuiActivity loading view -->
     <string name="web_gui_loading">Αναμονή για το GUI</string>
 
+
     <!-- SettingsFragment -->
 
 
@@ -219,8 +216,9 @@
 
     <string name="category_run_conditions">Συνθήκες εκτέλεσης</string>
     <string name="category_behaviour">Συμπεριφορά</string>
+
     <string name="category_syncthing_options">Επιλογές Syncthing</string>
-    <string name="category_debug">Αποσφαλμάτωση</string>
+
     <string name="category_experimental">Πειραματικά</string>
 
     <!-- Preference screen - Run conditions -->
@@ -235,10 +233,6 @@
     <string name="preference_language_title">Γλώσσα</string>
 
     <string name="preference_language_summary">Αλλαγή γλώσσας της εφαρμογής</string>
-
-    <string name="start_into_web_gui_title">Άνοιγμα απευθείας στο web GUI</string>
-
-    <string name="start_into_web_gui_summary">Κατά την εκκίνηση της εφαρμογής, να ανοίγει το web GUI αντί της κεντρικής οθόνης</string>
 
     <string name="pref_language_default">Προεπιλεγμένη γλώσσα</string>
 
@@ -269,8 +263,6 @@
     <string name="enable_relaying">Ενεργοποίηση αναμετάδοσης</string>
 
     <string name="usage_reporting">Ανώνυμη αναφορά δεδομένων χρήσης</string>
-
-    <string name="gui_address">Διευθύνσεις ακρόασης του GUI</string>
 
     <string name="export_config">Εξαγωγή ρυθμίσεων</string>
 
@@ -329,9 +321,6 @@
 
     <!-- Activity title -->
     <string name="folder_picker_title">Επιλογέας φακέλων</string>
-
-    <!-- Toast shown on devices with kitkat or higher -->
-    <string name="kitkat_external_storage_warning">Προσοχή: η έκδοση του Android σας δεν επιτρέπει τον συγχρονισμό προς εξωτερικές συσκευές αποθήκευσης</string>
 
     <!-- ListView empty text -->
     <string name="directory_empty">Ο φάκελος είναι κενός</string>
@@ -410,16 +399,11 @@
 
     <!-- SyncthingService -->
 
-
-    <!-- Title of the "syncthing disabled" dialog -->
-    <string name="syncthing_disabled_title">Το Syncthing είναι απενεργοποιημένο</string>
-    <!-- Button text on the "syncthing disabled" dialog, used as menu item to stop syncthing service if "always_run_in_background" is true -->
+    <!-- Text for the exit button on the drawer -->
     <string name="exit">Έξοδος</string>
 
     <!-- Title of the notification shown while syncthing is running and enabled -->
     <string name="syncthing_active">Το Syncthing εκτελείται</string>
-
-    <string name="syncthing_disabled">Το Syncthing είναι απενεργοποιημένο</string>
 
     <string name="config_create_failed">Αδυναμία δημιουργίας αρχείου ρυθμίσεων</string>
     <!-- Label of the default folder created of first start (camera folder). -->
@@ -429,8 +413,6 @@
     <string name="default_folder_id">%1$s-photos</string>
 
     <string name="notification_crash_title">Το Syncthing κατέρρευσε %1$s</string>
-
-    <string name="notification_crash_text">Πατήστε για να δείτε την καταγραφή συμβάντων</string>
 
     <string name="notifications_other_channel">Άλλες ειδοποιήσεις</string>
 

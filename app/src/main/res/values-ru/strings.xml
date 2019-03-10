@@ -11,9 +11,25 @@
     <!-- Title for dialog displayed on first start -->
     <string name="welcome_title">Добро пожаловать в Syncthing для Android</string>
 
-    <string name="welcome_text">Syncthing - это приложение с открытым исходным кодом для синхронизации файлов.\n
-Для того чтобы синхронизировать данные с другими устройствами, вам необходимо добавить их уникальные идентификаторы в список устройств. Затем вы сможете выбрать, какие папки с какими устройствами синхронизировать.\n
-Пожалуйста, сообщайте о возникших проблемах через Github.</string>
+    <!-- Welcome wizard -->
+    <!-- Slide "Introduction" -->
+    <string name="introduction">Вступление</string>
+    <string name="welcome_text">Syncthing — это приложение для синхронизации файлов с открытым исходным кодом. Для того чтобы синхронизировать данные с другими устройствами, вам необходимо добавить их уникальные идентификаторы в список устройств. Затем вы сможете выбрать, какие папки с какими устройствами синхронизировать.\n\
+Пожалуйста, сообщайте о возникших проблемах через GitHub.</string>
+
+    <!-- Slide "Storage Permission" -->
+    <string name="storage_permission_title">Доступ к файлам</string>
+    <string name="storage_permission_desc">Syncthing требуется доступ к вашим файлам для осуществления синхронизации.</string>
+
+    <!-- Slide "Ignore battery optimizations" -->
+    <string name="ignore_doze_permission_title">Оптимизация батареи</string>
+    <string name="dialog_disable_battery_optimizations_not_supported">Ваше устройство не поддерживает отключение энергосбережения</string>
+
+    <!-- Slide "Location Permission" -->
+    <string name="location_permission_title">Доступ к местоположению</string>
+    <!-- Slide "Key Generation" -->
+    <string name="key_generation_title">Генерация ключей</string>
+    <string name="key_generation_success">Криптографические ключи для приватного обмена данными были успешно сгенерированы.</string>
 
     <!-- Generic texts used everywhere -->
     <string name="back">Назад</string>
@@ -22,8 +38,19 @@
     <string name="generic_example">Пример</string>
     <string name="generic_error">Ошибка</string>
     <string name="generic_help">Помощь</string>
+    <string name="grant_permission">Дать доступ</string>
+    <string name="permission_granted">Доступ предоставлен</string>
+    <string name="reason">Причина:</string>
+
+    <string name="accept">Принять</string>
+
     <string name="ignore">Игнорировать</string>
 
+    <!-- Exception dialog message -->
+    <string name="exception_known_bug_notice">Была встречена найденная ошибка, которая ещё не была решена. Больше информации в %1$s/%2$s. Пожалуйста, оставьте нам точное описание произошедшего перед этим.</string>
+
+    <!-- Title of the exit app when running as a service confirmation dialog -->
+    <string name="dialog_exit_while_running_as_service_title">Подтвердить выход из приложения</string>
     <!-- Title of the "add folder" menu action -->
     <string name="add_folder">Добавить папку</string>
 
@@ -45,9 +72,9 @@
 
     <string name="toast_write_storage_permission_required">Приложению требуется право на запись</string>
 
-    <string name="ignore_doze_permission_title">Оптимизация батареи</string>
-    <string name="ignore_doze_permission_desc">Android может остановить синхронизацию через определенное время. Чтобы избежать этого, отключите энергосбережение в режиме ожидания.\n\nТакже, если на вашем устройстве установлена программа для автоматического завершения приложений, внесите Syncthing в её список исключений.</string>
-    <string name="dialog_disable_battery_optimizations_not_supported">Ваше устройство не поддерживает отключение энергосбережения</string>
+    <string name="device_rejected">Устройство \"%1$s\" хочет подключиться</string>
+
+    <string name="folder_rejected">Устройство \"%1$s\" хочет поделиться папкой \"%2$s\"</string>
 
     <!-- StateDialogActivity -->
 
@@ -71,7 +98,14 @@
         <item quantity="other">%1$d / %2$d Файла</item>
     </plurals>
 
+    <string name="override_changes">Переопределить изменения</string>
+
     <string name="open_file_manager">Открыть файловый менеджер</string>
+    <string name="open_file_with">Открыть файл с помощью</string>
+    <string name="open_file_no_compatible_app">Не найдено приложение, чтобы открыть файл.</string>
+
+    <!-- Suggest File Manager App Dialog -->
+    <string name="suggest_file_manager_app_dialog_title">Не найдено совместимого файлового менеджера</string>
     <!-- DevicesFragment -->
 
 
@@ -101,6 +135,13 @@
     <!-- Title for current upload rate -->
     <string name="upload_title">Отдача</string>
 
+    <!-- StatusFragment -->
+    <string name="status_fragment_title">Статус</string>
+    <string name="syncthing_starting">Syncthing запускается.</string>
+    <string name="syncthing_running">Syncthing запущен.</string>
+    <string name="syncthing_not_running">Syncthing не запущен.</string>
+    <string name="syncthing_has_crashed">Syncthing завершился из-за сбоя.</string>
+
     <!-- DrawerFragment -->
 
 
@@ -118,6 +159,9 @@
 
     <!-- Title for announce server status -->
     <string name="announce_server">Сервера анонсов</string>
+
+    <!-- Title for uptime status -->
+    <string name="uptime">Время работы</string>
 
     <string name="restart">Перезапустить</string>
 
@@ -138,6 +182,10 @@
     <!-- Setting title and description -->
     <string name="folder_fileWatcher">Следить за изменениями</string>
     <string name="folder_fileWatcherDescription">Запросить операционную систему сообщать об изменениях в файлах. Если отключено, сканирование будет происходить ежечасно.</string>
+
+    <!-- Setting title and description -->
+    <string name="folder_variable_size_blocks_caption">Блоки переменного размера</string>
+    <string name="folder_variable_size_blocks_description">Блоки переменного размера (также «большие блоки») более эффективны для больших файлов. Если вы включаете это для какой-либо папки, вы также должны включить это для этой папки на всех устройствах.</string>
 
     <!-- Setting title -->
     <string name="folder_pause">Приостановить папку</string>
@@ -166,10 +214,19 @@
     <!-- Toast shown when trying to create a folder with an empty ID -->
     <string name="folder_id_required">ID папки не может быть пустым</string>
 
+    <!-- Toast shown when trying to create a folder with an empty label -->
+    <string name="folder_label_required">Ярлык папки не может быть пустым</string>
+
     <!-- Toast shown when trying to create a folder with an empty path -->
     <string name="folder_path_required">Путь к папке не может быть пустым</string>
 
     <string name="dialog_discard_changes">Отменить внесённые изменения?</string>
+
+    <!-- Summary shown if we only have readonly access to the folder path -->
+    <string name="folder_path_readonly">Ваша версия Android даёт Syncthing только доступ на чтение этой папки.</string>
+
+    <!-- Toast shown if the user selected an invalid location for a new syncthing folder -->
+    <string name="toast_invalid_folder_selected">Извините. Выбранная папка не может быть использована. Пожалуйста, выберите папку, расположенную на внутреннем или внешнем хранилище.</string>
 
     <string name="ignore_patterns">Шаблоны игнорирования</string>
     <!-- DeviceActivity -->
@@ -220,11 +277,28 @@
     <!-- Toast shown when trying to create a device with an empty ID -->
     <string name="device_id_required">ID устройства не может быть пустым</string>
 
+    <!-- Toast shown when trying to create a device with an empty name -->
+    <string name="device_name_required">Имя устройства не может быть пустым</string>
+
     <!-- Content description for device ID qr code icon -->
     <string name="scan_qr_code_description">Сканировать QR Код</string>
 
     <!-- Toast show if we could not get root permissions -->
     <string name="toast_root_denied">Рут права не доступны</string>
+
+    <!-- TipsAndTricks activity -->
+
+
+    <!-- Title of the Tips and Tricks activity -->
+    <string name="tips_and_tricks_title">Советы</string>
+
+    <string name="tip_phone_ip_address_syntax">PHONE_IP_ADDRESS</string>
+
+    <!-- RecentChangesActivity -->
+    <string name="recent_changes_title">Последние изменения</string>
+    <string name="modified_by_device">Устройство: %1$s</string>
+    <string name="modification_time">Время: %1$s</string>
+
 
     <!-- WebGuiActivity -->
 
@@ -234,6 +308,7 @@
     <!-- Text for WebGuiActivity loading view -->
     <string name="web_gui_loading">Ожидание GUI</string>
 
+
     <!-- SettingsFragment -->
 
 
@@ -241,7 +316,9 @@
 
     <string name="category_run_conditions">Условия выполнения</string>
     <string name="category_behaviour">Поведение</string>
+
     <string name="category_syncthing_options">Настройки устройства</string>
+
     <string name="category_backup">Импорт и экспорт</string>
     <string name="category_debug">Отладка</string>
     <string name="category_experimental">Экспериментальное</string>
@@ -256,6 +333,8 @@
     <string name="sync_only_wifi_ssids_location_permission_rejected_dialog_content">Начиная с Android 8.1, для чтения имени сети WiFi требуется разрешение позиционирования. Вы можете пользоваться данной функцией только если разрешите позиционирование. </string>
 
     <string name="respect_battery_saving_title">Учитывать настройки энергосбережения Android</string>
+    <!-- Preferences - Behaviour -->
+    <string name="behaviour_autostart_title">Автозапуск</string>
     <string name="use_root_title">Запуск Syncthing с рут-правами</string>
 
     <string name="use_root_summary">Это нестабильная опция, которая может вызвать проблемы как с Syncthing так и с вашим устройством. Если вы столкнетесь с проблемами, переустановите Syncthing.</string>
@@ -264,11 +343,22 @@
 
     <string name="preference_language_summary">Изменить язык приложения</string>
 
-    <string name="start_into_web_gui_title">Использовать веб-интерфейс при старте</string>
-
-    <string name="start_into_web_gui_summary">Во время запуска приложения открывать веб-интерфейс вместо главного экрана</string>
-
     <string name="pref_language_default">Язык по умолчанию</string>
+
+    <string-array name="folder_types">
+        <item>Отправка и получение</item>
+        <item>Только отправка</item>
+        <item>Только получение</item>
+    </string-array>
+
+    <string-array name="pull_order_types">
+        <item>В случайном порядке</item>
+        <item>По алфавиту</item>
+        <item>Сначала маленькие</item>
+        <item>Сначала большие</item>
+        <item>Сначала старые</item>
+        <item>Сначала новые</item>
+    </string-array>
 
     <string-array name="versioning_types">
         <item>Отключить</item>
@@ -298,8 +388,6 @@
 
     <string name="usage_reporting">Анонимные Отчёты Использования</string>
 
-    <string name="gui_address">Адрес Ожидания GUI</string>
-
     <string name="export_config">Экспорт настроек</string>
 
     <!-- Experimental options -->
@@ -311,14 +399,10 @@
     <string name="use_tor_summary">Для дополнительной приватности перенаправлять весь трафик через Tor. Требует наличия Orbot. Отключает опции прокси.</string>
 
     <string name="socks_proxy_address_title">SOCKS5 прокси</string>
-    <string name="socks_proxy_address_example">socks5://192.168.0.1:1080</string>
-
     <!-- Toast after entering invalid socks proxy address -->
     <string name="toast_invalid_socks_proxy_address">Данные не соответствуют синтаксису прокси \'socks5://[IP/HOSTNAME]:[PORT]\'</string>
 
     <string name="http_proxy_address_title">HTTP(S) прокси</string>
-    <string name="http_proxy_address_example">http://192.168.0.1:8080</string>
-
     <!-- Toast after entering invalid http proxy address -->
     <string name="toast_invalid_http_proxy_address">Данные не соответствуют синтаксису прокси \'http://[IP/HOSTNAME]:[PORT]\'</string>
 
@@ -393,9 +477,6 @@
 
     <!-- Activity title -->
     <string name="folder_picker_title">Выбор Папки</string>
-
-    <!-- Toast shown on devices with kitkat or higher -->
-    <string name="kitkat_external_storage_warning">Внимание: Ваша версия Android не позволяет синхронизацию на внешние хранилища</string>
 
     <!-- ListView empty text -->
     <string name="directory_empty">Папка пуста</string>
@@ -478,18 +559,17 @@
     <!-- Sub Folder title -->
     <string name="sub_folder">Подпапка</string>
 
+    <!-- RunConditionMonitor -->
+
+    <!-- Explanations why syncthing is running or not running -->
+    <string name="reason_not_charging">Телефон не на зарядке</string>
     <!-- SyncthingService -->
 
-
-    <!-- Title of the "syncthing disabled" dialog -->
-    <string name="syncthing_disabled_title">Syncthing выключен</string>
-    <!-- Button text on the "syncthing disabled" dialog, used as menu item to stop syncthing service if "always_run_in_background" is true -->
+    <!-- Text for the exit button on the drawer -->
     <string name="exit">Выход</string>
 
     <!-- Title of the notification shown while syncthing is running and enabled -->
     <string name="syncthing_active">Syncthing запущен</string>
-
-    <string name="syncthing_disabled">Syncthing выключен</string>
 
     <string name="config_create_failed">Ошибка при создании файла конфигурации</string>
     <!-- Label of the default folder created of first start (camera folder). -->
@@ -500,7 +580,7 @@
 
     <string name="notification_crash_title">Syncthing завершился из-за сбоя %1$s</string>
 
-    <string name="notification_crash_text">Нажмите для просмотра логов</string>
+    <string name="notification_crash_text">Нажмите для просмотра логов (%1$s)</string>
 
     <string name="notifications_persistent_channel">Syncthing работает</string>
     <string name="notification_persistent_waiting_channel">Отслеживание условий работы</string>
@@ -552,7 +632,27 @@
 
     <string name="appconfig_receiver_background_enabled">Остановка Syncthing не поддерживается, если включено выполнение в фоновом режиме.</string>
 
+    <!-- Titles used in the folder type dialog and folder type button in the folder activity -->
+    <string name="folder_type">Тип папки</string>
+
+    <!-- Displays the current folder type in the folder activity -->
+    <string name="folder_type_sendreceive">Отправка и получение</string>
     <string name="folder_type_sendonly">Только отправка</string>
+    <string name="folder_type_receiveonly">Только получение</string>
+
+    <!-- Titles used in the pull order dialog and pull order button in the folder activity -->
+    <string name="pull_order">Порядок загрузки файлов</string>
+
+    <!-- Displays the current pull order type in the Folder activity -->
+    <string name="pull_order_type_random">В случайном порядке</string>
+    <string name="pull_order_type_alphabetic">По алфавиту</string>
+    <string name="pull_order_type_smallestFirst">Сначала маленькие</string>
+    <string name="pull_order_type_largestFirst">Сначала большие</string>
+    <string name="pull_order_type_oldestFirst">Сначала старые</string>
+    <string name="pull_order_type_newestFirst">Сначала новые</string>
+
+    <!-- Pull order dialog descriptions for pull order types -->
+    <string name="pull_order_type_random_description">Загружать файлы в случайном порядке</string>
     <!-- Titles used in the file versioning dialog and file versioning button in the folder activity -->
     <string name="maximum_age">Максимальный срок</string>
     <string name="clean_out_after">Очистить после</string>

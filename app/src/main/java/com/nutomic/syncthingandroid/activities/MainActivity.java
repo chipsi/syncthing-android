@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -26,6 +25,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.widget.Toolbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.util.DisplayMetrics;
@@ -36,18 +36,18 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.annimon.stream.function.Consumer;
 import com.nutomic.syncthingandroid.R;
 import com.nutomic.syncthingandroid.SyncthingApp;
+import com.nutomic.syncthingandroid.activities.WebViewActivity;
 import com.nutomic.syncthingandroid.fragments.DeviceListFragment;
 import com.nutomic.syncthingandroid.fragments.DrawerFragment;
 import com.nutomic.syncthingandroid.fragments.FolderListFragment;
 import com.nutomic.syncthingandroid.fragments.StatusFragment;
-import com.nutomic.syncthingandroid.model.Options;
 import com.nutomic.syncthingandroid.service.RestApi;
 import com.nutomic.syncthingandroid.service.SyncthingService;
 import com.nutomic.syncthingandroid.service.SyncthingServiceBinder;
@@ -60,6 +60,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import static java.lang.Math.min;
+import static com.nutomic.syncthingandroid.service.Constants.PREF_BROADCAST_SERVICE_CONTROL;
 
 /**
  * Shows {@link FolderListFragment} and
@@ -75,15 +76,19 @@ public class MainActivity extends SyncthingActivity
     private static final String QRCODE_BITMAP_KEY = "QRCODE_BITMAP";
     private static final String DEVICEID_KEY = "DEVICEID";
 
+    private static final int FOLDER_FRAGMENT_ID = 0;
+    private static final int DEVICE_FRAGMENT_ID = 1;
+    private static final int STATUS_FRAGMENT_ID = 2;
+
     /**
      * Time after first start when usage reporting dialog should be shown.
-     *
-     * @see #showUsageReportingDialog()
+     * See {@link #showUsageReportingDialog}
      */
     private static final long USAGE_REPORTING_DIALOG_DELAY = TimeUnit.DAYS.toMillis(3);
+    private static final Boolean DEBUG_FORCE_USAGE_REPORTING_DIALOG = false;
 
-    private AlertDialog mBatteryOptimizationsDialog;
     private AlertDialog mQrCodeDialog;
+    private AlertDialog mUsageReportingDialog;
     private Dialog mRestartDialog;
 
     private SyncthingService.State mSyncthingServiceState = SyncthingService.State.INIT;
@@ -97,6 +102,9 @@ public class MainActivity extends SyncthingActivity
 
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout          mDrawerLayout;
+
+    private Boolean oneTimeShot = true;
+
     @Inject SharedPreferences mPreferences;
 
     /**
@@ -104,26 +112,40 @@ public class MainActivity extends SyncthingActivity
      */
     @Override
     public void onServiceStateChange(SyncthingService.State currentState) {
-        if (currentState != mSyncthingServiceState) {
-            mSyncthingServiceState = currentState;
+        mSyncthingServiceState = currentState;
+        if (oneTimeShot) {
             updateViewPager();
+            oneTimeShot = false;
+        }
+
+        // Update status light indicating if syncthing is running.
+        Button btnDisabled = (Button) findViewById(R.id.btnDisabled);
+        Button btnStarting = (Button) findViewById(R.id.btnStarting);
+        Button btnActive = (Button) findViewById(R.id.btnActive);
+        if (btnDisabled != null && btnStarting != null && btnActive != null) {
+            btnActive.setVisibility(currentState == SyncthingService.State.ACTIVE ? View.VISIBLE : View.GONE);
+            btnStarting.setVisibility(currentState == SyncthingService.State.STARTING ? View.VISIBLE : View.GONE);
+            btnDisabled.setVisibility(currentState != SyncthingService.State.ACTIVE && currentState != SyncthingService.State.STARTING ? View.VISIBLE : View.GONE);
         }
 
         switch (currentState) {
-            case STARTING:
-                break;
             case ACTIVE:
                 // Check if the usage reporting minimum delay passed by.
                 Boolean usageReportingDelayPassed = (new Date().getTime() > getFirstStartTime() + USAGE_REPORTING_DIALOG_DELAY);
                 RestApi restApi = getApi();
-                if (usageReportingDelayPassed && restApi != null && !restApi.isUsageReportingDecided()) {
+                if (        (
+                                DEBUG_FORCE_USAGE_REPORTING_DIALOG
+                            ) || (
+                                usageReportingDelayPassed &&
+                                restApi != null &&
+                                restApi.isConfigLoaded() &&
+                                !restApi.isUsageReportingDecided()
+                            )) {
                     showUsageReportingDialog(restApi);
                 }
                 break;
             case ERROR:
                 finish();
-                break;
-            case DISABLED:
                 break;
         }
     }
@@ -178,30 +200,33 @@ public class MainActivity extends SyncthingActivity
         }
 
         if (savedInstanceState != null) {
-            mViewPager.setCurrentItem(savedInstanceState.getInt("currentTab"));
             if (savedInstanceState.getBoolean(IS_SHOWING_RESTART_DIALOG)){
                 showRestartDialog();
             }
-            if(savedInstanceState.getBoolean(IS_QRCODE_DIALOG_DISPLAYED)) {
+            if (savedInstanceState.getBoolean(IS_QRCODE_DIALOG_DISPLAYED)) {
                 showQrCodeDialog(savedInstanceState.getString(DEVICEID_KEY), savedInstanceState.getParcelable(QRCODE_BITMAP_KEY));
             }
-        } else {
-            updateViewPager();
         }
 
-        fm.beginTransaction().replace(R.id.drawer, mDrawerFragment).commit();
+        fm.beginTransaction().replace(R.id.drawer, mDrawerFragment).commitAllowingStateLoss();
         mDrawerToggle = new Toggle(this, mDrawerLayout);
         mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
         mDrawerLayout.addDrawerListener(mDrawerToggle);
         setOptimalDrawerWidth(findViewById(R.id.drawer));
 
-        // SyncthingService needs to be started from this activity as the user
-        // can directly launch this activity from the recent activity switcher.
-        Intent serviceIntent = new Intent(this, SyncthingService.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(serviceIntent);
-        } else {
-            startService(serviceIntent);
+        Boolean prefBroadcastServiceControl = mPreferences.getBoolean(PREF_BROADCAST_SERVICE_CONTROL, false);
+        if (!prefBroadcastServiceControl) {
+            /**
+             * SyncthingService needs to be started from this activity as the user
+             * can directly launch this activity from the recent activity switcher.
+             * Applies if PREF_BROADCAST_SERVICE_CONTROL is DISABLED (default).
+             */
+            Intent serviceIntent = new Intent(this, SyncthingService.class);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(serviceIntent);
+            } else {
+                startService(serviceIntent);
+            }
         }
 
         onNewIntent(getIntent());
@@ -211,31 +236,21 @@ public class MainActivity extends SyncthingActivity
      * Updates the ViewPager to show tabs depending on the service state.
      */
     private void updateViewPager() {
-        Boolean isServiceActive = mSyncthingServiceState == SyncthingService.State.ACTIVE;
-        final int numPages = (isServiceActive ? 3 : 1);
+        final int numPages = 3;
         FragmentStatePagerAdapter mSectionsPagerAdapter =
                 new FragmentStatePagerAdapter(getSupportFragmentManager()) {
 
             @Override
             public Fragment getItem(int position) {
-                if (isServiceActive) {
-                    switch (position) {
-                        case 0:
-                            return mFolderListFragment;
-                        case 1:
-                            return mDeviceListFragment;
-                        case 2:
-                            return mStatusFragment;
-                        default:
-                            return null;
-                    }
-                } else {
-                    switch (position) {
-                        case 0:
-                            return mStatusFragment;
-                        default:
-                            return null;
-                    }
+                switch (position) {
+                    case FOLDER_FRAGMENT_ID:
+                        return mFolderListFragment;
+                    case DEVICE_FRAGMENT_ID:
+                        return mDeviceListFragment;
+                    case STATUS_FRAGMENT_ID:
+                        return mStatusFragment;
+                    default:
+                        return null;
                 }
             }
 
@@ -251,29 +266,25 @@ public class MainActivity extends SyncthingActivity
 
             @Override
             public CharSequence getPageTitle(int position) {
-                if (isServiceActive) {
-                    switch (position) {
-                        case 0:
-                            return getResources().getString(R.string.folders_fragment_title);
-                        case 1:
-                            return getResources().getString(R.string.devices_fragment_title);
-                        case 2:
-                            return getResources().getString(R.string.status_fragment_title);
-                        default:
-                            return String.valueOf(position);
-                    }
-                } else {
-                    switch (position) {
-                        case 0:
-                            return getResources().getString(R.string.status_fragment_title);
-                        default:
-                            return String.valueOf(position);
-                        }
+                switch (position) {
+                    case FOLDER_FRAGMENT_ID:
+                        return getResources().getString(R.string.folders_fragment_title);
+                    case DEVICE_FRAGMENT_ID:
+                        return getResources().getString(R.string.devices_fragment_title);
+                    case STATUS_FRAGMENT_ID:
+                        return getResources().getString(R.string.status_fragment_title);
+                    default:
+                        return String.valueOf(position);
                 }
             }
         };
         try {
             mViewPager.setAdapter(mSectionsPagerAdapter);
+            /**
+             * See issues #321, #327
+             * Call stack on IllegalStateException: onServiceStateChange/updateViewPager/setOffscreenPageLimit
+             */
+            // mViewPager.setOffscreenPageLimit(numPages);
         } catch (IllegalStateException e) {
             /**
              * IllegalStateException happens due to a bug in FragmentStatePagerAdapter.
@@ -288,7 +299,6 @@ public class MainActivity extends SyncthingActivity
                     .setPositiveButton(android.R.string.ok, (dialog, which) -> {})
                     .show();
         }
-        mViewPager.setOffscreenPageLimit(numPages);
         TabLayout tabLayout = findViewById(R.id.tabContainer);
         tabLayout.setupWithViewPager(mViewPager);
     }
@@ -316,9 +326,9 @@ public class MainActivity extends SyncthingActivity
         SyncthingService mSyncthingService = getService();
         if (mSyncthingService != null) {
             mSyncthingService.unregisterOnServiceStateChangeListener(this);
+            mSyncthingService.unregisterOnServiceStateChangeListener(mDrawerFragment);
             mSyncthingService.unregisterOnServiceStateChangeListener(mFolderListFragment);
             mSyncthingService.unregisterOnServiceStateChangeListener(mDeviceListFragment);
-            mSyncthingService.unregisterOnServiceStateChangeListener(mDrawerFragment);
             mSyncthingService.unregisterOnServiceStateChangeListener(mStatusFragment);
         }
     }
@@ -329,9 +339,9 @@ public class MainActivity extends SyncthingActivity
         SyncthingServiceBinder syncthingServiceBinder = (SyncthingServiceBinder) iBinder;
         SyncthingService syncthingService = syncthingServiceBinder.getService();
         syncthingService.registerOnServiceStateChangeListener(this);
+        syncthingService.registerOnServiceStateChangeListener(mDrawerFragment);
         syncthingService.registerOnServiceStateChangeListener(mFolderListFragment);
         syncthingService.registerOnServiceStateChangeListener(mDeviceListFragment);
-        syncthingService.registerOnServiceStateChangeListener(mDrawerFragment);
         syncthingService.registerOnServiceStateChangeListener(mStatusFragment);
     }
 
@@ -351,11 +361,9 @@ public class MainActivity extends SyncthingActivity
         putFragment.accept(mFolderListFragment);
         putFragment.accept(mDeviceListFragment);
         putFragment.accept(mStatusFragment);
-        putFragment.accept(mDrawerFragment);
 
-        outState.putInt("currentTab", mViewPager.getCurrentItem());
         outState.putBoolean(IS_SHOWING_RESTART_DIALOG, mRestartDialog != null && mRestartDialog.isShowing());
-        if(mQrCodeDialog != null && mQrCodeDialog.isShowing()) {
+        if (mQrCodeDialog != null && mQrCodeDialog.isShowing()) {
             outState.putBoolean(IS_QRCODE_DIALOG_DISPLAYED, true);
             ImageView qrCode = mQrCodeDialog.findViewById(R.id.qrcode_image_view);
             TextView deviceID = mQrCodeDialog.findViewById(R.id.device_id);
@@ -363,11 +371,23 @@ public class MainActivity extends SyncthingActivity
             outState.putString(DEVICEID_KEY, deviceID.getText().toString());
         }
         Util.dismissDialogSafe(mRestartDialog, this);
+        Util.dismissDialogSafe(mUsageReportingDialog, this);
     }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        if (toolbar != null) {
+            toolbar.setNavigationIcon(R.drawable.btn_menu);
+            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        mDrawerLayout.openDrawer(GravityCompat.START);
+                    }
+            });
+        }
 
         mDrawerToggle.syncState();
 
@@ -384,17 +404,13 @@ public class MainActivity extends SyncthingActivity
     }
 
     public void showRestartDialog(){
-        mRestartDialog = createRestartDialog();
-        mRestartDialog.show();
-    }
-
-    private Dialog createRestartDialog(){
-        return  new AlertDialog.Builder(this)
+        mRestartDialog = new AlertDialog.Builder(this)
                 .setMessage(R.string.dialog_confirm_restart)
                 .setPositiveButton(android.R.string.yes, (dialogInterface, i1) -> this.startService(new Intent(this, SyncthingService.class)
                         .setAction(SyncthingService.ACTION_RESTART)))
                 .setNegativeButton(android.R.string.no, null)
                 .create();
+        mRestartDialog.show();
     }
 
     public void showQrCodeDialog(String deviceId, Bitmap qrCode) {
@@ -435,7 +451,8 @@ public class MainActivity extends SyncthingActivity
      */
     private class Toggle extends ActionBarDrawerToggle {
         public Toggle(Activity activity, DrawerLayout drawerLayout) {
-            super(activity, drawerLayout, R.string.app_name, R.string.app_name);
+            super(activity, drawerLayout, R.string.open_main_menu, R.string.close_main_menu);
+            setDrawerIndicatorEnabled(false);
         }
 
         @Override
@@ -457,11 +474,14 @@ public class MainActivity extends SyncthingActivity
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent e) {
         if (keyCode == KeyEvent.KEYCODE_MENU) {
-            if (!mDrawerLayout.isDrawerOpen(GravityCompat.START))
+            if (!mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
                 mDrawerLayout.openDrawer(GravityCompat.START);
-            else
+            } else {
                 closeDrawer();
-
+            }
+            return true;
+        } else if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT && mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+            closeDrawer();
             return true;
         }
         return super.onKeyDown(keyCode, e);
@@ -505,6 +525,7 @@ public class MainActivity extends SyncthingActivity
      * Displays dialog asking user to accept/deny usage reporting.
      */
     private void showUsageReportingDialog(RestApi restApi) {
+        Log.v(TAG, "showUsageReportingDialog triggered.");
         final DialogInterface.OnClickListener listener = (dialog, which) -> {
             try {
                 switch (which) {
@@ -517,8 +538,9 @@ public class MainActivity extends SyncthingActivity
                         restApi.saveConfigAndRestart();
                         break;
                     case DialogInterface.BUTTON_NEUTRAL:
-                        Uri uri = Uri.parse("https://data.syncthing.net");
-                        startActivity(new Intent(Intent.ACTION_VIEW, uri));
+                        final Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
+                        intent.putExtra(WebViewActivity.EXTRA_WEB_URL, getString(R.string.syncthing_usage_stats_url));
+                        startActivity(intent);
                         break;
                 }
             } catch (Exception e) {
@@ -532,7 +554,8 @@ public class MainActivity extends SyncthingActivity
                     .inflate(R.layout.dialog_usage_reporting, null);
             TextView tv = v.findViewById(R.id.example);
             tv.setText(report);
-            new AlertDialog.Builder(MainActivity.this)
+            Util.dismissDialogSafe(mUsageReportingDialog, MainActivity.this);
+            mUsageReportingDialog = new AlertDialog.Builder(MainActivity.this)
                     .setTitle(R.string.usage_reporting_dialog_title)
                     .setView(v)
                     .setPositiveButton(R.string.yes, listener)

@@ -38,6 +38,9 @@ syncthing/go.zip
 syncthing/android-ndk-r*
 syncthing/ndk.zip
 
+# Go modules
+syncthing/pkg/mod/
+
 # MinGit
 syncthing/mingit
 syncthing/mingit.zip
@@ -47,3 +50,9 @@ ext/
 
 # push-to-device after build marker file
 \#enable_push_to_device
+
+# Unsupported translations
+app/src/main/play/el-EL
+app/src/main/play/en
+app/src/main/play/nb
+app/src/main/play/nn

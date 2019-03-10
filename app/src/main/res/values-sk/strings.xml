@@ -177,12 +177,14 @@
     <!-- Text for WebGuiActivity loading view -->
     <string name="web_gui_loading">Čakám na GUI</string>
 
+
     <!-- SettingsFragment -->
 
 
     <string name="settings_title">Nastavenia</string>
 
     <string name="category_syncthing_options">Nastavenia Syncthing</string>
+
     <string name="use_root_title">Spúšťať Syncthing s root oprávneniami</string>
 
     <string name="device_name">Názov Zariadenia</string>
@@ -198,8 +200,6 @@
     <string name="local_announce_enabled">Lokálne Vyhľadávanie</string>
 
     <string name="usage_reporting">Povoliť Anonymné Hlásenia o Používaní</string>
-
-    <string name="gui_address">Adresa pre GUI</string>
 
     <string name="export_config">Exportovať Konfiguráciu</string>
 
@@ -240,9 +240,6 @@
     <!-- Activity title -->
     <string name="folder_picker_title">Výver Adresára</string>
 
-    <!-- Toast shown on devices with kitkat or higher -->
-    <string name="kitkat_external_storage_warning">Varovanie: Verzia Androidu na Vašom zariadení nedovoľuje synchronizáciu externého úložiska</string>
-
     <!-- ListView empty text -->
     <string name="directory_empty">Adresár je Prázdny</string>
 
@@ -265,16 +262,11 @@
 
     <!-- SyncthingService -->
 
-
-    <!-- Title of the "syncthing disabled" dialog -->
-    <string name="syncthing_disabled_title">Syncthing je zakázaný</string>
-    <!-- Button text on the "syncthing disabled" dialog, used as menu item to stop syncthing service if "always_run_in_background" is true -->
+    <!-- Text for the exit button on the drawer -->
     <string name="exit">Koniec</string>
 
     <!-- Title of the notification shown while syncthing is running and enabled -->
     <string name="syncthing_active">Syncthing beží</string>
-
-    <string name="syncthing_disabled">Syncthing je zakázaný</string>
 
     <!-- ID of the default folder created on first start (camera folder). Must only contain 'a-z0-9_-'. Parameter is the device name-->
     <string name="default_folder_id">%1$s-fotografie</string>

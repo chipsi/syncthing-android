@@ -11,9 +11,9 @@
     <!-- Title for dialog displayed on first start -->
     <string name="welcome_title">Android용 Syncthing에 어서오세요</string>
 
-    <string name="welcome_text">Syncthing은 오픈소스 파일 동기화 어플리케이션입니다.\n\
-다른 장치들과 데이터를 공유하기 위해서는 기기 목록에 고유 기기 ID를 추가해야 합니다. 그 후에 기기와 공유하는 폴더를 선택할 수 있습니다.\n\
-발생한 문제는 무엇이든 Github를 통해 알려주시기 바랍니다.</string>
+    <!-- Slide "Ignore battery optimizations" -->
+    <string name="ignore_doze_permission_title">배터리 최적화</string>
+    <string name="dialog_disable_battery_optimizations_not_supported">기기가 배터리 최적화 비활성화를 지원하지 않습니다.</string>
 
     <string name="cont">계속</string>
     <string name="finish">완료</string>
@@ -38,10 +38,6 @@
     <string name="open_website">웹사이트 열기</string>
 
     <string name="toast_write_storage_permission_required">스토리지 쓰기 권한이 필요합니다</string>
-
-    <string name="ignore_doze_permission_title">배터리 최적화</string>
-    <string name="ignore_doze_permission_desc">안드로이드 운영체제는 시간이 지나면 동기화를 정지시킬 수도 있습니다. 이를 막기 위해 배터리 최적화 기능을 꺼주시기 바랍니다.\n\n몇몇 기기들은 추가적인 태스크 관리 앱이 선탑재되어 있습니다. 태스크 관리 앱의 신뢰목록에 등록함으로써 역시 문제를 해결하실 수 있습니다.</string>
-    <string name="dialog_disable_battery_optimizations_not_supported">기기가 배터리 최적화 비활성화를 지원하지 않습니다.</string>
 
     <!-- StateDialogActivity -->
 
@@ -211,6 +207,7 @@
     <!-- Text for WebGuiActivity loading view -->
     <string name="web_gui_loading">GUI를 기다리는 중</string>
 
+
     <!-- SettingsFragment -->
 
 
@@ -218,8 +215,9 @@
 
     <string name="category_run_conditions">작동 상태</string>
     <string name="category_behaviour">동작</string>
+
     <string name="category_syncthing_options">Syncthing 옵션 </string>
-    <string name="category_debug">디버그</string>
+
     <string name="category_experimental">실험적인 기능</string>
 
     <!-- Preference screen - Run conditions -->
@@ -234,10 +232,6 @@
     <string name="preference_language_title">언어</string>
 
     <string name="preference_language_summary">언어 변경하기</string>
-
-    <string name="start_into_web_gui_title">웹 GUI로 바로 시작하기</string>
-
-    <string name="start_into_web_gui_summary">앱을 시작할 때 기본 화면 대신 웹 GUI로 엽니다.</string>
 
     <string name="pref_language_default">기본 언어</string>
 
@@ -268,8 +262,6 @@
     <string name="enable_relaying">Relaying 활성화</string>
 
     <string name="usage_reporting">익명 사용 기록 </string>
-
-    <string name="gui_address">접속 대기 주소</string>
 
     <string name="export_config">설정 내보내기</string>
 
@@ -328,9 +320,6 @@
 
     <!-- Activity title -->
     <string name="folder_picker_title">폴더 선택기</string>
-
-    <!-- Toast shown on devices with kitkat or higher -->
-    <string name="kitkat_external_storage_warning">경고: 사용하는 Android 버전에서는 외부 저장소에의 동기화를 지원하지 않습니다</string>
 
     <!-- ListView empty text -->
     <string name="directory_empty">디렉토리가 비어 있습니다</string>
@@ -406,16 +395,11 @@
 
     <!-- SyncthingService -->
 
-
-    <!-- Title of the "syncthing disabled" dialog -->
-    <string name="syncthing_disabled_title">Syncthing이 비활성화되었습니다</string>
-    <!-- Button text on the "syncthing disabled" dialog, used as menu item to stop syncthing service if "always_run_in_background" is true -->
+    <!-- Text for the exit button on the drawer -->
     <string name="exit">나가기</string>
 
     <!-- Title of the notification shown while syncthing is running and enabled -->
     <string name="syncthing_active">Syncthing이 작동 중입니다</string>
-
-    <string name="syncthing_disabled">Syncthing이 비활성화되었습니다</string>
 
     <string name="config_create_failed">구성 파일을 만드는데 실패 했습니다.</string>
     <!-- Label of the default folder created of first start (camera folder). -->
@@ -425,8 +409,6 @@
     <string name="default_folder_id">%1$s-사진</string>
 
     <string name="notification_crash_title">Syncthing이 충돌하였습니다. %1$s</string>
-
-    <string name="notification_crash_text">클릭해서 로그 보기</string>
 
     <string name="notifications_other_channel">기타 알림</string>
 

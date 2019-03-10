@@ -11,8 +11,8 @@
     <!-- Title for dialog displayed on first start -->
     <string name="welcome_title">Bienvenido a Syncthing para Android</string>
 
-    <string name="welcome_text">Syncthing es una aplicación para sincronización de ficheros de fuentes abiertas.\nPara compartir datos con otros dispisitivos, necesitas añadir sus identificadores únicos de dispositivo a la lista de dispositivos. Después, puedes seleccionar qué carpetas vas a compartir con qué dispositivos.\nPor favor, informa de cualquier problema que te encuentres vía Github.</string>
-
+    <!-- Slide "Ignore battery optimizations" -->
+    <string name="ignore_doze_permission_title">Optimización de batería</string>
     <string name="cont">Continuar</string>
     <string name="finish">Finalizar</string>
     <string name="generic_error">Error</string>
@@ -37,8 +37,6 @@
 
     <string name="toast_write_storage_permission_required">Esta app necesita permiso para escribir al sistema de almacenamiento</string>
 
-    <string name="ignore_doze_permission_title">Optimización de batería</string>
-    <string name="ignore_doze_permission_desc">Andoid puede detener la sincronización pasado un tiempo. Para evitarlo, deshabilita la optimización de batería.\n\nAlgunos dispositivos tienen instaladas aplicaciones adicionales para terminar tareas. Igualmente, deberías añadir Syncthing a su lista blanca.</string>
     <!-- StateDialogActivity -->
 
 
@@ -201,6 +199,7 @@
     <!-- Text for WebGuiActivity loading view -->
     <string name="web_gui_loading">Esperando a la interfaz gráfica</string>
 
+
     <!-- SettingsFragment -->
 
 
@@ -208,8 +207,9 @@
 
     <string name="category_run_conditions">Condiciones de ejecución</string>
     <string name="category_behaviour">Comportamiento</string>
+
     <string name="category_syncthing_options">Opciones de Syncthing</string>
-    <string name="category_debug">Depuración</string>
+
     <string name="category_experimental">Experimental</string>
 
     <!-- Preference screen - Run conditions -->
@@ -246,8 +246,6 @@
     <string name="enable_relaying">Activar retransmisión (Relaying)</string>
 
     <string name="usage_reporting">Informe de uso anónimo</string>
-
-    <string name="gui_address">Direcciones de escucha de la interfaz</string>
 
     <string name="export_config">Exportar configuración</string>
 
@@ -298,9 +296,6 @@
 
     <!-- Activity title -->
     <string name="folder_picker_title">Seleccionador de carpetas</string>
-
-    <!-- Toast shown on devices with kitkat or higher -->
-    <string name="kitkat_external_storage_warning">Aviso: Tu versión de Android no permite la sincronización con dispositivos de almacenamiento externos</string>
 
     <!-- ListView empty text -->
     <string name="directory_empty">El directorio esta vacío</string>
@@ -370,16 +365,11 @@
 
     <!-- SyncthingService -->
 
-
-    <!-- Title of the "syncthing disabled" dialog -->
-    <string name="syncthing_disabled_title">Syncthing está deshabilitado</string>
-    <!-- Button text on the "syncthing disabled" dialog, used as menu item to stop syncthing service if "always_run_in_background" is true -->
+    <!-- Text for the exit button on the drawer -->
     <string name="exit">Salir</string>
 
     <!-- Title of the notification shown while syncthing is running and enabled -->
     <string name="syncthing_active">Syncthing se está ejecutando</string>
-
-    <string name="syncthing_disabled">Syncthing está deshabilitado</string>
 
     <!-- Label of the default folder created of first start (camera folder). -->
     <string name="default_folder_label">Cámara</string>
@@ -388,8 +378,6 @@
     <string name="default_folder_id">%1$s-photos</string>
 
     <string name="notification_crash_title">Syncthing se ha estrellado %1$s</string>
-
-    <string name="notification_crash_text">Haga clic para ver los registros</string>
 
     <!-- RestApi -->
 

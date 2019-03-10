@@ -40,6 +40,8 @@ import javax.inject.Inject;
 
 import eu.chainfire.libsuperuser.Shell;
 
+import static com.nutomic.syncthingandroid.service.SyncthingService.EXTRA_STOP_AFTER_CRASHED_NATIVE;
+
 /**
  * Runs the syncthing binary from command line, and prints its output to logcat.
  *
@@ -50,6 +52,8 @@ public class SyncthingRunnable implements Runnable {
     private static final String TAG = "SyncthingRunnable";
     private static final String TAG_NATIVE = "SyncthingNativeCode";
     private static final String TAG_NICE = "SyncthingRunnableIoNice";
+
+    private Boolean ENABLE_VERBOSE_LOG = false;
     private static final int LOG_FILE_MAX_LINES = 10;
 
     private static final AtomicReference<Process> mSyncthing = new AtomicReference<>();
@@ -80,7 +84,9 @@ public class SyncthingRunnable implements Runnable {
      */
     public SyncthingRunnable(Context context, Command command) {
         ((SyncthingApp) context.getApplicationContext()).component().inject(this);
+        ENABLE_VERBOSE_LOG = AppPrefs.getPrefVerboseLog(mPreferences);
         mContext = context;
+        // Example: mSyncthingBinary="/data/app/com.github.catfriend1.syncthingandroid.debug-8HsN-IsVtZXc8GrE5-Hepw==/lib/x86/libsyncthing.so"
         mSyncthingBinary = Constants.getSyncthingBinary(mContext);
         mLogFile = Constants.getLogFile(mContext);
 
@@ -127,12 +133,11 @@ public class SyncthingRunnable implements Runnable {
         trimLogFile();
 
         // Make sure Syncthing is executable
-        try {
-            ProcessBuilder pb = new ProcessBuilder("chmod", "500", mSyncthingBinary.getPath());
-            Process p = pb.start();
-            p.waitFor();
-        } catch (IOException | InterruptedException e) {
-            Log.w(TAG, "Failed to chmod Syncthing", e);
+        exitCode = Util.runShellCommand("chmod 500 " + mSyncthingBinary.getPath(), false);
+        if (exitCode == 1) {
+            LogV("chmod SyncthingNative exited with code 1 [permission denied]. This is expected on Android 5+.");
+        } else if (exitCode > 1) {
+            Log.w(TAG, "chmod SyncthingNative failed with exit code " + Integer.toString(exitCode));
         }
 
         /**
@@ -176,7 +181,7 @@ public class SyncthingRunnable implements Runnable {
                     br = new BufferedReader(new InputStreamReader(process.getInputStream(), Charsets.UTF_8));
                     String line;
                     while ((line = br.readLine()) != null) {
-                        Log.println(Log.INFO, TAG_NATIVE, line);
+                        Log.i(TAG_NATIVE, line);
                         capturedStdOut = capturedStdOut + line + "\n";
                     }
                 } catch (IOException e) {
@@ -193,7 +198,7 @@ public class SyncthingRunnable implements Runnable {
             niceSyncthing();
 
             exitCode = process.waitFor();
-            Log.i(TAG, "Syncthing exited with code " + exitCode);
+            LogV("Syncthing exited with code " + exitCode);
             mSyncthing.set(null);
             if (lInfo != null) {
                 lInfo.join();
@@ -258,8 +263,10 @@ public class SyncthingRunnable implements Runnable {
 
         // Notify {@link SyncthingService} that service state State.ACTIVE is no longer valid.
         if (!returnStdOut && sendStopToService) {
-            mContext.startService(new Intent(mContext, SyncthingService.class)
-                    .setAction(SyncthingService.ACTION_STOP));
+            Intent intent = new Intent(mContext, SyncthingService.class);
+            intent.setAction(SyncthingService.ACTION_STOP);
+            intent.putExtra(EXTRA_STOP_AFTER_CRASHED_NATIVE, true);
+            mContext.startService(intent);
         }
 
         // Return captured command line output.
@@ -283,42 +290,26 @@ public class SyncthingRunnable implements Runnable {
      */
     private List<String> getSyncthingPIDs(Boolean enableLog) {
         List<String> syncthingPIDs = new ArrayList<String>();
-        Process ps = null;
-        DataOutputStream psOut = null;
-        BufferedReader br = null;
-        try {
-            ps = Runtime.getRuntime().exec((mUseRoot) ? "su" : "sh");
-            psOut = new DataOutputStream(ps.getOutputStream());
-            psOut.writeBytes("ps\n");
-            psOut.writeBytes("exit\n");
-            psOut.flush();
-            ps.waitFor();
-            br = new BufferedReader(new InputStreamReader(ps.getInputStream(), "UTF-8"));
-            String line;
-            while ((line = br.readLine()) != null) {
-                if (line.contains(Constants.FILENAME_SYNCTHING_BINARY)) {
-                    String syncthingPID = line.trim().split("\\s+")[1];
-                    if (enableLog) {
-                        Log.v(TAG, "getSyncthingPIDs: Found process PID [" + syncthingPID + "]");
-                    }
-                    syncthingPIDs.add(syncthingPID);
+        String output = Util.runShellCommandGetOutput("ps\n", mUseRoot);
+        if (TextUtils.isEmpty(output)) {
+            Log.w(TAG, "Failed to list SyncthingNative processes. ps command returned empty.");
+            return syncthingPIDs;
+        }
+
+        String lines[] = output.split("\n");
+        if (lines.length == 0) {
+            Log.w(TAG, "Failed to list SyncthingNative processes. ps command returned no rows.");
+            return syncthingPIDs;
+        }
+
+        for (int i = 0; i < lines.length; i++) {
+            String line = lines[i];
+            if (line.contains(Constants.FILENAME_SYNCTHING_BINARY)) {
+                String syncthingPID = line.trim().split("\\s+")[1];
+                if (enableLog) {
+                    Log.v(TAG, "getSyncthingPIDs: Found process PID [" + syncthingPID + "]");
                 }
-            }
-        } catch (IOException | InterruptedException e) {
-            Log.w(TAG, "Failed to list Syncthing processes", e);
-        } finally {
-            try {
-                if (br != null) {
-                    br.close();
-                }
-                if (psOut != null) {
-                    psOut.close();
-                }
-            } catch (IOException e) {
-                Log.w(TAG, "Failed to close psOut stream", e);
-            }
-            if (ps != null) {
-                ps.destroy();
+                syncthingPIDs.add(syncthingPID);
             }
         }
         return syncthingPIDs;
@@ -377,13 +368,13 @@ public class SyncthingRunnable implements Runnable {
         int exitCode;
         List<String> syncthingPIDs = getSyncthingPIDs(true);
         if (syncthingPIDs.isEmpty()) {
-            Log.d(TAG, "killSyncthing: Found no running instances of " + Constants.FILENAME_SYNCTHING_BINARY);
+            LogV("killSyncthing: Found no running instances of " + Constants.FILENAME_SYNCTHING_BINARY);
             return;
         }
         for (String syncthingPID : syncthingPIDs) {
             exitCode = Util.runShellCommand("kill -SIGINT " + syncthingPID + "\n", mUseRoot);
             if (exitCode == 0) {
-                Log.d(TAG, "Sent kill SIGINT to process " + syncthingPID);
+                LogV("Sent kill SIGINT to process " + syncthingPID);
             } else {
                 Log.w(TAG, "Failed to send kill SIGINT to process " + syncthingPID +
                         " exit code " + Integer.toString(exitCode));
@@ -393,11 +384,11 @@ public class SyncthingRunnable implements Runnable {
         /**
          * Wait for the syncthing instance to end.
          */
-        Log.v(TAG, "Waiting for all syncthing instances to end ...");
+        LogV("Waiting for all syncthing instances to end ...");
         while (!getSyncthingPIDs(false).isEmpty()) {
             SystemClock.sleep(50);
         }
-        Log.v(TAG, "killSyncthing: Complete.");
+        Log.d(TAG, "killSyncthing: Complete.");
     }
 
     /**
@@ -551,5 +542,11 @@ public class SyncthingRunnable implements Runnable {
             super(message, throwable);
         }
 
+    }
+
+    private void LogV(String logMessage) {
+        if (ENABLE_VERBOSE_LOG) {
+            Log.v(TAG, logMessage);
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.nutomic.syncthingandroid.service;
 
 import android.app.PendingIntent;
+import android.content.AsyncQueryHandler;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -10,10 +11,10 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.annimon.stream.Stream;
-import com.nutomic.syncthingandroid.BuildConfig;
 import com.nutomic.syncthingandroid.R;
 import com.nutomic.syncthingandroid.SyncthingApp;
 import com.nutomic.syncthingandroid.activities.DeviceActivity;
@@ -37,9 +38,11 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
 
     private static final String TAG = "EventProcessor";
 
+    private Boolean ENABLE_VERBOSE_LOG = false;
+
     /**
      * Minimum interval in seconds at which the events are polled from syncthing and processed.
-     * This intervall will not wake up the device to save battery power.
+     * This interval will not wake up the device to save battery power.
      */
     private static final long EVENT_UPDATE_INTERVAL = TimeUnit.SECONDS.toMillis(15);
 
@@ -59,6 +62,7 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
 
     public EventProcessor(Context context, RestApi restApi) {
         ((SyncthingApp) context.getApplicationContext()).component().inject(this);
+        ENABLE_VERBOSE_LOG = AppPrefs.getPrefVerboseLog(mPreferences);
         mContext = context;
         mRestApi = restApi;
     }
@@ -81,7 +85,7 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
             public void onDone(long lastId) {
                 if (lastId < mLastEventId) mLastEventId = 0;
 
-                Log.d(TAG, "Reading events starting with id " + mLastEventId);
+                LogV("Reading events starting with id " + mLastEventId);
 
                 mRestApi.getEvents(mLastEventId, 0, EventProcessor.this);
             }
@@ -96,7 +100,7 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
         switch (event.type) {
             case "ConfigSaved":
                 if (mRestApi != null) {
-                    Log.v(TAG, "Forwarding ConfigSaved event to RestApi to get the updated config.");
+                    LogV("Forwarding ConfigSaved event to RestApi to get the updated config.");
                     mRestApi.reloadConfig();
                 }
                 break;
@@ -123,25 +127,27 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
                 );
                 break;
             case "ItemFinished":
-                String folder = (String) event.data.get("folder");
+                String action               = (String) event.data.get("action");
+                String error                = (String) event.data.get("error");
+                String folderId             = (String) event.data.get("folder");
+                String relativeFilePath     = (String) event.data.get("item");
+
+                // Lookup folder.path for the given folder.id if all fields were contained in the event.data.
                 String folderPath = null;
-                for (Folder f : mRestApi.getFolders()) {
-                    if (f.id.equals(folder)) {
-                        folderPath = f.path;
+                if (!TextUtils.isEmpty(action) &&
+                        !TextUtils.isEmpty(folderId) &&
+                        !TextUtils.isEmpty(relativeFilePath)) {
+                    for (Folder folder : mRestApi.getFolders()) {
+                        if (folder.id.equals(folderId)) {
+                            folderPath = folder.path;
+                            break;
+                        }
                     }
                 }
-                File updatedFile = new File(folderPath, (String) event.data.get("item"));
-                if (!"delete".equals(event.data.get("action"))) {
-                    Log.i(TAG, "Rescanned file via MediaScanner: " + updatedFile.toString());
-                    MediaScannerConnection.scanFile(mContext, new String[]{updatedFile.getPath()},
-                            null, null);
+                if (!TextUtils.isEmpty(folderPath)) {
+                    onItemFinished(action, error, new File(folderPath, relativeFilePath));
                 } else {
-                    // https://stackoverflow.com/a/29881556/1837158
-                    Log.i(TAG, "Deleted file from MediaStore: " + updatedFile.toString());
-                    Uri contentUri = MediaStore.Files.getContentUri("external");
-                    ContentResolver resolver = mContext.getContentResolver();
-                    resolver.delete(contentUri, MediaStore.Images.ImageColumns.DATA + " LIKE ?",
-                            new String[]{updatedFile.getPath()});
+                    Log.w(TAG, "ItemFinished: Failed to determine folder.path for folder.id=\"" + (TextUtils.isEmpty(folderId) ? "" : folderId) + "\"");
                 }
                 break;
             case "Ping":
@@ -152,9 +158,12 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
             case "DeviceDiscovered":
             case "DownloadProgress":
             case "FolderPaused":
+            case "FolderResumed":
             case "FolderScanProgress":
             case "FolderSummary":
+            case "FolderWatchStateChanged":
             case "ItemStarted":
+            case "ListenAddressesChanged":
             case "LocalIndexUpdated":
             case "LoginAttempt":
             case "RemoteDownloadProgress":
@@ -162,12 +171,12 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
             case "Starting":
             case "StartupComplete":
             case "StateChanged":
-                if (BuildConfig.DEBUG) {
-                    Log.v(TAG, "Ignored event " + event.type + ", data " + event.data);
+                if (ENABLE_VERBOSE_LOG) {
+                    LogV("Ignored event " + event.type + ", data " + event.data);
                 }
                 break;
             default:
-                Log.v(TAG, "Unhandled event " + event.type);
+                Log.d(TAG, "Unhandled event " + event.type);
         }
     }
 
@@ -282,5 +291,61 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
 
         // Show notification.
         mNotificationHandler.showConsentNotification(notificationId, title, piAccept, piIgnore);
+    }
+
+    /**
+     * Precondition: action != null
+     */
+    private void onItemFinished(String action, String error, File updatedFile) {
+        String relativeFilePath = updatedFile.toString();
+        if (!TextUtils.isEmpty(error)) {
+            Log.e(TAG, "onItemFinished: Error \"" + error + "\" reported on file: " + relativeFilePath);
+            return;
+        }
+
+        switch (action) {
+            case "delete":          // file deleted
+                Log.i(TAG, "Deleting file from MediaStore: " + relativeFilePath);
+                Uri contentUri = MediaStore.Files.getContentUri("external");
+                ContentResolver resolver = mContext.getContentResolver();
+                LoggingAsyncQueryHandler asyncQueryHandler = new LoggingAsyncQueryHandler(resolver);
+                asyncQueryHandler.startDelete(
+                    0,                          // this will be passed to "onUpdatedComplete#token"
+                    relativeFilePath,           // this will be passed to "onUpdatedComplete#cookie"
+                    contentUri,
+                    MediaStore.Images.ImageColumns.DATA + " LIKE ?",
+                    new String[]{updatedFile.getPath()}
+                );
+                break;
+            case "update":          // file contents changed
+            case "metadata":        // file metadata changed but not contents
+                Log.i(TAG, "Rescanning file via MediaScanner: " + relativeFilePath);
+                MediaScannerConnection.scanFile(mContext, new String[]{updatedFile.getPath()},
+                        null, null);
+                break;
+            default:
+                Log.w(TAG, "onItemFinished: Unhandled action \"" + action + "\"");
+        }
+    }
+
+    private static class LoggingAsyncQueryHandler extends AsyncQueryHandler {
+
+        public LoggingAsyncQueryHandler(ContentResolver contentResolver) {
+            super(contentResolver);
+        }
+
+        @Override
+        protected void onDeleteComplete(int token, Object cookie, int result) {
+            super.onUpdateComplete(token, cookie, result);
+            if (result == 1 && cookie != null) {
+                // Log.v(TAG, "onItemFinished: onDeleteComplete: [ok] file=" + cookie.toString() + ", token=" + Integer.toString(token));
+            }
+        }
+    }
+
+    private void LogV(String logMessage) {
+        if (ENABLE_VERBOSE_LOG) {
+            Log.v(TAG, logMessage);
+        }
     }
 }

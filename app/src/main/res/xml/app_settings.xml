@@ -78,12 +78,14 @@
         android:key="category_behaviour"
         android:title="@string/category_behaviour">
 
+        <!-- Autostart on boot -->
         <CheckBoxPreference
             android:key="always_run_in_background"
             android:title="@string/behaviour_autostart_title"
             android:summary="@string/behaviour_autostart_summary"
             android:defaultValue="false" />
 
+        <!-- Use root -->
         <CheckBoxPreference
             android:key="use_root"
             android:title="@string/use_root_title"
@@ -91,20 +93,30 @@
             android:defaultValue="false" />
 
         <ListPreference
+            android:key="suggest_new_folder_root"
+            android:title="@string/suggest_new_folder_root_title"
+            android:entryValues="@array/suggest_new_folder_root_values"
+            android:entries="@array/suggest_new_folder_root_entries"
+            android:summary="@null"
+            android:defaultValue="external_android_data" />
+
+        <!-- Expert mode -->
+        <CheckBoxPreference
+            android:key="expert_mode"
+            android:title="@string/expert_mode_title"
+            android:summary="@string/expert_mode_summary"
+            android:defaultValue="false" />
+
+        <ListPreference
             android:key="pref_current_language"
             android:title="@string/preference_language_title"
             android:summary="@string/preference_language_summary" />
-
-        <CheckBoxPreference
-            android:key="start_into_web_gui"
-            android:title="@string/start_into_web_gui_title"
-            android:summary="@string/start_into_web_gui_summary"
-            android:defaultValue="false"/>
 
     </PreferenceScreen>
 
     <PreferenceScreen
         android:key="category_syncthing_options"
+        android:summary="@string/category_syncthing_options_summary"
         android:title="@string/category_syncthing_options">
 
         <EditTextPreference
@@ -160,10 +172,23 @@
             android:inputType="textNoSuggestions" />
 
         <EditTextPreference
-            android:key="address"
-            android:title="@string/gui_address"
+            android:key="webUITcpPort"
+            android:title="@string/webui_tcp_port_title"
+            android:summary=""
             android:persistent="false"
-            android:inputType="textNoSuggestions" />
+            android:inputType="number" />
+
+        <CheckBoxPreference
+            android:key="webUIRemoteAccess"
+            android:title="@string/webui_remote_access_title"
+            android:summary="@string/webui_remote_access_summary"
+            android:persistent="false" />
+
+        <Preference
+            android:persistent="false"
+            android:selectable="true"
+            android:key="syncthing_api_key"
+            android:title="@string/syncthing_api_key" />
 
         <CheckBoxPreference
             android:key="restartOnWakeup"
@@ -176,9 +201,22 @@
             android:title="@string/usage_reporting"
             android:persistent="false" />
 
+        <CheckBoxPreference
+            android:key="webUIDebugging"
+            android:title="@string/webui_debugging_title"
+            android:summary="@string/webui_debugging_summary"
+            android:persistent="false" />
+
+        <Preference
+            android:key="downloadSupportBundle"
+            android:title="@string/download_support_bundle_title"
+            android:persistent="false"
+            android:singleLine="true" />
+
         <Preference
             android:key="undo_ignored_devices_folders"
             android:title="@string/undo_ignored_devices_folders_title"
+            android:persistent="false"
             android:singleLine="true" />
 
     </PreferenceScreen>
@@ -189,10 +227,12 @@
 
         <Preference
             android:key="export_config"
+            android:persistent="false"
             android:title="@string/export_config" />
 
         <Preference
             android:key="import_config"
+            android:persistent="false"
             android:title="@string/import_config" />
 
     </PreferenceScreen>
@@ -200,6 +240,21 @@
     <PreferenceScreen
         android:title="@string/category_debug">
 
+        <!-- Report issue -->
+        <Preference
+            android:key="open_issue_tracker"
+            android:persistent="false"
+            android:title="@string/report_issue_title">
+        </Preference>
+
+        <!-- Verbose log -->
+        <CheckBoxPreference
+            android:key="verbose_log"
+            android:title="@string/verbose_log_title"
+            android:summary="@string/verbose_log_summary"
+            android:defaultValue="false" />
+
+        <!-- Open Android or SyncthingNative log -->
         <Preference
             android:title="@string/open_log"
             android:summary="@string/open_log_summary">
@@ -207,21 +262,25 @@
                 android:action=".activities.LogActivity" />
         </Preference>
 
+        <!-- STTRACE facility chooser dialog -->
         <com.nutomic.syncthingandroid.views.SttracePreference
             android:key="debug_facilities_enabled"
             android:title="@string/sttrace_title" />
 
+        <!-- Environment variables -->
         <EditTextPreference
             android:key="environment_variables"
             android:title="@string/environment_variables"
             android:singleLine="true"
             android:inputType="textNoSuggestions"/>
 
+        <!-- Reset database -->
         <Preference
             android:key="st_reset_database"
             android:title="@string/st_reset_database_title"
             android:singleLine="true" />
 
+        <!-- Reset index database -->
         <Preference
             android:key="st_reset_deltas"
             android:title="@string/st_reset_deltas_title"
@@ -242,18 +301,25 @@
             android:key="socks_proxy_address"
             android:title="@string/socks_proxy_address_title"
             android:summary=""
+            android:hint="@string/socks_proxy_address_title"
             android:inputType="textUri|textNoSuggestions" />
 
         <EditTextPreference
             android:key="http_proxy_address"
             android:title="@string/http_proxy_address_title"
             android:summary=""
+            android:hint="@string/http_proxy_address_title"
             android:inputType="textUri|textNoSuggestions" />
 
         <CheckBoxPreference
             android:key="use_legacy_hashing"
             android:title="@string/use_legacy_hashing_title"
             android:summary="@string/use_legacy_hashing_summary" />
+
+        <CheckBoxPreference
+            android:key="broadcast_service_control"
+            android:title="@string/broadcast_service_control_title"
+            android:summary="@string/broadcast_service_control_summary" />
 
         <!-- Only valid for Android < 6 -->
         <CheckBoxPreference
@@ -268,20 +334,28 @@
         android:title="@string/category_about">
 
         <Preference
-            android:title="@string/report_issue_title"
-            android:summary="@string/report_issue_summary">
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="@string/issue_tracker_url" />
-        </Preference>
+            android:persistent="false"
+            android:selectable="false"
+            android:key="app_version"
+            android:title="@string/app_version_title" />
 
         <Preference
+            android:persistent="false"
+            android:selectable="false"
             android:key="syncthing_version"
             android:title="@string/syncthing_version_title" />
 
         <Preference
-            android:key="app_version"
-            android:title="@string/app_version_title" />
+            android:persistent="false"
+            android:selectable="false"
+            android:key="syncthing_database_size"
+            android:title="@string/syncthing_database_size" />
+
+        <Preference
+            android:persistent="false"
+            android:selectable="false"
+            android:key="os_open_file_limit"
+            android:title="@string/os_open_file_limit" />
 
     </PreferenceScreen>
 

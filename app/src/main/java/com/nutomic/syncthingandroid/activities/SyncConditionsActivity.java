@@ -1,17 +1,14 @@
 package com.nutomic.syncthingandroid.activities;
 
 import android.app.Activity;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,13 +16,9 @@ import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.google.common.collect.Sets;
 import com.nutomic.syncthingandroid.R;
 import com.nutomic.syncthingandroid.SyncthingApp;
 import com.nutomic.syncthingandroid.service.Constants;
-import com.nutomic.syncthingandroid.service.SyncthingService;
-import com.nutomic.syncthingandroid.service.SyncthingServiceBinder;
-import com.nutomic.syncthingandroid.util.Util;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -41,16 +34,15 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 /**
  * Activity that allows selecting a directory in the local file system.
  */
-public class SyncConditionsActivity extends SyncthingActivity
-        implements SyncthingService.OnServiceStateChangeListener {
+public class SyncConditionsActivity extends SyncthingActivity {
 
     private static final String TAG = "SyncConditionsActivity";
 
     private static final String EXTRA_OBJECT_PREFIX_AND_ID =
-            "com.nutomic.syncthingandroid.activities.SyncConditionsActivity.OBJECT_PREFIX_AND_ID";
+            "com.github.catfriend1.syncthingandroid.activities.SyncConditionsActivity.OBJECT_PREFIX_AND_ID";
 
     private static final String EXTRA_OBJECT_READABLE_NAME =
-            "com.nutomic.syncthingandroid.activities.SyncConditionsActivity.OBJECT_READABLE_NAME";
+            "com.github.catfriend1.syncthingandroid.activities.SyncConditionsActivity.OBJECT_READABLE_NAME";
 
     // UI elements
     private SwitchCompat mSyncOnWifi;
@@ -216,19 +208,8 @@ public class SyncConditionsActivity extends SyncthingActivity
     };
 
     @Override
-    public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-        super.onServiceConnected(componentName, iBinder);
-        SyncthingServiceBinder syncthingServiceBinder = (SyncthingServiceBinder) iBinder;
-        syncthingServiceBinder.getService().registerOnServiceStateChangeListener(this);
-    }
-
-    @Override
     protected void onDestroy() {
         super.onDestroy();
-        SyncthingService syncthingService = getService();
-        if (syncthingService != null) {
-            syncthingService.unregisterOnServiceStateChangeListener(this::onServiceStateChange);
-        }
     }
 
     @Override
@@ -282,14 +263,6 @@ public class SyncConditionsActivity extends SyncthingActivity
     public void onBackPressed() {
         setResult(Activity.RESULT_OK);
         finish();
-    }
-
-    @Override
-    public void onServiceStateChange(SyncthingService.State currentState) {
-        if (!isFinishing() && currentState != SyncthingService.State.ACTIVE) {
-            setResult(Activity.RESULT_CANCELED);
-            finish();
-        }
     }
 
 }

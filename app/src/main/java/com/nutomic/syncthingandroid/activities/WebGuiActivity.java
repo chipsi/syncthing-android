@@ -26,6 +26,7 @@ import com.nutomic.syncthingandroid.service.Constants;
 import com.nutomic.syncthingandroid.service.SyncthingService;
 import com.nutomic.syncthingandroid.service.SyncthingServiceBinder;
 import com.nutomic.syncthingandroid.util.ConfigXml;
+import com.nutomic.syncthingandroid.util.Util;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,7 +35,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -109,7 +109,9 @@ public class WebGuiActivity extends SyncthingActivity
             if (uri.getHost().equals(getService().getWebGuiUrl().getHost())) {
                 return false;
             } else {
-                startActivity(new Intent(Intent.ACTION_VIEW, uri));
+                if (!Util.isRunningOnTV(WebGuiActivity.this)) {
+                    startActivity(new Intent(Intent.ACTION_VIEW, uri));
+                }
                 return true;
             }
         }
@@ -133,9 +135,10 @@ public class WebGuiActivity extends SyncthingActivity
         setContentView(R.layout.activity_web_gui);
 
         mLoadingView = findViewById(R.id.loading);
+        mConfig = new ConfigXml(this);
         try {
-            mConfig = new ConfigXml(this);
-        } catch (Exception e) {
+            mConfig.loadConfig();
+        } catch (ConfigXml.OpenConfigException e) {
             throw new RuntimeException(e.getMessage());
         }
         loadCaCert();
@@ -264,8 +267,8 @@ public class WebGuiActivity extends SyncthingActivity
         properties.setProperty("https.nonProxyHosts", exclusionList);
 
         try {
-            Class applictionCls = Class.forName("android.app.Application");
-            Field loadedApkField = applictionCls.getDeclaredField("mLoadedApk");
+            Class applicationCls = Class.forName("android.app.Application");
+            Field loadedApkField = applicationCls.getDeclaredField("mLoadedApk");
             loadedApkField.setAccessible(true);
             Object loadedApk = loadedApkField.get(appContext);
             Class loadedApkCls = Class.forName("android.app.LoadedApk");

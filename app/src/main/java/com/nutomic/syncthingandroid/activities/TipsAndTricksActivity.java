@@ -48,16 +48,13 @@ public class TipsAndTricksActivity extends SyncthingActivity {
             ArrayList<File> externalFilesDir = new ArrayList<>();
             externalFilesDir.addAll(Arrays.asList(getExternalFilesDirs(null)));
             externalFilesDir.remove(getExternalFilesDir(null));
+            externalFilesDir.remove(null);      // getExternalFilesDirs may return null for an ejected SDcard.
             if (externalFilesDir.size() > 0) {
                 String absExternalStorageAppFilesPath = externalFilesDir.get(0).getAbsolutePath();
                 mTipListAdapter.add(getString(R.string.tip_write_to_sdcard_title),
                         getString(R.string.tip_write_to_sdcard_text, absExternalStorageAppFilesPath));
             }
         }
-
-        // Fill tip title and text content.
-        mTipListAdapter.add(getString(R.string.tip_sync_on_local_network_title), getString(R.string.tip_sync_on_local_network_text));
-        mTipListAdapter.add(getString(R.string.tip_custom_sync_conditions_title), getString(R.string.tip_custom_sync_conditions_text));
 
         // Tips referring to Huawei devices.
         if ("huawei".equalsIgnoreCase(Build.MANUFACTURER)) {
@@ -69,10 +66,15 @@ public class TipsAndTricksActivity extends SyncthingActivity {
             mTipListAdapter.add(getString(R.string.tip_huawei_device_disconnected_title), getString(R.string.tip_huawei_device_disconnected_text, ipAddress));
         }
 
-        // Tips referring to Xiaomi deviecs.
+        // Tips referring to Xiaomi devices.
         if ("xiaomi".equalsIgnoreCase(Build.MANUFACTURER)) {
             mTipListAdapter.add(getString(R.string.tip_xiaomi_autostart_title), getString(R.string.tip_xiaomi_autostart_text));
         }
+
+        // Fill tip title and text content.
+        mTipListAdapter.add(getString(R.string.tip_sync_on_local_network_title), getString(R.string.tip_sync_on_local_network_text));
+        mTipListAdapter.add(getString(R.string.tip_custom_sync_conditions_title), getString(R.string.tip_custom_sync_conditions_text));
+        mTipListAdapter.add(getString(R.string.tip_ignore_delete_title), getString(R.string.tip_ignore_delete_text));
 
         // Set onClick listener and add adapter to recycler view.
         mTipListAdapter.setOnClickListener(

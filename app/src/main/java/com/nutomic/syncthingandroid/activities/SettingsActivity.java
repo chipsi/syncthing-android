@@ -2,12 +2,19 @@ package com.nutomic.syncthingandroid.activities;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
@@ -17,8 +24,16 @@ import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.Toast;
 
@@ -27,17 +42,21 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
 import com.nutomic.syncthingandroid.R;
 import com.nutomic.syncthingandroid.SyncthingApp;
-import com.nutomic.syncthingandroid.model.Config;
+import com.nutomic.syncthingandroid.activities.WebViewActivity;
 import com.nutomic.syncthingandroid.model.Device;
+import com.nutomic.syncthingandroid.model.Gui;
 import com.nutomic.syncthingandroid.model.Options;
 import com.nutomic.syncthingandroid.service.Constants;
 import com.nutomic.syncthingandroid.service.NotificationHandler;
 import com.nutomic.syncthingandroid.service.RestApi;
 import com.nutomic.syncthingandroid.service.SyncthingService;
+import com.nutomic.syncthingandroid.service.SyncthingServiceBinder;
+import com.nutomic.syncthingandroid.util.FileUtils;
 import com.nutomic.syncthingandroid.util.Languages;
 import com.nutomic.syncthingandroid.util.Util;
 import com.nutomic.syncthingandroid.views.WifiSsidPreference;
 
+import java.io.File;
 import java.lang.ref.WeakReference;
 import java.security.InvalidParameterException;
 import java.util.HashSet;
@@ -49,18 +68,25 @@ import eu.chainfire.libsuperuser.Shell;
 
 public class SettingsActivity extends SyncthingActivity {
 
+    private static final String TAG = "SettingsActivity";
+
+    private SettingsFragment mSettingsFragment;
+
+    public static final int RESULT_RESTART_APP = 3461;
+
     public static final String EXTRA_OPEN_SUB_PREF_SCREEN =
-            "com.nutomic.syncthingandroid.activities.SettingsActivity.OPEN_SUB_PREF_SCREEN";
+            "com.github.catfriend1.syncthingandroid.activities.SettingsActivity.OPEN_SUB_PREF_SCREEN";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SettingsFragment settingsFragment = new SettingsFragment();
+        setContentView(R.layout.activity_settings);
+        mSettingsFragment = new SettingsFragment();
         Bundle bundle = new Bundle();
         bundle.putString(EXTRA_OPEN_SUB_PREF_SCREEN, getIntent().getStringExtra(EXTRA_OPEN_SUB_PREF_SCREEN));
-        settingsFragment.setArguments(bundle);
+        mSettingsFragment.setArguments(bundle);
         getFragmentManager().beginTransaction()
-                .replace(android.R.id.content, settingsFragment)
+                .replace(R.id.prefFragmentContainer, mSettingsFragment)
                 .commit();
     }
 
@@ -84,23 +110,58 @@ public class SettingsActivity extends SyncthingActivity {
         }
     }
 
+    @Override
+    public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+        super.onServiceConnected(componentName, iBinder);
+        SyncthingServiceBinder syncthingServiceBinder = (SyncthingServiceBinder) iBinder;
+        SyncthingService syncthingService = (SyncthingService) syncthingServiceBinder.getService();
+        mSettingsFragment.setService(syncthingService);
+        syncthingService.registerOnServiceStateChangeListener(mSettingsFragment);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent e) {
+        if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+            finish();
+            return true;
+        }
+        return super.onKeyDown(keyCode, e);
+    }
+
     public static class SettingsFragment extends PreferenceFragment
-            implements SyncthingActivity.OnServiceConnectedListener,
-            SyncthingService.OnServiceStateChangeListener, Preference.OnPreferenceChangeListener,
-            Preference.OnPreferenceClickListener {
+            implements SyncthingService.OnServiceStateChangeListener,
+                Preference.OnPreferenceChangeListener,
+                Preference.OnPreferenceClickListener {
 
         private static final String TAG = "SettingsFragment";
+        // Settings/Syncthing Options
+        private static final String KEY_WEBUI_TCP_PORT = "webUITcpPort";
+        private static final String KEY_WEBUI_REMOTE_ACCESS = "webUIRemoteAccess";
+        private static final String KEY_WEBUI_DEBUGGING = "webUIDebugging";
+        private static final String KEY_DOWNLOAD_SUPPORT_BUNDLE = "downloadSupportBundle";
+        private static final String KEY_UNDO_IGNORED_DEVICES_FOLDERS = "undo_ignored_devices_folders";
+        // Settings/Import and Export
         private static final String KEY_EXPORT_CONFIG = "export_config";
         private static final String KEY_IMPORT_CONFIG = "import_config";
-        private static final String KEY_UNDO_IGNORED_DEVICES_FOLDERS = "undo_ignored_devices_folders";
+        // Settings/Debug
+        private static final String KEY_OPEN_ISSUE_TRACKER = "open_issue_tracker";
         private static final String KEY_ST_RESET_DATABASE = "st_reset_database";
         private static final String KEY_ST_RESET_DELTAS = "st_reset_deltas";
+        // Settings/About
+        private static final String KEY_SYNCTHING_API_KEY = "syncthing_api_key";
+        private static final String KEY_SYNCTHING_DATABASE_SIZE = "syncthing_database_size";
+        private static final String KEY_OS_OPEN_FILE_LIMIT = "os_open_file_limit";
+
+        private static final String BIND_ALL = "0.0.0.0";
+        private static final String BIND_LOCALHOST = "127.0.0.1";
 
         @Inject NotificationHandler mNotificationHandler;
         @Inject SharedPreferences mPreferences;
 
+        private Dialog             mCurrentPrefScreenDialog = null;
+
+        /* Run conditions */
         private Preference         mCategoryRunConditions;
-        private CheckBoxPreference mStartServiceOnBoot;
         private ListPreference     mPowerSource;
         private CheckBoxPreference mRunOnMobileData;
         private CheckBoxPreference mRunOnWifi;
@@ -109,6 +170,13 @@ public class SettingsActivity extends SyncthingActivity {
         private WifiSsidPreference mWifiSsidWhitelist;
         private CheckBoxPreference mRunInFlightMode;
 
+        /* Behaviour */
+        private CheckBoxPreference mStartServiceOnBoot;
+        private CheckBoxPreference mUseRoot;
+        private ListPreference     mSuggestNewFolderRoot;
+        private Languages          mLanguages;
+
+        /* Syncthing Options */
         private Preference         mCategorySyncthingOptions;
         private EditTextPreference mDeviceName;
         private EditTextPreference mListenAddresses;
@@ -119,25 +187,30 @@ public class SettingsActivity extends SyncthingActivity {
         private CheckBoxPreference mGlobalAnnounceEnabled;
         private CheckBoxPreference mRelaysEnabled;
         private EditTextPreference mGlobalAnnounceServers;
-        private EditTextPreference mAddress;
+        private EditTextPreference mWebUITcpPort;
+        private CheckBoxPreference mWebUIRemoteAccess;
         private CheckBoxPreference mRestartOnWakeup;
         private CheckBoxPreference mUrAccepted;
+        private CheckBoxPreference mWebUIDebugging;
+        private Preference mDownloadSupportBundle;
 
         /* Experimental options */
-        private CheckBoxPreference mUseRoot;
         private CheckBoxPreference mUseWakelock;
         private CheckBoxPreference mUseTor;
         private EditTextPreference mSocksProxyAddress;
         private EditTextPreference mHttpProxyAddress;
 
         private Preference mSyncthingVersion;
+        private Preference mSyncthingApiKey;
 
+        private Context mContext;
         private SyncthingService mSyncthingService;
         private RestApi mRestApi;
 
         private Options mOptions;
-        private Config.Gui mGui;
+        private Gui mGui;
 
+        private Handler mHandler;
         private Boolean mPendingConfig = false;
 
         /**
@@ -150,7 +223,26 @@ public class SettingsActivity extends SyncthingActivity {
         public void onCreate(@Nullable Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             ((SyncthingApp) getActivity().getApplication()).component().inject(this);
-            ((SyncthingActivity) getActivity()).registerOnServiceConnectedListener(this);
+            setHasOptionsMenu(true);
+        }
+
+        /**
+         * The ActionBar overlaps the preferences view.
+         * Move the preferences view below the ActionBar.
+         */
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            View view = super.onCreateView(inflater, container, savedInstanceState);
+            int horizontalMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics());
+            int verticalMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics());
+            TypedValue tv = new TypedValue();
+            if (container.getContext().getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
+            {
+                // Calculate ActionBar height
+                int actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
+                view.setPadding(horizontalMargin, actionBarHeight, horizontalMargin, verticalMargin);
+            }
+            return view;
         }
 
         /**
@@ -160,16 +252,25 @@ public class SettingsActivity extends SyncthingActivity {
          */
         @Override
         public void onActivityCreated(Bundle savedInstanceState) {
+            mContext = getActivity().getApplicationContext();
             super.onActivityCreated(savedInstanceState);
 
             addPreferencesFromResource(R.xml.app_settings);
+            mPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
+            ListPreference languagePref = (ListPreference) findPreference(Languages.PREFERENCE_LANGUAGE);
+            PreferenceScreen categoryBehaviour = (PreferenceScreen) findPreference("category_behaviour");
+            if (Build.VERSION.SDK_INT >= 24) {
+                categoryBehaviour.removePreference(languagePref);
+            } else {
+                mLanguages = new Languages(getActivity());
+                languagePref.setDefaultValue(mLanguages.USE_SYSTEM_DEFAULT);
+                languagePref.setEntries(mLanguages.getAllNames());
+                languagePref.setEntryValues(mLanguages.getSupportedLocales());
+            }
             PreferenceScreen screen = getPreferenceScreen();
-            mStartServiceOnBoot =
-                    (CheckBoxPreference) findPreference(Constants.PREF_START_SERVICE_ON_BOOT);
-            mPowerSource =
-                    (ListPreference) findPreference(Constants.PREF_POWER_SOURCE);
-            mRunOnMobileData =
-                    (CheckBoxPreference) findPreference(Constants.PREF_RUN_ON_WIFI);
+
+            /* Run conditions */
             mRunOnWifi =
                     (CheckBoxPreference) findPreference(Constants.PREF_RUN_ON_WIFI);
             mRunOnMeteredWifi =
@@ -178,24 +279,42 @@ public class SettingsActivity extends SyncthingActivity {
                     (CheckBoxPreference) findPreference(Constants.PREF_USE_WIFI_SSID_WHITELIST);
             mWifiSsidWhitelist =
                     (WifiSsidPreference) findPreference(Constants.PREF_WIFI_SSID_WHITELIST);
+            mRunOnMobileData =
+                    (CheckBoxPreference) findPreference(Constants.PREF_RUN_ON_WIFI);
+            mPowerSource =
+                    (ListPreference) findPreference(Constants.PREF_POWER_SOURCE);
             mRunInFlightMode =
                     (CheckBoxPreference) findPreference(Constants.PREF_RUN_IN_FLIGHT_MODE);
 
-            ListPreference languagePref = (ListPreference) findPreference(Languages.PREFERENCE_LANGUAGE);
-            PreferenceScreen categoryBehaviour = (PreferenceScreen) findPreference("category_behaviour");
-            if (Build.VERSION.SDK_INT >= 24) {
-                categoryBehaviour.removePreference(languagePref);
-            } else {
-                Languages languages = new Languages(getActivity());
-                languagePref.setDefaultValue(Languages.USE_SYSTEM_DEFAULT);
-                languagePref.setEntries(languages.getAllNames());
-                languagePref.setEntryValues(languages.getSupportedLocales());
-                languagePref.setOnPreferenceChangeListener((p, o) -> {
-                    languages.forceChangeLanguage(getActivity(), (String) o);
-                    return false;
-                });
-            }
+            mRunOnMeteredWifi.setEnabled(mRunOnWifi.isChecked());
+            mUseWifiWhitelist.setEnabled(mRunOnWifi.isChecked());
+            mWifiSsidWhitelist.setEnabled(mRunOnWifi.isChecked() && mUseWifiWhitelist.isChecked());
 
+            screen.findPreference(Constants.PREF_POWER_SOURCE).setSummary(mPowerSource.getEntry());
+            String wifiSsidSummary = TextUtils.join(", ", mPreferences.getStringSet(Constants.PREF_WIFI_SSID_WHITELIST, new HashSet<>()));
+            screen.findPreference(Constants.PREF_WIFI_SSID_WHITELIST).setSummary(TextUtils.isEmpty(wifiSsidSummary) ?
+                getString(R.string.wifi_ssid_whitelist_empty) :
+                getString(R.string.run_on_whitelisted_wifi_networks, wifiSsidSummary)
+            );
+
+            mCategoryRunConditions = findPreference("category_run_conditions");
+            setPreferenceCategoryChangeListener(mCategoryRunConditions, this::onRunConditionPreferenceChange);
+
+            /* Behaviour */
+            mStartServiceOnBoot =
+                    (CheckBoxPreference) findPreference(Constants.PREF_START_SERVICE_ON_BOOT);
+            mUseRoot =
+                    (CheckBoxPreference) findPreference(Constants.PREF_USE_ROOT);
+            mSuggestNewFolderRoot =
+                    (ListPreference) findPreference(Constants.PREF_SUGGEST_NEW_FOLDER_ROOT);
+            screen.findPreference(Constants.PREF_SUGGEST_NEW_FOLDER_ROOT).setSummary(mSuggestNewFolderRoot.getEntry());
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                // Remove preference as FileUtils#getExternalFilesDirUri is only supported on API 21+ (LOLLIPOP+).
+                categoryBehaviour.removePreference(mSuggestNewFolderRoot);
+            }
+            setPreferenceCategoryChangeListener(categoryBehaviour, this::onBehaviourPreferenceChange);
+
+            /* Syncthing Options */
             mDeviceName             = (EditTextPreference) findPreference("deviceName");
             mListenAddresses        = (EditTextPreference) findPreference("listenAddresses");
             mMaxRecvKbps            = (EditTextPreference) findPreference("maxRecvKbps");
@@ -205,113 +324,179 @@ public class SettingsActivity extends SyncthingActivity {
             mGlobalAnnounceEnabled  = (CheckBoxPreference) findPreference("globalAnnounceEnabled");
             mRelaysEnabled          = (CheckBoxPreference) findPreference("relaysEnabled");
             mGlobalAnnounceServers  = (EditTextPreference) findPreference("globalAnnounceServers");
-            mAddress                = (EditTextPreference) findPreference("address");
+            mWebUITcpPort           = (EditTextPreference) findPreference(KEY_WEBUI_TCP_PORT);
+            mWebUIRemoteAccess      = (CheckBoxPreference) findPreference(KEY_WEBUI_REMOTE_ACCESS);
+            mSyncthingApiKey        = findPreference(KEY_SYNCTHING_API_KEY);
             mRestartOnWakeup        = (CheckBoxPreference) findPreference("restartOnWakeup");
             mUrAccepted             = (CheckBoxPreference) findPreference("urAccepted");
+            mWebUIDebugging         = (CheckBoxPreference) findPreference(KEY_WEBUI_DEBUGGING);
+            mDownloadSupportBundle  = findPreference(KEY_DOWNLOAD_SUPPORT_BUNDLE);
+            Preference undoIgnoredDevicesFolders = findPreference(KEY_UNDO_IGNORED_DEVICES_FOLDERS);
 
+            mCategorySyncthingOptions = findPreference("category_syncthing_options");
+            setPreferenceCategoryChangeListener(mCategorySyncthingOptions, this::onSyncthingPreferenceChange);
+            mSyncthingApiKey.setOnPreferenceClickListener(this);
+            mDownloadSupportBundle.setOnPreferenceClickListener(this);
+            undoIgnoredDevicesFolders.setOnPreferenceClickListener(this);
+
+            /* Import and Export */
             Preference exportConfig = findPreference("export_config");
             Preference importConfig = findPreference("import_config");
+            exportConfig.setOnPreferenceClickListener(this);
+            importConfig.setOnPreferenceClickListener(this);
 
-            Preference undoIgnoredDevicesFolders    = findPreference(KEY_UNDO_IGNORED_DEVICES_FOLDERS);
+            /* Troubleshooting */
+            Preference verboseLog                   = findPreference(Constants.PREF_VERBOSE_LOG);
+            Preference openIssueTracker             = findPreference(KEY_OPEN_ISSUE_TRACKER);
             Preference debugFacilitiesEnabled       = findPreference(Constants.PREF_DEBUG_FACILITIES_ENABLED);
             Preference environmentVariables         = findPreference("environment_variables");
             Preference stResetDatabase              = findPreference("st_reset_database");
             Preference stResetDeltas                = findPreference("st_reset_deltas");
 
-            mUseRoot                        = (CheckBoxPreference) findPreference(Constants.PREF_USE_ROOT);
-            mUseWakelock                    = (CheckBoxPreference) findPreference(Constants.PREF_USE_WAKE_LOCK);
+            verboseLog.setOnPreferenceClickListener(this);
+            openIssueTracker.setOnPreferenceClickListener(this);
+            debugFacilitiesEnabled.setOnPreferenceChangeListener(this);
+            environmentVariables.setOnPreferenceChangeListener(this);
+            stResetDatabase.setOnPreferenceClickListener(this);
+            stResetDeltas.setOnPreferenceClickListener(this);
+
+            screen.findPreference(KEY_OPEN_ISSUE_TRACKER).setSummary(getString(R.string.open_issue_tracker_summary, getString(R.string.issue_tracker_url)));
+
+            /* Experimental options */
             mUseTor                         = (CheckBoxPreference) findPreference(Constants.PREF_USE_TOR);
             mSocksProxyAddress              = (EditTextPreference) findPreference(Constants.PREF_SOCKS_PROXY_ADDRESS);
             mHttpProxyAddress               = (EditTextPreference) findPreference(Constants.PREF_HTTP_PROXY_ADDRESS);
+            mUseWakelock                    = (CheckBoxPreference) findPreference(Constants.PREF_USE_WAKE_LOCK);
 
-            mSyncthingVersion       = findPreference("syncthing_version");
-            Preference appVersion   = screen.findPreference("app_version");
-
-            mRunOnMeteredWifi.setEnabled(mRunOnWifi.isChecked());
-            mUseWifiWhitelist.setEnabled(mRunOnWifi.isChecked());
-            mWifiSsidWhitelist.setEnabled(mRunOnWifi.isChecked() && mUseWifiWhitelist.isChecked());
-            /* Experimental options */
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 /* Wakelocks are only valid on Android 5 or lower. */
                 mUseWakelock.setEnabled(false);
                 mUseWakelock.setChecked(false);
             }
 
-            mCategorySyncthingOptions = findPreference("category_syncthing_options");
-            setPreferenceCategoryChangeListener(mCategorySyncthingOptions, this::onSyncthingPreferenceChange);
-            mCategoryRunConditions = findPreference("category_run_conditions");
-            setPreferenceCategoryChangeListener(mCategoryRunConditions, this::onRunConditionPreferenceChange);
-
-            exportConfig.setOnPreferenceClickListener(this);
-            importConfig.setOnPreferenceClickListener(this);
-
-            undoIgnoredDevicesFolders.setOnPreferenceClickListener(this);
-            debugFacilitiesEnabled.setOnPreferenceChangeListener(this);
-            environmentVariables.setOnPreferenceChangeListener(this);
-            stResetDatabase.setOnPreferenceClickListener(this);
-            stResetDeltas.setOnPreferenceClickListener(this);
-
-            /* Experimental options */
-            mUseRoot.setOnPreferenceClickListener(this);
             mUseWakelock.setOnPreferenceChangeListener(this);
             mUseTor.setOnPreferenceChangeListener(this);
 
             mSocksProxyAddress.setEnabled(!(Boolean) mUseTor.isChecked());
             mSocksProxyAddress.setOnPreferenceChangeListener(this);
+            handleSocksProxyPreferenceChange(screen.findPreference(Constants.PREF_SOCKS_PROXY_ADDRESS),  mPreferences.getString(Constants.PREF_SOCKS_PROXY_ADDRESS, ""));
             mHttpProxyAddress.setEnabled(!(Boolean) mUseTor.isChecked());
             mHttpProxyAddress.setOnPreferenceChangeListener(this);
-
-            /* Initialize summaries */
-            mPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            screen.findPreference(Constants.PREF_POWER_SOURCE).setSummary(mPowerSource.getEntry());
-            String wifiSsidSummary = TextUtils.join(", ", mPreferences.getStringSet(Constants.PREF_WIFI_SSID_WHITELIST, new HashSet<>()));
-            screen.findPreference(Constants.PREF_WIFI_SSID_WHITELIST).setSummary(TextUtils.isEmpty(wifiSsidSummary) ?
-                getString(R.string.wifi_ssid_whitelist_empty) :
-                getString(R.string.run_on_whitelisted_wifi_networks, wifiSsidSummary)
-            );
-            handleSocksProxyPreferenceChange(screen.findPreference(Constants.PREF_SOCKS_PROXY_ADDRESS),  mPreferences.getString(Constants.PREF_SOCKS_PROXY_ADDRESS, ""));
             handleHttpProxyPreferenceChange(screen.findPreference(Constants.PREF_HTTP_PROXY_ADDRESS), mPreferences.getString(Constants.PREF_HTTP_PROXY_ADDRESS, ""));
 
+            /* About */
+            Preference appVersion   = findPreference("app_version");
+            mSyncthingVersion       = findPreference("syncthing_version");
             try {
-                appVersion.setSummary(getActivity().getPackageManager()
-                        .getPackageInfo(getActivity().getPackageName(), 0).versionName);
+                String versionName = getActivity().getPackageManager()
+                        .getPackageInfo(getActivity().getPackageName(), 0).versionName;
+                appVersion.setSummary("v" + versionName);
             } catch (PackageManager.NameNotFoundException e) {
                 Log.d(TAG, "Failed to get app version name");
             }
+            screen.findPreference(KEY_SYNCTHING_DATABASE_SIZE).setSummary(getDatabaseSize());
+            screen.findPreference(KEY_OS_OPEN_FILE_LIMIT).setSummary(getOpenFileLimit());
 
-            openSubPrefScreen(screen);
+            // Check if we should directly show a sub preference screen.
+            Bundle bundle = getArguments();
+            if (bundle != null) {
+                // Fix issue #247: "Calling sub pref screen directly won't show toolbar on top"
+                mHandler =  new Handler();
+                mHandler.post(() -> {
+                    // Open sub preferences screen if EXTRA_OPEN_SUB_PREF_SCREEN was passed in bundle.
+                    openSubPrefScreen(screen, bundle.getString(EXTRA_OPEN_SUB_PREF_SCREEN, ""));
+                });
+            }
         }
 
-        private void openSubPrefScreen(PreferenceScreen prefScreen) {
-            Bundle bundle = getArguments();
-            if (bundle == null) {
+        private void openSubPrefScreen(PreferenceScreen parentPrefScreen, String subPrefScreenId) {
+            if (parentPrefScreen == null ||
+                    subPrefScreenId == null ||
+                    TextUtils.isEmpty(subPrefScreenId)) {
                 return;
             }
-            String openSubPrefScreen = bundle.getString(EXTRA_OPEN_SUB_PREF_SCREEN, "");
-            // Open sub preferences screen if EXTRA_OPEN_SUB_PREF_SCREEN was passed in bundle.
-            if (openSubPrefScreen != null && !TextUtils.isEmpty(openSubPrefScreen)) {
-                Log.v(TAG, "Transitioning to pref screen " + openSubPrefScreen);
-                PreferenceScreen categoryRunConditions = (PreferenceScreen) findPreference(openSubPrefScreen);
-                final ListAdapter listAdapter = prefScreen.getRootAdapter();
-                final int itemsCount = listAdapter.getCount();
-                for (int itemNumber = 0; itemNumber < itemsCount; ++itemNumber) {
-                    if (listAdapter.getItem(itemNumber).equals(categoryRunConditions)) {
-                        // Simulates click on the sub-preference
-                        prefScreen.onItemClick(null, null, itemNumber, 0);
-                        break;
-                    }
+            Log.v(TAG, "Transitioning to pref screen " + subPrefScreenId);
+            PreferenceScreen desiredSubPrefScreen = (PreferenceScreen) findPreference(subPrefScreenId);
+            final ListAdapter listAdapter = parentPrefScreen.getRootAdapter();
+            final int itemsCount = listAdapter.getCount();
+            for (int itemNumber = 0; itemNumber < itemsCount; ++itemNumber) {
+                if (listAdapter.getItem(itemNumber).equals(desiredSubPrefScreen)) {
+                    // Simulates click on the sub-preference. This will invoke {@link #onPreferenceTreeClick} subsequently.
+                    parentPrefScreen.onItemClick(null, null, itemNumber, 0);
+                    break;
                 }
             }
         }
 
+        @SuppressWarnings("deprecation")
         @Override
-        public void onServiceConnected() {
-            Log.v(TAG, "onServiceConnected");
-            if (getActivity() == null)
-                return;
+        public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
+            super.onPreferenceTreeClick(preferenceScreen, preference);
+            if (preference instanceof PreferenceScreen) {
+                // User has clicked on a sub-preferences screen.
+                try {
+                    mCurrentPrefScreenDialog = ((PreferenceScreen) preference).getDialog();
+                    LinearLayout root;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        root = (LinearLayout) mCurrentPrefScreenDialog.findViewById(android.R.id.list).getParent().getParent();
+                    } else {
+                        root = (LinearLayout) mCurrentPrefScreenDialog.findViewById(android.R.id.list).getParent();
+                    }
+                    SyncthingActivity syncthingActivity = (SyncthingActivity) getActivity();
+                    LayoutInflater layoutInflater = syncthingActivity.getLayoutInflater();
+                    Toolbar toolbar = (Toolbar) layoutInflater.inflate(R.layout.widget_toolbar, root, false);
+                    root.addView(toolbar, 0);
+                    toolbar.setTitle(((PreferenceScreen) preference).getTitle());
+                    registerActionBar(toolbar);
+                } catch (Exception e) {
+                    /**
+                     * The above code has been verified working but due to known bugs in the
+                     * support library on different Android versions better be safe in case
+                     * it breaks.
+                     */
+                    Log.e(TAG, "onPreferenceTreeClick", e);
+                }
+            }
+            return false;
+        }
 
-            mSyncthingService = ((SyncthingActivity) getActivity()).getService();
-            mSyncthingService.registerOnServiceStateChangeListener(this);
+        @Override
+        public boolean onOptionsItemSelected(MenuItem item) {
+            if (item.getItemId() == android.R.id.home) {
+                if (mCurrentPrefScreenDialog == null) {
+                    // User is on the top preferences screen.
+                    getActivity().onBackPressed();
+                } else {
+                    // User is on a sub-preferences screen.
+                    mCurrentPrefScreenDialog.dismiss();
+                    mCurrentPrefScreenDialog = null;
+
+                    // We need to re-register the action bar, see issue #247.
+                    registerActionBar(null);
+                }
+                return true;
+            }
+            return super.onOptionsItemSelected(item);
+        }
+
+        private void registerActionBar(Toolbar toolbar) {
+            SyncthingActivity syncthingActivity = (SyncthingActivity) getActivity();
+            if (toolbar == null) {
+                toolbar = (Toolbar) syncthingActivity.findViewById(R.id.toolbar);
+            }
+            if (toolbar == null) {
+                Log.w(TAG, "registerActionBar: toolbar == null");
+                return;
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                toolbar.setTouchscreenBlocksFocus(false);
+            }
+            syncthingActivity.setSupportActionBar(toolbar);
+            syncthingActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
+        public void setService(SyncthingService syncthingService) {
+            mSyncthingService = syncthingService;
         }
 
         @Override
@@ -322,27 +507,37 @@ public class SettingsActivity extends SyncthingActivity {
                         (currentState == SyncthingService.State.ACTIVE);
             mCategorySyncthingOptions.setEnabled(isSyncthingRunning);
 
-            if (!isSyncthingRunning)
+            if (!isSyncthingRunning) {
                 return;
+            }
 
             mSyncthingVersion.setSummary(mRestApi.getVersion());
+            mSyncthingApiKey.setSummary(mRestApi.getApiKey());
             mOptions = mRestApi.getOptions();
-            mGui = mRestApi.getGui();
+            if (mOptions != null) {
+                Joiner joiner = Joiner.on(", ");
+                mDeviceName.setText(mRestApi.getLocalDevice().name);
+                mListenAddresses.setText(joiner.join(mOptions.listenAddresses));
+                mMaxRecvKbps.setText(Integer.toString(mOptions.maxRecvKbps));
+                mMaxSendKbps.setText(Integer.toString(mOptions.maxSendKbps));
+                mNatEnabled.setChecked(mOptions.natEnabled);
+                mLocalAnnounceEnabled.setChecked(mOptions.localAnnounceEnabled);
+                mGlobalAnnounceEnabled.setChecked(mOptions.globalAnnounceEnabled);
+                mRelaysEnabled.setChecked(mOptions.relaysEnabled);
+                mGlobalAnnounceServers.setText(joiner.join(mOptions.globalAnnounceServers));
+                mRestartOnWakeup.setChecked(mOptions.restartOnWakeup);
+                mUrAccepted.setChecked(mRestApi.isUsageReportingAccepted());
+            }
 
-            Joiner joiner = Joiner.on(", ");
-            mDeviceName.setText(mRestApi.getLocalDevice().name);
-            mListenAddresses.setText(joiner.join(mOptions.listenAddresses));
-            mMaxRecvKbps.setText(Integer.toString(mOptions.maxRecvKbps));
-            mMaxSendKbps.setText(Integer.toString(mOptions.maxSendKbps));
-            mNatEnabled.setChecked(mOptions.natEnabled);
-            mLocalAnnounceEnabled.setChecked(mOptions.localAnnounceEnabled);
-            mGlobalAnnounceEnabled.setChecked(mOptions.globalAnnounceEnabled);
-            mRelaysEnabled.setChecked(mOptions.relaysEnabled);
-            mGlobalAnnounceServers.setText(joiner.join(mOptions.globalAnnounceServers));
-            mAddress.setText(mGui.address);
-            mRestartOnWakeup.setChecked(mOptions.restartOnWakeup);
-            mRestApi.getSystemStatus(systemStatus ->
-                    mUrAccepted.setChecked(mOptions.isUsageReportingAccepted(systemStatus.urVersionMax)));
+            // Web GUI tcp port and bind ip address.
+            mGui = mRestApi.getGui();
+            if (mGui != null) {
+                mWebUITcpPort.setText(mGui.getBindPort());
+                mWebUITcpPort.setSummary(mGui.getBindPort());
+                mWebUIRemoteAccess.setChecked(!BIND_LOCALHOST.equals(mGui.getBindAddress()));
+                mWebUIDebugging.setChecked(mGui.debugging);
+                mDownloadSupportBundle.setEnabled(mGui.debugging);
+            }
         }
 
         @Override
@@ -385,6 +580,27 @@ public class SettingsActivity extends SyncthingActivity {
                     break;
             }
             mPendingRunConditions = true;
+            return true;
+        }
+
+        public boolean onBehaviourPreferenceChange(Preference preference, Object o) {
+            switch (preference.getKey()) {
+                case Constants.PREF_USE_ROOT:
+                    if ((Boolean) o) {
+                        new TestRootTask(this).execute();
+                    } else {
+                        new Thread(() -> Util.fixAppDataPermissions(getActivity())).start();
+                        mPendingConfig = true;
+                    }
+                    break;
+                case Constants.PREF_SUGGEST_NEW_FOLDER_ROOT:
+                    mSuggestNewFolderRoot.setValue(o.toString());
+                    preference.setSummary(mSuggestNewFolderRoot.getEntry());
+                    break;
+                case Languages.PREFERENCE_LANGUAGE:
+                    mLanguages.forceChangeLanguage(getActivity(), (String) o);
+                    return false;
+            }
             return true;
         }
 
@@ -436,19 +652,41 @@ public class SettingsActivity extends SyncthingActivity {
                 case "globalAnnounceServers":
                     mOptions.globalAnnounceServers = Iterables.toArray(splitter.split((String) o), String.class);
                     break;
-                case "address":
-                    mGui.address = (String) o;
+                case KEY_WEBUI_TCP_PORT:
+                    Integer webUITcpPort = 0;
+                    try {
+                        webUITcpPort = Integer.parseInt((String) o);
+                    } catch (Exception e) {
+                    }
+                    if (webUITcpPort < 1024 || webUITcpPort > 65535) {
+                        Toast.makeText(getActivity(), getResources().getString(R.string.invalid_port_number, 1024, 65535), Toast.LENGTH_LONG)
+                                .show();
+                        return false;
+                    }
+                    mWebUITcpPort.setSummary(Integer.toString(webUITcpPort));
+                    mGui.address = mGui.getBindAddress() + ":" + Integer.toString(webUITcpPort);
+                    break;
+                case KEY_WEBUI_REMOTE_ACCESS:
+                    mGui.address = ((boolean) o ? BIND_ALL : BIND_LOCALHOST) + ":" + mWebUITcpPort.getSummary();
                     break;
                 case "restartOnWakeup":
                     mOptions.restartOnWakeup = (boolean) o;
                     break;
                 case "urAccepted":
-                    mRestApi.getSystemStatus(systemStatus -> {
-                        mOptions.urAccepted = ((boolean) o)
-                                ? systemStatus.urVersionMax
-                                : Options.USAGE_REPORTING_DENIED;
-                    });
+                    mRestApi.setUsageReporting((boolean) o);
+                    mOptions = mRestApi.getOptions();
                     break;
+                case KEY_WEBUI_DEBUGGING:
+                    mGui.debugging = (boolean) o;
+
+                    // Immediately apply changes.
+                    mRestApi.editSettings(mGui, mOptions);
+                    if (mRestApi != null &&
+                            mSyncthingService.getCurrentState() != SyncthingService.State.DISABLED) {
+                        mRestApi.saveConfigAndRestart();
+                        mPendingConfig = false;
+                    }
+                    return true;
                 default: throw new InvalidParameterException();
             }
 
@@ -530,15 +768,24 @@ public class SettingsActivity extends SyncthingActivity {
         public boolean onPreferenceClick(Preference preference) {
             final Intent intent;
             switch (preference.getKey()) {
-                case Constants.PREF_USE_ROOT:
-                    if (mUseRoot.isChecked()) {
-                        // Only check preference after root was granted.
-                        mUseRoot.setChecked(false);
-                        new TestRootTask(this).execute();
-                    } else {
-                        new Thread(() -> Util.fixAppDataPermissions(getActivity())).start();
-                        mPendingConfig = true;
-                    }
+                case Constants.PREF_VERBOSE_LOG:
+                    new AlertDialog.Builder(getActivity())
+                            .setTitle(R.string.dialog_settings_restart_app_title)
+                            .setMessage(R.string.dialog_settings_restart_app_question)
+                            .setPositiveButton(android.R.string.ok, (dialogInterface, i) -> {
+                                getActivity().setResult(RESULT_RESTART_APP);
+                                getActivity().finish();
+                            })
+                            .setNegativeButton(android.R.string.no, (dialogInterface, i) -> {
+                                // Revert.
+                                ((CheckBoxPreference) preference).setChecked(!((CheckBoxPreference) preference).isChecked());
+                            })
+                            .show();
+                    return true;
+                case KEY_OPEN_ISSUE_TRACKER:
+                    intent = new Intent(getActivity(), WebViewActivity.class);
+                    intent.putExtra(WebViewActivity.EXTRA_WEB_URL, getString(R.string.issue_tracker_url));
+                    startActivity(intent);
                     return true;
                 case KEY_EXPORT_CONFIG:
                     new AlertDialog.Builder(getActivity())
@@ -560,13 +807,26 @@ public class SettingsActivity extends SyncthingActivity {
                             .setNegativeButton(android.R.string.no, null)
                             .show();
                     return true;
+                case KEY_SYNCTHING_API_KEY:
+                        // Copy syncthing's API key to clipboard.
+                        ClipboardManager clipboard = (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
+                        ClipData clip = ClipData.newPlainText(getString(R.string.syncthing_api_key), mSyncthingApiKey.getSummary());
+                        clipboard.setPrimaryClip(clip);
+                        Toast.makeText(getActivity(), R.string.api_key_copied_to_clipboard, Toast.LENGTH_SHORT)
+                                .show();
+                        return true;
+                    default:
+                        return false;
+                case KEY_DOWNLOAD_SUPPORT_BUNDLE:
+                    onDownloadSupportBundleClick();
+                    return true;
                 case KEY_UNDO_IGNORED_DEVICES_FOLDERS:
                     new AlertDialog.Builder(getActivity())
                             .setMessage(R.string.undo_ignored_devices_folders_question)
                             .setPositiveButton(android.R.string.yes, (dialog, which) -> {
                                 if (mRestApi == null) {
                                     Toast.makeText(getActivity(),
-                                            getString(R.string.generic_error) + getString(R.string.syncthing_disabled_title),
+                                            getString(R.string.generic_error) + getString(R.string.syncthing_disabled),
                                             Toast.LENGTH_SHORT).show();
                                     return;
                                 }
@@ -609,9 +869,31 @@ public class SettingsActivity extends SyncthingActivity {
                             })
                             .show();
                     return true;
-                default:
-                    return false;
             }
+        }
+
+        private void onDownloadSupportBundleClick() {
+            if (mRestApi == null) {
+                Toast.makeText(mContext,
+                        getString(R.string.generic_error) + getString(R.string.syncthing_disabled),
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
+            mDownloadSupportBundle.setEnabled(false);
+            mDownloadSupportBundle.setSummary(R.string.download_support_bundle_in_progress);
+            String localDeviceName = mRestApi.getLocalDevice().getDisplayName();
+            String targetFileFullFN = FileUtils.getExternalStorageDownloadsDirectory() + "/" +
+                    "syncthing-support-bundle_" + localDeviceName + ".zip";
+            File targetFile = new File(targetFileFullFN);
+
+            mRestApi.downloadSupportBundle(targetFile, failSuccess -> {
+                mDownloadSupportBundle.setEnabled(true);
+                if (!failSuccess) {
+                    mDownloadSupportBundle.setSummary(R.string.download_support_bundle_failed);
+                    return;
+                }
+                mDownloadSupportBundle.setSummary(getString(R.string.download_support_bundle_succeeded, targetFileFullFN));
+            });
         }
 
         /**
@@ -636,13 +918,15 @@ public class SettingsActivity extends SyncthingActivity {
                 if (settingsFragment == null) {
                     return;
                 }
+                settingsFragment.mUseRoot.setOnPreferenceChangeListener(null);
+                settingsFragment.mUseRoot.setChecked(haveRoot);
                 if (haveRoot) {
                     settingsFragment.mPendingConfig = true;
-                    settingsFragment.mUseRoot.setChecked(true);
                 } else {
                     Toast.makeText(settingsFragment.getActivity(), R.string.toast_root_denied, Toast.LENGTH_SHORT)
                             .show();
                 }
+                settingsFragment.mUseRoot.setOnPreferenceChangeListener(settingsFragment::onBehaviourPreferenceChange);
             }
         }
 
@@ -726,7 +1010,7 @@ public class SettingsActivity extends SyncthingActivity {
         }
 
         /**
-         * Calley by {@link #ImportConfigTask} after config import.
+         * Calley by {@link SyncthingService#importConfig} after config import.
          */
         private void afterConfigImport(Boolean actionSucceeded) {
             if (!actionSucceeded) {
@@ -782,6 +1066,33 @@ public class SettingsActivity extends SyncthingActivity {
                         .show();
                 return false;
             }
+        }
+
+        /**
+         * Calculates the size of the syncthing database on disk.
+         */
+        private String getDatabaseSize() {
+            String dbPath = mContext.getFilesDir() + "/" + Constants.INDEX_DB_FOLDER;
+            String result = Util.runShellCommandGetOutput("/system/bin/du -sh " + dbPath, false);
+            if (TextUtils.isEmpty(result)) {
+                return "N/A";
+            }
+            String resultParts[] = result.split("\\s+");
+            if (resultParts.length == 0) {
+                return "N/A";
+            }
+            return resultParts[0];
+        }
+
+        /**
+         * Get current open file limit enforced by the Android OS.
+         */
+        private String getOpenFileLimit() {
+            String result = Util.runShellCommandGetOutput("/system/bin/ulimit -n", false);
+            if (TextUtils.isEmpty(result)) {
+                return "N/A";
+            }
+            return result;
         }
     }
 }

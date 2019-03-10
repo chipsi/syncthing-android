@@ -3,21 +3,25 @@
 [![License: MPLv2](https://img.shields.io/badge/License-MPLv2-blue.svg)](https://opensource.org/licenses/MPL-2.0)
 <a href="https://github.com/Catfriend1/syncthing-android/releases" alt="GitHub release"><img src="https://img.shields.io/github/release/Catfriend1/syncthing-android/all.svg" /></a>
 <a href="https://f-droid.org/de/packages/com.github.catfriend1.syncthingandroid" alt="F-Droid release"><img src="https://img.shields.io/f-droid/v/com.github.catfriend1.syncthingandroid.svg" /></a>
+<a href="https://play.google.com/store/apps/details?id=com.github.catfriend1.syncthingandroid" alt="G-Play release"><img src="https://img.shields.io/badge/g--play-1.1.0.2-blue.svg" /></a>
+<a href="https://liberapay.com/~1534877" alt="LiberaPay"><img src="https://img.shields.io/liberapay/patrons/Syncthing-Fork.svg?style=social" /></a>
+<a href="https://www.somsubhra.com/github-release-stats/?username=Catfriend1&repository=syncthing-android" alt="GitHub Stats"><img src="https://img.shields.io/github/downloads/Catfriend1/syncthing-android/total.svg" /></a>
 
 # Major enhancements in this fork are:
 - Individual sync conditions can be applied per device and per folder (for expert users).
 - Recent changes UI, click to open files.
-- UI explains why syncthing is running or not running according to the run conditions set in preferences.
+- Changes to folder and device config can be made regardless if syncthing is running or not.
+- UI explains why syncthing is running or not.
 - "Battery eater" problem is fixed.
 - Android 8 and 9 support.
-- Many bug fixes, enhancements and more frequent releases.
+- Extended support for third-party automation apps (see wiki)
 
 A wrapper of [Syncthing](https://github.com/syncthing/syncthing) for Android. Head to the "releases" section or F-Droid for builds. Please open an issue under this fork if you need help. Important: Please don't file bugs at the upstream repository "syncthing-android" if you are using this fork.
 
 <img src="app/src/main/play/en-GB/listing/phoneScreenshots/screenshot_phone_12.png" alt="screenshot 1" width="200" /> <img src="app/src/main/play/en-GB/listing/phoneScreenshots/screenshot_phone_11.png" alt="screenshot 2" width="200" /> <img src="app/src/main/play/en-GB/listing/phoneScreenshots/screenshot_phone_09.png" alt="screenshot 3" width="200" />
 
-# Please participate in quality assurance testing
-See https://github.com/Catfriend1/syncthing-android/issues/122 for more details and QA builds.
+# Privacy Policy
+See our document on privacy: [privacy-policy.md](https://github.com/Catfriend1/syncthing-android/blob/master/privacy-policy.md).
 
 # Goal of the forked version
 - Develop and try out enhancements together
@@ -65,6 +69,16 @@ To clean up all files generated during build, use the following commands:
 `./gradlew cleanNative`
 
 `./gradlew clean`
+
+### Development Notes
+
+It is recommended to change the GUI and Listen Address ports for the debug app, e.g. to 8385 and 22001 respectively.
+
+The Syncthing native used for this android application provides a web interface by default. It can be accessed via the Settings menu -> 'Web GUI'. It is quite helpful to access this web interface from your development machine. Read android documentation on how to access the network of your emulator. Or use the following command to connect to the single currently running emulator/AVD.
+
+adb forward tcp:18384 tcp:8384
+
+Start Syncthing app on your emulator and access the web interface from you favorite browser of your development machine via https://127.0.0.1:18384
 
 # License
 

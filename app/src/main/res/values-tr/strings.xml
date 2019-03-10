@@ -11,11 +11,8 @@
     <!-- Title for dialog displayed on first start -->
     <string name="welcome_title">Android için Syncthing\'e Hoş Geldiniz</string>
 
-    <string name="welcome_text">Syncthing bir açık kaynaklı dosya eşzamanlama uygulamasıdır.\n\
-Diğer aygıtlarla veri paylaşmak için, onların eşsiz aygıt ID\'lerini aygıt listesine eklemen gerekir.
-Ardından hangi klasörlerin hangi aygıtlar ile paylaşılacağını seçebilirsin.\n\
-Eğer herhangi bir sorunla karşılaşırsan Github aracılığıyla bildir.</string>
-
+    <!-- Slide "Ignore battery optimizations" -->
+    <string name="ignore_doze_permission_title">Batarya İyileştirme</string>
     <string name="cont">Devam et</string>
     <string name="generic_error">Hata</string>
     <!-- Title of the "add folder" menu action -->
@@ -39,8 +36,6 @@ Eğer herhangi bir sorunla karşılaşırsan Github aracılığıyla bildir.</st
 
     <string name="toast_write_storage_permission_required">Bu uygulama için belleğe yazma yetkisi gerekmektedir.</string>
 
-    <string name="ignore_doze_permission_title">Batarya İyileştirme</string>
-    <string name="ignore_doze_permission_desc">Android, birkaç zaman sonra eşzamanlamayı durdurabilir. Bunu önlemek için batarya iyileştirmesini kapat.\n\nBazı aygıtlar ek olarak görev bitirme uygulamalarıyla yüklü gelir. Syncthing\'i onların beyaz listesine ayrıca eklemelisiniz.</string>
     <!-- StateDialogActivity -->
 
 
@@ -203,6 +198,7 @@ Eğer herhangi bir sorunla karşılaşırsan Github aracılığıyla bildir.</st
     <!-- Text for WebGuiActivity loading view -->
     <string name="web_gui_loading">Arayüz Bekleniyor</string>
 
+
     <!-- SettingsFragment -->
 
 
@@ -210,8 +206,9 @@ Eğer herhangi bir sorunla karşılaşırsan Github aracılığıyla bildir.</st
 
     <string name="category_run_conditions">Çalışma Koşulları</string>
     <string name="category_behaviour">Davranış</string>
+
     <string name="category_syncthing_options">Syncthing Seçenekleri</string>
-    <string name="category_debug">Hata ayıklama</string>
+
     <string name="category_experimental">Deneysel</string>
 
     <!-- Preference screen - Run conditions -->
@@ -239,8 +236,6 @@ Eğer herhangi bir sorunla karşılaşırsan Github aracılığıyla bildir.</st
     <string name="global_announce_server">Küresel Bulunabilirlik Sunucuları</string>
 
     <string name="usage_reporting">Anonim Kullanım Raporlama</string>
-
-    <string name="gui_address">Arayüz Dinleme Adresleri</string>
 
     <string name="export_config">Yapılandırmayı Dışa Aktar</string>
 
@@ -288,9 +283,6 @@ Eğer herhangi bir sorunla karşılaşırsan Github aracılığıyla bildir.</st
     <!-- Activity title -->
     <string name="folder_picker_title">Klasör Seçici</string>
 
-    <!-- Toast shown on devices with kitkat or higher -->
-    <string name="kitkat_external_storage_warning">Uyarı: Android sürümünüz, harici depolama aygıtlarına eşzamanlama yapılmasına izin vermiyor.</string>
-
     <!-- ListView empty text -->
     <string name="directory_empty">Dizin Boş</string>
 
@@ -315,16 +307,11 @@ Eğer herhangi bir sorunla karşılaşırsan Github aracılığıyla bildir.</st
 
     <!-- SyncthingService -->
 
-
-    <!-- Title of the "syncthing disabled" dialog -->
-    <string name="syncthing_disabled_title">Syncthing devre dışı</string>
-    <!-- Button text on the "syncthing disabled" dialog, used as menu item to stop syncthing service if "always_run_in_background" is true -->
+    <!-- Text for the exit button on the drawer -->
     <string name="exit">Çık</string>
 
     <!-- Title of the notification shown while syncthing is running and enabled -->
     <string name="syncthing_active">Syncthing çalışıyor</string>
-
-    <string name="syncthing_disabled">Syncthing devre dışı</string>
 
     <!-- Label of the default folder created of first start (camera folder). -->
     <string name="default_folder_label">Kamera</string>

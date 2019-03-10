@@ -2,8 +2,8 @@ package com.nutomic.syncthingandroid.activities;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,14 +20,11 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
@@ -41,12 +38,14 @@ import com.nutomic.syncthingandroid.SyncthingApp;
 import com.nutomic.syncthingandroid.service.Constants;
 import com.nutomic.syncthingandroid.service.SyncthingRunnable.ExecutableNotFoundException;
 import com.nutomic.syncthingandroid.util.ConfigXml;
+import com.nutomic.syncthingandroid.util.Util;
+import com.nutomic.syncthingandroid.views.CustomViewPager;
 
 import java.lang.ref.WeakReference;
 
 import javax.inject.Inject;
 
-public class FirstStartActivity extends Activity {
+public class FirstStartActivity extends AppCompatActivity {
 
     private static String TAG = "FirstStartActivity";
     private static final int REQUEST_COARSE_LOCATION = 141;
@@ -74,7 +73,7 @@ public class FirstStartActivity extends Activity {
     private int mSlidePosIgnoreDozePermission = -1;
     private int mSlidePosKeyGeneration = -1;
 
-    private ViewPager mViewPager;
+    private CustomViewPager mViewPager;
     private ViewPagerAdapter mViewPagerAdapter;
     private LinearLayout mDotsLayout;
     private TextView[] mDots;
@@ -83,6 +82,8 @@ public class FirstStartActivity extends Activity {
 
     @Inject
     SharedPreferences mPreferences;
+
+    private Boolean mRunningOnTV = false;
 
     /**
      * Handles activity behaviour depending on prerequisites.
@@ -93,6 +94,9 @@ public class FirstStartActivity extends Activity {
         super.onCreate(savedInstanceState);
         ((SyncthingApp) getApplication()).component().inject(this);
 
+        mRunningOnTV = Util.isRunningOnTV(this);
+        Log.d(TAG, mRunningOnTV ? "Running on a TV Device" : "Running on a non-TV Device");
+
         /**
          * Check if prerequisites to run the app are still in place.
          * If anything mandatory is missing, the according welcome slide(s) will be shown.
@@ -100,7 +104,7 @@ public class FirstStartActivity extends Activity {
         Boolean showSlideStoragePermission = !haveStoragePermission();
         Boolean showSlideIgnoreDozePermission = !haveIgnoreDozePermission();
         Boolean showSlideLocationPermission = !haveLocationPermission();
-        Boolean showSlideKeyGeneration = !Constants.getConfigFile(this).exists();
+        Boolean showSlideKeyGeneration = !checkForParseableConfig();
 
         /**
          * If we don't have to show slides for mandatory prerequisites,
@@ -121,19 +125,12 @@ public class FirstStartActivity extends Activity {
 
         // Show first start welcome wizard UI.
         setContentView(R.layout.activity_first_start);
-        mViewPager = (ViewPager) findViewById(R.id.view_pager);
+        mViewPager = (CustomViewPager) findViewById(R.id.view_pager);
         mDotsLayout = (LinearLayout) findViewById(R.id.layoutDots);
         mBackButton = (Button) findViewById(R.id.btn_back);
         mNextButton = (Button) findViewById(R.id.btn_next);
 
-        mViewPager.setOnTouchListener(new OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                // Consume the event to prevent swiping through the slides.
-                v.performClick();
-                return true;
-            }
-        });
+        mViewPager.setPagingEnabled(false);
 
         // Add welcome slides to be shown.
         int[] colorsActive = getResources().getIntArray(R.array.array_dot_active);
@@ -186,6 +183,30 @@ public class FirstStartActivity extends Activity {
                 onBtnNextClick();
             }
         });
+
+        if (mRunningOnTV) {
+            mNextButton.setFocusableInTouchMode(true);
+        }
+        if (savedInstanceState != null) {
+            mBackButton.setVisibility(savedInstanceState.getBoolean("mBackButton") ? View.VISIBLE : View.GONE);
+            mNextButton.setVisibility(savedInstanceState.getBoolean("mNextButton") ? View.VISIBLE : View.GONE);
+        }
+        if (mNextButton.getVisibility() == View.VISIBLE) {
+            mNextButton.requestFocus();
+        } else if (mBackButton.getVisibility() == View.VISIBLE) {
+            mBackButton.requestFocus();
+        }
+    }
+
+    /**
+     * Saves current tab index and fragment states.
+     */
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putBoolean("mBackButton", mBackButton.getVisibility() == View.VISIBLE);
+        outState.putBoolean("mNextButton", mNextButton.getVisibility() == View.VISIBLE);
     }
 
     public void onBtnBackClick() {
@@ -195,6 +216,7 @@ public class FirstStartActivity extends Activity {
             mViewPager.setCurrentItem(current);
             if (current == 0) {
                 mBackButton.setVisibility(View.GONE);
+                mNextButton.requestFocus();
             }
         }
     }
@@ -215,7 +237,14 @@ public class FirstStartActivity extends Activity {
             if (!haveIgnoreDozePermission()) {
                 Toast.makeText(this, R.string.toast_ignore_doze_permission_required,
                         Toast.LENGTH_LONG).show();
-                return;
+                /**
+                 * a) Phones, tablets: The ignore doze permission is mandatory.
+                 * b) TVs: The ignore doze permission is optional as it can only set by ADB on Android 8+.
+                 */
+                if (!mRunningOnTV) {
+                    // Case a) - Prevent user moving on with the slides.
+                    return;
+                }
             }
         }
 
@@ -224,7 +253,18 @@ public class FirstStartActivity extends Activity {
             // Move to next slide.
             mViewPager.setCurrentItem(current);
             mBackButton.setVisibility(View.VISIBLE);
-            if (current == mSlidePosKeyGeneration) {
+            if (current == mSlidePosIgnoreDozePermission) {
+                if (mRunningOnTV) {
+                    /**
+                     * Display workaround notice: Without workaround SyncthingNative can't run reliably on TV's running Android 8+.
+                     * See issue https://github.com/Catfriend1/syncthing-android/issues/192
+                     */
+                    TextView ignoreDozeOsNotice = (TextView) findViewById(R.id.tvIgnoreDozePermissionOsNotice);
+                    ignoreDozeOsNotice.setText(getString(R.string.ignore_doze_permission_os_notice, getString(R.string.wiki_url), "Android-TV-preparations"));
+                    ignoreDozeOsNotice.setVisibility(View.VISIBLE);
+                }
+            }
+            else if (current == mSlidePosKeyGeneration) {
                 onKeyGenerationSlideShown();
             }
         } else {
@@ -243,6 +283,10 @@ public class FirstStartActivity extends Activity {
             mDots[i].setText(Html.fromHtml("&#8226;"));
             mDots[i].setTextSize(35);
             mDots[i].setTextColor(mSlides[currentPage].dotColorInActive);
+
+            // Prevent TalkBack from announcing a decorative TextView.
+            mDots[i].setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+            mDots[i].setContentDescription(getString(R.string.page_x_of_y, Integer.toString(i), Integer.toString(mDots.length)));
             mDotsLayout.addView(mDots[i]);
         }
 
@@ -255,7 +299,7 @@ public class FirstStartActivity extends Activity {
     }
 
     //  ViewPager change listener
-    ViewPager.OnPageChangeListener mViewPagerPageChangeListener = new ViewPager.OnPageChangeListener() {
+    CustomViewPager.OnPageChangeListener mViewPagerPageChangeListener = new CustomViewPager.OnPageChangeListener() {
 
         @Override
         public void onPageSelected(int position) {
@@ -362,16 +406,7 @@ public class FirstStartActivity extends Activity {
      */
     private void startApp() {
         Intent mainIntent = new Intent(this, MainActivity.class);
-
-        /**
-         * In case start_into_web_gui option is enabled, start both activities
-         * so that back navigation works as expected.
-         */
-        if (mPreferences.getBoolean(Constants.PREF_START_INTO_WEB_GUI, false)) {
-            startActivities(new Intent[]{mainIntent, new Intent(this, WebGuiActivity.class)});
-        } else {
-            startActivity(mainIntent);
-        }
+        startActivity(mainIntent);
         finish();
     }
 
@@ -390,14 +425,29 @@ public class FirstStartActivity extends Activity {
     @SuppressLint("InlinedApi")
     @TargetApi(23)
     private void requestIgnoreDozePermission() {
+        Boolean intentFailed = false;
         Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
         intent.setData(Uri.parse("package:" + getPackageName()));
         try {
-            startActivity(intent);
+            ComponentName componentName = intent.resolveActivity(getPackageManager());
+            if (componentName != null) {
+                String className = componentName.getClassName();
+                if (className != null && !className.equalsIgnoreCase("com.android.tv.settings.EmptyStubActivity")) {
+                    // Launch "Exempt from doze mode?" dialog.
+                    startActivity(intent);
+                    return;
+                }
+                intentFailed = true;
+            } else {
+                Log.w(TAG, "Request ignore battery optimizations not supported");
+                intentFailed = true;
+            }
         } catch (ActivityNotFoundException e) {
-            // Some devices dont seem to support this request (according to Google Play
-            // crash reports).
             Log.w(TAG, "Request ignore battery optimizations not supported", e);
+            intentFailed = true;
+        }
+        if (intentFailed) {
+            // Some devices don't support this request.
             Toast.makeText(this, R.string.dialog_disable_battery_optimizations_not_supported, Toast.LENGTH_LONG).show();
         }
     }
@@ -437,6 +487,7 @@ public class FirstStartActivity extends Activity {
                 } else {
                     Toast.makeText(this, R.string.permission_granted, Toast.LENGTH_SHORT).show();
                     Log.i(TAG, "User granted ACCESS_COARSE_LOCATION permission.");
+                    mNextButton.requestFocus();
                 }
                 break;
             case REQUEST_WRITE_STORAGE:
@@ -446,6 +497,7 @@ public class FirstStartActivity extends Activity {
                 } else {
                     Toast.makeText(this, R.string.permission_granted, Toast.LENGTH_SHORT).show();
                     Log.i(TAG, "User granted WRITE_EXTERNAL_STORAGE permission.");
+                    mNextButton.requestFocus();
                 }
                 break;
             default:
@@ -457,6 +509,7 @@ public class FirstStartActivity extends Activity {
      * Perform secure key generation in an AsyncTask.
      */
     private void onKeyGenerationSlideShown() {
+        mBackButton.setVisibility(View.GONE);
         mNextButton.setVisibility(View.GONE);
         KeyGenerationTask keyGenerationTask = new KeyGenerationTask(this);
         keyGenerationTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -480,8 +533,10 @@ public class FirstStartActivity extends Activity {
                 cancel(true);
                 return null;
             }
+            configXml = new ConfigXml(firstStartActivity);
             try {
-                configXml = new ConfigXml(firstStartActivity);
+                // Create new secure keys and config.
+                configXml.generateConfig();
             } catch (ExecutableNotFoundException e) {
                 publishProgress(firstStartActivity.getString(R.string.executable_not_found, e.getMessage()));
                 cancel(true);
@@ -513,10 +568,33 @@ public class FirstStartActivity extends Activity {
                 return;
             }
             TextView keygenStatus = (TextView) firstStartActivity.findViewById(R.id.key_generation_status);
+            if (!firstStartActivity.checkForParseableConfig()) {
+                keygenStatus.setText(firstStartActivity.getString(R.string.config_read_failed));
+                return;
+            }
             keygenStatus.setText(firstStartActivity.getString(R.string.key_generation_success));
             Button nextButton = (Button) firstStartActivity.findViewById(R.id.btn_next);
             nextButton.setVisibility(View.VISIBLE);
+            nextButton.requestFocus();
         }
     }
 
+    private Boolean checkForParseableConfig() {
+        /**
+         * Check if a valid config exists that can be read and parsed.
+         */
+        Boolean configExists = Constants.getConfigFile(this).exists();
+        if (!configExists) {
+            return false;
+        }
+        Boolean configParseable = false;
+        ConfigXml configParseTest = new ConfigXml(this);
+        try {
+            configParseTest.loadConfig();
+            configParseable = true;
+        } catch (ConfigXml.OpenConfigException e) {
+            Log.d(TAG, "Failed to parse existing config. Will show key generation slide ...");
+        }
+        return configParseable;
+    }
 }

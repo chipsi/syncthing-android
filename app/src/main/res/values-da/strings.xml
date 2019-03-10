@@ -11,9 +11,9 @@
     <!-- Title for dialog displayed on first start -->
     <string name="welcome_title">Velkommen til Syncthing til Android</string>
 
-    <string name="welcome_text">Syncthing er en open-source fil-synkroniserings applikation.\n\
-For at dele data med andre enheder, skal du tilføje deres enheds unikke ID til enhedslisten. Efter dette kan du vælge hvilke mapper der skal deles med hvilke enheder.\n\
-Vær venlig at rapportere ethvert problem, du støder på, via Github. </string>
+    <!-- Slide "Ignore battery optimizations" -->
+    <string name="ignore_doze_permission_title">Batterioptimering</string>
+    <string name="dialog_disable_battery_optimizations_not_supported">Din enhed understøtter ikke at slå batterioptimeringer fra.</string>
 
     <string name="cont">Fortsæt</string>
     <string name="finish">Færdiggør</string>
@@ -38,10 +38,6 @@ Vær venlig at rapportere ethvert problem, du støder på, via Github. </string>
     <string name="open_website">Åben Hjemmeside</string>
 
     <string name="toast_write_storage_permission_required">Write storage rettigheder er nødvendige for denne app.</string>
-
-    <string name="ignore_doze_permission_title">Batterioptimering</string>
-    <string name="ignore_doze_permission_desc">Android stopper måske synkroniseringen efter noget tid. For at undgå dette, vælg batterioptimering fra.\n\nNogle enheder har ekstra job-afsluttende apps installeret. Du burde også tilføje Syncthing til deres whitelist. </string>
-    <string name="dialog_disable_battery_optimizations_not_supported">Din enhed understøtter ikke at slå batterioptimeringer fra.</string>
 
     <!-- StateDialogActivity -->
 
@@ -212,6 +208,7 @@ Vær venlig at rapportere ethvert problem, du støder på, via Github. </string>
     <!-- Text for WebGuiActivity loading view -->
     <string name="web_gui_loading">Venter på GUI</string>
 
+
     <!-- SettingsFragment -->
 
 
@@ -219,8 +216,9 @@ Vær venlig at rapportere ethvert problem, du støder på, via Github. </string>
 
     <string name="category_run_conditions">Kør betingelser</string>
     <string name="category_behaviour">Adfærd</string>
+
     <string name="category_syncthing_options">Syncthing Muligheder</string>
-    <string name="category_debug">Debug</string>
+
     <string name="category_experimental">Eksperimentalt</string>
 
     <!-- Preference screen - Run conditions -->
@@ -235,10 +233,6 @@ Vær venlig at rapportere ethvert problem, du støder på, via Github. </string>
     <string name="preference_language_title">Sprog</string>
 
     <string name="preference_language_summary">Ændr app sproget</string>
-
-    <string name="start_into_web_gui_title">Start direkte i webinterfacet</string>
-
-    <string name="start_into_web_gui_summary">Når app\'en starter, åben webinterfacet i stedet for hovedskærmen</string>
 
     <string name="pref_language_default">Default Sprog</string>
 
@@ -269,8 +263,6 @@ Vær venlig at rapportere ethvert problem, du støder på, via Github. </string>
     <string name="enable_relaying">Aktiver Relaying</string>
 
     <string name="usage_reporting">Anonym Forburgsrapportering</string>
-
-    <string name="gui_address">GUI Listen Addresser</string>
 
     <string name="export_config">Eksporter Konfigurering</string>
 
@@ -329,9 +321,6 @@ Vær venlig at rapportere ethvert problem, du støder på, via Github. </string>
 
     <!-- Activity title -->
     <string name="folder_picker_title">Mappe Vælger</string>
-
-    <!-- Toast shown on devices with kitkat or higher -->
-    <string name="kitkat_external_storage_warning">Advarsel: Din Android version tillader ikke at synkronisere til eksterne lagringsenheder</string>
 
     <!-- ListView empty text -->
     <string name="directory_empty">Katalog er Tomt</string>
@@ -401,16 +390,11 @@ Vær venlig at rapportere ethvert problem, du støder på, via Github. </string>
 
     <!-- SyncthingService -->
 
-
-    <!-- Title of the "syncthing disabled" dialog -->
-    <string name="syncthing_disabled_title">Syncthing er slået fra</string>
-    <!-- Button text on the "syncthing disabled" dialog, used as menu item to stop syncthing service if "always_run_in_background" is true -->
+    <!-- Text for the exit button on the drawer -->
     <string name="exit">Afslut</string>
 
     <!-- Title of the notification shown while syncthing is running and enabled -->
     <string name="syncthing_active">Syncthing kører</string>
-
-    <string name="syncthing_disabled">Syncthing er slået fra</string>
 
     <!-- Label of the default folder created of first start (camera folder). -->
     <string name="default_folder_label">Kamera</string>
@@ -419,8 +403,6 @@ Vær venlig at rapportere ethvert problem, du støder på, via Github. </string>
     <string name="default_folder_id">%1$s-fotos</string>
 
     <string name="notification_crash_title">Syncthing crashede %1$s</string>
-
-    <string name="notification_crash_text">Klik for at se logs</string>
 
     <!-- RestApi -->
 

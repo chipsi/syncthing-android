@@ -14,15 +14,16 @@
     <!-- Welcome wizard -->
     <!-- Slide "Introduction" -->
     <string name="introduction">Introduktion</string>
-    <string name="welcome_text">Syncthing är en filsynkroniseringsapplikation med öppen källkod.\n\
-För att dela data med andra enheter måste du lägga till deras unika enhets-ID i enhetslistan. Efteråt kan du välja vilka mappar som ska delas med vilka enheter.\n\
-Vänligen rapportera eventuella problem du stöter på via Github.</string>
-
     <!-- Slide "Storage Permission" -->
     <string name="storage_permission_title">Lagringsbehörighet</string>
     <string name="storage_permission_desc">Syncthing behöver komma åt din lagring för att göra filsynkronisering.</string>
 
-    <!-- Slide "Location Permission"" -->
+    <!-- Slide "Ignore battery optimizations" -->
+    <string name="ignore_doze_permission_title">Batterioptimering</string>
+    <string name="toast_ignore_doze_permission_required">Den här appen fungerar bara tillförlitligt om den är undantagen från\" doze\"-energisparläge.</string>
+    <string name="dialog_disable_battery_optimizations_not_supported">Din enhet har inte stöd för att inaktivera batterioptimeringar</string>
+
+    <!-- Slide "Location Permission" -->
     <string name="location_permission_title">Plats tillstånd</string>
     <string name="key_generation_success">Säkra nycklar för privat datautbyte har genererats.</string>
 
@@ -67,11 +68,6 @@ Vänligen rapportera eventuella problem du stöter på via Github.</string>
     <string name="device_rejected">Enhet \"%1$s\" vill ansluta</string>
 
     <string name="folder_rejected">Enhet \"%1$s\" vill dela mapp \"%2$s\"</string>
-
-    <string name="ignore_doze_permission_title">Batterioptimering</string>
-    <string name="ignore_doze_permission_desc">Android kan stoppa synkronisering efter en viss tid. För att förhindra detta, stäng av batterioptimering.\n\nNågra enheter har ytterligare uppgiftsdödande appar förinstallerade. Ni bör lägga till Syncthing till deras vitlista, också.</string>
-    <string name="toast_ignore_doze_permission_required">Den här appen fungerar bara tillförlitligt om den är undantagen från\" doze\"-energisparläge.</string>
-    <string name="dialog_disable_battery_optimizations_not_supported">Din enhet har inte stöd för att inaktivera batterioptimeringar</string>
 
     <!-- StateDialogActivity -->
 
@@ -301,6 +297,7 @@ Vänligen rapportera eventuella problem du stöter på via Github.</string>
     <!-- Text for WebGuiActivity loading view -->
     <string name="web_gui_loading">Väntar på gränssnitt</string>
 
+
     <!-- SettingsFragment -->
 
 
@@ -308,7 +305,9 @@ Vänligen rapportera eventuella problem du stöter på via Github.</string>
 
     <string name="category_run_conditions">Körvillkor</string>
     <string name="category_behaviour">Beteende</string>
+
     <string name="category_syncthing_options">Syncthing alternativ</string>
+
     <string name="category_backup">Import och export</string>
     <string name="category_debug">Felsök</string>
     <string name="category_experimental">Experimentell</string>
@@ -355,10 +354,6 @@ Vänligen rapportera eventuella problem du stöter på via Github.</string>
 
     <string name="preference_language_summary">Ändra appens språk</string>
 
-    <string name="start_into_web_gui_title">Starta direkt i webbgränssnittet</string>
-
-    <string name="start_into_web_gui_summary">När du startar appen öppnar du webbgränssnittet istället för huvudskärmen</string>
-
     <string name="pref_language_default">Standardspråk</string>
 
     <string-array name="folder_types">
@@ -404,8 +399,6 @@ Vänligen rapportera eventuella problem du stöter på via Github.</string>
 
     <string name="usage_reporting">Anonym användningsrapportering</string>
 
-    <string name="gui_address">Gränssnittets lyssnaradresser</string>
-
     <!-- Titles for the preference to undo ignored devices and folders -->
     <string name="undo_ignored_devices_folders_title">Ångra ignorerande enheter och mappar</string>
     <string name="undo_ignored_devices_folders_question">Detta kommer att ångra tidigare beslut att ignorera enheter och mappar. Fortsätta?</string>
@@ -427,14 +420,10 @@ Vänligen rapportera eventuella problem du stöter på via Github.</string>
     <string name="use_tor_summary">Tvinga all trafik genom Tor för ökad integritet. Kräver Orbot. Inaktiverar proxyalternativ.</string>
 
     <string name="socks_proxy_address_title">SOCKS5-proxy</string>
-    <string name="socks_proxy_address_example">socks5://192.168.0.1:1080</string>
-
     <!-- Toast after entering invalid socks proxy address -->
     <string name="toast_invalid_socks_proxy_address">Inmatning bryter mot proxysyntaxen \'socks5://[IP/HOSTNAME]:[PORT]\'</string>
 
     <string name="http_proxy_address_title">HTTP(S)-proxy</string>
-    <string name="http_proxy_address_example">http://192.168.0.1:8080</string>
-
     <!-- Toast after entering invalid http proxy address -->
     <string name="toast_invalid_http_proxy_address">Inmatning bryter mot proxysyntaxen \'http://[IP/HOSTNAME]:[PORT]\'</string>
 
@@ -509,9 +498,6 @@ Vänligen rapportera eventuella problem du stöter på via Github.</string>
 
     <!-- Activity title -->
     <string name="folder_picker_title">Mappväljare</string>
-
-    <!-- Toast shown on devices with kitkat or higher -->
-    <string name="kitkat_external_storage_warning">Varning: Din Android version tillåter inte synkronisering till externa lagringsenheter</string>
 
     <!-- ListView empty text -->
     <string name="directory_empty">Katalogen är tom</string>
@@ -600,23 +586,17 @@ Vänligen rapportera eventuella problem du stöter på via Github.</string>
     <string name="reason_on_whitelisted_wifi">Syncthing får köras på det aktuella Wi-Fi-nätverket.</string>
     <string name="reason_not_on_whitelisted_wifi">Syncthing körs inte eftersom det aktuella Wi-Fi-nätverkets namn inte är vitlistat.</string>
     <string name="reason_on_flight_mode">Syncthing körs som du tillät att den ska köras när flygläget är aktivt.</string>
-
     <!-- Sync Conditions Dialog -->
 
     <string name="custom_wifi_ssid_whitelist_empty">Ingen Wi-Fi-SSID är vitlistad. Ange några i inställningarna.</string>
 
     <!-- SyncthingService -->
 
-
-    <!-- Title of the "syncthing disabled" dialog -->
-    <string name="syncthing_disabled_title">Syncthing är inaktiverad</string>
-    <!-- Button text on the "syncthing disabled" dialog, used as menu item to stop syncthing service if "always_run_in_background" is true -->
+    <!-- Text for the exit button on the drawer -->
     <string name="exit">Avsluta</string>
 
     <!-- Title of the notification shown while syncthing is running and enabled -->
     <string name="syncthing_active">Syncthing körs</string>
-
-    <string name="syncthing_disabled">Syncthing är inaktiverad</string>
 
     <string name="syncthing_terminated">Syncthing avslutades</string>
 
@@ -632,7 +612,7 @@ Vänligen rapportera eventuella problem du stöter på via Github.</string>
 
     <string name="notification_crash_title">Syncthing har kraschat %1$s</string>
 
-    <string name="notification_crash_text">Klicka för att visa loggar</string>
+    <string name="notification_crash_text">Klicka för att visa loggar (%1$s)</string>
 
     <string name="notifications_persistent_channel">Syncthing är aktiv</string>
     <string name="notification_persistent_waiting_channel">Övervakar körvillkor</string>

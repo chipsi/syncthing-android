@@ -1,8 +1,10 @@
 package com.nutomic.syncthingandroid.fragments;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.Menu;
@@ -12,16 +14,21 @@ import android.view.View;
 import android.widget.AdapterView;
 
 import com.nutomic.syncthingandroid.R;
+import com.nutomic.syncthingandroid.SyncthingApp;
 import com.nutomic.syncthingandroid.activities.FolderActivity;
 import com.nutomic.syncthingandroid.activities.MainActivity;
 import com.nutomic.syncthingandroid.activities.SyncthingActivity;
 import com.nutomic.syncthingandroid.model.Folder;
+import com.nutomic.syncthingandroid.service.AppPrefs;
 import com.nutomic.syncthingandroid.service.Constants;
 import com.nutomic.syncthingandroid.service.RestApi;
 import com.nutomic.syncthingandroid.service.SyncthingService;
+import com.nutomic.syncthingandroid.util.ConfigXml;
 import com.nutomic.syncthingandroid.views.FoldersAdapter;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 /**
  * Displays a list of all existing folders.
@@ -29,7 +36,11 @@ import java.util.List;
 public class FolderListFragment extends ListFragment implements SyncthingService.OnServiceStateChangeListener,
         AdapterView.OnItemClickListener {
 
-    private final static String TAG = "FolderListFragment";
+    private static final String TAG = "FolderListFragment";
+
+    private Boolean ENABLE_VERBOSE_LOG = false;
+
+    @Inject SharedPreferences mPreferences;
 
     private Runnable mUpdateListRunnable = new Runnable() {
         @Override
@@ -43,6 +54,13 @@ public class FolderListFragment extends ListFragment implements SyncthingService
     private Boolean mLastVisibleToUser = false;
     private FoldersAdapter mAdapter;
     private SyncthingService.State mServiceState = SyncthingService.State.INIT;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        ((SyncthingApp) getActivity().getApplication()).component().inject(this);
+        ENABLE_VERBOSE_LOG = AppPrefs.getPrefVerboseLog(mPreferences);
+    }
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser)
@@ -73,13 +91,13 @@ public class FolderListFragment extends ListFragment implements SyncthingService
     }
 
     private void startUpdateListHandler() {
-        Log.v(TAG, "startUpdateListHandler");
+        LogV("startUpdateListHandler");
         mUpdateListHandler.removeCallbacks(mUpdateListRunnable);
         mUpdateListHandler.post(mUpdateListRunnable);
     }
 
     private void stopUpdateListHandler() {
-        Log.v(TAG, "stopUpdateListHandler");
+        LogV("stopUpdateListHandler");
         mUpdateListHandler.removeCallbacks(mUpdateListRunnable);
     }
 
@@ -102,9 +120,6 @@ public class FolderListFragment extends ListFragment implements SyncthingService
      *  while the user is looking at the current tab.
      */
     private void onTimerEvent() {
-        if (mServiceState != SyncthingService.State.ACTIVE) {
-            return;
-        }
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity == null) {
             return;
@@ -112,11 +127,7 @@ public class FolderListFragment extends ListFragment implements SyncthingService
         if (mainActivity.isFinishing()) {
             return;
         }
-        RestApi restApi = mainActivity.getApi();
-        if (restApi == null) {
-            return;
-        }
-        Log.v(TAG, "Invoking updateList on UI thread");
+        LogV("Invoking updateList on UI thread");
         mainActivity.runOnUiThread(FolderListFragment.this::updateList);
     }
 
@@ -130,11 +141,19 @@ public class FolderListFragment extends ListFragment implements SyncthingService
         if (activity == null || getView() == null || activity.isFinishing()) {
             return;
         }
+        List<Folder> folders;
         RestApi restApi = activity.getApi();
-        if (restApi == null || !restApi.isConfigLoaded()) {
-            return;
+        if (restApi == null ||
+                !restApi.isConfigLoaded() ||
+                mServiceState != SyncthingService.State.ACTIVE) {
+            // Syncthing is not running or REST API is not available yet.
+            ConfigXml configXml = new ConfigXml(activity);
+            configXml.loadConfig();
+            folders = configXml.getFolders();
+        } else {
+            // Syncthing is running and REST API is available.
+            folders = restApi.getFolders();
         }
-        List<Folder> folders = restApi.getFolders();
         if (folders == null) {
             return;
         }
@@ -178,4 +197,9 @@ public class FolderListFragment extends ListFragment implements SyncthingService
         }
     }
 
+    private void LogV(String logMessage) {
+        if (ENABLE_VERBOSE_LOG) {
+            Log.v(TAG, logMessage);
+        }
+    }
 }

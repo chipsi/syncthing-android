@@ -193,12 +193,14 @@
     <!-- Text for WebGuiActivity loading view -->
     <string name="web_gui_loading">Venter på GUI</string>
 
+
     <!-- SettingsFragment -->
 
 
     <string name="settings_title">Innstillinger</string>
 
     <string name="category_syncthing_options">Valg for Syncthing</string>
+
     <string name="category_experimental">Eksperimentelt</string>
 
     <string name="sync_only_wifi_ssids_wifi_turn_on_wifi">Vennligst skru på WiFi for å velge nettverk.</string>
@@ -224,8 +226,6 @@
     <string name="enable_relaying">Aktiver relésending</string>
 
     <string name="usage_reporting">Anonym bruksrapportering</string>
-
-    <string name="gui_address">GUI Lytteadresser</string>
 
     <string name="export_config">Eksporter innstillinger</string>
 
@@ -271,9 +271,6 @@
     <!-- Activity title -->
     <string name="folder_picker_title">Mappe-velger</string>
 
-    <!-- Toast shown on devices with kitkat or higher -->
-    <string name="kitkat_external_storage_warning">Advarsel: Din versjon av Android tillater ikke synkronisering til eksterne lagringsenheter. </string>
-
     <!-- ListView empty text -->
     <string name="directory_empty">Katalogen er tom</string>
 
@@ -296,16 +293,11 @@
 
     <!-- SyncthingService -->
 
-
-    <!-- Title of the "syncthing disabled" dialog -->
-    <string name="syncthing_disabled_title">Syncthing er deaktivert</string>
-    <!-- Button text on the "syncthing disabled" dialog, used as menu item to stop syncthing service if "always_run_in_background" is true -->
+    <!-- Text for the exit button on the drawer -->
     <string name="exit">Avslutt</string>
 
     <!-- Title of the notification shown while syncthing is running and enabled -->
     <string name="syncthing_active">Syncthing kjører</string>
-
-    <string name="syncthing_disabled">Syncthing er deaktivert</string>
 
     <!-- Label of the default folder created of first start (camera folder). -->
     <string name="default_folder_label">Kamera</string>
