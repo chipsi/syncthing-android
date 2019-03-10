@@ -6,6 +6,7 @@
     <item
         android:id="@+id/select"
         android:title="@string/select_folder"
+        android:icon="@drawable/ic_done_white_24dp"
         app:showAsAction="ifRoom" />
 
     <item
