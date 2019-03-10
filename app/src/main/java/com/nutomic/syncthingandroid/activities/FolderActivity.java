@@ -46,6 +46,8 @@ import com.nutomic.syncthingandroid.util.TextWatcherAdapter;
 import com.nutomic.syncthingandroid.util.Util;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Random;
 import java.util.Map;
@@ -85,7 +87,8 @@ public class FolderActivity extends SyncthingActivity {
     private static final int FOLDER_TYPE_DIALOG_REQUEST =3456;
     private static final int CHOOSE_FOLDER_REQUEST = 3459;
 
-    private static final String FOLDER_MARKER_NAME = ".stfolder";
+    private static final String FOLDER_MARKER_DIR_NAME = ".stfolder";
+    private static final String DO_NOT_DELETE_FILE_NAME = "DO_NOT_DELETE";
     // private static final String IGNORE_FILE_NAME = ".stignore";
 
     private ConfigRouter mConfig;
@@ -737,18 +740,47 @@ public class FolderActivity extends SyncthingActivity {
         if (mIsCreateMode) {
             Log.v(TAG, "onSave: Adding folder with ID = \'" + mFolder.id + "\'");
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
-                mFolderUri != null &&
-                mFolder.type.equals(Constants.FOLDER_TYPE_SEND_ONLY)) {
+                mFolderUri != null) {
                 /**
                  * Normally, syncthing takes care of creating the ".stfolder" marker.
-                 * This fails on newer android versions if the syncthing binary only has
+                 * This fails on Android 5+ if the syncthing binary only has
                  * readonly access on the path and the user tries to configure a
-                 * sendonly folder. To fix this, we'll precreate the marker using java code.
+                 * sendOnly folder. To fix this, we'll precreate the marker using java code.
                  */
                 DocumentFile dfFolder = DocumentFile.fromTreeUri(this, mFolderUri);
                 if (dfFolder != null) {
-                    Log.v(TAG, "onSave: Creating new directory " + mFolder.path + File.separator + FOLDER_MARKER_NAME);
-                    dfFolder.createDirectory(FOLDER_MARKER_NAME);
+                    String strFolderMarkerDir = mFolder.path + File.separator + FOLDER_MARKER_DIR_NAME;
+                    DocumentFile dfFolderMarkerDir = dfFolder.createDirectory(FOLDER_MARKER_DIR_NAME);
+                    if (dfFolderMarkerDir != null) {
+                        Log.v(TAG, "onSave: Created directory '" + strFolderMarkerDir + "'");
+
+                        // Create "DO_NOT_DELETE" file to workaround issue #131.
+                        String strDoNotDeleteFile = strFolderMarkerDir + File.separator + DO_NOT_DELETE_FILE_NAME;
+                        DocumentFile dfDoNotDeleteFile = dfFolderMarkerDir.createFile("text/plain", DO_NOT_DELETE_FILE_NAME);
+                        if (dfDoNotDeleteFile == null) {
+                            Log.w(TAG, "onSave: Failed to create file '" + strDoNotDeleteFile + "' #1");
+                        } else {
+                            Log.v(TAG, "onSave: Created file '" + strDoNotDeleteFile + "'");
+                            OutputStream outputStream = null;
+                            try {
+                                outputStream = getContentResolver().openOutputStream(dfDoNotDeleteFile.getUri());
+                                outputStream.write(DO_NOT_DELETE_FILE_NAME.getBytes("ISO-8859-1"));
+                                outputStream.flush();
+                            } catch (IOException e) {
+                                Log.e(TAG, "onSave: Failed to create file '" + strDoNotDeleteFile + "' #2", e);
+                            } finally {
+                                try {
+                                    if (outputStream != null) {
+                                        outputStream.close();
+                                    }
+                                } catch (IOException e) {
+                                    Log.e(TAG, "onSave: Failed to create file '" + strDoNotDeleteFile + "' #3", e);
+                                }
+                            }
+                        }
+                    } else {
+                        Log.w(TAG, "onSave: Failed to create directory '" + strFolderMarkerDir + "'");
+                    }
                 }
             }
             mConfig.addFolder(getApi(), mFolder);
