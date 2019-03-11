@@ -680,7 +680,10 @@ public class FolderActivity extends SyncthingActivity {
         mFolder.id = (getIntent().hasExtra(EXTRA_FOLDER_ID))
                 ? getIntent().getStringExtra(EXTRA_FOLDER_ID)
                 : generateRandomFolderId();
-        mFolder.label = getIntent().getStringExtra(EXTRA_FOLDER_LABEL).trim();
+        mFolder.label = getIntent().getStringExtra(EXTRA_FOLDER_LABEL);
+        if (!TextUtils.isEmpty(mFolder.label)) {
+            mFolder.label = mFolder.label.trim();
+        }
         mFolder.paused = false;
         mFolder.type = Constants.FOLDER_TYPE_SEND_RECEIVE;      // Default for {@link #checkWriteAndUpdateUI}.
         mFolder.minDiskFree = new Folder.MinDiskFree();
