@@ -22,18 +22,27 @@ BUILD_TARGETS = [
         'goarch': 'arm',
         'jni_dir': 'armeabi',
         'cc': 'arm-linux-androideabi-clang',
+        'patch_tls_underalign_offset': '0x14c',
+        'patch_tls_underalign_old_byte': '04',
+        'patch_tls_underalign_new_byte': '20',
     },
     {
         'arch': 'arm64',
         'goarch': 'arm64',
         'jni_dir': 'arm64-v8a',
         'cc': 'aarch64-linux-android-clang',
+        'patch_tls_underalign_offset': '0x1c0',
+        'patch_tls_underalign_old_byte': '08',
+        'patch_tls_underalign_new_byte': '40',
         'min_sdk': 21,
     },
     {
         'arch': 'x86',
         'goarch': '386',
         'jni_dir': 'x86',
+        'patch_tls_underalign_offset': '0x14c',
+        'patch_tls_underalign_old_byte': '04',
+        'patch_tls_underalign_new_byte': '20',
         'cc': 'i686-linux-android-clang',
     }
 ]
@@ -356,6 +365,23 @@ for target in BUILD_TARGETS:
                               '-cc', os.path.join(standalone_ndk_dir, 'bin', target['cc']),
                               '-version', syncthingVersion
                           ] + pkg_argument + ['-no-upgrade', 'build'], env=environ, cwd=syncthing_dir)
+
+    # Determine path of source artifact
+    source_artifact = os.path.join(syncthing_dir, 'syncthing')
+
+    # Path artifact to work around golang bug.
+    # See issues:
+    # - https://github.com/Catfriend1/syncthing-android/issues/370
+    # - https://github.com/golang/go/issues/29674
+    if 'patch_tls_underalign_offset' in target:
+        fh = open(source_artifact, "r+b")
+        fh.seek(int(target['patch_tls_underalign_offset'], 16))
+        print('Checking if tls path is applicable ...')
+        if fh.read(1) == bytes.fromhex(target['patch_tls_underalign_old_byte']):
+            print('Patching tls alignment ...')
+            fh.seek(int(target['patch_tls_underalign_offset'], 16))
+            fh.write(bytes.fromhex(target['patch_tls_underalign_new_byte']))
+        fh.close()
 
     # Copy compiled binary to jniLibs folder
     target_dir = os.path.join(project_dir, 'app', 'src', 'main', 'jniLibs', target['jni_dir'])
