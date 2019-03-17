@@ -254,12 +254,12 @@ def artifact_patch_underaligned_tls(artifact_fullfn):
 
     with open(artifact_fullfn, 'r+b') as f:
         f.seek(0)
-        hdr = f.read(16)
-        if hdr[0] != str(b'\x7f') or hdr[1] != 'E' or hdr[2] != 'L' or hdr[3] != 'F':
+        hdr = struct.unpack('16c', f.read(16))
+        if hdr[0] != b'\x7f' or hdr[1] != b'E' or hdr[2] != b'L' or hdr[3] != b'F':
             print('artifact_patch_underaligned_tls: Not an ELF file')
             return None
 
-        if hdr[4] == str(b'\x01'):
+        if hdr[4] == b'\x01':
             # 32 bit code
             f.seek(28)
             offset = struct.unpack('<I', f.read(4))[0]
@@ -277,7 +277,7 @@ def artifact_patch_underaligned_tls(artifact_fullfn):
                         f.seek(-4, 1)
                         f.write(struct.pack('<I', 32))
 
-        elif hdr[4] == str(b'\x02'):
+        elif hdr[4] == b'\x02':
             # 64 bit code
             f.seek(32)
             offset = struct.unpack('<Q', f.read(8))[0]
