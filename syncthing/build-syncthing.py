@@ -40,9 +40,6 @@ BUILD_TARGETS = [
         'arch': 'x86',
         'goarch': '386',
         'jni_dir': 'x86',
-        'patch_tls_underalign_offset': '0x14c',
-        'patch_tls_underalign_old_byte': '04',
-        'patch_tls_underalign_new_byte': '20',
         'cc': 'i686-linux-android-clang',
     }
 ]
