@@ -22,18 +22,14 @@ BUILD_TARGETS = [
         'goarch': 'arm',
         'jni_dir': 'armeabi',
         'cc': 'arm-linux-androideabi-clang',
-        'patch_tls_underalign_offset': '0x14c',
-        'patch_tls_underalign_old_byte': '04',
-        'patch_tls_underalign_new_byte': '20',
+        'patch_underaligned_tls': 'yes',
     },
     {
         'arch': 'arm64',
         'goarch': 'arm64',
         'jni_dir': 'arm64-v8a',
         'cc': 'aarch64-linux-android-clang',
-        'patch_tls_underalign_offset': '0x1c0',
-        'patch_tls_underalign_old_byte': '08',
-        'patch_tls_underalign_new_byte': '40',
+        'patch_underaligned_tls': 'yes',
         'min_sdk': 21,
     },
     {
@@ -253,6 +249,55 @@ def install_ndk():
     os.environ["ANDROID_NDK_HOME"] = ndk_home_path
 
 
+def artifact_patch_underaligned_tls(artifact_fullfn):
+    import struct
+
+    with open(artifact_fullfn, 'r+b') as f:
+      f.seek(0)
+      hdr = f.read(16)
+      if hdr[0] != 0x7f or hdr[1] != ord('E') or hdr[2] != ord('L') or hdr[3] != ord('F'):
+        print('artifact_patch_underaligned_tls: Not an ELF file')
+        return None
+
+      if hdr[4] == 1:
+        # 32 bit code
+        f.seek(28)
+        offset = struct.unpack('<I', f.read(4))[0]
+        f.seek(42)
+        phsize = struct.unpack('<H', f.read(2))[0]
+        phnum = struct.unpack('<H', f.read(2))[0]
+        for i in range(0, phnum):
+          f.seek(offset + i * phsize)
+          t = struct.unpack('<I', f.read(4))[0]
+          if t == 7:
+            f.seek(28 - 4, 1)
+            align = struct.unpack('<I', f.read(4))[0]
+            if (align < 32):
+              print('artifact_patch_underaligned_tls: Patching underaligned TLS segment from ' + str(align) + ' to 32')
+              f.seek(-4, 1)
+              f.write(struct.pack('<I', 32))
+
+      elif hdr[4] == 2:
+        # 64 bit code
+        f.seek(32)
+        offset = struct.unpack('<Q', f.read(8))[0]
+        f.seek(54)
+        phsize = struct.unpack('<H', f.read(2))[0]
+        phnum = struct.unpack('<H', f.read(2))[0]
+        for i in range(0, phnum):
+          f.seek(offset + i * phsize)
+          t = struct.unpack('<I', f.read(4))[0]
+          if t == 7:
+            f.seek(48 - 4, 1)
+            align = struct.unpack('<Q', f.read(8))[0]
+            if (align < 64):
+              print('artifact_patch_underaligned_tls: Patching underaligned TLS segment from ' + str(align) + ' to 64')
+              f.seek(-8, 1)
+              f.write(struct.pack('<H', 64))
+
+      else:
+        print('artifact_patch_underaligned_tls: Unknown ELF file class')
+
 
 #
 # BUILD SCRIPT MAIN.
@@ -366,19 +411,12 @@ for target in BUILD_TARGETS:
     # Determine path of source artifact
     source_artifact = os.path.join(syncthing_dir, 'syncthing')
 
-    # Path artifact to work around golang bug.
+    # Patch artifact to work around golang bug.
     # See issues:
     # - https://github.com/Catfriend1/syncthing-android/issues/370
     # - https://github.com/golang/go/issues/29674
-    if 'patch_tls_underalign_offset' in target:
-        fh = open(source_artifact, "r+b")
-        fh.seek(int(target['patch_tls_underalign_offset'], 16))
-        print('Checking if tls path is applicable ...')
-        if fh.read(1) == bytes.fromhex(target['patch_tls_underalign_old_byte']):
-            print('Patching tls alignment ...')
-            fh.seek(int(target['patch_tls_underalign_offset'], 16))
-            fh.write(bytes.fromhex(target['patch_tls_underalign_new_byte']))
-        fh.close()
+    if 'patch_underaligned_tls' in target:
+        artifact_patch_underaligned_tls(source_artifact)
 
     # Copy compiled binary to jniLibs folder
     target_dir = os.path.join(project_dir, 'app', 'src', 'main', 'jniLibs', target['jni_dir'])
