@@ -253,50 +253,50 @@ def artifact_patch_underaligned_tls(artifact_fullfn):
     import struct
 
     with open(artifact_fullfn, 'r+b') as f:
-      f.seek(0)
-      hdr = f.read(16)
-      if hdr[0] != 0x7f or hdr[1] != ord('E') or hdr[2] != ord('L') or hdr[3] != ord('F'):
-        print('artifact_patch_underaligned_tls: Not an ELF file')
-        return None
+        f.seek(0)
+        hdr = f.read(16)
+        if hdr[0] != str(b'\x7f') or hdr[1] != 'E' or hdr[2] != 'L' or hdr[3] != 'F':
+            print('artifact_patch_underaligned_tls: Not an ELF file')
+            return None
 
-      if hdr[4] == 1:
-        # 32 bit code
-        f.seek(28)
-        offset = struct.unpack('<I', f.read(4))[0]
-        f.seek(42)
-        phsize = struct.unpack('<H', f.read(2))[0]
-        phnum = struct.unpack('<H', f.read(2))[0]
-        for i in range(0, phnum):
-          f.seek(offset + i * phsize)
-          t = struct.unpack('<I', f.read(4))[0]
-          if t == 7:
-            f.seek(28 - 4, 1)
-            align = struct.unpack('<I', f.read(4))[0]
-            if (align < 32):
-              print('artifact_patch_underaligned_tls: Patching underaligned TLS segment from ' + str(align) + ' to 32')
-              f.seek(-4, 1)
-              f.write(struct.pack('<I', 32))
+        if hdr[4] == str(b'\x01'):
+            # 32 bit code
+            f.seek(28)
+            offset = struct.unpack('<I', f.read(4))[0]
+            f.seek(42)
+            phsize = struct.unpack('<H', f.read(2))[0]
+            phnum = struct.unpack('<H', f.read(2))[0]
+            for i in range(0, phnum):
+                f.seek(offset + i * phsize)
+                t = struct.unpack('<I', f.read(4))[0]
+                if t == 7:
+                    f.seek(28 - 4, 1)
+                    align = struct.unpack('<I', f.read(4))[0]
+                    if (align < 32):
+                        print('artifact_patch_underaligned_tls: Patching underaligned TLS segment from ' + str(align) + ' to 32')
+                        f.seek(-4, 1)
+                        f.write(struct.pack('<I', 32))
 
-      elif hdr[4] == 2:
-        # 64 bit code
-        f.seek(32)
-        offset = struct.unpack('<Q', f.read(8))[0]
-        f.seek(54)
-        phsize = struct.unpack('<H', f.read(2))[0]
-        phnum = struct.unpack('<H', f.read(2))[0]
-        for i in range(0, phnum):
-          f.seek(offset + i * phsize)
-          t = struct.unpack('<I', f.read(4))[0]
-          if t == 7:
-            f.seek(48 - 4, 1)
-            align = struct.unpack('<Q', f.read(8))[0]
-            if (align < 64):
-              print('artifact_patch_underaligned_tls: Patching underaligned TLS segment from ' + str(align) + ' to 64')
-              f.seek(-8, 1)
-              f.write(struct.pack('<H', 64))
+        elif hdr[4] == str(b'\x02'):
+            # 64 bit code
+            f.seek(32)
+            offset = struct.unpack('<Q', f.read(8))[0]
+            f.seek(54)
+            phsize = struct.unpack('<H', f.read(2))[0]
+            phnum = struct.unpack('<H', f.read(2))[0]
+            for i in range(0, phnum):
+                f.seek(offset + i * phsize)
+                t = struct.unpack('<I', f.read(4))[0]
+                if t == 7:
+                    f.seek(48 - 4, 1)
+                    align = struct.unpack('<Q', f.read(8))[0]
+                    if (align < 64):
+                        print('artifact_patch_underaligned_tls: Patching underaligned TLS segment from ' + str(align) + ' to 64')
+                        f.seek(-8, 1)
+                        f.write(struct.pack('<H', 64))
 
-      else:
-        print('artifact_patch_underaligned_tls: Unknown ELF file class')
+        else:
+            print('artifact_patch_underaligned_tls: Unknown ELF file class')
 
 
 #
@@ -364,6 +364,7 @@ syncthingVersion = subprocess.check_output([
     '--always'
 ]).strip();
 syncthingVersion = syncthingVersion.decode().replace("rc", "preview");
+print('Building syncthing version', syncthingVersion);
 
 for target in BUILD_TARGETS:
     target_min_sdk = str(target.get('min_sdk', min_sdk))
@@ -400,7 +401,6 @@ for target in BUILD_TARGETS:
         'CGO_ENABLED': '1',
     })
 
-    print('Building syncthing version', syncthingVersion);
     subprocess.check_call([go_bin, 'mod', 'download'], cwd=syncthing_dir)
     subprocess.check_call([
                               go_bin, 'run', 'build.go', '-goos', 'android', '-goarch', target['goarch'],
