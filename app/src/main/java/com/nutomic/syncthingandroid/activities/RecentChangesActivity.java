@@ -30,6 +30,7 @@ import java.io.File;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 import static com.nutomic.syncthingandroid.service.Constants.ENABLE_TEST_DATA;
@@ -182,7 +183,9 @@ public class RecentChangesActivity extends SyncthingActivity
             DiskEvent fakeDiskEvent = new DiskEvent();
             fakeDiskEvent.id = 10;
             fakeDiskEvent.globalID = 84;
-            fakeDiskEvent.time = "2018-10-28T14:08:" + String.format("%02d", new Random().nextInt(60)) + ".6183215+01:00";
+            fakeDiskEvent.time = "2018-10-28T14:08:" +
+                    String.format(Locale.getDefault(), "%02d", new Random().nextInt(60)) +
+                    ".6183215+01:00";
             fakeDiskEvent.type = "RemoteChangeDetected";
             fakeDiskEvent.data.action = "added";
             fakeDiskEvent.data.folder = "abcd-efgh";
