@@ -19,7 +19,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <!-- ACCESS_FINE_LOCATION is required to get WiFi's SSID on 10 "Q" -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <!-- FOREGROUND_SERVICE is required since Android 8.1 SDK 28 -->
+    <!-- FOREGROUND_SERVICE is required since Android 9 SDK 28 -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
