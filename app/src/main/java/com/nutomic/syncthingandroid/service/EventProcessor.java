@@ -300,6 +300,14 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
         String relativeFilePath = updatedFile.toString();
         if (!TextUtils.isEmpty(error)) {
             Log.e(TAG, "onItemFinished: Error \"" + error + "\" reported on file: " + relativeFilePath);
+            if (error.contains("no space left on device")) {
+                String[] segments = relativeFilePath.split(File.separator);
+                String shortenedFileAndFolder =
+                        segments.length < 2 ?
+                        relativeFilePath :
+                        segments[segments.length-2] + File.separator + segments[segments.length-1];
+                mNotificationHandler.showCrashedNotification(R.string.notification_out_of_disk_space, shortenedFileAndFolder);
+            }
             return;
         }
 
