@@ -11,7 +11,7 @@ import android.util.Log;
 import com.nutomic.syncthingandroid.service.Constants;
 import com.nutomic.syncthingandroid.service.SyncthingRunnable;
 import com.nutomic.syncthingandroid.service.SyncthingService;
-import com.nutomic.syncthingandroid.util.JobUtils;
+// ToDo - import com.nutomic.syncthingandroid.util.JobUtils;
 
 import eu.chainfire.libsuperuser.Shell;
 
