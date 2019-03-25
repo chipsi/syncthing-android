@@ -40,6 +40,7 @@ import javax.inject.Inject;
 
 import eu.chainfire.libsuperuser.Shell;
 
+import static com.nutomic.syncthingandroid.service.Constants.ENABLE_TEST_DATA;
 import static com.nutomic.syncthingandroid.service.SyncthingService.EXTRA_STOP_AFTER_CRASHED_NATIVE;
 
 /**
@@ -110,6 +111,22 @@ public class SyncthingRunnable implements Runnable {
                 break;
             default:
                 throw new InvalidParameterException("Unknown command option");
+        }
+
+        if (ENABLE_TEST_DATA) {
+            if (Build.VERSION.SDK_INT == 28 &&
+                        Build.MANUFACTURER.equals("Google") &&
+                        Build.MODEL.equals("Android SDK built for x86")) {
+                Log.w(TAG, "Emulator test for Android Q");
+                switch (command) {
+                    case main:
+                    case resetdeltas:
+                        mCommand = new String[]{new File("/bin/sleep").getPath(), "5"};
+                        break;
+                    default:
+                        mCommand = new String[]{new File("/bin/sleep").getPath(), "0"};
+                }
+            }
         }
     }
 
