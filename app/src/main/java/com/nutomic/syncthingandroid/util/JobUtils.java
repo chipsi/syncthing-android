@@ -27,7 +27,7 @@ public class JobUtils {
         // Schedule the start of "SyncTriggerJobService" in "X" seconds.
         JobScheduler jobScheduler = context.getSystemService(JobScheduler.class);
         jobScheduler.schedule(builder.build());
-        Log.e(TAG, "Scheduled job to run SyncTriggerJobService in " + Integer.toString(delayInSeconds / 60) + " minutes.");
+        Log.i(TAG, "Scheduled SyncTriggerJobService to run in " + Integer.toString(delayInSeconds / 60) + " minutes.");
     }
 
     public static void cancelAllScheduledJobs(Context context) {
