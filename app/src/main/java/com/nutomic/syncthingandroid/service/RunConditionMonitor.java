@@ -19,11 +19,13 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.PowerManager;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.nutomic.syncthingandroid.R;
 import com.nutomic.syncthingandroid.SyncthingApp;
 import com.nutomic.syncthingandroid.service.ReceiverManager;
+import com.nutomic.syncthingandroid.util.JobUtils;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -40,6 +42,9 @@ public class RunConditionMonitor {
     private static final String TAG = "RunConditionMonitor";
 
     private Boolean ENABLE_VERBOSE_LOG = false;
+
+    public static final String ACTION_SYNC_TRIGGER_FIRED =
+        "com.github.catfriend1.syncthingandroid.service.RunConditionMonitor.ACTION_SYNC_TRIGGER_FIRED";
 
     private static final String POWER_SOURCE_CHARGER_BATTERY = "ac_and_battery_power";
     private static final String POWER_SOURCE_CHARGER = "ac_power";
@@ -87,6 +92,7 @@ public class RunConditionMonitor {
 
     private final Context mContext;
     private ReceiverManager mReceiverManager;
+    private @Nullable SyncTriggerReceiver mSyncTriggerReceiver = null;
     private Resources res;
     private String mRunDecisionExplanation = "";
 
@@ -142,15 +148,30 @@ public class RunConditionMonitor {
         mSyncStatusObserverHandle = ContentResolver.addStatusChangeListener(
                 ContentResolver.SYNC_OBSERVER_TYPE_SETTINGS, mSyncStatusObserver);
 
+        // SyncTriggerReceiver
+        LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(mContext);
+        mSyncTriggerReceiver = new SyncTriggerReceiver();
+        localBroadcastManager.registerReceiver(mSyncTriggerReceiver,
+                new IntentFilter(ACTION_SYNC_TRIGGER_FIRED));
+
         // Initially determine if syncthing should run under current circumstances.
         updateShouldRunDecision();
+
+        // Initially schedule the SyncTrigger job.
+        JobUtils.scheduleSyncTriggerServiceJob(context, Constants.WAIT_FOR_NEXT_SYNC_DELAY_SECS);
     }
 
     public void shutdown() {
         LogV("Shutting down");
+        JobUtils.cancelAllScheduledJobs(mContext);
         if (mSyncStatusObserverHandle != null) {
             ContentResolver.removeStatusChangeListener(mSyncStatusObserverHandle);
             mSyncStatusObserverHandle = null;
+        }
+        if (mSyncTriggerReceiver != null) {
+            LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(mContext);
+            localBroadcastManager.unregisterReceiver(mSyncTriggerReceiver);
+            mSyncTriggerReceiver = null;
         }
         mReceiverManager.unregisterAllReceivers(mContext);
     }
@@ -180,6 +201,18 @@ public class RunConditionMonitor {
             if (PowerManager.ACTION_POWER_SAVE_MODE_CHANGED.equals(intent.getAction())) {
                 updateShouldRunDecision();
             }
+        }
+    }
+
+    private class SyncTriggerReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.e(TAG, "SyncTriggerReceiver: I've received something ...");
+            
+            // updateShouldRunDecision();
+
+            // Reschedule the job.
+            JobUtils.scheduleSyncTriggerServiceJob(context, Constants.WAIT_FOR_NEXT_SYNC_DELAY_SECS);
         }
     }
 
