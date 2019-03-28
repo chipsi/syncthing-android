@@ -96,6 +96,13 @@ public class RunConditionMonitor {
     private Resources res;
     private String mRunDecisionExplanation = "";
 
+    /**
+     * Only relevant if the user has enabled turning Syncthing on by
+     * time schedule for a specific amount of time periodically.
+     * Holds true if we are within a "SyncthingNative should run" time frame.
+     */
+    private Boolean mTimeConditionMatch = false;
+
     @Inject
     SharedPreferences mPreferences;
 
@@ -207,12 +214,32 @@ public class RunConditionMonitor {
     private class SyncTriggerReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.e(TAG, "SyncTriggerReceiver: I've received something ...");
-            
-            // updateShouldRunDecision();
+            LogV("SyncTriggerReceiver: onReceive");
+            boolean prefRunOnTimeSchedule = mPreferences.getBoolean(Constants.PREF_RUN_ON_TIME_SCHEDULE, false);
+            if (!prefRunOnTimeSchedule) {
+                mTimeConditionMatch = false;
+            } else {
+                /**
+                 * Toggle the "digital input" for this condition as the condition change is
+                 * triggered by a time schedule and not the OS notifying us.
+                 */
+                mTimeConditionMatch = !mTimeConditionMatch;
+                updateShouldRunDecision();
+            }
 
-            // Reschedule the job.
-            JobUtils.scheduleSyncTriggerServiceJob(context, Constants.WAIT_FOR_NEXT_SYNC_DELAY_SECS);
+            /**
+             * Reschedule the job.
+             * If we are within a "SyncthingNative should run" time frame,
+             * let the receiver fire and change to "SyncthingNative shouldn't run" after
+             * TRIGGERED_SYNC_DURATION_SECS seconds elapsed.
+             * If we are within a "SyncthingNative shouldn't run" time frame,
+             * let the receiver fire and change to "SyncthingNative should run" after
+             * WAIT_FOR_NEXT_SYNC_DELAY_SECS seconds elapsed.
+             */
+            JobUtils.scheduleSyncTriggerServiceJob(
+                    context,
+                    mTimeConditionMatch ? Constants.TRIGGERED_SYNC_DURATION_SECS : Constants.WAIT_FOR_NEXT_SYNC_DELAY_SECS
+            );
         }
     }
 
@@ -334,6 +361,15 @@ public class RunConditionMonitor {
         boolean prefRespectPowerSaving = mPreferences.getBoolean(Constants.PREF_RESPECT_BATTERY_SAVING, true);
         boolean prefRespectMasterSync = mPreferences.getBoolean(Constants.PREF_RESPECT_MASTER_SYNC, false);
         boolean prefRunInFlightMode = mPreferences.getBoolean(Constants.PREF_RUN_IN_FLIGHT_MODE, false);
+        boolean prefRunOnTimeSchedule = mPreferences.getBoolean(Constants.PREF_RUN_ON_TIME_SCHEDULE, false);
+
+        // PREF_RUN_ON_TIME_SCHEDULE
+        if (prefRunOnTimeSchedule && !mTimeConditionMatch) {
+            // Currently, we aren't within a "SyncthingNative should run" time frame.
+            LogV("decideShouldRun: PREF_RUN_ON_TIME_SCHEDULE && !mTimeConditionMatch");
+            mRunDecisionExplanation = res.getString(R.string.reason_not_within_time_frame);
+            return false;
+        }
 
         // PREF_POWER_SOURCE
         switch (prefPowerSource) {
