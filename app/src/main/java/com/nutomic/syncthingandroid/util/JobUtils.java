@@ -25,13 +25,13 @@ public class JobUtils {
         builder.setOverrideDeadline((delayInSeconds + TOLERATED_INACCURACY_IN_SECONDS) * 1000);
 
         // Schedule the start of "SyncTriggerJobService" in "X" seconds.
-        JobScheduler jobScheduler = context.getSystemService(JobScheduler.class);
+        JobScheduler jobScheduler = (JobScheduler) context.getSystemService(context.JOB_SCHEDULER_SERVICE);
         jobScheduler.schedule(builder.build());
         Log.i(TAG, "Scheduled SyncTriggerJobService to run in " + Integer.toString(delayInSeconds) + " seconds.");
     }
 
     public static void cancelAllScheduledJobs(Context context) {
-        JobScheduler jobScheduler = context.getSystemService(JobScheduler.class);
+        JobScheduler jobScheduler = (JobScheduler) context.getSystemService(context.JOB_SCHEDULER_SERVICE);
         jobScheduler.cancelAll();
     }
 }
