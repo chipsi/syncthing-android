@@ -33,7 +33,9 @@ public class JobUtils {
         // Schedule the start of "SyncTriggerJobService" in "X" seconds.
         JobScheduler jobScheduler = (JobScheduler) context.getSystemService(context.JOB_SCHEDULER_SERVICE);
         jobScheduler.schedule(builder.build());
-        Log.i(TAG, "Scheduled SyncTriggerJobService to run in " + Integer.toString(delayInSeconds) + " seconds.");
+        Log.i(TAG, "Scheduled SyncTriggerJobService to run in " +
+                Integer.toString(delayInSeconds) +
+                "(+" + Integer.toString(TOLERATED_INACCURACY_IN_SECONDS) + ") seconds.");
     }
 
     @TargetApi(21)
