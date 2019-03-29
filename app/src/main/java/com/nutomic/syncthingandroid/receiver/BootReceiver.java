@@ -11,7 +11,6 @@ import android.util.Log;
 import com.nutomic.syncthingandroid.service.Constants;
 import com.nutomic.syncthingandroid.service.SyncthingRunnable;
 import com.nutomic.syncthingandroid.service.SyncthingService;
-// ToDo - import com.nutomic.syncthingandroid.util.JobUtils;
 
 import eu.chainfire.libsuperuser.Shell;
 
@@ -19,6 +18,10 @@ public class BootReceiver extends BroadcastReceiver {
 
     private static final String TAG = "BootReceiver";
 
+    /**
+     * For testing purposes:
+     * adb root & adb shell am broadcast -a android.intent.action.BOOT_COMPLETED
+     */
     @Override
     public void onReceive(Context context, Intent intent) {
         Boolean bootCompleted = intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED);
@@ -26,13 +29,6 @@ public class BootReceiver extends BroadcastReceiver {
         if (!bootCompleted && !packageReplaced) {
             return;
         }
-
-        /**
-         * Initially schedule "SyncTriggerJobService".
-         * For testing purposes:
-         * adb root & adb shell am broadcast -a android.intent.action.BOOT_COMPLETED
-         */
-        // ToDo - JobUtils.scheduleSyncTriggerServiceJob(context, Constants.WAIT_FOR_NEXT_SYNC_DELAY_SECS);
 
         if (packageReplaced) {
             if (getPrefUseRoot(context) && Shell.SU.available()) {
