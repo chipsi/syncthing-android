@@ -404,6 +404,8 @@ Please report any problems you encounter via Github.</string>
 
     <string name="settings_title">Settings</string>
 
+    <string name="preference_theme_title">Theme</string>
+
     <string name="category_run_conditions">Run Conditions</string>
     <string name="category_behaviour">Behaviour</string>
 

@@ -11,6 +11,7 @@ import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+// import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -162,7 +163,7 @@ public class FolderPickerActivity extends SyncthingActivity
         switch (item.getItemId()) {
             case R.id.create_folder:
                 final EditText et = new EditText(this);
-                AlertDialog dialog = new AlertDialog.Builder(this)
+                AlertDialog dialog = new AlertDialog.Builder(this, R.style.Theme_Syncthing_Dialog)
                         .setTitle(R.string.create_folder)
                         .setView(et)
                         .setPositiveButton(android.R.string.ok,

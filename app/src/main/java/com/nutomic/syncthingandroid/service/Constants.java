@@ -16,6 +16,8 @@ public class Constants {
     public static final String FILENAME_SYNCTHING_BINARY        = "libsyncthing.so";
     public static final String FILENAME_STIGNORE                = ".stignore";
 
+    public static final String PREF_THEME                       = "theme";
+
     // Preferences - Run conditions
     public static final String PREF_START_SERVICE_ON_BOOT       = "always_run_in_background";
     public static final String PREF_RUN_ON_MOBILE_DATA          = "run_on_mobile_data";

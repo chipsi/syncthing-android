@@ -2,7 +2,7 @@ package com.nutomic.syncthingandroid.activities;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlertDialog;
+import android.support.v7.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.DialogInterface;
@@ -425,7 +425,7 @@ public class MainActivity extends SyncthingActivity
         shareDeviceIdTextView.setOnClickListener(v -> shareDeviceId(deviceId));
         qrCodeImageView.setImageBitmap(qrCode);
 
-        mQrCodeDialog = new AlertDialog.Builder(this)
+        mQrCodeDialog = new AlertDialog.Builder(this, R.style.Theme_Syncthing_Dialog)
                 .setTitle(R.string.device_id)
                 .setView(qrCodeDialogView)
                 .setPositiveButton(R.string.finish, null)

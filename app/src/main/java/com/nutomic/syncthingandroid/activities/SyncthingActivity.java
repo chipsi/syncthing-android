@@ -4,15 +4,19 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
 // import android.util.Log;
 
 import com.nutomic.syncthingandroid.R;
+import com.nutomic.syncthingandroid.service.Constants;
 import com.nutomic.syncthingandroid.service.RestApi;
 import com.nutomic.syncthingandroid.service.SyncthingService;
 import com.nutomic.syncthingandroid.service.SyncthingServiceBinder;
@@ -25,6 +29,18 @@ public abstract class SyncthingActivity extends AppCompatActivity implements Ser
     private static final String TAG = "SyncthingActivity";
 
     private SyncthingService mSyncthingService;
+
+    /**
+     * Loads the selected user theme
+     */
+    protected void onCreate(Bundle savedInstanceState)
+    {
+        // Load user theme
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String themeString = prefs.getString(Constants.PREF_THEME, "1");
+        AppCompatDelegate.setDefaultNightMode(Integer.parseInt(themeString));
+        super.onCreate(savedInstanceState);
+    }
 
     /**
      * Look for a Toolbar in the layout and bind it as the activity's actionbar with reasonable
