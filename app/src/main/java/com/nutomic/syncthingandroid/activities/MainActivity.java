@@ -293,7 +293,7 @@ public class MainActivity extends SyncthingActivity
              * - https://issuetracker.google.com/issues/36956111
              */
             Log.e(TAG, "updateViewPager: IllegalStateException in setAdapter.", e);
-            new AlertDialog.Builder(this, R.style.Theme_Syncthing_Dialog)
+            new AlertDialog.Builder(this)
                     .setMessage(getString(R.string.exception_known_bug_notice, getString(R.string.issue_tracker_url), "108"))
                     .setCancelable(false)
                     .setPositiveButton(android.R.string.ok, (dialog, which) -> {})
@@ -404,7 +404,7 @@ public class MainActivity extends SyncthingActivity
     }
 
     public void showRestartDialog(){
-        mRestartDialog = new AlertDialog.Builder(this, R.style.Theme_Syncthing_Dialog)
+        mRestartDialog = new AlertDialog.Builder(this)
                 .setMessage(R.string.dialog_confirm_restart)
                 .setPositiveButton(android.R.string.yes, (dialogInterface, i1) -> this.startService(new Intent(this, SyncthingService.class)
                         .setAction(SyncthingService.ACTION_RESTART)))
