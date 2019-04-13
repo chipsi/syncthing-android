@@ -465,7 +465,7 @@ public class DeviceActivity extends SyncthingActivity {
     }
 
     private Dialog createDeleteDialog(){
-        return Util.getAlertDialogBuilder(this)
+        return new AlertDialog.Builder(this, R.style.Theme_Syncthing_Dialog)
                 .setMessage(R.string.remove_device_confirm)
                 .setPositiveButton(android.R.string.yes, (dialogInterface, i) -> {
                     mConfig.removeDevice(getApi(), mDevice.deviceID);
@@ -641,7 +641,7 @@ public class DeviceActivity extends SyncthingActivity {
     }
 
     private void showCompressionDialog(){
-        mCompressionDialog = Util.getAlertDialogBuilder(this)
+        mCompressionDialog = new AlertDialog.Builder(this, R.style.Theme_Syncthing_Dialog)
                 .setTitle(R.string.compression)
                 .setSingleChoiceItems(R.array.compress_entries,
                         Compression.fromValue(this, mDevice.compression).getIndex(),
@@ -663,7 +663,7 @@ public class DeviceActivity extends SyncthingActivity {
     }
 
     private void showDiscardDialog(){
-        mDiscardDialog = Util.getAlertDialogBuilder(this)
+        mDiscardDialog = new android.app.AlertDialog.Builder(this, R.style.Theme_Syncthing_Dialog)
                 .setMessage(R.string.dialog_discard_changes)
                 .setPositiveButton(android.R.string.ok, (dialog, which) -> {
                         setResult(Activity.RESULT_CANCELED);

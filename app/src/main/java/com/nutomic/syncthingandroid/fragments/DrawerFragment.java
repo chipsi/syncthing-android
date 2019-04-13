@@ -205,7 +205,7 @@ public class DrawerFragment extends Fragment implements SyncthingService.OnServi
                      * App is running as a service. Show an explanation why exiting syncthing is an
                      * extraordinary request, then ask the user to confirm.
                      */
-                    AlertDialog mExitConfirmationDialog = Util.getAlertDialogBuilder(mActivity)
+                    AlertDialog mExitConfirmationDialog = new AlertDialog.Builder(mActivity)
                             .setTitle(R.string.dialog_exit_while_running_as_service_title)
                             .setMessage(R.string.dialog_exit_while_running_as_service_message)
                             .setPositiveButton(R.string.yes, (d, i) -> {

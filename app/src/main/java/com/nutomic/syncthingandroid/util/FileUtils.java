@@ -960,7 +960,7 @@ public class FileUtils {
     }
 
     private static void suggestFileManagerApp(Context context) {
-        AlertDialog mSuggestFileManagerAppDialog = Util.getAlertDialogBuilder(context)
+        AlertDialog mSuggestFileManagerAppDialog = new AlertDialog.Builder(context)
                 .setTitle(R.string.suggest_file_manager_app_dialog_title)
                 .setMessage(R.string.suggest_file_manager_app_dialog_text)
                 .setPositiveButton(R.string.yes, (d, i) -> {

@@ -70,7 +70,7 @@ public class WebViewActivity extends SyncthingActivity {
                     Log.e(TAG, "onReceivedSslError:OnClickListener", e);
                 }
             };
-            mSecurityNoticeDialog = Util.getAlertDialogBuilder(WebViewActivity.this)
+            mSecurityNoticeDialog = new AlertDialog.Builder(WebViewActivity.this)
                 .setTitle(R.string.security_notice)
                 .setMessage(getString(R.string.ssl_cert_invalid_text, webPageUrl))
                 .setPositiveButton(R.string.cont, listener)
