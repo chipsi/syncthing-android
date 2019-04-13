@@ -271,6 +271,8 @@ public class SettingsActivity extends SyncthingActivity {
             }
             PreferenceScreen screen = getPreferenceScreen();
 
+            ((ListPreference) findPreference(Constants.PREF_THEME)).setOnPreferenceChangeListener(this);
+
             /* Run conditions */
             mRunOnWifi =
                     (CheckBoxPreference) findPreference(Constants.PREF_RUN_ON_WIFI);
