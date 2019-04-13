@@ -42,9 +42,7 @@
     <!-- Dialog themes -->
     <eat-comment/>
 
-    <style name="Theme.Syncthing.Dialog" parent="Theme.AppCompat.DayNight.Dialog.Alert">
-        <item name="colorAccent">@color/primary_dark</item>
-    </style>
+    <style name="Theme.Syncthing.Dialog" parent="Theme.AppCompat.DayNight.Dialog.Alert"/>
 
     <!-- Toolbar themes -->
     <eat-comment/>
