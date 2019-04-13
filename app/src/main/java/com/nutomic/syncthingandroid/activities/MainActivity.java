@@ -293,7 +293,7 @@ public class MainActivity extends SyncthingActivity
              * - https://issuetracker.google.com/issues/36956111
              */
             Log.e(TAG, "updateViewPager: IllegalStateException in setAdapter.", e);
-            new AlertDialog.Builder(this, R.style.Theme_Syncthing_Dialog)
+            Util.getAlertDialogBuilder(this)
                     .setMessage(getString(R.string.exception_known_bug_notice, getString(R.string.issue_tracker_url), "108"))
                     .setCancelable(false)
                     .setPositiveButton(android.R.string.ok, (dialog, which) -> {})
@@ -404,7 +404,7 @@ public class MainActivity extends SyncthingActivity
     }
 
     public void showRestartDialog(){
-        mRestartDialog = new AlertDialog.Builder(this, R.style.Theme_Syncthing_Dialog)
+        mRestartDialog = Util.getAlertDialogBuilder(this)
                 .setMessage(R.string.dialog_confirm_restart)
                 .setPositiveButton(android.R.string.yes, (dialogInterface, i1) -> this.startService(new Intent(this, SyncthingService.class)
                         .setAction(SyncthingService.ACTION_RESTART)))
@@ -425,7 +425,7 @@ public class MainActivity extends SyncthingActivity
         shareDeviceIdTextView.setOnClickListener(v -> shareDeviceId(deviceId));
         qrCodeImageView.setImageBitmap(qrCode);
 
-        mQrCodeDialog = new AlertDialog.Builder(this, R.style.Theme_Syncthing_Dialog)
+        mQrCodeDialog = Util.getAlertDialogBuilder(this)
                 .setTitle(R.string.device_id)
                 .setView(qrCodeDialogView)
                 .setPositiveButton(R.string.finish, null)
@@ -555,7 +555,7 @@ public class MainActivity extends SyncthingActivity
             TextView tv = v.findViewById(R.id.example);
             tv.setText(report);
             Util.dismissDialogSafe(mUsageReportingDialog, MainActivity.this);
-            mUsageReportingDialog = new AlertDialog.Builder(MainActivity.this)
+            mUsageReportingDialog = Util.getAlertDialogBuilder(MainActivity.this)
                     .setTitle(R.string.usage_reporting_dialog_title)
                     .setView(v)
                     .setPositiveButton(R.string.yes, listener)
