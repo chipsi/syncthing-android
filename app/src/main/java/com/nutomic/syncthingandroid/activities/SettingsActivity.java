@@ -783,7 +783,7 @@ public class SettingsActivity extends SyncthingActivity {
             final Intent intent;
             switch (preference.getKey()) {
                 case Constants.PREF_VERBOSE_LOG:
-                    new AlertDialog.Builder(getActivity())
+                    new AlertDialog.Builder(getActivity(), R.style.Theme_Syncthing_Dialog)
                             .setTitle(R.string.dialog_settings_restart_app_title)
                             .setMessage(R.string.dialog_settings_restart_app_question)
                             .setPositiveButton(android.R.string.ok, (dialogInterface, i) -> {
