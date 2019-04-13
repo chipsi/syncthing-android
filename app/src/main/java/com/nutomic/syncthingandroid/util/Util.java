@@ -1,7 +1,6 @@
 package com.nutomic.syncthingandroid.util;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.UiModeManager;
 import android.content.ClipData;
@@ -12,7 +11,6 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.preference.PreferenceManager;
-import android.support.v7.app.AppCompatDelegate;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
@@ -354,12 +352,5 @@ public class Util {
     public static Boolean isRunningOnTV(Context context) {
         UiModeManager uiModeManager = (UiModeManager) context.getSystemService(Context.UI_MODE_SERVICE);
         return uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION;
-    }
-
-    public static AlertDialog.Builder getAlertDialogBuilder(Context context) {
-        if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
-            return new AlertDialog.Builder(context, android.R.style.Theme_DeviceDefault_Dialog_Alert);
-        }
-        return new AlertDialog.Builder(context, android.R.style.Theme_DeviceDefault_Light_Dialog_Alert);
     }
 }
