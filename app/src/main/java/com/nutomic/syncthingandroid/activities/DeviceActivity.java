@@ -465,7 +465,7 @@ public class DeviceActivity extends SyncthingActivity {
     }
 
     private Dialog createDeleteDialog(){
-        return new AlertDialog.Builder(this, R.style.Theme_Syncthing_Dialog)
+        return new AlertDialog.Builder(this)
                 .setMessage(R.string.remove_device_confirm)
                 .setPositiveButton(android.R.string.yes, (dialogInterface, i) -> {
                     mConfig.removeDevice(getApi(), mDevice.deviceID);

@@ -101,7 +101,7 @@ public class SettingsActivity extends SyncthingActivity {
                         this.startService(new Intent(this, SyncthingService.class)
                                 .setAction(SyncthingService.ACTION_REFRESH_NETWORK_INFO));
                     } else {
-                        new AlertDialog.Builder(this, R.style.Theme_Syncthing_Dialog)
+                        new AlertDialog.Builder(this)
                                 .setTitle(R.string.sync_only_wifi_ssids_location_permission_rejected_dialog_title)
                                 .setMessage(R.string.sync_only_wifi_ssids_location_permission_rejected_dialog_content)
                                 .setPositiveButton(android.R.string.ok, null).show();
@@ -802,7 +802,7 @@ public class SettingsActivity extends SyncthingActivity {
                     startActivity(intent);
                     return true;
                 case KEY_EXPORT_CONFIG:
-                    new AlertDialog.Builder(getActivity(), R.style.Theme_Syncthing_Dialog)
+                    new AlertDialog.Builder(getActivity())
                             .setMessage(R.string.dialog_confirm_export)
                             .setPositiveButton(android.R.string.yes, (dialog, which) -> {
                                 new ExportConfigTask((SettingsActivity) getActivity(), mSyncthingService)
@@ -812,7 +812,7 @@ public class SettingsActivity extends SyncthingActivity {
                             .show();
                     return true;
                 case KEY_IMPORT_CONFIG:
-                    new AlertDialog.Builder(getActivity(), R.style.Theme_Syncthing_Dialog)
+                    new AlertDialog.Builder(getActivity())
                             .setMessage(R.string.dialog_confirm_import)
                             .setPositiveButton(android.R.string.yes, (dialog, which) -> {
                                 new ImportConfigTask(this, mSyncthingService)
@@ -835,7 +835,7 @@ public class SettingsActivity extends SyncthingActivity {
                     onDownloadSupportBundleClick();
                     return true;
                 case KEY_UNDO_IGNORED_DEVICES_FOLDERS:
-                    new AlertDialog.Builder(getActivity(), R.style.Theme_Syncthing_Dialog)
+                    new AlertDialog.Builder(getActivity())
                             .setMessage(R.string.undo_ignored_devices_folders_question)
                             .setPositiveButton(android.R.string.yes, (dialog, which) -> {
                                 if (mRestApi == null) {
@@ -857,7 +857,7 @@ public class SettingsActivity extends SyncthingActivity {
                     intent = new Intent(getActivity(), SyncthingService.class)
                             .setAction(SyncthingService.ACTION_RESET_DATABASE);
 
-                    new AlertDialog.Builder(getActivity(), R.style.Theme_Syncthing_Dialog)
+                    new AlertDialog.Builder(getActivity())
                             .setTitle(R.string.st_reset_database_title)
                             .setMessage(R.string.st_reset_database_question)
                             .setPositiveButton(android.R.string.ok, (dialogInterface, i) -> {
@@ -872,7 +872,7 @@ public class SettingsActivity extends SyncthingActivity {
                     intent = new Intent(getActivity(), SyncthingService.class)
                             .setAction(SyncthingService.ACTION_RESET_DELTAS);
 
-                    new AlertDialog.Builder(getActivity(), R.style.Theme_Syncthing_Dialog)
+                    new AlertDialog.Builder(getActivity())
                             .setTitle(R.string.st_reset_deltas_title)
                             .setMessage(R.string.st_reset_deltas_question)
                             .setPositiveButton(android.R.string.ok, (dialogInterface, i) -> {

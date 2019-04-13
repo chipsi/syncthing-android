@@ -425,7 +425,7 @@ public class MainActivity extends SyncthingActivity
         shareDeviceIdTextView.setOnClickListener(v -> shareDeviceId(deviceId));
         qrCodeImageView.setImageBitmap(qrCode);
 
-        mQrCodeDialog = new AlertDialog.Builder(this, R.style.Theme_Syncthing_Dialog)
+        mQrCodeDialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.device_id)
                 .setView(qrCodeDialogView)
                 .setPositiveButton(R.string.finish, null)
