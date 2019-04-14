@@ -838,7 +838,7 @@ public class ConfigXml {
         gui.address = getContentOrDefault(elementGui.getElementsByTagName("address").item(0), gui.address);
         gui.user = getContentOrDefault(elementGui.getElementsByTagName("user").item(0), gui.user);
         gui.password = getContentOrDefault(elementGui.getElementsByTagName("password").item(0), "");
-        gui.apiKey = getContentOrDefault(elementGui.getElementsByTagName("apiKey").item(0), "");
+        gui.apiKey = getContentOrDefault(elementGui.getElementsByTagName("apikey").item(0), "");
         gui.theme = getContentOrDefault(elementGui.getElementsByTagName("theme").item(0), gui.theme);
         gui.insecureAdminAccess = getContentOrDefault(elementGui.getElementsByTagName("insecureAdminAccess").item(0), gui.insecureAdminAccess);
         gui.insecureAllowFrameLoading = getContentOrDefault(elementGui.getElementsByTagName("insecureAllowFrameLoading").item(0), gui.insecureAllowFrameLoading);
@@ -860,7 +860,7 @@ public class ConfigXml {
         setConfigElement(elementGui, "address", gui.address);
         setConfigElement(elementGui, "user", gui.user);
         setConfigElement(elementGui, "password", gui.password);
-        setConfigElement(elementGui, "apiKey", gui.apiKey);
+        setConfigElement(elementGui, "apikey", gui.apiKey);
         setConfigElement(elementGui, "theme", gui.theme);
         setConfigElement(elementGui, "insecureAdminAccess", Boolean.toString(gui.insecureAdminAccess));
         setConfigElement(elementGui, "insecureAllowFrameLoading", Boolean.toString(gui.insecureAllowFrameLoading));
