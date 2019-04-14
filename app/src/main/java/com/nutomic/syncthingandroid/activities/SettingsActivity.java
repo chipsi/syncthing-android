@@ -52,6 +52,7 @@ import com.nutomic.syncthingandroid.service.NotificationHandler;
 import com.nutomic.syncthingandroid.service.RestApi;
 import com.nutomic.syncthingandroid.service.SyncthingService;
 import com.nutomic.syncthingandroid.service.SyncthingServiceBinder;
+import com.nutomic.syncthingandroid.util.ConfigRouter;
 import com.nutomic.syncthingandroid.util.FileUtils;
 import com.nutomic.syncthingandroid.util.Languages;
 import com.nutomic.syncthingandroid.util.Util;
@@ -597,8 +598,16 @@ public class SettingsActivity extends SyncthingActivity {
         public boolean onUserInterfacePreferenceChange(Preference preference, Object o) {
             switch (preference.getKey()) {
                 case Constants.PREF_APP_THEME:
-                    getAppRestartConfirmationDialog(getActivity())
-                            .show();
+                    String newTheme = (String) o;
+                    String prevTheme = mPreferences.getString(Constants.PREF_APP_THEME, Constants.APP_THEME_LIGHT);
+                    if (!newTheme.equals(prevTheme)) {
+                        ConfigRouter config = new ConfigRouter(getActivity());
+                        Gui gui = config.getGui(mRestApi);
+                        gui.theme = newTheme.equals(Constants.APP_THEME_LIGHT) ? "default" : "dark";
+                        config.updateGui(mRestApi, gui);
+                        getAppRestartConfirmationDialog(getActivity())
+                                .show();
+                    }
                     break;
                 case Languages.PREFERENCE_LANGUAGE:
                     mLanguages.forceChangeLanguage(getActivity(), (String) o);
