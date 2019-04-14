@@ -19,11 +19,10 @@ public abstract class ThemedAppCompatActivity extends AppCompatActivity {
     private static final String LIGHT_THEME = "1";
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         // Load theme.
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        Integer prefAppTheme = Integer.parseInt(prefs.getString(Constants.PREF_APP_THEME, LIGHT_THEME));
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        Integer prefAppTheme = Integer.parseInt(sharedPreferences.getString(Constants.PREF_APP_THEME, LIGHT_THEME));
         AppCompatDelegate.setDefaultNightMode(prefAppTheme);
         super.onCreate(savedInstanceState);
     }
