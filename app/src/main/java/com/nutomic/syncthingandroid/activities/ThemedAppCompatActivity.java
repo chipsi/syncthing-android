@@ -16,13 +16,11 @@ public abstract class ThemedAppCompatActivity extends AppCompatActivity {
 
     // private static final String TAG = "ThemedAppCompatActivity";
 
-    private static final String LIGHT_THEME = "1";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // Load theme.
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        Integer prefAppTheme = Integer.parseInt(sharedPreferences.getString(Constants.PREF_APP_THEME, LIGHT_THEME));
+        Integer prefAppTheme = Integer.parseInt(sharedPreferences.getString(Constants.PREF_APP_THEME, Constants.APP_THEME_LIGHT));
         AppCompatDelegate.setDefaultNightMode(prefAppTheme);
         super.onCreate(savedInstanceState);
     }
