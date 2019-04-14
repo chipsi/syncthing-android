@@ -846,6 +846,27 @@ public class ConfigXml {
         return gui;
     }
 
+    public void updateGui(final Gui gui) {
+        Element elementGui = (Element) mConfig.getDocumentElement().getElementsByTagName("gui").item(0);
+        if (elementGui == null) {
+            Log.e(TAG, "updateGui: elementGui == null");
+            return;
+        }
+
+        elementGui.setAttribute("debugging", Boolean.toString(gui.debugging));
+        elementGui.setAttribute("enabled", Boolean.toString(gui.enabled));
+        elementGui.setAttribute("tls", Boolean.toString(gui.useTLS));
+
+        setConfigElement(elementGui, "address", gui.address);
+        setConfigElement(elementGui, "user", gui.user);
+        setConfigElement(elementGui, "password", gui.password);
+        setConfigElement(elementGui, "apiKey", gui.apiKey);
+        setConfigElement(elementGui, "theme", gui.theme);
+        setConfigElement(elementGui, "insecureAdminAccess", Boolean.toString(gui.insecureAdminAccess));
+        setConfigElement(elementGui, "insecureAllowFrameLoading", Boolean.toString(gui.insecureAllowFrameLoading));
+        setConfigElement(elementGui, "insecureSkipHostCheck", Boolean.toString(gui.insecureSkipHostCheck));
+    }
+
     public Options getOptions() {
         Element elementOptions = (Element) mConfig.getDocumentElement().getElementsByTagName("options").item(0);
         Options options = new Options();
