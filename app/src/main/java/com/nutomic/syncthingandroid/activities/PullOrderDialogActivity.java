@@ -8,7 +8,6 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.Spinner;
 import com.nutomic.syncthingandroid.R;
-import com.nutomic.syncthingandroid.service.Constants;
 
 import java.util.Arrays;
 import java.util.List;

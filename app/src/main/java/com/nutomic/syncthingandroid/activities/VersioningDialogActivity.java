@@ -15,7 +15,6 @@ import com.nutomic.syncthingandroid.fragments.dialog.NoVersioningFragment;
 import com.nutomic.syncthingandroid.fragments.dialog.SimpleVersioningFragment;
 import com.nutomic.syncthingandroid.fragments.dialog.StaggeredVersioningFragment;
 import com.nutomic.syncthingandroid.fragments.dialog.TrashCanVersioningFragment;
-import com.nutomic.syncthingandroid.service.Constants;
 
 import java.util.Arrays;
 import java.util.List;
