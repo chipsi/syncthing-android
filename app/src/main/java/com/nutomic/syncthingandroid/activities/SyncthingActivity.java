@@ -37,7 +37,7 @@ public abstract class SyncthingActivity extends AppCompatActivity implements Ser
     {
         // Load user theme
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String themeString = prefs.getString(Constants.PREF_THEME, "1");
+        String themeString = prefs.getString(Constants.PREF_APP_THEME, "1");
         AppCompatDelegate.setDefaultNightMode(Integer.parseInt(themeString));
         super.onCreate(savedInstanceState);
     }

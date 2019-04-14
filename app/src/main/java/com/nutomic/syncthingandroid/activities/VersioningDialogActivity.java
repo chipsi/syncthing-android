@@ -2,13 +2,9 @@ package com.nutomic.syncthingandroid.activities;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.AppCompatDelegate;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -24,7 +20,7 @@ import com.nutomic.syncthingandroid.service.Constants;
 import java.util.Arrays;
 import java.util.List;
 
-public class VersioningDialogActivity extends AppCompatActivity {
+public class VersioningDialogActivity extends ThemedAppCompatActivity {
 
     private Fragment mCurrentFragment;
 
@@ -34,11 +30,6 @@ public class VersioningDialogActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // Load user theme
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String themeString = prefs.getString(Constants.PREF_THEME, "1");
-        AppCompatDelegate.setDefaultNightMode(Integer.parseInt(themeString));
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_versioning_dialog);
 
