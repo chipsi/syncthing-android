@@ -164,7 +164,7 @@ public class LogActivity extends SyncthingActivity {
             // Filter Android log.
             output = output.replaceAll("I/SyncthingNativeCode", "");
             // Remove PID.
-            output = output.replaceAll("\\([0-9]+\\):", "");
+            output = output.replaceAll("\\(\\s?[0-9]+\\):", "");
             String[] lines = output.split("\n");
             List<String> list = new ArrayList<String>(Arrays.asList(lines));
             ListIterator<String> it = list.listIterator();
