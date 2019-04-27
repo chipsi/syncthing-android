@@ -149,10 +149,10 @@ public class LogActivity extends SyncthingActivity {
          */
         private String getLog(final boolean syncthingLog) {
             if (syncthingLog) {
-                String output = Util.runShellCommandGetOutput("/system/bin/logcat -t 300 -v time -s SyncthingNativeCode", false);
+                String output = Util.runShellCommandGetOutput("/system/bin/logcat -t 900 -v time -s SyncthingNativeCode", false);
                 return output.replaceAll("SyncthingNativeCode", "");
             } else {
-                return Util.runShellCommandGetOutput("/system/bin/logcat -t 300 -v time *:i ps:s art:s", false);
+                return Util.runShellCommandGetOutput("/system/bin/logcat -t 900 -v time *:i ps:s art:s", false);
             }
         }
     }
