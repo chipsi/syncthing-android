@@ -204,7 +204,7 @@ public class LogActivity extends SyncthingActivity {
                 // Remove date.
                 logline = logline.replaceFirst("^[0-9]{2}-[0-9]{2}\\s", "");
                 // Remove milliseconds.
-                // logline = logline.replaceFirst("^(:[0-9]{2})\\.[0-9]+\\s", "");
+                logline = logline.replaceFirst("^([0-9]{2}:[0-9]{2}:[0-9]{2})\\.[0-9]{3}\\s", "$1");
                 it.set(logline);
             }
             return TextUtils.join("\n", list.toArray(new String[0]));
