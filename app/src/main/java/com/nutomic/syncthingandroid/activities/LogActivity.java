@@ -171,6 +171,7 @@ public class LogActivity extends SyncthingActivity {
             while (it.hasNext()) {
                 String logline = it.next();
                 if (
+                            logline.contains("--- beginning of ") ||
                             logline.contains("W/ActionBarDrawerToggle") ||
                             logline.contains("W/ActivityThread") ||
                             logline.contains("I/chatty") ||
@@ -180,6 +181,7 @@ public class LogActivity extends SyncthingActivity {
                             logline.contains("/ContentCatcher") ||
                             logline.contains("/cr_AwContents") ||
                             logline.contains("/cr_base") ||
+                            logline.contains("/cr_BrowserStartup") ||
                             logline.contains("/cr_ChildProcessConn") ||
                             logline.contains("/cr_ChildProcLH") ||
                             logline.contains("/cr_CrashFileManager") ||
