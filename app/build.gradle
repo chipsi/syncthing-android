@@ -37,8 +37,8 @@ android {
         applicationId "com.github.catfriend1.syncthingandroid"
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 1020001
-        versionName "1.2.0.1"
+        versionCode 1020002
+        versionName "1.2.0.2"
         testApplicationId 'com.github.catfriend1.syncthingandroid.test'
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     }
@@ -93,10 +93,15 @@ tasks.whenTaskAdded { task ->
  * Some languages are not supported by Google Play, so we ignore them.
  */
 task deleteUnsupportedPlayTranslations(type: Delete) {
-    delete 'src/main/play/nn'
-    delete 'src/main/play/el-EL'
-    delete 'src/main/play/nb'
-    delete 'src/main/play/en/'
+    delete 'src/main/play/listings/el-EL/'
+    delete 'src/main/play/listings/en/'
+    delete 'src/main/play/listings/eu/'
+    delete 'src/main/play/listings/nb/'
+    delete 'src/main/play/listings/nl_BE/'
+    delete 'src/main/play/listings/nl-BE/'
+    delete 'src/main/play/listings/nn/'
+    delete 'src/main/play/listings/no/'
+    delete 'src/main/play/listings/ta/'
 }
 
 task postBuildScript(type: Exec) {
