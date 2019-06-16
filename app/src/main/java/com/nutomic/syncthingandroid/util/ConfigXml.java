@@ -309,11 +309,13 @@ public class ConfigXml {
         for (int i = 0; i < childNodes.getLength(); i++) {
             Node node = childNodes.item(i);
             if (node.getNodeName().equals("unackedNotificationID")) {
-                if (node.equals("fsWatcherNotification")) {
-                    Log.i(TAG, "Remove found unackedNotificationID 'fsWatcherNotification'.");
-                    options.removeChild(node);
-                    changed = true;
-                    break;
+                switch (getContentOrDefault(node, "")) {
+                    case "crAutoEnabled":
+                    case "fsWatcherNotification":
+                        Log.i(TAG, "Remove found unackedNotificationID '" + node + "'.");
+                        options.removeChild(node);
+                        changed = true;
+                        break;
                 }
             }
         }
