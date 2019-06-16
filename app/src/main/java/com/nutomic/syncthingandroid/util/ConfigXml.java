@@ -910,6 +910,12 @@ public class ConfigXml {
         options.setLowPriority = getContentOrDefault(elementOptions.getElementsByTagName("setLowPriority").item(0), options.setLowPriority);
         // minHomeDiskFree
         options.maxConcurrentScans = getContentOrDefault(elementOptions.getElementsByTagName("maxConcurrentScans").item(0), options.maxConcurrentScans);
+        options.unackedNotificationID = getContentOrDefault(elementOptions.getElementsByTagName("unackedNotificationID").item(0), options.unackedNotificationID);
+        options.crashReportingURL = getContentOrDefault(elementOptions.getElementsByTagName("crashReportingURL").item(0), options.crashReportingURL);
+        options.crashReportingEnabled =getContentOrDefault(elementOptions.getElementsByTagName("crashReportingEnabled").item(0), options.crashReportingEnabled);
+        options.stunKeepaliveStartS = getContentOrDefault(elementOptions.getElementsByTagName("stunKeepaliveStartS").item(0), options.stunKeepaliveStartS);
+        options.stunKeepaliveMinS = getContentOrDefault(elementOptions.getElementsByTagName("stunKeepaliveMinS").item(0), options.stunKeepaliveMinS);
+        options.stunServer = getContentOrDefault(elementOptions.getElementsByTagName("stunServer").item(0), options.stunServer);
         return options;
     }
 
