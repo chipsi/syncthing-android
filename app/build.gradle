@@ -100,7 +100,6 @@ task deleteUnsupportedPlayTranslations(type: Delete) {
     delete 'src/main/play/listings/nl_BE/'
     delete 'src/main/play/listings/nl-BE/'
     delete 'src/main/play/listings/nn/'
-    delete 'src/main/play/listings/no/'
     delete 'src/main/play/listings/ta/'
 }
 
