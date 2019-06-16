@@ -1,3 +1,0 @@
-Notes
-* Syncthing v1.1.4
-* Refer to GitHub for detailed change log.
