@@ -32,9 +32,9 @@ android {
     buildTypes.debug.applicationIdSuffix ".debug"
     dataBinding.enabled = true
 
-    playAccountConfigs {
+    playConfigs {
         defaultAccountConfig {
-            jsonFile = file(System.getenv("SYNCTHING_RELEASE_PLAY_ACCOUNT_CONFIG_FILE") ?: 'keys.json')
+            serviceAccountCredentials = file(System.getenv("SYNCTHING_RELEASE_PLAY_ACCOUNT_CONFIG_FILE") ?: 'keys.json')
         }
     }
     defaultConfig {
@@ -45,7 +45,6 @@ android {
         versionName ourVersionName
         testApplicationId 'com.github.catfriend1.syncthingandroid.test'
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
-        playAccountConfig = playAccountConfigs.defaultAccountConfig
     }
 
     signingConfigs {
@@ -83,9 +82,7 @@ android {
 }
 
 play {
-    jsonFile = file(System.getenv("SYNCTHING_RELEASE_PLAY_ACCOUNT_CONFIG_FILE") ?: 'keys.json')
-    errorOnSizeLimit = false
-    uploadImages = false
+    serviceAccountCredentials = file(System.getenv("SYNCTHING_RELEASE_PLAY_ACCOUNT_CONFIG_FILE") ?: 'keys.json')
     track = 'beta'
 }
 
