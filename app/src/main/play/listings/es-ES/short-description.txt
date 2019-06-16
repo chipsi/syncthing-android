@@ -1,1 +1,1 @@
-Wrapper for Syncthing - Sincronización de ficheros abierta, de confianza y desce
+Wrapper for Syncthing - Sincronización de ficheros abierta y descentralizada

@@ -1,1 +1,1 @@
-Wrapper for Syncthing - Sincronizare de fișiere în mod deschis, de încredere și
+Wrapper for Syncthing - Sincronizare de fișiere în mod deschis și descentralizat
