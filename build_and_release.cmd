@@ -60,6 +60,12 @@ SET UI_ANSWER=
 SET /p UI_ANSWER=Are you ready to publish this release to GPlay? [y/n]
 IF NOT "%UI_ANSWER%" == "y" goto :askUserReadyToPublish
 REM 
+REM Workaround for play-publisher issue, see https://github.com/Triple-T/gradle-play-publisher/issues/597
+:clearPlayPublisherCache
+rd /s /q "app\build\generated\gpp" || rem
+SET RESULT=%ERRORLEVEL%
+IF "%RESULT%" == "32" TASKKILL /F /IM java.exe & goto :clearPlayPublisherCache
+REM 
 REM Publish APK to GPlay
 echo [INFO] Publishing APK to GPlay ...
 call gradlew --quiet publishRelease
