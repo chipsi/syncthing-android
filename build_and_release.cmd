@@ -43,12 +43,14 @@ IF "%CLEANUP_BEFORE_BUILD%" == "1" del /f "%SCRIPT_PATH%app\build\outputs\apk\de
 call gradlew --quiet assembleDebug
 SET RESULT=%ERRORLEVEL%
 IF NOT "%RESULT%" == "0" echo [ERROR] "gradlew assembleDebug" exited with code #%RESULT%. & goto :eos
+type "app\build\intermediates\merged_manifests\debug\AndroidManifest.xml" | findstr /i "android:version"
 REM 
 IF "%CLEANUP_BEFORE_BUILD%" == "1" del /f "%SCRIPT_PATH%app\build\outputs\apk\release\app-release.apk" 2> NUL:
 echo [INFO] Building Android APK variant "release" ...
 call gradlew --quiet assembleRelease
 SET RESULT=%ERRORLEVEL%
 IF NOT "%RESULT%" == "0" echo [ERROR] "gradlew assembleRelease" exited with code #%RESULT%. & goto :eos
+type "app\build\intermediates\merged_manifests\release\AndroidManifest.xml" | findstr /i "android:version"
 REM 
 echo [INFO] Deleting unsupported play translations ...
 call gradlew --quiet deleteUnsupportedPlayTranslations
