@@ -84,6 +84,7 @@ android {
 play {
     serviceAccountCredentials = file(System.getenv("SYNCTHING_RELEASE_PLAY_ACCOUNT_CONFIG_FILE") ?: 'keys.json')
     track = 'beta'
+    resolutionStrategy = 'auto'
 }
 
 tasks.whenTaskAdded { task ->
