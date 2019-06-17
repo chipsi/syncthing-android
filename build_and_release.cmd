@@ -64,9 +64,8 @@ IF NOT "%UI_ANSWER%" == "y" goto :askUserReadyToPublish
 REM 
 REM Workaround for play-publisher issue, see https://github.com/Triple-T/gradle-play-publisher/issues/597
 :clearPlayPublisherCache
-rd /s /q "app\build\generated\gpp" || rem
-SET RESULT=%ERRORLEVEL%
-IF "%RESULT%" == "32" TASKKILL /F /IM java.exe & goto :clearPlayPublisherCache
+IF EXIST "app\build\generated\gpp" rd /s /q "app\build\generated\gpp"
+IF EXIST "app\build\generated\gpp" TASKKILL /F /IM java.exe & sleep 1 & goto :clearPlayPublisherCache
 REM 
 REM Publish APK to GPlay
 echo [INFO] Publishing APK to GPlay ...
