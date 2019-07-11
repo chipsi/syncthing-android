@@ -59,6 +59,21 @@
                 android:drawableStart="@android:drawable/ic_menu_upload"
                 android:textSize="12sp" />
 
+            <Button
+                android:id="@+id/revert"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/directory"
+                android:contentDescription="@string/revert_local_changes"
+                android:paddingEnd="20dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:paddingStart="20dp"
+                android:text="@string/revert_local_changes"
+                android:drawableLeft="@drawable/ic_cloud_download_red_24"
+                android:drawableStart="@drawable/ic_cloud_download_red_24"
+                android:textSize="12sp" />
+
             <TextView
                 android:id="@+id/items"
                 android:layout_width="wrap_content"
