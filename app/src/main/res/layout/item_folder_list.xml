@@ -60,8 +60,9 @@
                     android:paddingRight="20dp"
                     android:paddingStart="20dp"
                     android:text="@string/override_changes"
-                    android:drawableLeft="@android:drawable/ic_menu_upload"
-                    android:drawableStart="@android:drawable/ic_menu_upload"
+                    android:drawableLeft="@drawable/ic_cloud_upload_red_24"
+                    android:drawableStart="@drawable/ic_cloud_upload_red_24"
+                    android:drawablePadding="5sp"
                     android:textSize="12sp" />
 
                 <Button
@@ -76,7 +77,7 @@
                     android:text="@string/revert_local_changes"
                     android:drawableLeft="@drawable/ic_cloud_download_red_24"
                     android:drawableStart="@drawable/ic_cloud_download_red_24"
-                    android:drawablePadding="10sp"
+                    android:drawablePadding="5sp"
                     android:textSize="12sp" />
 
             </RelativeLayout>
