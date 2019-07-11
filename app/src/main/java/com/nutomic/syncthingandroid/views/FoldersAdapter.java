@@ -1,5 +1,6 @@
 package com.nutomic.syncthingandroid.views;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
@@ -189,11 +190,18 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
     }
 
     private void onClickOverride(View view, Folder folder) {
-        // Send "Override changes" through our service to the REST API.
-        Intent intent = new Intent(mContext, SyncthingService.class)
-                .putExtra(SyncthingService.EXTRA_FOLDER_ID, folder.id);
-        intent.setAction(SyncthingService.ACTION_OVERRIDE_CHANGES);
-        mContext.startService(intent);
+        AlertDialog.Builder confirmDialog = new AlertDialog.Builder(mContext)
+                .setTitle(R.string.override_changes)
+                .setMessage(R.string.override_changes_question)
+                .setPositiveButton(android.R.string.ok, (dialogInterface, i) -> {
+                    // Send "Override changes" through our service to the REST API.
+                    Intent intent = new Intent(mContext, SyncthingService.class)
+                            .putExtra(SyncthingService.EXTRA_FOLDER_ID, folder.id);
+                    intent.setAction(SyncthingService.ACTION_OVERRIDE_CHANGES);
+                    mContext.startService(intent);
+                })
+                .setNegativeButton(android.R.string.no, (dialogInterface, i) -> {});
+        confirmDialog.show();
     }
 
 }
