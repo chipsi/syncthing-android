@@ -53,13 +53,7 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
         Folder folder = getItem(position);
         binding.label.setText(TextUtils.isEmpty(folder.label) ? folder.id : folder.label);
         binding.directory.setText(folder.path);
-        binding.override.setOnClickListener(v -> {
-            // Send "Override changes" through our service to the REST API.
-            Intent intent = new Intent(mContext, SyncthingService.class)
-                    .putExtra(SyncthingService.EXTRA_FOLDER_ID, folder.id);
-            intent.setAction(SyncthingService.ACTION_OVERRIDE_CHANGES);
-            mContext.startService(intent);
-        });
+        binding.override.setOnClickListener(view -> { onClickOverride(view, folder); } );
         binding.openFolder.setOnClickListener(view -> { FileUtils.openFolder(mContext, folder.path); } );
 
         // Update folder icon.
@@ -194,5 +188,12 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
         }
     }
 
+    private void onClickOverride(View view, Folder folder) {
+        // Send "Override changes" through our service to the REST API.
+        Intent intent = new Intent(mContext, SyncthingService.class)
+                .putExtra(SyncthingService.EXTRA_FOLDER_ID, folder.id);
+        intent.setAction(SyncthingService.ACTION_OVERRIDE_CHANGES);
+        mContext.startService(intent);
+    }
 
 }
