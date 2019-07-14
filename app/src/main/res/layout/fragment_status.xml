@@ -10,7 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:paddingTop="10dp"
-        android:paddingBottom="10dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp">
 
@@ -28,8 +27,7 @@
             app:strokeColor="#bbbbbb"
             app:strokeWidth="3dp"
             app:cornerRadius="10dp"
-            app:btnPaddingTop="10dp"
-            app:btnPaddingBottom="10dp" />
+            app:btnPaddingTop="10dp" />
 
     </LinearLayout>
 
