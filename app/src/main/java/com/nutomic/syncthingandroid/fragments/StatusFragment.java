@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -15,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 
 import com.google.common.base.Optional;
 import com.nutomic.syncthingandroid.R;
@@ -38,6 +40,8 @@ import java.text.NumberFormat;
 
 import javax.inject.Inject;
 
+import static com.nutomic.syncthingandroid.service.RunConditionMonitor.ACTION_UPDATE_SHOULDRUN_DECISION;
+
 /**
  * Displays why syncthing is running or disabled.
  */
@@ -58,6 +62,7 @@ public class StatusFragment extends ListFragment implements SyncthingService.OnS
     };
 
     private MainActivity mActivity;
+    private View mStatusFragmentView;
     private ArrayAdapter mAdapter;
     private SyncthingService.State mServiceState = SyncthingService.State.INIT;
     private final Handler mRestApiQueryHandler = new Handler();
@@ -133,7 +138,8 @@ public class StatusFragment extends ListFragment implements SyncthingService.OnS
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_status, container, false);
+        mStatusFragmentView = inflater.inflate(R.layout.fragment_status, container, false);
+        return mStatusFragmentView;
     }
 
     @Override
@@ -149,6 +155,14 @@ public class StatusFragment extends ListFragment implements SyncthingService.OnS
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mActivity = (MainActivity) getActivity();
+
+        Button btnForceStartStop = (Button) mStatusFragmentView.findViewById(R.id.forceStartStop);
+        btnForceStartStop.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onBtnForceStartStopClick();
+                }
+        });
     }
 
     @Override
@@ -317,6 +331,31 @@ public class StatusFragment extends ListFragment implements SyncthingService.OnS
             mUpload += " (" + Util.readableFileSize(mActivity, total.outBytesTotal) + ")";
         }
         updateStatus();
+    }
+
+    private void onBtnForceStartStopClick() {
+        LogV("onBtnForceStartStopClick");
+
+        int prefBtnStateForceStartStop = mPreferences.getInt(Constants.PREF_BTNSTATE_FORCE_START_STOP, Constants.BTNSTATE_NO_FORCE_START_STOP);
+        switch (prefBtnStateForceStartStop) {
+            case Constants.BTNSTATE_NO_FORCE_START_STOP:
+                prefBtnStateForceStartStop = Constants.BTNSTATE_FORCE_START;
+                break;
+            case Constants.BTNSTATE_FORCE_START:
+                prefBtnStateForceStartStop = Constants.BTNSTATE_FORCE_STOP;
+                break;
+            case Constants.BTNSTATE_FORCE_STOP:
+                prefBtnStateForceStartStop = Constants.BTNSTATE_NO_FORCE_START_STOP;
+                break;
+        }
+        SharedPreferences.Editor editor = mPreferences.edit();
+        editor.putInt(Constants.PREF_BTNSTATE_FORCE_START_STOP, prefBtnStateForceStartStop);
+        editor.apply();
+
+        // Notify {@link RunConditionMonitor} that the button's state changed.
+        LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(mActivity);
+        Intent intent = new Intent(ACTION_UPDATE_SHOULDRUN_DECISION);
+        localBroadcastManager.sendBroadcast(intent);
     }
 
     private void LogV(String logMessage) {
