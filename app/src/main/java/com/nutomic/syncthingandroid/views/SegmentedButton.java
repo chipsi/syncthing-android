@@ -136,7 +136,7 @@ public class SegmentedButton extends LinearLayout {
             LinearLayout.LayoutParams llp =
                 new LinearLayout.LayoutParams(
                         0,
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.MATCH_PARENT,
                         1);
             addView(button, llp);
             button.setPadding(0, mBtnPaddingTop, 0, mBtnPaddingBottom);
