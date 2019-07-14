@@ -109,7 +109,7 @@ public class SegmentedButton extends LinearLayout {
 
             Button button = new Button(getContext());
             button.setText(titles[i]);
-            button.setTag(new Integer(i));
+            button.setTag(Integer.valueOf(i));
             button.setOnClickListener(mOnClickListener);
             if (mTextStyle != -1) {
                 button.setTextAppearance(getContext(), mTextStyle);
