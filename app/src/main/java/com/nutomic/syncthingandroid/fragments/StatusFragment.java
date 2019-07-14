@@ -31,6 +31,8 @@ import com.nutomic.syncthingandroid.service.Constants;
 import com.nutomic.syncthingandroid.service.RestApi;
 import com.nutomic.syncthingandroid.service.SyncthingService;
 import com.nutomic.syncthingandroid.util.Util;
+import com.nutomic.syncthingandroid.views.SegmentedButton;
+import com.nutomic.syncthingandroid.views.SegmentedButton.OnClickListenerSegmentedButton;
 
 import java.util.concurrent.TimeUnit;
 import java.util.ArrayList;
@@ -156,13 +158,24 @@ public class StatusFragment extends ListFragment implements SyncthingService.OnS
         super.onActivityCreated(savedInstanceState);
         mActivity = (MainActivity) getActivity();
 
-        Button btnForceStartStop = (Button) mStatusFragmentView.findViewById(R.id.forceStartStop);
-        btnForceStartStop.setOnClickListener(new View.OnClickListener() {
+        // Create button group.
+        SegmentedButton btnForceStartStop = (SegmentedButton) mActivity.findViewById(R.id.forceStartStop);
+        btnForceStartStop.clearButtons();
+        btnForceStartStop.addButtons(
+                getString(R.string.button_follow_run_conditions),
+                getString(R.string.button_force_start),
+                getString(R.string.button_force_stop)
+        );
+        btnForceStartStop.setOnClickListener(new OnClickListenerSegmentedButton() {
                 @Override
-                public void onClick(View view) {
-                    onBtnForceStartStopClick();
+                public void onClick(int index) {
+                    onBtnForceStartStopClick(index);
                 }
         });
+
+        // Restore last state of button group.
+        int prefBtnStateForceStartStop = mPreferences.getInt(Constants.PREF_BTNSTATE_FORCE_START_STOP, Constants.BTNSTATE_NO_FORCE_START_STOP);
+        btnForceStartStop.setPushedButtonIndex(prefBtnStateForceStartStop);
     }
 
     @Override
@@ -333,23 +346,12 @@ public class StatusFragment extends ListFragment implements SyncthingService.OnS
         updateStatus();
     }
 
-    private void onBtnForceStartStopClick() {
+    private void onBtnForceStartStopClick(int index) {
         LogV("onBtnForceStartStopClick");
 
-        int prefBtnStateForceStartStop = mPreferences.getInt(Constants.PREF_BTNSTATE_FORCE_START_STOP, Constants.BTNSTATE_NO_FORCE_START_STOP);
-        switch (prefBtnStateForceStartStop) {
-            case Constants.BTNSTATE_NO_FORCE_START_STOP:
-                prefBtnStateForceStartStop = Constants.BTNSTATE_FORCE_START;
-                break;
-            case Constants.BTNSTATE_FORCE_START:
-                prefBtnStateForceStartStop = Constants.BTNSTATE_FORCE_STOP;
-                break;
-            case Constants.BTNSTATE_FORCE_STOP:
-                prefBtnStateForceStartStop = Constants.BTNSTATE_NO_FORCE_START_STOP;
-                break;
-        }
+        // Note: "index" is equivalent to the defined integer "Constants.PREF_BTNSTATE_*" values.
         SharedPreferences.Editor editor = mPreferences.edit();
-        editor.putInt(Constants.PREF_BTNSTATE_FORCE_START_STOP, prefBtnStateForceStartStop);
+        editor.putInt(Constants.PREF_BTNSTATE_FORCE_START_STOP, index);
         editor.apply();
 
         // Notify {@link RunConditionMonitor} that the button's state changed.
