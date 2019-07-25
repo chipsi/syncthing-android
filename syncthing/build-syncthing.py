@@ -362,7 +362,6 @@ syncthingVersion = subprocess.check_output([
     'describe',
     '--always'
 ]).strip();
-syncthingVersion = 'v1.2.1-preview4-mtime';
 syncthingVersion = syncthingVersion.decode().replace("rc", "preview");
 
 print('Cleaning go-build cache')
