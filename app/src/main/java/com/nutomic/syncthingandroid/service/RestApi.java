@@ -229,8 +229,16 @@ public class RestApi {
             throw new RuntimeException("config is null: " + result);
         }
         Log.d(TAG, "onReloadConfigComplete: Successfully parsed configuration.");
-        LogV("mConfig.pendingDevices = " + mGson.toJson(mConfig.pendingDevices));
-        LogV("mConfig.remoteIgnoredDevices = " + mGson.toJson(mConfig.remoteIgnoredDevices));
+
+        synchronized (mConfigLock) {
+            LogV("mConfig.pendingDevices = " + mGson.toJson(mConfig.pendingDevices));
+            LogV("mConfig.remoteIgnoredDevices = " + mGson.toJson(mConfig.remoteIgnoredDevices));
+
+            // Check if device approval notifications are pending.
+            for (PendingDevice pendingDevice : mConfig.pendingDevices) {
+                // ToDo
+            }
+        }
 
         // Update cached device and folder information stored in the mCompletion model.
         mCompletion.updateFromConfig(getDevices(true), getFolders());
