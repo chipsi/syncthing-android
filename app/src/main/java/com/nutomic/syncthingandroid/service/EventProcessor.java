@@ -107,10 +107,12 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
                 }
                 break;
             case "DeviceRejected":
+                /*
                 onDeviceRejected(
                     (String) event.data.get("device"),          // deviceId
                     (String) event.data.get("name")             // deviceName
                 );
+                */
                 break;
             case "FolderCompletion":
                 CompletionInfo completionInfo = new CompletionInfo();
@@ -126,11 +128,13 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
                 onFolderErrors(json);
                 break;
             case "FolderRejected":
+                /*
                 onFolderRejected(
                     (String) event.data.get("device"),          // deviceId
                     (String) event.data.get("folder"),          // folderId
                     (String) event.data.get("folderLabel")      // folderLabel
                 );
+                */
                 break;
             case "ItemFinished":
                 String action               = (String) event.data.get("action");
