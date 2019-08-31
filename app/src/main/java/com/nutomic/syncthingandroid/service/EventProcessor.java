@@ -21,8 +21,6 @@ import com.google.gson.JsonObject;
 
 import com.nutomic.syncthingandroid.R;
 import com.nutomic.syncthingandroid.SyncthingApp;
-import com.nutomic.syncthingandroid.activities.DeviceActivity;
-import com.nutomic.syncthingandroid.activities.FolderActivity;
 import com.nutomic.syncthingandroid.model.CompletionInfo;
 import com.nutomic.syncthingandroid.model.Device;
 import com.nutomic.syncthingandroid.model.Event;

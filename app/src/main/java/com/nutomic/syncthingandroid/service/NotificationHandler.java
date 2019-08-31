@@ -14,7 +14,9 @@ import android.util.Log;
 
 import com.nutomic.syncthingandroid.R;
 import com.nutomic.syncthingandroid.SyncthingApp;
+import com.nutomic.syncthingandroid.activities.DeviceActivity;
 import com.nutomic.syncthingandroid.activities.FirstStartActivity;
+import com.nutomic.syncthingandroid.activities.FolderActivity;
 import com.nutomic.syncthingandroid.activities.LogActivity;
 import com.nutomic.syncthingandroid.activities.MainActivity;
 import com.nutomic.syncthingandroid.service.SyncthingService.State;
