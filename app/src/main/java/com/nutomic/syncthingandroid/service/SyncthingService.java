@@ -20,6 +20,7 @@ import com.nutomic.syncthingandroid.SyncthingApp;
 import com.nutomic.syncthingandroid.http.PollWebGuiAvailableTask;
 import com.nutomic.syncthingandroid.model.Device;
 import com.nutomic.syncthingandroid.model.Folder;
+import com.nutomic.syncthingandroid.model.PendingDevice;
 import com.nutomic.syncthingandroid.util.ConfigXml;
 import com.nutomic.syncthingandroid.util.FileUtils;
 import com.nutomic.syncthingandroid.util.Util;
@@ -358,8 +359,46 @@ public class SyncthingService extends Service {
             mRestApi.overrideChanges(intent.getStringExtra(EXTRA_FOLDER_ID));
         } else if (ACTION_REVERT_LOCAL_CHANGES.equals(intent.getAction()) && mCurrentState == State.ACTIVE) {
             mRestApi.revertLocalChanges(intent.getStringExtra(EXTRA_FOLDER_ID));
+        } else {
+            afterFreshServiceInstanceStart();
         }
         return START_STICKY;
+    }
+
+    /**
+     * Event handler ot catch a fresh service startup right after the run condition evaluation took place
+     * and SyncthingNative may be starting in the background meanwhilst or non-present.
+     */
+    private void afterFreshServiceInstanceStart() {
+        LogV("afterFreshServiceInstanceStart: Service started from scratch, SyncthingNative is going to STATE_" + mCurrentState + " meanwhilst ...");
+        if (mCurrentState == State.DISABLED) {
+            // Read and parse the config from disk.
+            ConfigXml configXml = new ConfigXml(this);
+            try {
+                configXml.loadConfig();
+            } catch (ConfigXml.OpenConfigException e) {
+                mNotificationHandler.showCrashedNotification(R.string.config_read_failed, "afterFreshServiceInstanceStart:OpenConfigException");
+                synchronized (mStateLock) {
+                    onServiceStateChange(State.ERROR);
+                }
+                stopSelf();
+                return;
+            }
+
+            // Check if pending devices are waiting for approval.
+            List<PendingDevice> pendingDevices = configXml.getPendingDevices();
+            if (pendingDevices != null) {
+                for (PendingDevice pendingDevice : pendingDevices) {
+                    if (mNotificationHandler != null && pendingDevice.deviceID != null) {
+                        LogV("pendingDevice.deviceID = " + pendingDevice.deviceID + "('" + pendingDevice.name + "')");
+                        mNotificationHandler.showDeviceConnectNotification(
+                            pendingDevice.deviceID,
+                            pendingDevice.name
+                        );
+                    }
+                }
+            }
+        }
     }
 
     /**
