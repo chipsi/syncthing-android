@@ -303,7 +303,7 @@ public class RestApi {
 
             /**
              * Ignore device by moving its corresponding "pendingDevice" entry to
-             * a newly created "remotePendingDevice" entry.
+             * a newly created "remoteIgnoredDevice" entry.
              */
             RemoteIgnoredDevice remoteIgnoredDevice = new RemoteIgnoredDevice();
             remoteIgnoredDevice.deviceID = deviceId;
