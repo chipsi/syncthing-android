@@ -952,6 +952,52 @@ public class ConfigXml {
         return pendingDevices;
     }
 
+    /**
+     * Permanently ignore a device when it tries to connect.
+     * Ignored devices will not trigger the consent notification.
+     */
+    public void ignoreDevice(String deviceId) {
+        /**
+         * Example xml content:
+         *  <remoteIgnoredDevice time="2019-08-31T14:46:13Z" id="7LTUV3P-Y37HQXK-UUM7S5Q-2NDQT3B-SA4WAT4-T5ODX3V-XRXAF7Z-MXM7GAA" name="PC1" address="185.207.107.1:22067"></remoteIgnoredDevice>
+         *  <remoteIgnoredDevice time="2019-08-31T14:47:13Z" id="7LTUV3P-Y37HQXK-UUM7S5Q-2NDQT3B-SA4WAT4-T5ODX3V-XRXAF7Z-MXM7GAB" name="PC2" address="185.207.107.2:22067"></remoteIgnoredDevice>
+         */
+        if (deviceId == null || deviceId.isEmpty()) {
+            Log.e(TAG, "ignoreDevice: deviceId == null or empty.");
+            return;
+        }
+
+        // Check if the device has already been ignored.
+        NodeList nodeRemoteIgnoredDevice = mConfig.getDocumentElement().getElementsByTagName("remoteIgnoredDevice");
+        for (int i = 0; i < nodeRemoteIgnoredDevice.getLength(); i++) {
+            Element r = (Element) nodeRemoteIgnoredDevice.item(i);
+            if (getAttributeOrDefault(r, "id", "").equals(deviceId)) {
+                // Device already ignored.
+                Log.d(TAG, "Device already ignored [" + deviceId + "]");
+                return;
+            }
+        }
+
+        /**
+         * Ignore device by moving its corresponding "pendingDevice" entry to
+         * a newly created "remoteIgnoredDevice" entry. We take a shortcut here:
+         * As the element structure is the same for both nodes, we just rename the
+         * "pendingDevice" node to "remoteIgnoredDevice".
+         */
+        NodeList nodePendingDevice = mConfig.getDocumentElement().getElementsByTagName("pendingDevice");
+        for (int i = 0; i < nodePendingDevice.getLength(); i++) {
+            Element r = (Element) nodePendingDevice.item(i);
+            if (getAttributeOrDefault(r, "id", "").equals(deviceId)) {
+                mConfig.renameNode(r, r.getNamespaceURI(), "remoteIgnoredDevice");
+                Log.d(TAG, "Ignored device [" + deviceId + "]");
+                return;
+            }
+        }
+
+        // We didn't find the device to ignore in pending device tags.
+        Log.w(TAG, "ignoreDevice: Pending device not found [" + deviceId + "]");
+    }
+
     public void setDevicePause(String deviceId, Boolean paused) {
         // Prevent enumerating "<device>" tags below "<folder>" nodes by enumerating child nodes manually.
         NodeList childNodes = mConfig.getDocumentElement().getChildNodes();
