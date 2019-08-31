@@ -165,6 +165,19 @@ public class ConfigRouter {
         restApi.removeDevice(deviceID);       // This will send the config afterwards.
     }
 
+    public void ignoreDevice(RestApi restApi, final String deviceID) {
+        if (restApi == null || !restApi.isConfigLoaded()) {
+            // Syncthing is not running or REST API is not (yet) available.
+            configXml.loadConfig();
+            configXml.ignoreDevice(deviceID);
+            configXml.saveChanges();
+            return;
+        }
+
+        // Syncthing is running and REST API is available.
+        restApi.ignoreDevice(deviceID);       // This will send the config afterwards.
+    }
+
     public Gui getGui(RestApi restApi) {
         if (restApi == null || !restApi.isConfigLoaded()) {
             // Syncthing is not running or REST API is not (yet) available.

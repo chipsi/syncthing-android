@@ -21,6 +21,7 @@ import com.nutomic.syncthingandroid.http.PollWebGuiAvailableTask;
 import com.nutomic.syncthingandroid.model.Device;
 import com.nutomic.syncthingandroid.model.Folder;
 import com.nutomic.syncthingandroid.model.PendingDevice;
+import com.nutomic.syncthingandroid.util.ConfigRouter;
 import com.nutomic.syncthingandroid.util.ConfigXml;
 import com.nutomic.syncthingandroid.util.FileUtils;
 import com.nutomic.syncthingandroid.util.Util;
@@ -165,6 +166,7 @@ public class SyncthingService extends Service {
      * {@link #onStartCommand}.
      */
     private State mCurrentState = State.DISABLED;
+    private ConfigRouter mConfigRouter;
     private ConfigXml mConfig;
     private Thread mSyncthingRunnableThread = null;
     private Handler mHandler;
@@ -226,6 +228,7 @@ public class SyncthingService extends Service {
         ((SyncthingApp) getApplication()).component().inject(this);
         ENABLE_VERBOSE_LOG = AppPrefs.getPrefVerboseLog(mPreferences);
         LogV("onCreate");
+        mConfigRouter = new ConfigRouter(SyncthingService.this);
         mHandler = new Handler();
 
         /**
@@ -347,9 +350,8 @@ public class SyncthingService extends Service {
             if (mRunConditionMonitor != null) {
                 mRunConditionMonitor.updateShouldRunDecision();
             }
-        } else if (ACTION_IGNORE_DEVICE.equals(intent.getAction()) && mCurrentState == State.ACTIVE) {
-            // mRestApi is not null due to State.ACTIVE
-            mRestApi.ignoreDevice(intent.getStringExtra(EXTRA_DEVICE_ID));
+        } else if (ACTION_IGNORE_DEVICE.equals(intent.getAction())) {
+            mConfigRouter.ignoreDevice(mRestApi, intent.getStringExtra(EXTRA_DEVICE_ID));
             mNotificationHandler.cancelConsentNotification(intent.getIntExtra(EXTRA_NOTIFICATION_ID, 0));
         } else if (ACTION_IGNORE_FOLDER.equals(intent.getAction()) && mCurrentState == State.ACTIVE) {
             // mRestApi is not null due to State.ACTIVE
