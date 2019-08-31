@@ -368,7 +368,7 @@ public class SettingsActivity extends SyncthingActivity {
             Preference verboseLog                   = findPreference(Constants.PREF_VERBOSE_LOG);
             Preference openIssueTracker             = findPreference(KEY_OPEN_ISSUE_TRACKER);
             Preference debugFacilitiesEnabled       = findPreference(Constants.PREF_DEBUG_FACILITIES_ENABLED);
-            Preference environmentVariables         = findPreference("environment_variables");
+            Preference environmentVariables         = findPreference(Constants.PREF_ENVIRONMENT_VARIABLES);
             Preference stResetDatabase              = findPreference("st_reset_database");
             Preference stResetDeltas                = findPreference("st_reset_deltas");
 
