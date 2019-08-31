@@ -12,6 +12,7 @@ import com.nutomic.syncthingandroid.model.Folder;
 import com.nutomic.syncthingandroid.model.FolderIgnoreList;
 import com.nutomic.syncthingandroid.model.Gui;
 import com.nutomic.syncthingandroid.model.Options;
+import com.nutomic.syncthingandroid.model.PendingDevice;
 import com.nutomic.syncthingandroid.R;
 import com.nutomic.syncthingandroid.service.AppPrefs;
 import com.nutomic.syncthingandroid.service.Constants;
@@ -85,6 +86,15 @@ public class ConfigXml {
         return lhsLabel.compareTo(rhsLabel);
     };
 
+    /**
+     * Compares pending devices by labels, uses the device ID as fallback if the label is empty
+     */
+    private final static Comparator<PendingDevice> PENDING_DEVICES_COMPARATOR = (lhs, rhs) -> {
+        String lhsLabel = lhs.name != null && !lhs.name.isEmpty() ? lhs.name : lhs.deviceID;
+        String rhsLabel = rhs.name != null && !rhs.name.isEmpty() ? rhs.name : rhs.deviceID;
+        return lhsLabel.compareTo(rhsLabel);
+    };
+
     public interface OnResultListener1<T> {
         void onResult(T t);
     }
@@ -106,6 +116,9 @@ public class ConfigXml {
     public void loadConfig() throws OpenConfigException {
         parseConfig();
         updateIfNeeded();
+
+        // For testing puporses only.
+        // getPendingDevices();
     }
 
     /**
@@ -923,6 +936,30 @@ public class ConfigXml {
         options.stunKeepaliveMinS = getContentOrDefault(elementOptions.getElementsByTagName("stunKeepaliveMinS").item(0), options.stunKeepaliveMinS);
         options.stunServer = getContentOrDefault(elementOptions.getElementsByTagName("stunServer").item(0), options.stunServer);
         return options;
+    }
+
+    public List<PendingDevice> getPendingDevices() {
+        /**
+         * Example xml content:
+         *  <pendingDevice time="2019-08-31T13:20:38Z" id="7LTUV3P-Y37HQXK-UUM7S5Q-2NDQT3B-SA4WAT4-T5ODX3V-XRXAF7Z-MXM7GAA" name="PC1" address="89.221.214.1:22067"/>
+         *  <pendingDevice time="2019-08-31T13:21:38Z" id="7LTUV3P-Y37HQXK-UUM7S5Q-2NDQT3B-SA4WAT4-T5ODX3V-XRXAF7Z-MXM7GAB" name="PC2" address="89.221.214.2:22067"/>
+         */
+        List<PendingDevice> pendingDevices = new ArrayList<>();
+        NodeList nodePendingDevice = mConfig.getDocumentElement().getElementsByTagName("pendingDevice");
+        for (int i = 0; i < nodePendingDevice.getLength(); i++) {
+            Element r = (Element) nodePendingDevice.item(i);
+            PendingDevice pendingDevice = new PendingDevice();
+            pendingDevice.address = getAttributeOrDefault(r, "address", pendingDevice.address);
+            pendingDevice.deviceID = getAttributeOrDefault(r, "id", pendingDevice.deviceID);
+            pendingDevice.name = getAttributeOrDefault(r, "name", pendingDevice.name);
+            pendingDevice.time = getAttributeOrDefault(r, "time", pendingDevice.time);
+
+            // For testing purposes only.
+            Log.v(TAG, "pendingDevice.name=" + pendingDevice.name + "/pendingDevice.deviceID=" + pendingDevice.deviceID + "/pendingDevice.time=" +  pendingDevice.time);
+            pendingDevices.add(pendingDevice);
+        }
+        Collections.sort(pendingDevices, PENDING_DEVICES_COMPARATOR);
+        return pendingDevices;
     }
 
     public void setDevicePause(String deviceId, Boolean paused) {
