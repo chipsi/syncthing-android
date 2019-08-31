@@ -107,6 +107,13 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
                 }
                 break;
             case "DeviceRejected":
+                /**
+                 * This is obsolete since v0.14.51, https://github.com/syncthing/syncthing/pull/5084
+                 * Unknown devices are now stored to "config.xml" and persisted until the user decided
+                 * to accept or ignore the device connection request. We don't need to catch the event
+                 * as a "ConfigSaved" event is fired which will be forwarded to:
+                 * {@link RestApi#reloadConfig} => {@link RestApi#onReloadConfigComplete}
+                 */
                 /*
                 onDeviceRejected(
                     (String) event.data.get("device"),          // deviceId
@@ -128,6 +135,13 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
                 onFolderErrors(json);
                 break;
             case "FolderRejected":
+                /**
+                 * This is obsolete since v0.14.51, https://github.com/syncthing/syncthing/pull/5084
+                 * Unknown folders are now stored to "config.xml" and persisted until the user decided
+                 * to accept or ignore the folder share request. We don't need to catch the event
+                 * as a "ConfigSaved" event is fired which will be forwarded to:
+                 * {@link RestApi#reloadConfig} => {@link RestApi#onReloadConfigComplete}
+                 */
                 /*
                 onFolderRejected(
                     (String) event.data.get("device"),          // deviceId
