@@ -772,6 +772,18 @@ public class ConfigXml {
         Element elementDevice = (Element) nodeDevice;
         elementDevice.setAttribute("id", device.deviceID);
         updateDevice(device);
+
+        // Remove corresponding "pendingDevice" node if any exists.
+        List<PendingDevice> pendingDevices = new ArrayList<>();
+        NodeList nodePendingDevice = mConfig.getDocumentElement().getElementsByTagName("pendingDevice");
+        for (int i = 0; i < nodePendingDevice.getLength(); i++) {
+            Element r = (Element) nodePendingDevice.item(i);
+            if (getAttributeOrDefault(r, "id", "").equals(device.deviceID)) {
+                Log.d(TAG, "addDevice: Removing pendingDevice [" + device.deviceID + "]");
+                removeChildElementFromTextNode((Element) r.getParentNode(), r);
+                break;
+            }
+        }
     }
 
     public void updateDevice(final Device device) {
