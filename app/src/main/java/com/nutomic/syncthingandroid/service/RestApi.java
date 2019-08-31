@@ -236,10 +236,10 @@ public class RestApi {
             LogV("mConfig.remoteIgnoredDevices = " + mGson.toJson(mConfig.remoteIgnoredDevices));
 
             // Check if device approval notifications are pending.
-            // LogV("mConfig.pendingDevices = " + mGson.toJson(mConfig.pendingDevices));
+            LogV("mConfig.pendingDevices = " + mGson.toJson(mConfig.pendingDevices));
             for (PendingDevice pendingDevice : mConfig.pendingDevices) {
                 if (mNotificationHandler != null && pendingDevice.deviceID != null) {
-                    LogV("pendingDevice.deviceID = " + pendingDevice.deviceID + "('" + pendingDevice.name + "')");
+                    Log.d(TAG, "pendingDevice.deviceID = " + pendingDevice.deviceID + "('" + pendingDevice.name + "')");
                     mNotificationHandler.showDeviceConnectNotification(
                         pendingDevice.deviceID,
                         pendingDevice.name

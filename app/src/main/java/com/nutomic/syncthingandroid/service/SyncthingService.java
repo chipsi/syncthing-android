@@ -390,7 +390,7 @@ public class SyncthingService extends Service {
             if (pendingDevices != null) {
                 for (PendingDevice pendingDevice : pendingDevices) {
                     if (mNotificationHandler != null && pendingDevice.deviceID != null) {
-                        LogV("pendingDevice.deviceID = " + pendingDevice.deviceID + "('" + pendingDevice.name + "')");
+                        Log.d(TAG, "pendingDevice.deviceID = " + pendingDevice.deviceID + "('" + pendingDevice.name + "')");
                         mNotificationHandler.showDeviceConnectNotification(
                             pendingDevice.deviceID,
                             pendingDevice.name
