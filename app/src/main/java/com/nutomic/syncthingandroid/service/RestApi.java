@@ -150,6 +150,8 @@ public class RestApi {
 
     private Gson mGson;
 
+    @Inject NotificationHandler mNotificationHandler;
+
     public RestApi(Context context, URL url, String apiKey, OnApiAvailableListener apiListener,
                    OnConfigChangedListener configListener) {
         ((SyncthingApp) context.getApplicationContext()).component().inject(this);
@@ -236,7 +238,12 @@ public class RestApi {
 
             // Check if device approval notifications are pending.
             for (PendingDevice pendingDevice : mConfig.pendingDevices) {
-                // ToDo
+                if (mNotificationHandler != null && pendingDevice.deviceID != null) {
+                    mNotificationHandler.showDeviceConnectNotification(
+                        pendingDevice.deviceID,
+                        pendingDevice.name
+                    );
+                }
             }
         }
 
