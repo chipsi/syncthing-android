@@ -239,6 +239,7 @@ public class RestApi {
             // Check if device approval notifications are pending.
             for (PendingDevice pendingDevice : mConfig.pendingDevices) {
                 if (mNotificationHandler != null && pendingDevice.deviceID != null) {
+                    LogV("pendingDevice.deviceID = " + pendingDevice.deviceID + "('" + pendingDevice.name + "')");
                     mNotificationHandler.showDeviceConnectNotification(
                         pendingDevice.deviceID,
                         pendingDevice.name
