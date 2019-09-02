@@ -16,7 +16,6 @@ import com.nutomic.syncthingandroid.R;
 import com.nutomic.syncthingandroid.service.AppPrefs;
 import com.nutomic.syncthingandroid.service.Constants;
 import com.nutomic.syncthingandroid.service.SyncthingRunnable;
-import com.nutomic.syncthingandroid.util.ExtStorageCompat;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
@@ -107,7 +106,6 @@ public class ConfigXml {
     public void loadConfig() throws OpenConfigException {
         parseConfig();
         updateIfNeeded();
-        // Log.e(TAG, "TEST: " + ExtStorageCompat.getExternalStoragePublicDirectory(mContext, Environment.DIRECTORY_DCIM).getAbsolutePath());
     }
 
     /**
@@ -1006,7 +1004,8 @@ public class ConfigXml {
         String defaultFolderId = deviceModel + "_" + generateRandomString(FOLDER_ID_APPENDIX_LENGTH);
         folder.setAttribute("label", mContext.getString(R.string.default_folder_label));
         folder.setAttribute("id", mContext.getString(R.string.default_folder_id, defaultFolderId));
-        folder.setAttribute("path", ExtStorageCompat.getExternalStoragePublicDirectory(mContext, Environment.DIRECTORY_DCIM).getAbsolutePath());
+        folder.setAttribute("path", Environment
+                .getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath());
         folder.setAttribute("type", Constants.FOLDER_TYPE_SEND_ONLY);
         folder.setAttribute("fsWatcherEnabled", Boolean.toString(defaultFolder.fsWatcherEnabled));
         folder.setAttribute("fsWatcherDelayS", Integer.toString(defaultFolder.fsWatcherDelayS));
