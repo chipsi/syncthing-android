@@ -82,12 +82,6 @@ android {
         disable "IconMissingDensityFolder"
         abortOnError true
     }
-
-    allprojects {
-        tasks.withType(JavaCompile) {
-            options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
-        }
-    }
 }
 
 play {
