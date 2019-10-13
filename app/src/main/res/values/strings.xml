@@ -61,6 +61,14 @@ Please report any problems you encounter via Github.</string>
 
     <string name="refresh">Refresh</string>
 
+
+
+    <!-- PhotoShootActivity -->
+
+
+    <string name="photo_shoot_activity_title">Syncthing Camera</string>
+
+
     <!-- MainActivity -->
 
 
