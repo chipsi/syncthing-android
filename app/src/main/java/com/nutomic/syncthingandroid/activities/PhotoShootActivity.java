@@ -42,13 +42,20 @@ import com.nutomic.syncthingandroid.util.Util;
 import com.nutomic.syncthingandroid.views.CustomViewPager;
 
 import java.lang.ref.WeakReference;
-
 import javax.inject.Inject;
 
 /* TEST for Activity */
 import android.content.pm.PackageManager;
-import android.hardware.Camera;
+import android.os.Environment;
 import android.provider.MediaStore;
+import androidx.core.content.FileProvider;
+import java.io.IOException;
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
+import android.app.Activity;
 
 public class PhotoShootActivity extends AppCompatActivity {
 
@@ -59,15 +66,48 @@ public class PhotoShootActivity extends AppCompatActivity {
 
     /* TEST */
     private static final int REQUEST_CAPTURE_IMAGE = 100;
+    String imageFilePath;
 
     private void openCameraIntent() {
         Intent pictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (pictureIntent.resolveActivity(getPackageManager()) == null) {
-            Log.e(TAG, "This system does not support the ACTION_IMAGE_CAPTURE intent.";
+            Log.e(TAG, "This system does not support the ACTION_IMAGE_CAPTURE intent.");
             return;
         }
-        Log.d(TAG, "Launching take picture intent ...");
-        startActivityForResult(pictureIntent, REQUEST_CAPTURE_IMAGE);
+
+        //Create a file to store the image
+        File photoFile = null;
+        try {
+            photoFile = createImageFile();
+        } catch (IOException ex) {
+            Log.e(TAG, "Error occurred while creating the temp image file");
+            return;
+        }
+
+        if (photoFile != null) {
+            Uri photoURI = FileProvider.getUriForFile(this, getPackageName() + ".provider", photoFile);
+            pictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+
+            Log.d(TAG, "Launching take picture intent ...");
+            startActivityForResult(pictureIntent, REQUEST_CAPTURE_IMAGE);
+        }
+    }
+
+    private File createImageFile() throws IOException {
+        String timeStamp =
+             new SimpleDateFormat("yyyyMMdd_HHmmss",
+                          Locale.getDefault()).format(new Date());
+        String imageFileName = "IMG_" + timeStamp + "_";
+        File storageDir =
+                    getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                        imageFileName,  /* prefix */
+                        ".jpg",         /* suffix */
+                        storageDir      /* directory */
+        );
+
+        imageFilePath = image.getAbsolutePath();
+        return image;
     }
 
 
@@ -241,14 +281,22 @@ public class PhotoShootActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode,
                                                   Intent data) {
-        if (requestCode == REQUEST_CAPTURE_IMAGE &&
-                                  resultCode == RESULT_OK) {
-            if (data != null && data.getExtras() != null) {
-                Log.d(TAG, "Processing taken picture ...");
-                Bitmap imageBitmap = (Bitmap) data.getExtras().get("data");
-                // ToDo 
+        if (requestCode == REQUEST_CAPTURE_IMAGE) {
+            if (resultCode == Activity.RESULT_OK) {
+                Log.d(TAG, "User took a picture.");
+            } else if(resultCode == Activity.RESULT_CANCELED) {
+                Log.d(TAG, "User cancelled to take a picture.");
             }
         }
+        /*
+        if (requestCode == REQUEST_CAPTURE_IMAGE && resultCode == RESULT_OK) {
+            if (data != null && data.getExtras() != null) {
+                Log.d(TAG, "Processing taken picture ...");
+                // Bitmap imageBitmap = (Bitmap) data.getExtras().get("data");
+                // ToDo
+            }
+        }
+        */
     }
 
     /**
