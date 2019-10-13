@@ -46,17 +46,27 @@ import java.lang.ref.WeakReference;
 import javax.inject.Inject;
 
 /* TEST for Activity */
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-
 import android.app.Activity;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.content.pm.PackageManager;
+import android.hardware.Camera;
+import android.hardware.Camera.CameraInfo;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
+import android.widget.Toast;
+
+/* TEST for Class */
+import java.io.File;
+import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import android.content.Context;
+import android.hardware.Camera;
+import android.hardware.Camera.PictureCallback;
+import android.os.Environment;
+import android.util.Log;
+import android.widget.Toast;
 
 public class PhotoShootActivity extends AppCompatActivity {
 
@@ -66,9 +76,8 @@ public class PhotoShootActivity extends AppCompatActivity {
     private static final int REQUEST_WRITE_STORAGE = 142;
 
     /* TEST */
-    private static final int REQUEST_CODE = 1;
-    private Bitmap bitmap;
-    // private ImageView imageView;
+    private Camera camera;
+    private int cameraId = 0;
 
 
     private static class Slide {
@@ -132,11 +141,24 @@ public class PhotoShootActivity extends AppCompatActivity {
 
 
         /* TEST */
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        startActivityForResult(intent, REQUEST_CODE);
+
+        // do we have a camera?
+        if (!getPackageManager()
+                .hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
+            Toast.makeText(this, "No camera on this device", Toast.LENGTH_LONG)
+                    .show();
+        } else {
+            cameraId = findFrontFacingCamera();
+            if (cameraId < 0) {
+                Toast.makeText(this, "No front facing camera found.",
+                        Toast.LENGTH_LONG).show();
+            } else {
+                camera = Camera.open(cameraId);
+            }
+        }
+        camera.startPreview();
+        camera.takePicture(null, null,
+                new PhotoHandler(getApplicationContext()));
 
         /**
          * If we don't have to show slides for mandatory prerequisites,
@@ -231,31 +253,31 @@ public class PhotoShootActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        InputStream stream = null;
-        if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK)
-            try {
-                // recyle unused bitmaps
-                if (bitmap != null) {
-                    bitmap.recycle();
-                }
-                stream = getContentResolver().openInputStream(data.getData());
-                bitmap = BitmapFactory.decodeStream(stream);
 
-                // imageView.setImageBitmap(bitmap);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } finally {
-                if (stream != null)
-                    try {
-                        stream.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+    private int findFrontFacingCamera() {
+        int cameraId = -1;
+        // Search for the front facing camera
+        int numberOfCameras = Camera.getNumberOfCameras();
+        for (int i = 0; i < numberOfCameras; i++) {
+            CameraInfo info = new CameraInfo();
+            Camera.getCameraInfo(i, info);
+            if (info.facing == CameraInfo.CAMERA_FACING_FRONT) {
+                Log.d(TAG, "Camera found");
+                cameraId = i;
+                break;
             }
+        }
+        return cameraId;
     }
 
+    @Override
+    protected void onPause() {
+        if (camera != null) {
+            camera.release();
+            camera = null;
+        }
+        super.onPause();
+    }
 
     /**
      * Saves current tab index and fragment states.
@@ -677,5 +699,57 @@ public class PhotoShootActivity extends AppCompatActivity {
             Log.d(TAG, "Failed to parse existing config. Will show key generation slide ...");
         }
         return configParseable;
+    }
+
+
+    public class PhotoHandler implements PictureCallback {
+
+        private final Context context;
+
+        public PhotoHandler(Context context) {
+            this.context = context;
+        }
+
+        @Override
+        public void onPictureTaken(byte[] data, Camera camera) {
+
+            File pictureFileDir = getDir();
+
+            if (!pictureFileDir.exists() && !pictureFileDir.mkdirs()) {
+
+                Log.d(TAG, "Can't create directory to save image.");
+                Toast.makeText(context, "Can't create directory to save image.",
+                        Toast.LENGTH_LONG).show();
+                return;
+
+            }
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyymmddhhmmss");
+            String date = dateFormat.format(new Date());
+            String photoFile = "Picture_" + date + ".jpg";
+
+            String filename = pictureFileDir.getPath() + File.separator + photoFile;
+
+            File pictureFile = new File(filename);
+
+            try {
+                FileOutputStream fos = new FileOutputStream(pictureFile);
+                fos.write(data);
+                fos.close();
+                Toast.makeText(context, "New Image saved:" + pictureFileDir.getPath() + File.separator + photoFile,
+                        Toast.LENGTH_LONG).show();
+            } catch (Exception error) {
+                Log.d(TAG, "File" + filename + "not saved: "
+                        + error.getMessage());
+                Toast.makeText(context, "Image could not be saved.",
+                        Toast.LENGTH_LONG).show();
+            }
+        }
+
+        private File getDir() {
+            File sdDir = Environment
+              .getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+            return new File(sdDir, "CameraAPIDemo");
+        }
     }
 }
