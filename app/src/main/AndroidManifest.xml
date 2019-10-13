@@ -24,6 +24,8 @@
     <!-- WRITE_SETTINGS, WRITE_SECURE_SETTINGS are required to disable DuraSpeed -->
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
+    <!-- CAMERA is required for the "Syncthing Camera" feature -->
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:allowBackup="false"
