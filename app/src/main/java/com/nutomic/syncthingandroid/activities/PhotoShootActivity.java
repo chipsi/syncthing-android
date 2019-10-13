@@ -40,16 +40,19 @@ public class PhotoShootActivity extends AppCompatActivity {
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
             Toast.makeText(this, "No camera on this device", Toast.LENGTH_LONG)
                     .show();
+            finish();
             return;
         }
 
         if (!haveCameraPermission()) {
             requestCameraPermission();
+            finish();
             return;
         }
 
         if (!haveStoragePermission()) {
             requestStoragePermission();
+            finish();
             return;
         }
 
