@@ -913,6 +913,7 @@ public class ConfigXml {
         options.stunKeepaliveStartS = getContentOrDefault(elementOptions.getElementsByTagName("stunKeepaliveStartS").item(0), options.stunKeepaliveStartS);
         options.stunKeepaliveMinS = getContentOrDefault(elementOptions.getElementsByTagName("stunKeepaliveMinS").item(0), options.stunKeepaliveMinS);
         options.stunServer = getContentOrDefault(elementOptions.getElementsByTagName("stunServer").item(0), options.stunServer);
+        options.databaseTuning = getContentOrDefault(elementOptions.getElementsByTagName("databaseTuning").item(0), options.databaseTuning);
         return options;
     }
 
