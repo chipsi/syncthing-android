@@ -16,7 +16,7 @@ SET PACKAGE_UID=u0_a96
 REM 
 :loopMe
 cls
-IF "%USE_ROOT%" == "1" adb root
+adb root
 IF "%USE_ROOT%" == "1" adb shell ls -a -l "%DATA_ROOT%/%PACKAGE_NAME%/files/config.xml"
 adb push "%SCRIPT_PATH%config.xml" "%DATA_ROOT%/%PACKAGE_NAME%/files/config.xml"
 IF "%USE_ROOT%" == "1" adb shell chmod 0600 "%DATA_ROOT%/%PACKAGE_NAME%/files/config.xml"
