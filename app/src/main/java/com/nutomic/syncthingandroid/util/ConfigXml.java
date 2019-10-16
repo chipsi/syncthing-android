@@ -317,6 +317,7 @@ public class ConfigXml {
         // Disable "startBrowser" because it applies to desktop environments and cannot start a mobile browser app.
         Options defaultOptions = new Options();
         changed = setConfigElement(options, "startBrowser", Boolean.toString(defaultOptions.startBrowser)) || changed;
+        changed = setConfigElement(options, "databaseTuning", defaultOptions.databaseTuning) || changed;
 
         // Save changes if we made any.
         if (changed) {
