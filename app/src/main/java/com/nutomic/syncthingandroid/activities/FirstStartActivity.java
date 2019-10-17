@@ -49,7 +49,8 @@ public class FirstStartActivity extends AppCompatActivity {
 
     private static String TAG = "FirstStartActivity";
     private static final int REQUEST_COARSE_LOCATION = 141;
-    private static final int REQUEST_WRITE_STORAGE = 142;
+    private static final int REQUEST_BACKGROUND_LOCATION = 142;
+    private static final int REQUEST_WRITE_STORAGE = 143;
 
     private static class Slide {
         public int layout;
@@ -464,6 +465,17 @@ public class FirstStartActivity extends AppCompatActivity {
     }
 
     private void requestLocationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            ActivityCompat.requestPermissions(
+                    this,
+                    new String[]{
+                            Manifest.permission.ACCESS_COARSE_LOCATION,
+                            Manifest.permission.ACCESS_BACKGROUND_LOCATION
+                    },
+                    REQUEST_BACKGROUND_LOCATION
+            );
+            return;
+        }
         ActivityCompat.requestPermissions(this,
                 new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
                 REQUEST_COARSE_LOCATION);
@@ -492,6 +504,16 @@ public class FirstStartActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(this, R.string.permission_granted, Toast.LENGTH_SHORT).show();
                     Log.i(TAG, "User granted ACCESS_COARSE_LOCATION permission.");
+                    mNextButton.requestFocus();
+                }
+                break;
+            case REQUEST_BACKGROUND_LOCATION:
+                if (grantResults.length == 0 ||
+                        grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    Log.i(TAG, "User denied ACCESS_BACKGROUND_LOCATION permission.");
+                } else {
+                    Toast.makeText(this, R.string.permission_granted, Toast.LENGTH_SHORT).show();
+                    Log.i(TAG, "User granted ACCESS_BACKGROUND_LOCATION permission.");
                     mNextButton.requestFocus();
                 }
                 break;
