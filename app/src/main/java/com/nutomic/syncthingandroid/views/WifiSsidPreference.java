@@ -137,6 +137,7 @@ public class WifiSsidPreference extends MultiSelectListPreference {
                 getContext().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         if (wifiManager == null) {
             // WiFi is turned off or device doesn't have WiFi.
+            Log.w(TAG, "loadConfiguredNetworksSorted: WiFi is turned off or device doesn't have WiFi.");
             return null;
         }
 
@@ -148,8 +149,10 @@ public class WifiSsidPreference extends MultiSelectListPreference {
             Log.e(TAG, "loadConfiguredNetworksSorted:", e);
         }
         if (configuredNetworks == null) {
+            Log.i(TAG, "loadConfiguredNetworksSorted: wifiManager returned configuredNetworks == null");
             return null;
         }
+        Log.v(TAG, "configuredNetworks != null");
 
         WifiConfiguration[] result = configuredNetworks.toArray(new WifiConfiguration[configuredNetworks.size()]);
         Arrays.sort(result, (lhs, rhs) -> {
