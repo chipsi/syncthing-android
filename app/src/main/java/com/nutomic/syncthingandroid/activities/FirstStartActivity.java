@@ -453,9 +453,14 @@ public class FirstStartActivity extends AppCompatActivity {
     }
 
     private boolean haveLocationPermission() {
-        int permissionState = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_COARSE_LOCATION);
-        return permissionState == PackageManager.PERMISSION_GRANTED;
+        Boolean coarseLocationGranted = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+        Boolean backgroundLocationGranted = true;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            backgroundLocationGranted = ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED;
+        }
+        return coarseLocationGranted && backgroundLocationGranted;
     }
 
     private void requestLocationPermission() {
