@@ -469,7 +469,7 @@ public class FirstStartActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(
                     this,
                     new String[]{
-                            Manifest.permission.ACCESS_COARSE_LOCATION,
+                            Manifest.permission.ACCESS_FINE_LOCATION,
                             Manifest.permission.ACCESS_BACKGROUND_LOCATION
                     },
                     REQUEST_BACKGROUND_LOCATION
