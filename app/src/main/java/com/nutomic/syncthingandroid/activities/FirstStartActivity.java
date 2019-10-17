@@ -72,6 +72,7 @@ public class FirstStartActivity extends AppCompatActivity {
      */
     private int mSlidePosStoragePermission = -1;
     private int mSlidePosIgnoreDozePermission = -1;
+    private int mSlideLocationPermission = -1;
     private int mSlidePosKeyGeneration = -1;
 
     private CustomViewPager mViewPager;
@@ -154,6 +155,7 @@ public class FirstStartActivity extends AppCompatActivity {
             mSlides[slideIndex++] = new Slide(R.layout.activity_firststart_ignore_doze_permission, colorsActive[4], colorsInactive[4]);
         }
         if (showSlideLocationPermission) {
+            mSlideLocationPermission = slideIndex;
             mSlides[slideIndex++] = new Slide(R.layout.activity_firststart_location_permission, colorsActive[2], colorsInactive[2]);
         }
         if (showSlideKeyGeneration) {
@@ -264,8 +266,12 @@ public class FirstStartActivity extends AppCompatActivity {
                     ignoreDozeOsNotice.setText(getString(R.string.ignore_doze_permission_os_notice, getString(R.string.wiki_url), "Android-TV-preparations"));
                     ignoreDozeOsNotice.setVisibility(View.VISIBLE);
                 }
-            }
-            else if (current == mSlidePosKeyGeneration) {
+            } else if (current == mSlideLocationPermission) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    TextView locationPermissionTipApi29 = (TextView) findViewById(R.id.locationPermissionTipApi29);
+                    locationPermissionTipApi29.setVisibility(View.VISIBLE);
+                }
+            } else if (current == mSlidePosKeyGeneration) {
                 onKeyGenerationSlideShown();
             }
         } else {
