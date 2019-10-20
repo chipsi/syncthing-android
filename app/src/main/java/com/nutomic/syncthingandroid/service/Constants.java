@@ -90,6 +90,11 @@ public class Constants {
     public static final String PREF_LOCAL_DEVICE_ID             = "localDeviceID";
 
     /**
+     * {@link ConfigXml#addSyncthingCameraFolder}
+     */
+    public static final String syncthingCameraFolderId          = "syncthingAndroidCamera-52x89-60es4";
+
+    /**
      * {@link RunConditionMonitor}
      * {@link StatusFragment}
      */
