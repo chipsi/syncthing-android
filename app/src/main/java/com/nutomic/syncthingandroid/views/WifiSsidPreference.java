@@ -68,7 +68,7 @@ public class WifiSsidPreference extends MultiSelectListPreference {
     protected void showDialog(Bundle state) {
         SharedPreferences sharedPreferences = getSharedPreferences();
         Set<String> knownSsids;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q || true) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             knownSsids = sharedPreferences.getStringSet(Constants.PREF_KNOWN_WIFI_SSIDS, new HashSet<>());
             String currentWifiSsid = getCurrentWifiSsid();
             if (!TextUtils.isEmpty(currentWifiSsid)) {
