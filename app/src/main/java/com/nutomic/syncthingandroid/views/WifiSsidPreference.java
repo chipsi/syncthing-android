@@ -106,6 +106,7 @@ public class WifiSsidPreference extends MultiSelectListPreference {
             if (getContext() instanceof Activity) {
                 Activity activity = (Activity) getContext();
                 requestLocationPermission(activity);
+                this.getDialog().dismiss(); // wait for result
             } else {
                 Toast.makeText(getContext(), R.string.sync_only_wifi_ssids_need_to_grant_location_permission, Toast.LENGTH_LONG).show();
             }
