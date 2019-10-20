@@ -69,6 +69,20 @@ Please report any problems you encounter via Github.</string>
 
     <string name="photo_shoot_activity_title">Syncthing-Fork Camera</string>
 
+    <string name="photo_shoot_intro_welcome_title">Welcome to Syncthing Camera</string>
+
+    <string name="photo_shoot_intro_permission_title">Required permissions</string>
+
+    <string name="photo_shoot_intro_no_camera">Sorry, this device doesn\'t have a camera.</string>
+
+    <string name="photo_shoot_intro_missing_permissions">We require storage and camera permission to continue.</string>
+
+    <string name="grant_storage_permission">Grant storage permission</string>
+
+    <string name="grant_camera_permission">Grant camera permission</string>
+
+    <string name="photo_shoot_intro_permission_desc">Syncthing Camera requires your consent to shoot pictures and store them on your device. This feature is optional. To use it, grant permissions and tap \"Continue\". We will setup a Syncthing Camera folder for you which you can share with other Syncthing devices later.</string>
+
 
     <!-- MainActivity -->
 
