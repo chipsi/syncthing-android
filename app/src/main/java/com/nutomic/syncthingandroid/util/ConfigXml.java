@@ -1064,7 +1064,7 @@ public class ConfigXml {
                 .toLowerCase(Locale.US)
                 .replaceAll("[^a-z0-9_-]", "");
         String defaultFolderId = deviceModel + "_" + generateRandomString(FOLDER_ID_APPENDIX_LENGTH);
-        folder.setAttribute("label", mContext.getString(R.string.default_folder_label));
+        folder.setAttribute("label", mContext.getString(R.string.default_android_camera_folder_label));
         folder.setAttribute("id", mContext.getString(R.string.default_folder_id, defaultFolderId));
         folder.setAttribute("path", Environment
                 .getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath());

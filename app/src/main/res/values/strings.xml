@@ -889,7 +889,7 @@ Please report any problems you encounter via Github.</string>
     <string name="webui_tcp_port_unavailable">WebUI tcp port %s busy. Second instance?</string>
 
     <!-- Label of the default folder created of first start (camera folder). -->
-    <string name="default_folder_label">Camera</string>
+    <string name="default_android_camera_folder_label">Android Camera</string>
 
     <!-- ID of the default folder created on first start (camera folder). Must only contain 'a-z0-9_-'. Parameter is the device name-->
     <string name="default_folder_id">%1$s-photos</string>
