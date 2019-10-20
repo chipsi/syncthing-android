@@ -1,6 +1,7 @@
 package com.nutomic.syncthingandroid.activities;
 
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -44,6 +45,8 @@ public class PhotoShootActivity extends AppCompatActivity {
     private Button mBtnGo;
     private Button mBtnGrantCameraPerm;
     private Button mBtnGrantStoragePerm;
+
+    private Uri lastPhotoURI = null;
 
     @Inject
     SharedPreferences mPreferences;
@@ -164,6 +167,7 @@ public class PhotoShootActivity extends AppCompatActivity {
             pictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
 
             Log.d(TAG, "Launching take picture intent ...");
+            lastPhotoURI = photoURI;
             startActivityForResult(pictureIntent, REQUEST_CAPTURE_IMAGE);
         }
     }
@@ -189,8 +193,19 @@ public class PhotoShootActivity extends AppCompatActivity {
         if (requestCode == REQUEST_CAPTURE_IMAGE) {
             if (resultCode == Activity.RESULT_OK) {
                 Log.d(TAG, "User took a picture.");
+                lastPhotoURI = null;
             } else if(resultCode == Activity.RESULT_CANCELED) {
                 Log.d(TAG, "User cancelled to take a picture.");
+                if (lastPhotoURI != null) {
+                    Log.v(TAG, "Deleting temporary file [" + lastPhotoURI.getPath() + "]");
+                    try {
+                        final ContentResolver contentResolver = getContentResolver();
+                        contentResolver.delete(lastPhotoURI, null, null);
+                    } catch (Exception e) {
+                        Log.e(TAG, "Delete temporary file FAILED", e);
+                    }
+                    lastPhotoURI = null;
+                }
             }
             finish();
         }
