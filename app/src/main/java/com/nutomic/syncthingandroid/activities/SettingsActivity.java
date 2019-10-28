@@ -1152,7 +1152,7 @@ public class SettingsActivity extends SyncthingActivity {
          */
         private String getOpenFileLimit() {
             String shellCommand = "ulimit -n";
-            if (Build.VERSION.SDK_INT < 29) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
                 shellCommand = "/system/bin/" + shellCommand;
             }
             String result = Util.runShellCommandGetOutput(shellCommand, false);
