@@ -1166,14 +1166,6 @@ public class SettingsActivity extends SyncthingActivity {
          * Returns if the operation succeeded.
          */
         private Boolean showHideLauncherCameraIcon(Boolean showIcon) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                /**
-                 * According to
-                 * https://developer.android.com/reference/android/content/pm/LauncherApps#getActivityList(java.lang.String,%20android.os.UserHandle)
-                 * this won't work on Android 10+
-                 */
-                return false;
-            }
             try {
                 SyncthingActivity syncthingActivity = (SyncthingActivity) getActivity();
                 PackageManager packageManager = syncthingActivity.getPackageManager();
