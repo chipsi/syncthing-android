@@ -34,6 +34,6 @@ md "%SCRIPT_PATH%extracted_apks" 2> NUL:
 echo [INFO] Extracting APKs ...
 unzip -q -o -d "%SCRIPT_PATH%extracted_apks" "%SCRIPT_PATH%extracted.apks"
 SET UNZIP_RESULT=%ERRORLEVEL%
-IF "%UNZIP_RESULT%" == "0" DEL /F "%SCRIPT_PATH%extracted.apks"
+REM IF "%UNZIP_RESULT%" == "0" DEL /F "%SCRIPT_PATH%extracted.apks"
 REM 
 goto :eof
