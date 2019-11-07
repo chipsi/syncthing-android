@@ -16,6 +16,7 @@ IF NOT EXIST "bundletool.jar" echo [INFO] Downloading [bundletool.jar] ... & wge
 IF NOT EXIST "bundletool.jar" echo [ERROR] Download [bundletool.jar] FAILED. & pause & goto :eof
 REM 
 REM Extract APKs from Android Bundle "AAB" file.
+DEL /F "%SCRIPT_PATH%extracted.apks"
 IF NOT EXIST "%SCRIPT_PATH%extracted.apks" echo [INFO] Extracting Android Bundle ... & java -jar "bundletool.jar" build-apks --bundle="..\app\build\outputs\bundle\release\app-release.aab" --output="%SCRIPT_PATH%extracted.apks" --ks="%SYNCTHING_RELEASE_STORE_FILE%" --ks-key-alias=%SYNCTHING_RELEASE_KEY_ALIAS%
 IF NOT EXIST "%SCRIPT_PATH%extracted.apks" echo [ERROR] Extracting Android Bundle FAILED. & pause & goto :eof
 REM 
