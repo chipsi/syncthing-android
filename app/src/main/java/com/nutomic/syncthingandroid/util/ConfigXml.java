@@ -593,6 +593,9 @@ public class ConfigXml {
                     Element elementDevice = (Element) nodeDevice;
                     elementDevice.setAttribute("id", device.deviceID);
                     elementDevice.setAttribute("introducedBy", device.introducedBy);
+
+                    // Remove corresponding "pendingFolder" node if any exists for the current device.
+                    removePendingFolder(device.deviceID, folder.id);
                 }
 
                 // minDiskFree
@@ -1139,6 +1142,62 @@ public class ConfigXml {
 
         // We didn't find the pending folder to ignore.
         Log.w(TAG, "ignoreFolder: Pending folder [" + folderId + "] offered by device [" + deviceId + "] not found.");
+    }
+
+    private void removePendingFolder(String deviceId, String folderId) {
+        /**
+         * Example xml content:
+         *  <device ...>
+         *      <pendingFolder time="2019-11-10T14:33:46.777Z" id="9MeeC-6yyAY" label="test_folder"></pendingFolder>
+         *  </device>
+         */
+        if (deviceId == null || deviceId.isEmpty()) {
+            Log.e(TAG, "removePendingFolder: deviceId == null or empty.");
+            return;
+        }
+        if (folderId == null || folderId.isEmpty()) {
+            Log.e(TAG, "removePendingFolder: folderId == null or empty.");
+            return;
+        }
+
+        // Prevent enumerating "<device>" tags below "<folder>" nodes by enumerating child nodes manually.
+        NodeList documentChildNodes = mConfig.getDocumentElement().getChildNodes();
+        for (int i = 0; i < documentChildNodes.getLength(); i++) {
+            Node documentChildNode = documentChildNodes.item(i);
+            if (documentChildNode.getNodeName().equals("device")) {
+                // Found a "<device>" node.
+                String nodeDeviceId = getAttributeOrDefault((Element) documentChildNode, "id", "");
+                if (nodeDeviceId.equals(deviceId)) {
+                    // Found the correct "<device>" node containing "deviceId".
+                    NodeList deviceChildNodes = documentChildNode.getChildNodes();
+
+                    // Look for the "<pendingFolder>" node.
+                    for (int j = 0; j < deviceChildNodes.getLength(); j++) {
+                        Node deviceChildNode = deviceChildNodes.item(j);
+                        if (deviceChildNode.getNodeName().equals("pendingFolder")) {
+                            // Found a "<pendingFolder>" node below the "<device>" node.
+                            Element pendingFolderElement = (Element) deviceChildNode;
+                            String nodeFolderId = getAttributeOrDefault(pendingFolderElement, "id", "");
+                            if (nodeFolderId.equals(folderId)) {
+                                /**
+                                 * Found the correct "<pendingFolder>" node containing "folderId".
+                                 * Remove "<pendingFolder>" node.
+                                 */
+                                Log.d(TAG, "removePendingFolder: Removing pendingFolder [" + folderId + "] offered by device [" + deviceId + "]");
+                                removeChildElementFromTextNode((Element) pendingFolderElement.getParentNode(), pendingFolderElement);
+                                return;
+                            }
+                        }
+                    }
+
+                    // We've already found and handled the correct "<device id="[deviceId]">" node.
+                    break;
+                }
+            }
+        }
+
+        // We didn't find the pending folder to remove.
+        LogV("removePendingFolder: Pending folder [" + folderId + "] offered by device [" + deviceId + "] not found.");
     }
 
     public void setDevicePause(String deviceId, Boolean paused) {
