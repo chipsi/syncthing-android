@@ -780,7 +780,7 @@ public class ConfigXml {
 
                 // ignoredFolders
                 device.ignoredFolders = new ArrayList<>();
-                NodeList nodeIgnoredFolders = r.getElementsByTagName("ignoredFolders");
+                NodeList nodeIgnoredFolders = r.getElementsByTagName("ignoredFolder");
                 for (int j = 0; j < nodeIgnoredFolders.getLength(); j++) {
                     Element elementIgnoredFolder = (Element) nodeIgnoredFolders.item(j);
                     IgnoredFolder ignoredFolder = new IgnoredFolder();
@@ -794,7 +794,7 @@ public class ConfigXml {
 
                 // pendingFolders
                 device.pendingFolders = new ArrayList<>();
-                NodeList nodePendingFolders = r.getElementsByTagName("pendingFolders");
+                NodeList nodePendingFolders = r.getElementsByTagName("pendingFolder");
                 for (int j = 0; j < nodePendingFolders.getLength(); j++) {
                     Element elementPendingFolder = (Element) nodePendingFolders.item(j);
                     PendingFolder pendingFolder = new PendingFolder();
