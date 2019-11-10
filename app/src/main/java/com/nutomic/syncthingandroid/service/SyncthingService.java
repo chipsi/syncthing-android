@@ -408,7 +408,7 @@ public class SyncthingService extends Service {
             if (devices != null) {
                 for (final Device device : devices) {
                     // Check if folder approval notifications are pending for the device.
-                    for (PendingFolder pendingFolder : device.pendingFolders) {
+                    for (final PendingFolder pendingFolder : device.pendingFolders) {
                         if (mNotificationHandler != null && pendingFolder.id != null) {
                             Log.d(TAG, "AFSIS: pendingFolder.id = " + pendingFolder.id + "('" + pendingFolder.label + "')");
                             Boolean isNewFolder = Stream.of(configXml.getFolders())
