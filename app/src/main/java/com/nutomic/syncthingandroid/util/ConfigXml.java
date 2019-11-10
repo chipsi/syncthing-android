@@ -776,6 +776,7 @@ public class ConfigXml {
                 }
 
                 // ignoredFolders
+                device.ignoredFolders = new ArrayList<>();
                 NodeList nodeIgnoredFolders = r.getElementsByTagName("ignoredFolders");
                 for (int j = 0; j < nodeIgnoredFolders.getLength(); j++) {
                     Element elementIgnoredFolder = (Element) nodeIgnoredFolders.item(j);
@@ -784,11 +785,12 @@ public class ConfigXml {
                     ignoredFolder.label = getAttributeOrDefault(elementIgnoredFolder, "label", ignoredFolder.label);
                     ignoredFolder.time = getAttributeOrDefault(elementIgnoredFolder, "time", ignoredFolder.time);
 
-                    LogV("getDevices: ignoredFolder=[id=" + ignoredFolder.id + ", label=" + ignoredFolder.label + ", time=" + ignoredFolder.time + "]");
+                    // LogV("getDevices: ignoredFolder=[id=" + ignoredFolder.id + ", label=" + ignoredFolder.label + ", time=" + ignoredFolder.time + "]");
                     device.ignoredFolders.add(ignoredFolder);
                 }
 
                 // pendingFolders
+                device.pendingFolders = new ArrayList<>();
                 NodeList nodePendingFolders = r.getElementsByTagName("pendingFolders");
                 for (int j = 0; j < nodePendingFolders.getLength(); j++) {
                     Element elementPendingFolder = (Element) nodePendingFolders.item(j);
