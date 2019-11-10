@@ -11,8 +11,10 @@ import com.nutomic.syncthingandroid.model.Device;
 import com.nutomic.syncthingandroid.model.Folder;
 import com.nutomic.syncthingandroid.model.FolderIgnoreList;
 import com.nutomic.syncthingandroid.model.Gui;
+import com.nutomic.syncthingandroid.model.IgnoredFolder;
 import com.nutomic.syncthingandroid.model.Options;
 import com.nutomic.syncthingandroid.model.PendingDevice;
+import com.nutomic.syncthingandroid.model.PendingFolder;
 import com.nutomic.syncthingandroid.R;
 import com.nutomic.syncthingandroid.service.AppPrefs;
 import com.nutomic.syncthingandroid.service.Constants;
@@ -762,6 +764,32 @@ public class ConfigXml {
                     String address = getContentOrDefault(nodeAddresses.item(j), "");
                     device.addresses.add(address);
                     // LogV("getDevices: address=" + address);
+                }
+
+                // ignoredFolders
+                NodeList nodeIgnoredFolders = r.getElementsByTagName("ignoredFolders");
+                for (int j = 0; j < nodeIgnoredFolders.getLength(); j++) {
+                    Element elementIgnoredFolder = (Element) nodeIgnoredFolders.item(j);
+                    IgnoredFolder ignoredFolder = new IgnoredFolder();
+                    ignoredFolder.id = getAttributeOrDefault(elementIgnoredFolder, "id", ignoredFolder.id);
+                    ignoredFolder.label = getAttributeOrDefault(elementIgnoredFolder, "label", ignoredFolder.label);
+                    ignoredFolder.time = getAttributeOrDefault(elementIgnoredFolder, "time", ignoredFolder.time);
+
+                    LogV("getDevices: ignoredFolder=[id=" + ignoredFolder.id + ", label=" + ignoredFolder.label + ", time=" + ignoredFolder.time + "]");
+                    device.ignoredFolders.add(ignoredFolder);
+                }
+
+                // pendingFolders
+                NodeList nodePendingFolders = r.getElementsByTagName("pendingFolders");
+                for (int j = 0; j < nodePendingFolders.getLength(); j++) {
+                    Element elementPendingFolder = (Element) nodePendingFolders.item(j);
+                    PendingFolder pendingFolder = new PendingFolder();
+                    pendingFolder.id = getAttributeOrDefault(elementPendingFolder, "id", pendingFolder.id);
+                    pendingFolder.label = getAttributeOrDefault(elementPendingFolder, "label", pendingFolder.label);
+                    pendingFolder.time = getAttributeOrDefault(elementPendingFolder, "time", pendingFolder.time);
+
+                    LogV("getDevices: pendingFolder=[id=" + pendingFolder.id + ", label=" + pendingFolder.label + ", time=" + pendingFolder.time + "]");
+                    device.pendingFolders.add(pendingFolder);
                 }
 
                 // For testing purposes only.
