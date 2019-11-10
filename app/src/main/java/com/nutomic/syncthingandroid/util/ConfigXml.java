@@ -1025,6 +1025,82 @@ public class ConfigXml {
         Log.w(TAG, "ignoreDevice: Pending device not found [" + deviceId + "]");
     }
 
+    /**
+     * Permanently ignore a folder when it is offered.
+     * Ignored folders will not trigger the consent notification.
+     */
+    public void ignoreFolder(String deviceId, String folderId) {
+        /**
+         * Example xml content:
+         *  <ignoredFolder time="2019-11-10T14:33:46.777Z" id="9MeeC-6yyAY" label="test_folder"></ignoredFolder>
+         */
+        if (deviceId == null || deviceId.isEmpty()) {
+            Log.e(TAG, "ignoreFolder: deviceId == null or empty.");
+            return;
+        }
+        if (folderId == null || folderId.isEmpty()) {
+            Log.e(TAG, "ignoreFolder: folderId == null or empty.");
+            return;
+        }
+
+        // Prevent enumerating "<device>" tags below "<folder>" nodes by enumerating child nodes manually.
+        NodeList documentChildNodes = mConfig.getDocumentElement().getChildNodes();
+        for (int i = 0; i < documentChildNodes.getLength(); i++) {
+            Node documentChildNode = documentChildNodes.item(i);
+            if (documentChildNode.getNodeName().equals("device")) {
+                // Found a "<device>" node.
+                String nodeDeviceId = getAttributeOrDefault((Element) documentChildNode, "id", "");
+                if (nodeDeviceId.equals(deviceId)) {
+                    // Found the correct "<device>" node containing "deviceId".
+                    NodeList deviceChildNodes = documentChildNode.getChildNodes();
+
+                    // Enumerate child nodes to check if the folder is already ignored.
+                    for (int j = 0; j < deviceChildNodes.getLength(); j++) {
+                        Node deviceChildNode = deviceChildNodes.item(j);
+                        if (deviceChildNode.getNodeName().equals("ignoredFolder")) {
+                            // Found an "<ignoredFolder>" node below the "<device>" node.
+                            String nodeFolderID = getAttributeOrDefault((Element) deviceChildNode, "id", "");
+                            if (nodeFolderID.equals(folderId)) {
+                                // Found the correct "<ignoredFolder>" node containing "folderId".
+                                Log.d(TAG, "Folder [" + folderId + "] offered by device [" + deviceId + "] already ignored.");
+                                return;
+                            }
+                        }
+                    }
+
+                    // The folder share request is still pending.
+                    for (int j = 0; j < deviceChildNodes.getLength(); j++) {
+                        Node deviceChildNode = deviceChildNodes.item(j);
+                        if (deviceChildNode.getNodeName().equals("pendingFolder")) {
+                            // Found a "<pendingFolder>" node below the "<device>" node.
+                            Element pendingFolderElement = (Element) deviceChildNode;
+                            String nodeFolderId = getAttributeOrDefault(pendingFolderElement, "id", "");
+                            if (nodeFolderId.equals(folderId)) {
+                                /**
+                                 * Found the correct "<pendingFolder>" node containing "folderId".
+                                 *
+                                 * Ignore folder by moving its corresponding "pendingFolder" entry to
+                                 * a newly created "ignoredFolder" entry. We take a shortcut here:
+                                 * As the element structure is the same for both nodes, we just rename the
+                                 * "pendingFolder" node to "ignoredFolder".
+                                 */
+                                mConfig.renameNode(pendingFolderElement, pendingFolderElement.getNamespaceURI(), "ignoredFolder");
+                                Log.d(TAG, "Ignored folder [" + folderId + "] offered by device [" + deviceId + "]");
+                                return;
+                            }
+                        }
+                    }
+
+                    // We've already found and handled the correct "<device id="[deviceId]">" node.
+                    break;
+                }
+            }
+        }
+
+        // We didn't find the pending folder to ignore.
+        Log.w(TAG, "ignoreFolder: Pending folder [" + folderId + "] offered by device [" + deviceId + "] not found.");
+    }
+
     public void setDevicePause(String deviceId, Boolean paused) {
         // Prevent enumerating "<device>" tags below "<folder>" nodes by enumerating child nodes manually.
         NodeList childNodes = mConfig.getDocumentElement().getChildNodes();
