@@ -238,7 +238,7 @@ public class RestApi {
 
             // Check if device approval notifications are pending.
             LogV("ORCC: pendingDevices = " + mGson.toJson(mConfig.pendingDevices));
-            for (PendingDevice pendingDevice : mConfig.pendingDevices) {
+            for (final PendingDevice pendingDevice : mConfig.pendingDevices) {
                 if (mNotificationHandler != null && pendingDevice.deviceID != null) {
                     Log.d(TAG, "ORCC: pendingDevice.deviceID = " + pendingDevice.deviceID + "('" + pendingDevice.name + "')");
                     mNotificationHandler.showDeviceConnectNotification(
@@ -249,12 +249,12 @@ public class RestApi {
             }
 
             // Loop through devices.
-            for (Device device : getDevices(false)) {
+            for (final Device device : getDevices(false)) {
                 LogV("ORCC: device[" + device.getDisplayName() + "].ignoredFolders = " + mGson.toJson(device.ignoredFolders));
 
                 // Check if folder approval notifications are pending for the device.
                 LogV("ORCC: device[" + device.getDisplayName() + "].pendingFolders = " + mGson.toJson(device.pendingFolders));
-                for (PendingFolder pendingFolder : device.pendingFolders) {
+                for (final PendingFolder pendingFolder : device.pendingFolders) {
                     if (mNotificationHandler != null && pendingFolder.id != null) {
                         Log.d(TAG, "ORCC: pendingFolder.id = " + pendingFolder.id + "('" + pendingFolder.label + "')");
                         Boolean isNewFolder = Stream.of(getFolders())
@@ -268,7 +268,6 @@ public class RestApi {
                         );
                     }
                 }
-
             }
         }
 
