@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import androidx.preference.PreferenceManager;
 import android.util.Log;
 
+import com.annimon.stream.Stream;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
@@ -233,18 +234,41 @@ public class RestApi {
         Log.d(TAG, "onReloadConfigComplete: Successfully parsed configuration.");
 
         synchronized (mConfigLock) {
-            LogV("mConfig.remoteIgnoredDevices = " + mGson.toJson(mConfig.remoteIgnoredDevices));
+            LogV("ORCC: remoteIgnoredDevices = " + mGson.toJson(mConfig.remoteIgnoredDevices));
 
             // Check if device approval notifications are pending.
-            LogV("mConfig.pendingDevices = " + mGson.toJson(mConfig.pendingDevices));
+            LogV("ORCC: pendingDevices = " + mGson.toJson(mConfig.pendingDevices));
             for (PendingDevice pendingDevice : mConfig.pendingDevices) {
                 if (mNotificationHandler != null && pendingDevice.deviceID != null) {
-                    Log.d(TAG, "pendingDevice.deviceID = " + pendingDevice.deviceID + "('" + pendingDevice.name + "')");
+                    Log.d(TAG, "ORCC: pendingDevice.deviceID = " + pendingDevice.deviceID + "('" + pendingDevice.name + "')");
                     mNotificationHandler.showDeviceConnectNotification(
                         pendingDevice.deviceID,
                         pendingDevice.name
                     );
                 }
+            }
+
+            // Loop through devices.
+            for (Device device : getDevices(false)) {
+                LogV("ORCC: device[" + device.getDisplayName() + "].ignoredFolders = " + mGson.toJson(device.ignoredFolders));
+
+                // Check if folder approval notifications are pending for the device.
+                LogV("ORCC: device[" + device.getDisplayName() + "].pendingFolders = " + mGson.toJson(device.pendingFolders));
+                for (PendingFolder pendingFolder : device.pendingFolders) {
+                    if (mNotificationHandler != null && pendingFolder.id != null) {
+                        Log.d(TAG, "ORCC: pendingFolder.id = " + pendingFolder.id + "('" + pendingFolder.label + "')");
+                        Boolean isNewFolder = Stream.of(getFolders())
+                                .noneMatch(f -> f.id.equals(pendingFolder.id));
+                        mNotificationHandler.showFolderShareNotification(
+                            device.deviceID,
+                            device.name,
+                            pendingFolder.id,
+                            pendingFolder.label,
+                            isNewFolder
+                        );
+                    }
+                }
+
             }
         }
 
