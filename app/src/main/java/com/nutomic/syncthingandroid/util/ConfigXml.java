@@ -1075,7 +1075,9 @@ public class ConfigXml {
     public void ignoreFolder(String deviceId, String folderId) {
         /**
          * Example xml content:
-         *  <ignoredFolder time="2019-11-10T14:33:46.777Z" id="9MeeC-6yyAY" label="test_folder"></ignoredFolder>
+         *  <device ...>
+         *      <ignoredFolder time="2019-11-10T14:33:46.777Z" id="9MeeC-6yyAY" label="test_folder"></ignoredFolder>
+         *  </device>
          */
         if (deviceId == null || deviceId.isEmpty()) {
             Log.e(TAG, "ignoreFolder: deviceId == null or empty.");
