@@ -239,6 +239,7 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
         }
     }
 
+    /*
     private void onDeviceRejected(String deviceId, String deviceName) {
         if (deviceId == null) {
             return;
@@ -248,7 +249,9 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
         // Show device approve/ignore notification.
         mNotificationHandler.showDeviceConnectNotification(deviceId, deviceName);
     }
+    */
 
+    /*
     private void onFolderRejected(String deviceId, String folderId,
                                     String folderLabel) {
         if (deviceId == null || folderId == null) {
@@ -278,6 +281,7 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
             isNewFolder
         );
     }
+    */
 
     private void onFolderErrors(JsonElement json) {
         JsonElement data = ((JsonObject) json).get("data");
