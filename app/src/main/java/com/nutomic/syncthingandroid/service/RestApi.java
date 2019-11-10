@@ -234,10 +234,16 @@ public class RestApi {
         Log.d(TAG, "onReloadConfigComplete: Successfully parsed configuration.");
 
         synchronized (mConfigLock) {
-            LogV("ORCC: remoteIgnoredDevices = " + mGson.toJson(mConfig.remoteIgnoredDevices));
+            String logRemoteIgnoredDevices = mGson.toJson(mConfig.remoteIgnoredDevices);
+            if (!logRemoteIgnoredDevices.equals("[]")) {
+                LogV("ORCC: remoteIgnoredDevices = " + logRemoteIgnoredDevices);
+            }
 
             // Check if device approval notifications are pending.
-            LogV("ORCC: pendingDevices = " + mGson.toJson(mConfig.pendingDevices));
+            String logPendingDevices = mGson.toJson(mConfig.pendingDevices);
+            if (!logPendingDevices.equals("[]")) {
+                LogV("ORCC: pendingDevices = " + logPendingDevices);
+            }
             for (final PendingDevice pendingDevice : mConfig.pendingDevices) {
                 if (mNotificationHandler != null && pendingDevice.deviceID != null) {
                     Log.d(TAG, "ORCC: pendingDevice.deviceID = " + pendingDevice.deviceID + "('" + pendingDevice.name + "')");
@@ -250,10 +256,16 @@ public class RestApi {
 
             // Loop through devices.
             for (final Device device : getDevices(false)) {
-                LogV("ORCC: device[" + device.getDisplayName() + "].ignoredFolders = " + mGson.toJson(device.ignoredFolders));
+                String logIgnoredFolders = mGson.toJson(device.ignoredFolders);
+                if (!logIgnoredFolders.equals("[]")) {
+                    LogV("ORCC: device[" + device.getDisplayName() + "].ignoredFolders = " + logIgnoredFolders);
+                }
 
                 // Check if folder approval notifications are pending for the device.
-                LogV("ORCC: device[" + device.getDisplayName() + "].pendingFolders = " + mGson.toJson(device.pendingFolders));
+                String logPendingFolders = mGson.toJson(device.pendingFolders);
+                if (!logPendingFolders.equals("[]")) {
+                    LogV("ORCC: device[" + device.getDisplayName() + "].pendingFolders = " + logPendingFolders);
+                }
                 for (final PendingFolder pendingFolder : device.pendingFolders) {
                     if (mNotificationHandler != null && pendingFolder.id != null) {
                         Log.d(TAG, "ORCC: pendingFolder.id = " + pendingFolder.id + "('" + pendingFolder.label + "')");
