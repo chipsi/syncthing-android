@@ -97,6 +97,15 @@ public class ConfigXml {
         return lhsLabel.compareTo(rhsLabel);
     };
 
+    /**
+     * Compares pending folders by labels, uses the folder ID as fallback if the label is empty
+     */
+    private final static Comparator<PendingFolder> PENDING_FOLDERS_COMPARATOR = (lhs, rhs) -> {
+        String lhsLabel = lhs.label != null && !lhs.label.isEmpty() ? lhs.label : lhs.id;
+        String rhsLabel = rhs.label != null && !rhs.label.isEmpty() ? rhs.label : rhs.id;
+        return lhsLabel.compareTo(rhsLabel);
+    };
+
     public interface OnResultListener1<T> {
         void onResult(T t);
     }
@@ -788,9 +797,10 @@ public class ConfigXml {
                     pendingFolder.label = getAttributeOrDefault(elementPendingFolder, "label", pendingFolder.label);
                     pendingFolder.time = getAttributeOrDefault(elementPendingFolder, "time", pendingFolder.time);
 
-                    LogV("getDevices: pendingFolder=[id=" + pendingFolder.id + ", label=" + pendingFolder.label + ", time=" + pendingFolder.time + "]");
+                    // LogV("getDevices: pendingFolder=[id=" + pendingFolder.id + ", label=" + pendingFolder.label + ", time=" + pendingFolder.time + "]");
                     device.pendingFolders.add(pendingFolder);
                 }
+                Collections.sort(device.pendingFolders, PENDING_FOLDERS_COMPARATOR);
 
                 // For testing purposes only.
                 // LogV("getDevices: device.name=" + device.name + "/" +"device.id=" + device.deviceID + "/" + "device.paused=" + device.paused);
