@@ -363,7 +363,7 @@ public class RestApi {
                     for (IgnoredFolder ignoredFolder : device.ignoredFolders) {
                         if (folderId.equals(ignoredFolder.id)) {
                             // Folder already ignored.
-                            Log.d(TAG, "Folder [" + folderId + "] already ignored on device [" + deviceId + "]");
+                            Log.d(TAG, "ignoreFolder: Folder [" + folderId + "] already ignored on device [" + deviceId + "]");
                             return;
                         }
                     }
@@ -386,8 +386,8 @@ public class RestApi {
                         }
                     }
                     device.ignoredFolders.add(ignoredFolder);
-                    LogV("device.pendingFolders = " + mGson.toJson(device.pendingFolders));
-                    LogV("device.ignoredFolders = " + mGson.toJson(device.ignoredFolders));
+                    LogV("ignoreFolder: device.pendingFolders = " + mGson.toJson(device.pendingFolders));
+                    LogV("ignoreFolder: device.ignoredFolders = " + mGson.toJson(device.ignoredFolders));
                     sendConfig();
                     Log.d(TAG, "Ignored folder [" + folderId + "] announced by device [" + deviceId + "]");
 
