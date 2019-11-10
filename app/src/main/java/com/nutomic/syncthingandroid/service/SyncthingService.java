@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat;
 import android.util.Log;
 
 import com.android.PRNGFixes;
+import com.annimon.stream.Stream;
 import com.google.common.io.Files;
 import com.nutomic.syncthingandroid.R;
 import com.nutomic.syncthingandroid.SyncthingApp;
@@ -21,6 +22,7 @@ import com.nutomic.syncthingandroid.http.PollWebGuiAvailableTask;
 import com.nutomic.syncthingandroid.model.Device;
 import com.nutomic.syncthingandroid.model.Folder;
 import com.nutomic.syncthingandroid.model.PendingDevice;
+import com.nutomic.syncthingandroid.model.PendingFolder;
 import com.nutomic.syncthingandroid.util.ConfigRouter;
 import com.nutomic.syncthingandroid.util.ConfigXml;
 import com.nutomic.syncthingandroid.util.FileUtils;
@@ -390,13 +392,35 @@ public class SyncthingService extends Service {
             // Check if pending devices are waiting for approval.
             List<PendingDevice> pendingDevices = configXml.getPendingDevices();
             if (pendingDevices != null) {
-                for (PendingDevice pendingDevice : pendingDevices) {
+                for (final PendingDevice pendingDevice : pendingDevices) {
                     if (mNotificationHandler != null && pendingDevice.deviceID != null) {
-                        Log.d(TAG, "pendingDevice.deviceID = " + pendingDevice.deviceID + "('" + pendingDevice.name + "')");
+                        Log.d(TAG, "AFSIS: pendingDevice.deviceID = " + pendingDevice.deviceID + "('" + pendingDevice.name + "')");
                         mNotificationHandler.showDeviceConnectNotification(
                             pendingDevice.deviceID,
                             pendingDevice.name
                         );
+                    }
+                }
+            }
+
+            // Loop through devices.
+            List<Device> devices = configXml.getDevices(false);
+            if (devices != null) {
+                for (final Device device : devices) {
+                    // Check if folder approval notifications are pending for the device.
+                    for (PendingFolder pendingFolder : device.pendingFolders) {
+                        if (mNotificationHandler != null && pendingFolder.id != null) {
+                            Log.d(TAG, "AFSIS: pendingFolder.id = " + pendingFolder.id + "('" + pendingFolder.label + "')");
+                            Boolean isNewFolder = Stream.of(configXml.getFolders())
+                                    .noneMatch(f -> f.id.equals(pendingFolder.id));
+                            mNotificationHandler.showFolderShareNotification(
+                                device.deviceID,
+                                device.name,
+                                pendingFolder.id,
+                                pendingFolder.label,
+                                isNewFolder
+                            );
+                        }
                     }
                 }
             }
