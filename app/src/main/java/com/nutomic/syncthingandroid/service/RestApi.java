@@ -784,19 +784,6 @@ public class RestApi {
     }
 
     /**
-     * Returns status information about the folder with the given id.
-     */
-    /*
-    public void getFolderStatus(final String folderId, final OnResultListener2<String, FolderStatus> listener) {
-        new GetRequest(mContext, mUrl, GetRequest.URI_DB_STATUS, mApiKey,
-                    ImmutableMap.of("folder", folderId), result -> {
-            FolderStatus m = mGson.fromJson(result, FolderStatus.class);
-            listener.onResult(folderId, m);
-        });
-    }
-    */
-
-    /**
      * Requests and parses information about recent changes.
      */
     public void getDiskEvents(int limit, OnResultListener1<List<DiskEvent>> listener) {
