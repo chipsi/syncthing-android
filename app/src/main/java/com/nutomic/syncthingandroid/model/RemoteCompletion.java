@@ -150,12 +150,12 @@ public class RemoteCompletion {
         if (!deviceFolderMap.containsKey(deviceId)) {
             deviceFolderMap.put(deviceId, new HashMap<String, CompletionInfo>());
         }
-        // Add folder or update existing folder entry.
         if (ENABLE_VERBOSE_LOG) {
             Log.v(TAG, "setCompletionInfo: Storing " + completionInfo.completion + "% for folder \"" +
                     folderId + "\" at device \"" +
                     getShortenedDeviceId(deviceId) + "\".");
         }
+        // Add folder or update existing folder entry.
         deviceFolderMap.get(deviceId).put(folderId, completionInfo);
     }
 
