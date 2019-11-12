@@ -19,7 +19,7 @@ public class RemoteCompletion {
 
     private static final String TAG = "RemoteCompletion";
 
-    private Boolean ENABLE_VERBOSE_LOG = true;
+    private Boolean ENABLE_VERBOSE_LOG = false;
 
     HashMap<String, HashMap<String, CompletionInfo>> deviceFolderMap =
         new HashMap<String, HashMap<String, CompletionInfo>>();
