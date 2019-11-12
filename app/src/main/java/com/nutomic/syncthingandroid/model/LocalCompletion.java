@@ -2,6 +2,7 @@ package com.nutomic.syncthingandroid.model;
 
 import android.util.Log;
 
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,8 +22,8 @@ public class LocalCompletion {
 
     private Boolean ENABLE_VERBOSE_LOG = false;
 
-    HashMap<String, CompletionInfo> folderMap =
-        new HashMap<String, CompletionInfo>();
+    HashMap<String, Map.Entry<FolderStatus, CompletionInfo>> folderMap =
+        new HashMap<String, Map.Entry<FolderStatus, CompletionInfo>>();
 
     public LocalCompletion(Boolean enableVerboseLog) {
         ENABLE_VERBOSE_LOG = enableVerboseLog;
@@ -63,7 +64,13 @@ public class LocalCompletion {
                 if (ENABLE_VERBOSE_LOG) {
                     Log.v(TAG, "updateFromConfig: Add folder '" + folder.id + "' to cache model.");
                 }
-                folderMap.put(folder.id, new CompletionInfo());
+                folderMap.put(
+                        folder.id,
+                        new SimpleEntry(
+                                new FolderStatus(),
+                                new CompletionInfo()
+                        )
+                );
             }
         }
     }
@@ -74,8 +81,8 @@ public class LocalCompletion {
     public int getTotalFolderCompletion() {
         int folderCount = 0;
         double sumCompletion = 0;
-        for (Map.Entry<String, CompletionInfo> folder : folderMap.entrySet()) {
-            sumCompletion += folder.getValue().completion;
+        for (Map.Entry<String, Map.Entry<FolderStatus, CompletionInfo>> folder : folderMap.entrySet()) {
+            sumCompletion += folder.getValue().getValue().completion;
             folderCount++;
         }
         if (folderCount == 0) {
@@ -88,24 +95,33 @@ public class LocalCompletion {
      * Returns local folder sync completion percentage.
      */
     public int getFolderCompletion(String folderId) {
-        int folderCount = 0;
-        double sumCompletion = 0;
         if (!folderMap.containsKey(folderId)) {
             return 100;
         }
-        return (int) Math.floor(folderMap.get(folderId).completion);
+        return (int) Math.floor(folderMap.get(folderId).getValue().completion);
     }
 
     /**
-     * Set completionInfo within the completion[folderId] model.
+     * Store folderStatus for later when we need info for the UI.
+     * Calculate completionInfo within the completion[folderId] model.
      */
-    public void setCompletionInfo(String folderId,
-                                    CompletionInfo completionInfo) {
+    public void setFolderStatus(final String folderId,
+                                    final Boolean folderPaused,
+                                    final FolderStatus folderStatus) {
+        CompletionInfo completionInfo = new CompletionInfo();
+        if (folderPaused ||
+                folderStatus.globalBytes == 0 ||
+                (folderStatus.inSyncBytes > folderStatus.globalBytes)) {
+            completionInfo.completion = 100;
+        } else {
+            completionInfo.completion = (int) Math.floor(((double) folderStatus.inSyncBytes / folderStatus.globalBytes) * 100);
+        }
         if (ENABLE_VERBOSE_LOG) {
-            Log.v(TAG, "setCompletionInfo: Storing " + completionInfo.completion + "% for folder \"" +
+            Log.v(TAG, "setFolderStatus: Storing " + completionInfo.completion + "% for folder \"" +
                     folderId + "\".");
         }
+
         // Add folder or update existing folder entry.
-        folderMap.put(folderId, completionInfo);
+        folderMap.put(folderId, new SimpleEntry(folderStatus, completionInfo));
     }
 }

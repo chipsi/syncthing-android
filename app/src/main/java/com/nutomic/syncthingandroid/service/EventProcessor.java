@@ -25,6 +25,7 @@ import com.nutomic.syncthingandroid.model.CompletionInfo;
 import com.nutomic.syncthingandroid.model.Device;
 import com.nutomic.syncthingandroid.model.Event;
 import com.nutomic.syncthingandroid.model.Folder;
+import com.nutomic.syncthingandroid.model.FolderStatus;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;
@@ -341,24 +342,15 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
             return;
         }
 
-        long globalBytes = 0;
-        long inSyncBytes = 0;
+        FolderStatus folderStatus = new FolderStatus();
         try {
-            globalBytes = Long.parseLong(jsoGlobalBytes.toString());
-            inSyncBytes = Long.parseLong(jsoInSyncBytes.toString());
+            folderStatus.globalBytes = Long.parseLong(jsoGlobalBytes.toString());
+            folderStatus.inSyncBytes = Long.parseLong(jsoInSyncBytes.toString());
         } catch (Exception e) {
             Log.e(TAG, "onFolderSummary:", e);
             return;
         }
-
-        CompletionInfo completionInfo = new CompletionInfo();
-        if (globalBytes == 0 ||
-                (inSyncBytes > globalBytes)) {
-            completionInfo.completion = 100;
-        } else {
-            completionInfo.completion = (int) Math.floor(((double) inSyncBytes / globalBytes) * 100);
-        }
-        mRestApi.setLocalCompletionInfo(folderId, completionInfo);
+        mRestApi.setLocalFolderStatus(folderId, folderStatus);
     }
 
 

@@ -862,17 +862,14 @@ public class RestApi {
     /**
      * Updates cached folder and device completion info according to event data.
      */
-    public void setLocalCompletionInfo(String folderId, CompletionInfo completionInfo) {
+    public void setLocalFolderStatus(final String folderId,
+                                            final FolderStatus folderStatus) {
         final Folder folder = getFolderByID(folderId);
         if (folder == null) {
-            Log.e(TAG, "setLocalCompletionInfo: folderId == null");
+            Log.e(TAG, "setLocalFolderStatus: folderId == null");
             return;
         }
-        if (folder.paused) {
-            LogV("setLocalCompletionInfo: Paused folder \"" + folderId + "\" - got " + completionInfo.completion + "%, passing on 100%");
-            completionInfo.completion = 100;
-        }
-        mLocalCompletion.setCompletionInfo(folderId, completionInfo);
+        mLocalCompletion.setFolderStatus(folderId, folder.paused, folderStatus);
     }
 
     public void setRemoteCompletionInfo(String deviceId, String folderId, CompletionInfo completionInfo) {
