@@ -23,7 +23,7 @@ import com.nutomic.syncthingandroid.activities.ShareActivity;
 import com.nutomic.syncthingandroid.http.GetRequest;
 import com.nutomic.syncthingandroid.http.PostRequest;
 import com.nutomic.syncthingandroid.model.Config;
-import com.nutomic.syncthingandroid.model.Completion;
+import com.nutomic.syncthingandroid.model.RemoteCompletion;
 import com.nutomic.syncthingandroid.model.CompletionInfo;
 import com.nutomic.syncthingandroid.model.Connections;
 import com.nutomic.syncthingandroid.model.Device;
@@ -147,7 +147,7 @@ public class RestApi {
     /**
      * Stores the latest result of device and folder completion events.
      */
-    private Completion mCompletion;
+    private RemoteCompletion mRemoteCompletion;
 
     private Gson mGson;
 
@@ -162,7 +162,7 @@ public class RestApi {
         mApiKey = apiKey;
         mOnApiAvailableListener = apiListener;
         mOnConfigChangedListener = configListener;
-        mCompletion = new Completion(ENABLE_VERBOSE_LOG);
+        mRemoteCompletion = new RemoteCompletion(ENABLE_VERBOSE_LOG);
         mGson = getGson();
     }
 
@@ -283,8 +283,8 @@ public class RestApi {
             }
         }
 
-        // Update cached device and folder information stored in the mCompletion model.
-        mCompletion.updateFromConfig(getDevices(true), getFolders());
+        // Update cached device and folder information stored in the mRemoteCompletion model.
+        mRemoteCompletion.updateFromConfig(getDevices(true), getFolders());
     }
 
     /**
@@ -543,7 +543,7 @@ public class RestApi {
     public void removeFolder(String id) {
         synchronized (mConfigLock) {
             removeFolderInternal(id);
-            // mCompletion will be updated after the ConfigSaved event.
+            // mRemoteCompletion will be updated after the ConfigSaved event.
             sendConfig();
             // Remove saved data from share activity for this folder.
         }
@@ -620,7 +620,7 @@ public class RestApi {
     public void removeDevice(String deviceId) {
         synchronized (mConfigLock) {
             removeDeviceInternal(deviceId);
-            // mCompletion will be updated after the ConfigSaved event.
+            // mRemoteCompletion will be updated after the ConfigSaved event.
             sendConfig();
         }
     }
@@ -758,7 +758,7 @@ public class RestApi {
             mPreviousConnectionTime = now;
             Connections connections = mGson.fromJson(result, Connections.class);
             for (Map.Entry<String, Connections.Connection> e : connections.connections.entrySet()) {
-                e.getValue().completion = mCompletion.getDeviceCompletion(e.getKey());
+                e.getValue().completion = mRemoteCompletion.getDeviceCompletion(e.getKey());
 
                 Connections.Connection prev =
                         (mPreviousConnections.isPresent() && mPreviousConnections.get().connections.containsKey(e.getKey()))
@@ -856,10 +856,10 @@ public class RestApi {
     /**
      * Updates cached folder and device completion info according to event data.
      */
-    public void setCompletionInfo(String deviceId, String folderId, CompletionInfo completionInfo) {
+    public void setRemoteCompletionInfo(String deviceId, String folderId, CompletionInfo completionInfo) {
         final Folder folder = getFolderByID(folderId);
         if (folder == null) {
-            Log.e(TAG, "setCompletionInfo: folderId == null");
+            Log.e(TAG, "setRemoteCompletionInfo: folderId == null");
             return;
         }
         if (folder.paused) {
@@ -870,10 +870,10 @@ public class RestApi {
              * to be 0% complete. To get consistent UI output, we assume 100% completion for paused
              * folders.
             **/
-            LogV("setCompletionInfo: Paused folder \"" + folderId + "\" - got " + completionInfo.completion + "%, passing on 100%");
+            LogV("setRemoteCompletionInfo: Paused folder \"" + folderId + "\" - got " + completionInfo.completion + "%, passing on 100%");
             completionInfo.completion = 100;
         }
-        mCompletion.setCompletionInfo(deviceId, folderId, completionInfo);
+        mRemoteCompletion.setCompletionInfo(deviceId, folderId, completionInfo);
     }
 
     /**

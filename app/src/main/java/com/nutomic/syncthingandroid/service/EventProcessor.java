@@ -124,7 +124,7 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
             case "FolderCompletion":
                 CompletionInfo completionInfo = new CompletionInfo();
                 completionInfo.completion = (Double) event.data.get("completion");
-                mRestApi.setCompletionInfo(
+                mRestApi.setRemoteCompletionInfo(
                     (String) event.data.get("device"),          // deviceId
                     (String) event.data.get("folder"),          // folderId
                     completionInfo

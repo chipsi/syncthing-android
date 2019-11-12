@@ -15,16 +15,16 @@ import android.text.TextUtils;
  * according to syncthing's REST "/completion" JSON result schema.
  * Completion model of syncthing's web UI is completion[deviceId][folderId]
  */
-public class Completion {
+public class RemoteCompletion {
 
-    private static final String TAG = "Completion";
+    private static final String TAG = "RemoteCompletion";
 
     private Boolean ENABLE_VERBOSE_LOG = true;
 
     HashMap<String, HashMap<String, CompletionInfo>> deviceFolderMap =
         new HashMap<String, HashMap<String, CompletionInfo>>();
 
-    public Completion(Boolean enableVerboseLog) {
+    public RemoteCompletion(Boolean enableVerboseLog) {
         ENABLE_VERBOSE_LOG = enableVerboseLog;
     }
 
