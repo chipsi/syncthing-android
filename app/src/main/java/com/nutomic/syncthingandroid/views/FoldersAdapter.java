@@ -137,7 +137,7 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
                         binding.state.setText(
                                 mContext.getString(
                                     R.string.state_syncing,
-                                    completionInfo.completion
+                                    (int) completionInfo.completion
                                 )
                         );
                         binding.state.setTextColor(ContextCompat.getColor(mContext, R.color.text_blue));
