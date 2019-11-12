@@ -145,6 +145,12 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
                 );
                 */
                 break;
+            case "FolderSummary":
+                    onFolderSummary(
+                            json,
+                            (String) event.data.get("folder")          // folderId
+                    );
+                    break;
             case "ItemFinished":
                 String action               = (String) event.data.get("action");
                 String error                = (String) event.data.get("error");
@@ -179,7 +185,6 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
             case "FolderPaused":
             case "FolderResumed":
             case "FolderScanProgress":
-            case "FolderSummary":
             case "FolderWatchStateChanged":
             case "ItemStarted":
             case "ListenAddressesChanged":
@@ -288,7 +293,7 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
         );
     }
 
-    private void onFolderErrors(JsonElement json) {
+    private void onFolderErrors(final JsonElement json) {
         JsonElement data = ((JsonObject) json).get("data");
         if (data == null) {
             Log.e(TAG, "onFolderErrors: data == null");
@@ -317,6 +322,45 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
             }
         }
     }
+
+    private void onFolderSummary(final JsonElement json, String folderId) {
+        JsonElement data = ((JsonObject) json).get("data");
+        if (data == null) {
+            Log.e(TAG, "onFolderSummary: data == null");
+            return;
+        }
+        JsonElement summary = ((JsonObject) data).get("summary");
+        if (summary == null) {
+            Log.e(TAG, "onFolderSummary: summary == null");
+            return;
+        }
+        JsonElement jsoGlobalBytes = ((JsonObject) summary).get("globalBytes");
+        JsonElement jsoInSyncBytes = ((JsonObject) summary).get("inSyncBytes");
+        if (jsoGlobalBytes == null || jsoInSyncBytes == null) {
+            Log.e(TAG, "onFolderSummary: jsoGlobalBytes == null || jsoInSyncBytes == null");
+            return;
+        }
+
+        long globalBytes = 0;
+        long inSyncBytes = 0;
+        try {
+            globalBytes = Long.parseLong(jsoGlobalBytes.toString());
+            inSyncBytes = Long.parseLong(jsoInSyncBytes.toString());
+        } catch (Exception e) {
+            Log.e(TAG, "onFolderSummary:", e);
+            return;
+        }
+
+        CompletionInfo completionInfo = new CompletionInfo();
+        if (globalBytes == 0 ||
+                (inSyncBytes > globalBytes)) {
+            completionInfo.completion = 100;
+        } else {
+            completionInfo.completion = (int) Math.floor(((double) inSyncBytes / globalBytes) * 100);
+        }
+        mRestApi.setLocalCompletionInfo(folderId, completionInfo);
+    }
+
 
     /**
      * Precondition: action != null
