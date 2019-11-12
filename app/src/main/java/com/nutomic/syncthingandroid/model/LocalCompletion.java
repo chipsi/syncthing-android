@@ -128,7 +128,7 @@ public class LocalCompletion {
             completionInfo.completion = (int) Math.floor(((double) folderStatus.inSyncBytes / folderStatus.globalBytes) * 100);
         }
         if (ENABLE_VERBOSE_LOG) {
-            Log.v(TAG, "setFolderStatus: folderId=\"" + folderId + "\", state=\"" + folderStatus.state + "\", completion=" + completionInfo.completion + "%");
+            Log.v(TAG, "setFolderStatus: folderId=\"" + folderId + "\", state=\"" + folderStatus.state + "\", completion=" + (int) completionInfo.completion + "%");
         }
 
         // Add folder or update existing folder entry.
