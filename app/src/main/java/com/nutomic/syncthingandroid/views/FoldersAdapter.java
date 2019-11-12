@@ -41,9 +41,12 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
 
     private RestApi mRestApi;
 
-    public FoldersAdapter(Context context, RestApi restApi) {
+    public FoldersAdapter(Context context) {
         super(context, 0);
         mContext = context;
+    }
+
+    public void setRestApi(RestApi restApi) {
         mRestApi = restApi;
     }
 

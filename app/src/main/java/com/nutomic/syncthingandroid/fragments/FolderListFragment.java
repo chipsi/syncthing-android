@@ -163,9 +163,10 @@ public class FolderListFragment extends ListFragment implements SyncthingService
             return;
         }
         if (mAdapter == null) {
-            mAdapter = new FoldersAdapter(activity, restApi);
+            mAdapter = new FoldersAdapter(activity);
             setListAdapter(mAdapter);
         }
+        mAdapter.setRestApi(restApi);
 
         // Prevent scroll position reset due to list update from clear().
         mAdapter.setNotifyOnChange(false);
