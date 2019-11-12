@@ -141,11 +141,6 @@ public class RestApi {
     private final Object mConfigLock = new Object();
 
     /**
-     * Stores the latest result of {@link #getFolderStatus} for each folder
-     */
-    private HashMap<String, FolderStatus> mCachedFolderStatuses = new HashMap<>();
-
-    /**
      * Stores the latest result of device and folder completion events.
      */
     private LocalCompletion mLocalCompletion;
@@ -781,16 +776,25 @@ public class RestApi {
     }
 
     /**
+     * Returns status information about the folder with the given id from cache.
+     */
+    public final Map.Entry<FolderStatus, CompletionInfo> getCachedFolderStatus (
+            final String folderId) {
+        return mLocalCompletion.getFolderStatus(folderId);
+    }
+
+    /**
      * Returns status information about the folder with the given id.
      */
+    /*
     public void getFolderStatus(final String folderId, final OnResultListener2<String, FolderStatus> listener) {
         new GetRequest(mContext, mUrl, GetRequest.URI_DB_STATUS, mApiKey,
                     ImmutableMap.of("folder", folderId), result -> {
             FolderStatus m = mGson.fromJson(result, FolderStatus.class);
-            mCachedFolderStatuses.put(folderId, m);
             listener.onResult(folderId, m);
         });
     }
+    */
 
     /**
      * Requests and parses information about recent changes.
