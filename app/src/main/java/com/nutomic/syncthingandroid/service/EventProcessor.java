@@ -180,6 +180,12 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
             case "Ping":
                 // Ignored.
                 break;
+            case "StateChanged":
+                onStateChanged(
+                        (String) event.data.get("folder"),             // folderId
+                        (String) event.data.get("to")
+                );
+                break;
             case "DeviceConnected":
             case "DeviceDisconnected":
             case "DeviceDiscovered":
@@ -196,7 +202,6 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
             case "RemoteIndexUpdated":
             case "Starting":
             case "StartupComplete":
-            case "StateChanged":
                 LogV("Ignored event " + event.type + ", data " + event.data);
                 break;
             default:
@@ -389,6 +394,13 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
             default:
                 Log.w(TAG, "onItemFinished: Unhandled action \"" + action + "\"");
         }
+    }
+
+    /**
+     * Emitted when a folder changes state.
+     */
+    private void onStateChanged(final String folderId, final String newState) {
+        mRestApi.updateLocalFolderState(folderId, newState);
     }
 
     private static class LoggingAsyncQueryHandler extends AsyncQueryHandler {
