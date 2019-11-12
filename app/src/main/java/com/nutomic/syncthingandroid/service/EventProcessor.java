@@ -15,6 +15,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.annimon.stream.Stream;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -335,19 +336,12 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
             Log.e(TAG, "onFolderSummary: summary == null");
             return;
         }
-        JsonElement jsoGlobalBytes = ((JsonObject) summary).get("globalBytes");
-        JsonElement jsoInSyncBytes = ((JsonObject) summary).get("inSyncBytes");
-        if (jsoGlobalBytes == null || jsoInSyncBytes == null) {
-            Log.e(TAG, "onFolderSummary: jsoGlobalBytes == null || jsoInSyncBytes == null");
-            return;
-        }
-
         FolderStatus folderStatus = new FolderStatus();
         try {
-            folderStatus.globalBytes = Long.parseLong(jsoGlobalBytes.toString());
-            folderStatus.inSyncBytes = Long.parseLong(jsoInSyncBytes.toString());
+            folderStatus = new GsonBuilder().create()
+                    .fromJson(summary, FolderStatus.class);
         } catch (Exception e) {
-            Log.e(TAG, "onFolderSummary:", e);
+            Log.e(TAG, "onFolderSummary: gson.fromJson failed", e);
             return;
         }
         mRestApi.setLocalFolderStatus(folderId, folderStatus);
