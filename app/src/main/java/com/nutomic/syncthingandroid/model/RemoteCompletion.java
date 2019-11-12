@@ -44,7 +44,7 @@ public class RemoteCompletion {
      * Updates device and folder information in the cache model
      * after a config update.
      */
-    public void updateFromConfig(List<Device> newDevices, List<Folder> newFolders) {
+    public void updateFromConfig(final List<Device> newDevices, final List<Folder> newFolders) {
         HashMap<String, CompletionInfo> folderMap;
 
         // Handle devices that were removed from the config.
