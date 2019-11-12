@@ -137,9 +137,8 @@ public class RemoteCompletion {
         }
         if (folderCount == 0) {
             return 100;
-        } else {
-            return (int) Math.floor(sumCompletion / folderCount);
         }
+        return (int) Math.floor(sumCompletion / folderCount);
     }
 
     /**
