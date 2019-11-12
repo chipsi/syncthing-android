@@ -16,6 +16,7 @@ import androidx.databinding.DataBindingUtil;
 
 import com.nutomic.syncthingandroid.R;
 import com.nutomic.syncthingandroid.databinding.ItemFolderListBinding;
+import com.nutomic.syncthingandroid.model.CompletionInfo;
 import com.nutomic.syncthingandroid.model.Folder;
 import com.nutomic.syncthingandroid.model.FolderStatus;
 import com.nutomic.syncthingandroid.service.Constants;
@@ -24,7 +25,7 @@ import com.nutomic.syncthingandroid.service.SyncthingService;
 import com.nutomic.syncthingandroid.util.FileUtils;
 import com.nutomic.syncthingandroid.util.Util;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -36,13 +37,14 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
 
     private static final String TAG = "FoldersAdapter";
 
-    private final HashMap<String, FolderStatus> mLocalFolderStatuses = new HashMap<>();
-
     private final Context mContext;
 
-    public FoldersAdapter(Context context) {
+    private RestApi mRestApi;
+
+    public FoldersAdapter(Context context, RestApi restApi) {
         super(context, 0);
         mContext = context;
+        mRestApi = restApi;
     }
 
     @Override
@@ -77,8 +79,7 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
     }
 
     private void updateFolderStatusView(ItemFolderListBinding binding, Folder folder) {
-        FolderStatus folderStatus = mLocalFolderStatuses.get(folder.id);
-        if (folderStatus == null) {
+        if  (mRestApi == null || !mRestApi.isConfigLoaded()) {
             binding.items.setVisibility(GONE);
             binding.override.setVisibility(GONE);
             binding.revert.setVisibility(GONE);
@@ -87,6 +88,11 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
             setTextOrHide(binding.invalid, folder.invalid);
             return;
         }
+
+        // mRestApi is available.
+        final Map.Entry<FolderStatus, CompletionInfo> folderEntry = mRestApi.getCachedFolderStatus(folder.id);
+        final FolderStatus folderStatus = folderEntry.getKey();
+        final CompletionInfo completionInfo = folderEntry.getValue();
 
         long neededItems = folderStatus.needFiles + folderStatus.needDirectories + folderStatus.needSymlinks + folderStatus.needDeletes;
         boolean outOfSync = folderStatus.state.equals("idle") && neededItems > 0;
@@ -131,9 +137,7 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
                         binding.state.setText(
                                 mContext.getString(
                                     R.string.state_syncing,
-                                        (folderStatus.globalBytes != 0)
-                                                ? Math.round(100 * folderStatus.inSyncBytes / folderStatus.globalBytes)
-                                                : 100
+                                    completionInfo.completion
                                 )
                         );
                         binding.state.setTextColor(ContextCompat.getColor(mContext, R.color.text_blue));
@@ -168,30 +172,6 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
                 Util.readableFileSize(mContext, folderStatus.inSyncBytes),
                 Util.readableFileSize(mContext, folderStatus.globalBytes)));
         setTextOrHide(binding.invalid, folderStatus.invalid);
-    }
-
-    /**
-     * Requests updated folder status from the api for all visible items.
-     */
-    public void updateFolderStatus(RestApi restApi) {
-        if (restApi == null || !restApi.isConfigLoaded()) {
-            // Syncthing is not running. Clear last state.
-            mLocalFolderStatuses.clear();
-            return;
-        }
-
-        for (int i = 0; i < getCount(); i++) {
-            Folder folder = getItem(i);
-            if (folder != null) {
-                restApi.getFolderStatus(folder.id, this::onReceiveFolderStatus);
-            }
-        }
-    }
-
-    private void onReceiveFolderStatus(String folderId, FolderStatus folderStatus) {
-        mLocalFolderStatuses.put(folderId, folderStatus);
-        // This will invoke "getView" for all elements.
-        notifyDataSetChanged();
     }
 
     private void setTextOrHide(TextView view, String text) {

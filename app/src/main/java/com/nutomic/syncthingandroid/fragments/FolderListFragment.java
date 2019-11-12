@@ -163,7 +163,7 @@ public class FolderListFragment extends ListFragment implements SyncthingService
             return;
         }
         if (mAdapter == null) {
-            mAdapter = new FoldersAdapter(activity);
+            mAdapter = new FoldersAdapter(activity, restApi);
             setListAdapter(mAdapter);
         }
 
@@ -171,7 +171,6 @@ public class FolderListFragment extends ListFragment implements SyncthingService
         mAdapter.setNotifyOnChange(false);
         mAdapter.clear();
         mAdapter.addAll(folders);
-        mAdapter.updateFolderStatus(restApi);
         mAdapter.notifyDataSetChanged();
         setListShown(true);
     }
