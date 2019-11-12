@@ -112,7 +112,7 @@ public class RemoteCompletion {
                     if (!folderMap.containsKey(folder.id)) {
                         if (ENABLE_VERBOSE_LOG) {
                             Log.v(TAG, "updateFromConfig: Add folder '" + folder.id +
-                                        "' shared with device '" + getShortenedDeviceId(device.deviceID)+ "' to cache model.");
+                                        "' shared with device '" + getShortenedDeviceId(device.deviceID) + "' to cache model.");
                         }
                         folderMap.put(folder.id, new CompletionInfo());
                     }
