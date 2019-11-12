@@ -23,7 +23,6 @@ import com.nutomic.syncthingandroid.activities.ShareActivity;
 import com.nutomic.syncthingandroid.http.GetRequest;
 import com.nutomic.syncthingandroid.http.PostRequest;
 import com.nutomic.syncthingandroid.model.Config;
-import com.nutomic.syncthingandroid.model.RemoteCompletion;
 import com.nutomic.syncthingandroid.model.CompletionInfo;
 import com.nutomic.syncthingandroid.model.Connections;
 import com.nutomic.syncthingandroid.model.Device;
@@ -35,9 +34,11 @@ import com.nutomic.syncthingandroid.model.FolderIgnoreList;
 import com.nutomic.syncthingandroid.model.FolderStatus;
 import com.nutomic.syncthingandroid.model.Gui;
 import com.nutomic.syncthingandroid.model.IgnoredFolder;
+import com.nutomic.syncthingandroid.model.LocalCompletion;
 import com.nutomic.syncthingandroid.model.Options;
 import com.nutomic.syncthingandroid.model.PendingDevice;
 import com.nutomic.syncthingandroid.model.PendingFolder;
+import com.nutomic.syncthingandroid.model.RemoteCompletion;
 import com.nutomic.syncthingandroid.model.RemoteIgnoredDevice;
 import com.nutomic.syncthingandroid.model.SystemStatus;
 import com.nutomic.syncthingandroid.model.SystemVersion;
@@ -147,6 +148,7 @@ public class RestApi {
     /**
      * Stores the latest result of device and folder completion events.
      */
+    private LocalCompletion mLocalCompletion;
     private RemoteCompletion mRemoteCompletion;
 
     private Gson mGson;
@@ -162,6 +164,7 @@ public class RestApi {
         mApiKey = apiKey;
         mOnApiAvailableListener = apiListener;
         mOnConfigChangedListener = configListener;
+        mLocalCompletion = new LocalCompletion(ENABLE_VERBOSE_LOG);
         mRemoteCompletion = new RemoteCompletion(ENABLE_VERBOSE_LOG);
         mGson = getGson();
     }
@@ -284,7 +287,9 @@ public class RestApi {
         }
 
         // Update cached device and folder information stored in the mRemoteCompletion model.
-        mRemoteCompletion.updateFromConfig(getDevices(true), getFolders());
+        final List<Folder> tmpFolders = getFolders();
+        mLocalCompletion.updateFromConfig(tmpFolders);
+        mRemoteCompletion.updateFromConfig(getDevices(true), tmpFolders);
     }
 
     /**
@@ -543,6 +548,7 @@ public class RestApi {
     public void removeFolder(String id) {
         synchronized (mConfigLock) {
             removeFolderInternal(id);
+            // mLocalCompletion will be updated after the ConfigSaved event.
             // mRemoteCompletion will be updated after the ConfigSaved event.
             sendConfig();
             // Remove saved data from share activity for this folder.
@@ -856,6 +862,19 @@ public class RestApi {
     /**
      * Updates cached folder and device completion info according to event data.
      */
+    public void setLocalCompletionInfo(String folderId, CompletionInfo completionInfo) {
+        final Folder folder = getFolderByID(folderId);
+        if (folder == null) {
+            Log.e(TAG, "setLocalCompletionInfo: folderId == null");
+            return;
+        }
+        if (folder.paused) {
+            LogV("setLocalCompletionInfo: Paused folder \"" + folderId + "\" - got " + completionInfo.completion + "%, passing on 100%");
+            completionInfo.completion = 100;
+        }
+        mLocalCompletion.setCompletionInfo(folderId, completionInfo);
+    }
+
     public void setRemoteCompletionInfo(String deviceId, String folderId, CompletionInfo completionInfo) {
         final Folder folder = getFolderByID(folderId);
         if (folder == null) {
