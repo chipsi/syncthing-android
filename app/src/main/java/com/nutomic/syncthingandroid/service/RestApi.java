@@ -778,9 +778,30 @@ public class RestApi {
     /**
      * Returns status information about the folder with the given id from cache.
      */
-    public final Map.Entry<FolderStatus, CompletionInfo> getCachedFolderStatus (
+    public final Map.Entry<FolderStatus, CompletionInfo> getFolderStatus (
             final String folderId) {
-        return mLocalCompletion.getFolderStatus(folderId);
+        final Map.Entry<FolderStatus, CompletionInfo> cacheEntry = mLocalCompletion.getFolderStatus(folderId);
+        if (cacheEntry.getKey().stateChanged.isEmpty()) {
+            /**
+             * Cache miss because we haven't received a "FolderSummary" event yet.
+             * Query for the required information so it will be available on a future call to this function.
+             */
+            LogV("getFolderStatus: Cache miss, folderId=\"" + folderId + "\". Performing query.");
+            new GetRequest(mContext, mUrl, GetRequest.URI_DB_STATUS, mApiKey,
+                    ImmutableMap.of("folder", folderId), result -> {
+                final Folder folder = getFolderByID(folderId);
+                if (folder == null) {
+                    Log.e(TAG, "getFolderStatus#GetRequest#onResult: folderId == null");
+                    return;
+                }
+                mLocalCompletion.setFolderStatus(
+                        folderId,
+                        folder.paused,
+                        mGson.fromJson(result, FolderStatus.class)
+                );
+            });
+        }
+        return cacheEntry;
     }
 
     /**

@@ -90,7 +90,7 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
         }
 
         // mRestApi is available.
-        final Map.Entry<FolderStatus, CompletionInfo> folderEntry = mRestApi.getCachedFolderStatus(folder.id);
+        final Map.Entry<FolderStatus, CompletionInfo> folderEntry = mRestApi.getFolderStatus(folder.id);
         final FolderStatus folderStatus = folderEntry.getKey();
         final CompletionInfo completionInfo = folderEntry.getValue();
 
