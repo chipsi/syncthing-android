@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import android.text.TextUtils;
+
 /**
  * This class caches remote folder and device synchronization
  * completion indicators defined in {@link CompletionInfo}
@@ -62,7 +64,7 @@ public class Completion {
         }
         for (String deviceId : removedDevices) {
             if (ENABLE_VERBOSE_LOG) {
-                Log.v(TAG, "updateFromConfig: Remove device '" + deviceId + "' from cache model");
+                Log.v(TAG, "updateFromConfig: Remove device '" + getShortenedDeviceId(deviceId) + "' from cache model");
             }
             deviceFolderMap.remove(deviceId);
         }
@@ -71,7 +73,7 @@ public class Completion {
         for (Device device : newDevices) {
             if (!deviceFolderMap.containsKey(device.deviceID)) {
                 if (ENABLE_VERBOSE_LOG) {
-                    Log.v(TAG, "updateFromConfig: Add device '" + device.deviceID + "' to cache model");
+                    Log.v(TAG, "updateFromConfig: Add device '" + getShortenedDeviceId(device.deviceID) + "' to cache model");
                 }
                 deviceFolderMap.put(device.deviceID, new HashMap<String, CompletionInfo>());
             }
@@ -110,7 +112,7 @@ public class Completion {
                     if (!folderMap.containsKey(folder.id)) {
                         if (ENABLE_VERBOSE_LOG) {
                             Log.v(TAG, "updateFromConfig: Add folder '" + folder.id +
-                                        "' shared with device '" + device.deviceID + "' to cache model.");
+                                        "' shared with device '" + getShortenedDeviceId(device.deviceID)+ "' to cache model.");
                         }
                         folderMap.put(folder.id, new CompletionInfo());
                     }
@@ -151,8 +153,17 @@ public class Completion {
         }
         // Add folder or update existing folder entry.
         if (ENABLE_VERBOSE_LOG) {
-            Log.v(TAG, "setCompletionInfo: Storing " + completionInfo.completion + "% for folder \"" + folderId + "\".");
+            Log.v(TAG, "setCompletionInfo: Storing " + completionInfo.completion + "% for folder \"" +
+                    folderId + "\" at device \"" +
+                    getShortenedDeviceId(deviceId) + "\".");
         }
         deviceFolderMap.get(deviceId).put(folderId, completionInfo);
+    }
+
+    /**
+     * Returns the first characters of the device ID for logging purposes.
+     */
+    public String getShortenedDeviceId(String deviceId) {
+        return (TextUtils.isEmpty(deviceId) ? "" : deviceId.substring(0, 7));
     }
 }
