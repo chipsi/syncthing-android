@@ -246,50 +246,6 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
         }
     }
 
-    /*
-    private void onDeviceRejected(String deviceId, String deviceName) {
-        if (deviceId == null) {
-            return;
-        }
-        Log.d(TAG, "Unknown device '" + deviceName + "' (" + deviceId + ") wants to connect");
-
-        // Show device approve/ignore notification.
-        mNotificationHandler.showDeviceConnectNotification(deviceId, deviceName);
-    }
-    */
-
-    /*
-    private void onFolderRejected(String deviceId, String folderId,
-                                    String folderLabel) {
-        if (deviceId == null || folderId == null) {
-            return;
-        }
-        Log.d(TAG, "Device '" + deviceId + "' wants to share folder '" +
-            folderLabel + "' (" + folderId + ")");
-
-        // Find the deviceName corresponding to the deviceId.
-        String deviceName = null;
-        for (Device d : mRestApi.getDevices(false)) {
-            if (d.deviceID.equals(deviceId)) {
-                deviceName = d.getDisplayName();
-                break;
-            }
-        }
-
-        Boolean isNewFolder = Stream.of(mRestApi.getFolders())
-                .noneMatch(f -> f.id.equals(folderId));
-
-        // Show folder approve/ignore notification.
-        mNotificationHandler.showFolderShareNotification(
-            deviceId,
-            deviceName,
-            folderId,
-            folderLabel,
-            isNewFolder
-        );
-    }
-    */
-
     private void onFolderCompletion(final Map<String, Object> eventData) {
         CompletionInfo completionInfo = new CompletionInfo();
         completionInfo.completion = (Double) eventData.get("completion");
