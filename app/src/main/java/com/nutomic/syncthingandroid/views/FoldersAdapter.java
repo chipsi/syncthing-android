@@ -85,6 +85,7 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
         if  (mRestApi == null || !mRestApi.isConfigLoaded()) {
             binding.items.setVisibility(GONE);
             binding.override.setVisibility(GONE);
+            binding.progressBar.setVisibility(GONE);
             binding.revert.setVisibility(GONE);
             binding.size.setVisibility(GONE);
             binding.state.setVisibility(GONE);
@@ -105,6 +106,8 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
         boolean outOfSync = folderStatus.state.equals("idle") && neededItems > 0;
         boolean overrideButtonVisible = folder.type.equals(Constants.FOLDER_TYPE_SEND_ONLY) && outOfSync;
         binding.override.setVisibility(overrideButtonVisible ? VISIBLE : GONE);
+
+        binding.progressBar.setVisibility(folderStatus.state.equals("syncing") ? VISIBLE : GONE);
 
         boolean revertButtonVisible = folder.type.equals(Constants.FOLDER_TYPE_RECEIVE_ONLY) && (folderStatus.receiveOnlyTotalItems > 0);
         binding.revert.setVisibility(revertButtonVisible ? VISIBLE : GONE);
@@ -145,6 +148,7 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
                         binding.state.setTextColor(ContextCompat.getColor(mContext, R.color.text_blue));
                         break;
                     case "syncing":
+                        binding.progressBar.setProgress((int) completionInfo.completion);
                         binding.state.setText(
                                 mContext.getString(
                                     R.string.state_syncing,
@@ -182,7 +186,7 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
         binding.size.setText(mContext.getString(R.string.folder_size_format,
                 Util.readableFileSize(mContext, folderStatus.inSyncBytes),
                 Util.readableFileSize(mContext, folderStatus.globalBytes)));
-        
+
         setTextOrHide(binding.invalid, folderStatus.invalid);
     }
 
