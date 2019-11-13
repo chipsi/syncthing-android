@@ -89,10 +89,6 @@ public class RestApi {
         void onResult(T t);
     }
 
-    public interface OnResultListener2<T, R> {
-        void onResult(T t, R r);
-    }
-
     private final Context mContext;
     private final URL mUrl;
     private final String mApiKey;
@@ -281,7 +277,7 @@ public class RestApi {
             }
         }
 
-        // Update cached device and folder information stored in the mRemoteCompletion model.
+        // Update cached device and folder information.
         final List<Folder> tmpFolders = getFolders();
         mLocalCompletion.updateFromConfig(tmpFolders);
         mRemoteCompletion.updateFromConfig(getDevices(true), tmpFolders);
