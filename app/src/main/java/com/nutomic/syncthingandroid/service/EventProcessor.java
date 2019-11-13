@@ -302,7 +302,7 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
         mRestApi.updateLocalFolderPause(folderId, false);
     }
 
-    private void onFolderSummary(final JsonElement json, String folderId) {
+    private void onFolderSummary(final JsonElement json, final String folderId) {
         JsonElement data = ((JsonObject) json).get("data");
         if (data == null) {
             Log.e(TAG, "onFolderSummary: data == null");
