@@ -876,12 +876,7 @@ public class RestApi {
      */
     public void setLocalFolderStatus(final String folderId,
                                             final FolderStatus folderStatus) {
-        final Folder folder = getFolderByID(folderId);
-        if (folder == null) {
-            Log.e(TAG, "setLocalFolderStatus: folderId == null");
-            return;
-        }
-        mLocalCompletion.setFolderStatus(folderId, folder.paused, folderStatus);
+        mLocalCompletion.setFolderStatus(folderId, folderStatus);
     }
 
     public void setRemoteCompletionInfo(String deviceId, String folderId, CompletionInfo completionInfo) {
@@ -904,15 +899,15 @@ public class RestApi {
         mRemoteCompletion.setCompletionInfo(deviceId, folderId, completionInfo);
     }
 
+    public void updateLocalFolderPause(final String folderId, final Boolean newPaused) {
+        // Clear status cache when pausing or resuming the folder.
+        mLocalCompletion.setFolderStatus(folderId, newPaused, new FolderStatus());
+    }
+
     public void updateLocalFolderState(final String folderId, final String newState) {
-        final Folder folder = getFolderByID(folderId);
-        if (folder == null) {
-            Log.e(TAG, "updateLocalFolderState: folderId == null");
-            return;
-        }
         final Map.Entry<FolderStatus, CompletionInfo> cacheEntry = mLocalCompletion.getFolderStatus(folderId);
         cacheEntry.getKey().state = newState;
-        mLocalCompletion.setFolderStatus(folderId, folder.paused, cacheEntry.getKey());
+        mLocalCompletion.setFolderStatus(folderId, cacheEntry.getKey());
     }
 
     /**
