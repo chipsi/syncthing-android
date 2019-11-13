@@ -86,8 +86,11 @@ public class LocalCompletion {
         int folderCount = 0;
         double sumCompletion = 0;
         for (Map.Entry<String, Map.Entry<FolderStatus, CompletionInfo>> folder : folderMap.entrySet()) {
-            sumCompletion += folder.getValue().getValue().completion;
-            folderCount++;
+            CompletionInfo completionInfo  = folder.getValue().getValue();
+            if (!completionInfo.paused) {
+                sumCompletion += completionInfo.completion;
+                folderCount++;
+            }
         }
         if (folderCount == 0) {
             return 100;
@@ -120,19 +123,29 @@ public class LocalCompletion {
                                     final Boolean folderPaused,
                                     final FolderStatus folderStatus) {
         CompletionInfo completionInfo = new CompletionInfo();
-        if (folderPaused ||
-                folderStatus.globalBytes == 0 ||
+        completionInfo.paused = folderPaused;
+        if (folderStatus.globalBytes == 0 ||
                 (folderStatus.inSyncBytes > folderStatus.globalBytes)) {
             completionInfo.completion = 100;
         } else {
             completionInfo.completion = (int) Math.floor(((double) folderStatus.inSyncBytes / folderStatus.globalBytes) * 100);
         }
         if (ENABLE_VERBOSE_LOG) {
-            Log.v(TAG, "setFolderStatus: folderId=\"" + folderId + "\", state=\"" + folderStatus.state + "\", completion=" + (int) completionInfo.completion + "%");
+            Log.v(TAG, "setFolderStatus: folderId=\"" + folderId + "\"" +
+                    ", state=\"" + folderStatus.state + "\"" +
+                    ", paused=" + Boolean.toString(completionInfo.paused) +
+                    ", completion=" + (int) completionInfo.completion + "%");
         }
 
         // Add folder or update existing folder entry.
         folderMap.put(folderId, new SimpleEntry(folderStatus, completionInfo));
+    }
+
+    public void setFolderStatus(final String folderId,
+                                    final FolderStatus folderStatus) {
+        // Persist completionInfo.paused from the previous entry.
+        final Map.Entry<FolderStatus, CompletionInfo> cacheEntry = getFolderStatus(folderId);
+        setFolderStatus(folderId, cacheEntry.getValue().paused, folderStatus);
     }
 
     /**
