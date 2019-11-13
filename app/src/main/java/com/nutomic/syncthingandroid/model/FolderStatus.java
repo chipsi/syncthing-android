@@ -2,6 +2,7 @@ package com.nutomic.syncthingandroid.model;
 
 public class FolderStatus {
     public String error = "";
+    public long errors = 0;
     public long globalBytes = 0;
     public long globalDeleted = 0;
     public long globalDirectories = 0;

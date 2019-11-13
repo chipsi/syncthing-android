@@ -99,6 +99,8 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
 
         binding.items.setVisibility(folder.paused ? GONE : VISIBLE);
 
+        boolean failedItems = folderStatus.errors > 0;
+
         long neededItems = folderStatus.needFiles + folderStatus.needDirectories + folderStatus.needSymlinks + folderStatus.needDeletes;
         boolean outOfSync = folderStatus.state.equals("idle") && neededItems > 0;
         boolean overrideButtonVisible = folder.type.equals(Constants.FOLDER_TYPE_SEND_ONLY) && outOfSync;
@@ -111,6 +113,9 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
         binding.state.setVisibility(VISIBLE);
         if (outOfSync) {
             binding.state.setText(mContext.getString(R.string.status_outofsync));
+            binding.state.setTextColor(ContextCompat.getColor(mContext, R.color.text_red));
+        } else if (failedItems) {
+            binding.state.setText(mContext.getString(R.string.state_failed_items, folderStatus.errors));
             binding.state.setTextColor(ContextCompat.getColor(mContext, R.color.text_red));
         } else {
             if (folder.paused) {
