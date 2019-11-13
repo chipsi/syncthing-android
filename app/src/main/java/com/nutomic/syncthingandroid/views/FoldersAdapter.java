@@ -97,6 +97,8 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
         final FolderStatus folderStatus = folderEntry.getKey();
         final CompletionInfo completionInfo = folderEntry.getValue();
 
+        binding.items.setVisibility(folder.paused ? GONE : VISIBLE);
+
         long neededItems = folderStatus.needFiles + folderStatus.needDirectories + folderStatus.needSymlinks + folderStatus.needDeletes;
         boolean outOfSync = folderStatus.state.equals("idle") && neededItems > 0;
         boolean overrideButtonVisible = folder.type.equals(Constants.FOLDER_TYPE_SEND_ONLY) && outOfSync;
@@ -105,6 +107,7 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
         boolean revertButtonVisible = folder.type.equals(Constants.FOLDER_TYPE_RECEIVE_ONLY) && (folderStatus.receiveOnlyTotalItems > 0);
         binding.revert.setVisibility(revertButtonVisible ? VISIBLE : GONE);
 
+        binding.size.setVisibility(folder.paused ? GONE : VISIBLE);
         binding.state.setVisibility(VISIBLE);
         if (outOfSync) {
             binding.state.setText(mContext.getString(R.string.status_outofsync));
@@ -167,13 +170,14 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
                 }
             }
         }
-        binding.items.setVisibility(VISIBLE);
+
         binding.items.setText(mContext.getResources()
                 .getQuantityString(R.plurals.files, (int) folderStatus.inSyncFiles, folderStatus.inSyncFiles, folderStatus.globalFiles));
-        binding.size.setVisibility(VISIBLE);
+
         binding.size.setText(mContext.getString(R.string.folder_size_format,
                 Util.readableFileSize(mContext, folderStatus.inSyncBytes),
                 Util.readableFileSize(mContext, folderStatus.globalBytes)));
+        
         setTextOrHide(binding.invalid, folderStatus.invalid);
     }
 
