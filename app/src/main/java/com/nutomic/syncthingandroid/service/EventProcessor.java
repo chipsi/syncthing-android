@@ -131,6 +131,11 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
                 LogV("Event " + event.type + ", data " + event.data);
                 onFolderErrors(json);
                 break;
+            case "FolderPaused":
+                onFolderPaused(
+                        (String) event.data.get("id")              // folderId
+                );
+                break;
             case "FolderRejected":
                 /**
                  * This is obsolete since v0.14.51, https://github.com/syncthing/syncthing/pull/5084
@@ -147,12 +152,17 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
                 );
                 */
                 break;
+            case "FolderResumed":
+                onFolderResumed(
+                        (String) event.data.get("id")              // folderId
+                );
+                break;
             case "FolderSummary":
-                    onFolderSummary(
-                            json,
-                            (String) event.data.get("folder")          // folderId
-                    );
-                    break;
+                onFolderSummary(
+                        json,
+                        (String) event.data.get("folder")          // folderId
+                );
+                break;
             case "ItemFinished":
                 String action               = (String) event.data.get("action");
                 String error                = (String) event.data.get("error");
@@ -182,7 +192,7 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
                 break;
             case "StateChanged":
                 onStateChanged(
-                        (String) event.data.get("folder"),             // folderId
+                        (String) event.data.get("folder"),         // folderId
                         (String) event.data.get("to")
                 );
                 break;
@@ -190,8 +200,6 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
             case "DeviceDisconnected":
             case "DeviceDiscovered":
             case "DownloadProgress":
-            case "FolderPaused":
-            case "FolderResumed":
             case "FolderScanProgress":
             case "FolderWatchStateChanged":
             case "ItemStarted":
@@ -284,6 +292,14 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
                 }
             }
         }
+    }
+
+    private void onFolderPaused(final String folderId) {
+        mRestApi.updateLocalFolderPause(folderId, true);
+    }
+
+    private void onFolderResumed(final String folderId) {
+        mRestApi.updateLocalFolderPause(folderId, false);
     }
 
     private void onFolderSummary(final JsonElement json, String folderId) {
