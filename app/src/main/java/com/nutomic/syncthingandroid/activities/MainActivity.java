@@ -608,6 +608,7 @@ public class MainActivity extends SyncthingActivity
         updateTotalSyncProgressBar();
     }
 
+    @SuppressLint("SetTextI18n")
     private void updateTotalSyncProgressBar() {
         View topRelTotalSyncProgress = (View) findViewById(R.id.topRelTotalSyncProgress);
         ProgressBar pbTotalSyncComplete = (ProgressBar) findViewById(R.id.pbTotalSyncComplete);
