@@ -2,6 +2,10 @@ package com.nutomic.syncthingandroid.model;
 
 import android.util.Log;
 
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
+
+import java.lang.reflect.Type;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -215,9 +219,65 @@ public class RemoteCompletion {
     }
 
     /**
+     * Returns remote device status.
+     */
+    public final Connection getDeviceStatus (final String deviceId) {
+        if (!deviceFolderMap.containsKey(deviceId)) {
+            return new Connection();
+        }
+        //                                      Map.Entry     Connection
+        Connection connection = deviceFolderMap.get(deviceId).getKey();
+        return deepCopy(connection, new TypeToken<Connection>(){}.getType());
+    }
+
+    /**
+     * Store remote device status for later when we need info for the UI.
+     */
+    public void setDeviceStatus(final String deviceId,
+                                    final Connection connection) {
+        // Add device parent node if it does not exist.
+        if (!deviceFolderMap.containsKey(deviceId)) {
+            deviceFolderMap.put(
+                    deviceId,
+                    new SimpleEntry(
+                            new Connection(),
+                            new HashMap<String, RemoteCompletionInfo>()
+                    )
+            );
+        }
+
+        if (ENABLE_VERBOSE_LOG) {
+            Log.d(TAG, "setDeviceStatus: deviceId=\"" + deviceId + "\"" +
+                    ", connected=" + Boolean.toString(connection.connected) +
+                    ", paused=" + Boolean.toString(connection.paused)
+            );
+        }
+
+        // Update device status information.
+        Map.Entry updatedEntry = new SimpleEntry(
+                deepCopy(connection, new TypeToken<Connection>(){}.getType()),
+                deepCopy(
+                        deviceFolderMap.get(deviceId).getValue(),
+                        new TypeToken<HashMap<String, RemoteCompletionInfo>>(){}.getType()
+                )
+        );
+        deviceFolderMap.put(deviceId, updatedEntry);
+    }
+
+    /**
      * Returns the first characters of the device ID for logging purposes.
      */
     public String getShortenedDeviceId(String deviceId) {
         return (TextUtils.isEmpty(deviceId) ? "" : deviceId.substring(0, 7));
+    }
+
+    /**
+     * Returns a deep copy of object.
+     *
+     * This method uses Gson and only works with objects that can be converted with Gson.
+     */
+    private <T> T deepCopy(T object, Type type) {
+        Gson gson = new Gson();
+        return gson.fromJson(gson.toJson(object, type), type);
     }
 }
