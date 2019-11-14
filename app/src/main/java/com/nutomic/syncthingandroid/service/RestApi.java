@@ -876,7 +876,7 @@ public class RestApi {
         if (cacheEntry.getKey().stateChanged.isEmpty()) {
             /**
              * Cache miss because we haven't received a "FolderSummary" event yet.
-             * Query for the required information so it will be available on a future call to this function.
+             * Query the required information so it will be available on a future call to this function.
              */
             LogV("getFolderStatus: Cache miss, folderId=\"" + folderId + "\". Performing query.");
             new GetRequest(mContext, mUrl, GetRequest.URI_DB_STATUS, mApiKey,
