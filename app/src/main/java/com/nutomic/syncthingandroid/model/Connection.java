@@ -7,7 +7,7 @@ public class Connection {
     public String clientVersion = "";
     public boolean connected = false;
     public long inBytesTotal = 0;
-    public long outBytesTotal= 0;
+    public long outBytesTotal = 0;
     public boolean paused = false;
     public String type = "";
 
