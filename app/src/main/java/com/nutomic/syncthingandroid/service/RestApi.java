@@ -22,8 +22,9 @@ import com.nutomic.syncthingandroid.SyncthingApp;
 import com.nutomic.syncthingandroid.activities.ShareActivity;
 import com.nutomic.syncthingandroid.http.GetRequest;
 import com.nutomic.syncthingandroid.http.PostRequest;
-import com.nutomic.syncthingandroid.model.Config;
+import com.nutomic.syncthingandroid.model.CachedFolderStatus;
 import com.nutomic.syncthingandroid.model.CompletionInfo;
+import com.nutomic.syncthingandroid.model.Config;
 import com.nutomic.syncthingandroid.model.Connections;
 import com.nutomic.syncthingandroid.model.Device;
 import com.nutomic.syncthingandroid.model.DiscoveredDevice;
@@ -868,9 +869,9 @@ public class RestApi {
     /**
      * Returns status information about the folder with the given id from cache.
      */
-    public final Map.Entry<FolderStatus, CompletionInfo> getFolderStatus (
+    public final Map.Entry<FolderStatus, CachedFolderStatus> getFolderStatus (
             final String folderId) {
-        final Map.Entry<FolderStatus, CompletionInfo> cacheEntry = mLocalCompletion.getFolderStatus(folderId);
+        final Map.Entry<FolderStatus, CachedFolderStatus> cacheEntry = mLocalCompletion.getFolderStatus(folderId);
         if (cacheEntry.getKey().stateChanged.isEmpty()) {
             /**
              * Cache miss because we haven't received a "FolderSummary" event yet.
@@ -930,7 +931,7 @@ public class RestApi {
     }
 
     public void updateLocalFolderState(final String folderId, final String newState) {
-        final Map.Entry<FolderStatus, CompletionInfo> cacheEntry = mLocalCompletion.getFolderStatus(folderId);
+        final Map.Entry<FolderStatus, CachedFolderStatus> cacheEntry = mLocalCompletion.getFolderStatus(folderId);
         cacheEntry.getKey().state = newState;
         mLocalCompletion.setFolderStatus(folderId, cacheEntry.getKey());
     }

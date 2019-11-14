@@ -1,14 +1,11 @@
 package com.nutomic.syncthingandroid.model;
 
 /**
- * According to syncthing REST API
- * https://docs.syncthing.net/rest/db-completion-get.html
- *
- * completion is also returned by the events API
- * https://docs.syncthing.net/events/foldercompletion.html
- *
+ * Caches information frequently needed by the wrapper
+ * to save expensive calls to Syncthing's REST API.
+ * Vars in class do not correspond to JSON results.
  */
-public class CompletionInfo {
+public class CachedFolderStatus {
     public double completion = 100;
     public boolean paused = false;
 }
