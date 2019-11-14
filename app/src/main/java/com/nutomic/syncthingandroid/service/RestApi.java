@@ -904,12 +904,15 @@ public class RestApi {
         onTotalSyncCompletionChange();
     }
 
-    public void setRemoteCompletionInfo(String deviceId, String folderId, RemoteCompletionInfo remoteCompletionInfo) {
+    public void setRemoteCompletionInfo(final String deviceId,
+                                            final String folderId,
+                                            final Double completion) {
         final Folder folder = getFolderByID(folderId);
         if (folder == null) {
             Log.e(TAG, "setRemoteCompletionInfo: folderId == null");
             return;
         }
+        RemoteCompletionInfo remoteCompletionInfo = new RemoteCompletionInfo();
         if (folder.paused) {
             /**
              * Fixes issue #463 where device sync percentage is displayed 50% on wrapper UI
@@ -921,6 +924,8 @@ public class RestApi {
             LogV("setRemoteCompletionInfo: Paused folder \"" + folderId + "\" - got " +
                     remoteCompletionInfo.completion + "%, passing on 100%");
             remoteCompletionInfo.completion = 100;
+        } else {
+            remoteCompletionInfo.completion = completion;
         }
         mRemoteCompletion.setCompletionInfo(deviceId, folderId, remoteCompletionInfo);
         onTotalSyncCompletionChange();

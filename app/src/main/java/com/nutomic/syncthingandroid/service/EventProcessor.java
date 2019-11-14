@@ -26,7 +26,6 @@ import com.nutomic.syncthingandroid.model.Device;
 import com.nutomic.syncthingandroid.model.Event;
 import com.nutomic.syncthingandroid.model.Folder;
 import com.nutomic.syncthingandroid.model.FolderStatus;
-import com.nutomic.syncthingandroid.model.RemoteCompletionInfo;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;
@@ -255,12 +254,10 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
     }
 
     private void onFolderCompletion(final Map<String, Object> eventData) {
-        RemoteCompletionInfo remoteCompletionInfo = new RemoteCompletionInfo();
-        remoteCompletionInfo.completion = (Double) eventData.get("completion");
         mRestApi.setRemoteCompletionInfo(
             (String) eventData.get("device"),          // deviceId
             (String) eventData.get("folder"),          // folderId
-            remoteCompletionInfo
+            (Double) eventData.get("completion")
         );
     }
 
