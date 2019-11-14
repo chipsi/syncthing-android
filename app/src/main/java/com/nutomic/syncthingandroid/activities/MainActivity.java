@@ -163,6 +163,7 @@ public class MainActivity extends SyncthingActivity
                 finish();
                 break;
         }
+        updateTotalSyncProgressBar();
     }
 
     /**
