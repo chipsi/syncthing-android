@@ -198,7 +198,7 @@ public class RemoteCompletion {
      * Set completionInfo within the completion[deviceId][folderId] model.
      */
     public void setCompletionInfo(String deviceId, String folderId,
-                                    RemoteCompletionInfo completionInfo) {
+                                    final RemoteCompletionInfo completionInfo) {
         // Add device parent node if it does not exist.
         if (!deviceFolderMap.containsKey(deviceId)) {
             deviceFolderMap.put(
