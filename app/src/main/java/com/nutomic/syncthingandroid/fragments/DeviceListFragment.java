@@ -178,13 +178,13 @@ public class DeviceListFragment extends ListFragment implements SyncthingService
             mAdapter = new DevicesAdapter(activity);
             setListAdapter(mAdapter);
         }
+        mAdapter.setRestApi(restApi);
 
         // Prevent scroll position reset due to list update from clear().
         mAdapter.setNotifyOnChange(false);
         mAdapter.clear();
         Collections.sort(devices, DEVICES_COMPARATOR);
         mAdapter.addAll(devices);
-        mAdapter.updateDeviceStatus(restApi);
         mAdapter.notifyDataSetChanged();
         setListShown(true);
     }
