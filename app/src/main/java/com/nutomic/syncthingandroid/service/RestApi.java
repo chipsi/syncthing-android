@@ -778,27 +778,10 @@ public class RestApi {
      * Device percentage means remotes currently pull changes from us.
      */
     public int getTotalSyncCompletion() {
-        // We only look at connected devices to calculate the overall sync progress.
-        int deviceCount = 0;
-        int totalDeviceCompletion =  0;
-        double sumDeviceCompletion = 0;
-        Connections connections = null;
-        if (mPreviousConnections.isPresent() ) {
-            connections = deepCopy(mPreviousConnections.get(), Connections.class);
-        }
-        if (connections == null ||
-                (connections.connections.size() == 0)) {
-            // Return "-1" if no device is connected to avoid confusing the user when no progress happens.
+        int totalDeviceCompletion = mRemoteCompletion.getTotalDeviceCompletion();
+        if (totalDeviceCompletion == -1) {
+            // Total sync completion is not applicable because there are no devices or no devices are connected.
             return -1;
-        }
-        for (Map.Entry<String, Connections.Connection> e : connections.connections.entrySet()) {
-            sumDeviceCompletion += mRemoteCompletion.getDeviceCompletion(e.getKey());
-            deviceCount++;
-        }
-        if (deviceCount == 0) {
-            totalDeviceCompletion = 100;
-        } else {
-            totalDeviceCompletion = (int) Math.floor(sumDeviceCompletion / deviceCount);
         }
 
         // Calculate overall sync completion percentage.
@@ -811,7 +794,7 @@ public class RestApi {
         }
         LogV("getTotalSyncCompletion: totalSyncCompletion=" + Integer.toString(totalSyncCompletion) + "%, " +
                 "folders=" + Integer.toString(totalFolderCompletion) + "%, " +
-                "devices=" + Integer.toString(totalDeviceCompletion) + "% (" + Integer.toString(deviceCount) + "), ");
+                "devices=" + Integer.toString(totalDeviceCompletion) + "%");
         return totalSyncCompletion;
     }
 
