@@ -43,6 +43,7 @@ public class NotificationHandler {
     private final NotificationChannel mPersistentChannelWaiting;
     private final NotificationChannel mInfoChannel;
 
+    private String lastNotificationText = null;
     private Boolean lastStartForegroundService = false;
     private Boolean appShutdownInProgress = false;
 
@@ -97,11 +98,13 @@ public class NotificationHandler {
      * Shows, updates or hides the notification.
      */
     public void updatePersistentNotification(SyncthingService service) {
-        // Do not show sync progress.
-        updatePersistentNotification(service, -1);
+        // Persist previous notification details.
+        updatePersistentNotification(service, true, 0);
     }
 
-    public void updatePersistentNotification(SyncthingService service, int totalSyncCompletion) {
+    public void updatePersistentNotification(SyncthingService service,
+                                                    Boolean persistNotificationDetails,
+                                                    int totalSyncCompletion) {
         boolean startServiceOnBoot = mPreferences.getBoolean(Constants.PREF_START_SERVICE_ON_BOOT, false);
         State currentServiceState = service.getCurrentState();
         boolean syncthingRunning = currentServiceState == SyncthingService.State.ACTIVE ||
@@ -152,11 +155,17 @@ public class NotificationHandler {
                 text = mContext.getString(R.string.syncthing_starting);
                 break;
             case ACTIVE:
-                if (totalSyncCompletion == -1) {
-                    text = mContext.getString(R.string.syncthing_active);
-                } else {
-                    text = mContext.getString(R.string.syncthing_active_syncing, totalSyncCompletion);
+                if (lastNotificationText == null || !persistNotificationDetails) {
+                    if (totalSyncCompletion == -1) {
+                        lastNotificationText = mContext.getString(
+                                R.string.syncthing_active_details,
+                                mContext.getString(R.string.no_remote_devices_connected)
+                        );
+                    } else {
+                        lastNotificationText = mContext.getString(R.string.syncthing_active_syncing, totalSyncCompletion);
+                    }
                 }
+                text = lastNotificationText;
                 break;
             default:
                 text = mContext.getString(R.string.syncthing_terminated);
