@@ -782,12 +782,18 @@ public class RestApi {
         int deviceCount = 0;
         int totalDeviceCompletion =  0;
         double sumDeviceCompletion = 0;
-        if (mPreviousConnections.isPresent()) {
-            Connections connections = deepCopy(mPreviousConnections.get(), Connections.class);
-            for (Map.Entry<String, Connections.Connection> e : connections.connections.entrySet()) {
-                sumDeviceCompletion += mRemoteCompletion.getDeviceCompletion(e.getKey());
-                deviceCount++;
-            }
+        Connections connections = null;
+        if (mPreviousConnections.isPresent() ) {
+            connections = deepCopy(mPreviousConnections.get(), Connections.class);
+        }
+        if (connections == null ||
+                (connections.connections.size() == 0)) {
+            // Return "-1" if no device is connected to avoid confusing the user when no progress happens.
+            return -1;
+        }
+        for (Map.Entry<String, Connections.Connection> e : connections.connections.entrySet()) {
+            sumDeviceCompletion += mRemoteCompletion.getDeviceCompletion(e.getKey());
+            deviceCount++;
         }
         if (deviceCount == 0) {
             totalDeviceCompletion = 100;
@@ -803,11 +809,9 @@ public class RestApi {
         } else if (totalSyncCompletion > 100) {
             totalSyncCompletion = 100;
         }
-        /*
         LogV("getTotalSyncCompletion: totalSyncCompletion=" + Integer.toString(totalSyncCompletion) + "%, " +
                 "folders=" + Integer.toString(totalFolderCompletion) + "%, " +
-                "devices=" + Integer.toString(totalDeviceCompletion) + "%");
-        */
+                "devices=" + Integer.toString(totalDeviceCompletion) + "% (" + Integer.toString(deviceCount) + "), ");
         return totalSyncCompletion;
     }
 
