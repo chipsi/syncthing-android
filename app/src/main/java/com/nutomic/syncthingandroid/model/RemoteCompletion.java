@@ -122,6 +122,39 @@ public class RemoteCompletion {
     }
 
     /**
+     * Calculates remote device sync completion percentage across all connected devices.
+     * Returns "-1" if sync completion is not applicable.
+     */
+    public int getTotalDeviceCompletion() {
+        int folderCount = 0;
+        double sumCompletion = 0;
+        for (HashMap<String, CompletionInfo> device : deviceFolderMap.values()) {
+            for (CompletionInfo completionInfo : device.values())
+            {
+                double folderCompletion = completionInfo.completion;
+                if (folderCompletion < 0) {
+                    folderCompletion = 0;
+                } else if (folderCompletion > 100) {
+                    folderCompletion = 100;
+                }
+                sumCompletion += folderCompletion;
+                folderCount++;
+            }
+        }
+        if (folderCount == 0) {
+            // No devices and no folders present in model.
+            return -1;
+        }
+        int totalDeviceCompletion = (int) Math.floor(sumCompletion / folderCount);
+        if (totalDeviceCompletion < 0) {
+            totalDeviceCompletion = 0;
+        } else if (totalDeviceCompletion > 100) {
+            totalDeviceCompletion = 100;
+        }
+        return totalDeviceCompletion;
+    }
+
+    /**
      * Calculates remote device sync completion percentage across all folders
      * shared with the device.
      */
