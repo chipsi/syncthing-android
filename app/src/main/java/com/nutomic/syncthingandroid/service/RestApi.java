@@ -914,6 +914,7 @@ public class RestApi {
     public void setLocalFolderStatus(final String folderId,
                                             final FolderStatus folderStatus) {
         mLocalCompletion.setFolderStatus(folderId, folderStatus);
+        onTotalSyncCompletionChange();
     }
 
     public void setRemoteCompletionInfo(String deviceId, String folderId, CompletionInfo completionInfo) {
@@ -934,6 +935,7 @@ public class RestApi {
             completionInfo.completion = 100;
         }
         mRemoteCompletion.setCompletionInfo(deviceId, folderId, completionInfo);
+        onTotalSyncCompletionChange();
     }
 
     public void updateLocalFolderPause(final String folderId, final Boolean newPaused) {
@@ -1096,6 +1098,18 @@ public class RestApi {
                 LogV("applyCustomRunConditions: No action was necessary.");
             }
         }
+    }
+
+    private void onTotalSyncCompletionChange() {
+        // LogV("onTotalSyncCompletionChange fired.");
+        if (mNotificationHandler == null) {
+            return;
+        }
+        mNotificationHandler.updatePersistentNotification(
+                (SyncthingService) mContext,
+                false,                                              // Do not persist previous notification text.
+                getTotalSyncCompletion()
+        );
     }
 
     private Gson getGson() {
