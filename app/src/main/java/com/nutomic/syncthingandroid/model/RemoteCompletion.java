@@ -221,7 +221,7 @@ public class RemoteCompletion {
     /**
      * Returns remote device status.
      */
-    public final Connection getDeviceStatus (final String deviceId) {
+    public final Connection getDeviceStatus(final String deviceId) {
         if (!deviceFolderMap.containsKey(deviceId)) {
             return new Connection();
         }
