@@ -23,7 +23,6 @@ import com.nutomic.syncthingandroid.activities.ShareActivity;
 import com.nutomic.syncthingandroid.http.GetRequest;
 import com.nutomic.syncthingandroid.http.PostRequest;
 import com.nutomic.syncthingandroid.model.CachedFolderStatus;
-import com.nutomic.syncthingandroid.model.CompletionInfo;
 import com.nutomic.syncthingandroid.model.Config;
 import com.nutomic.syncthingandroid.model.Connections;
 import com.nutomic.syncthingandroid.model.Device;
@@ -40,6 +39,7 @@ import com.nutomic.syncthingandroid.model.Options;
 import com.nutomic.syncthingandroid.model.PendingDevice;
 import com.nutomic.syncthingandroid.model.PendingFolder;
 import com.nutomic.syncthingandroid.model.RemoteCompletion;
+import com.nutomic.syncthingandroid.model.RemoteCompletionInfo;
 import com.nutomic.syncthingandroid.model.RemoteIgnoredDevice;
 import com.nutomic.syncthingandroid.model.SystemStatus;
 import com.nutomic.syncthingandroid.model.SystemVersion;
@@ -904,7 +904,7 @@ public class RestApi {
         onTotalSyncCompletionChange();
     }
 
-    public void setRemoteCompletionInfo(String deviceId, String folderId, CompletionInfo completionInfo) {
+    public void setRemoteCompletionInfo(String deviceId, String folderId, RemoteCompletionInfo remoteCompletionInfo) {
         final Folder folder = getFolderByID(folderId);
         if (folder == null) {
             Log.e(TAG, "setRemoteCompletionInfo: folderId == null");
@@ -918,10 +918,11 @@ public class RestApi {
              * to be 0% complete. To get consistent UI output, we assume 100% completion for paused
              * folders.
             **/
-            LogV("setRemoteCompletionInfo: Paused folder \"" + folderId + "\" - got " + completionInfo.completion + "%, passing on 100%");
-            completionInfo.completion = 100;
+            LogV("setRemoteCompletionInfo: Paused folder \"" + folderId + "\" - got " +
+                    remoteCompletionInfo.completion + "%, passing on 100%");
+            remoteCompletionInfo.completion = 100;
         }
-        mRemoteCompletion.setCompletionInfo(deviceId, folderId, completionInfo);
+        mRemoteCompletion.setCompletionInfo(deviceId, folderId, remoteCompletionInfo);
         onTotalSyncCompletionChange();
     }
 
