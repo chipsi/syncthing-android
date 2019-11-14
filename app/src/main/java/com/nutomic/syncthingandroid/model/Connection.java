@@ -11,8 +11,7 @@ public class Connection {
     public boolean paused = false;
     public String type = "";
 
-    // These fields are not sent from Syncthing, but are populated on the client side.
-    public int completion = 100;
+    // These fields are not sent from Syncthing. They are populated by {@link #setTransferRate}.
     public long inBits = 0;
     public long outBits = 0;
 
