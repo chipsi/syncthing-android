@@ -2,19 +2,19 @@ package com.nutomic.syncthingandroid.model;
 
 public class Connection {
 
-    public boolean paused;
-    public String clientVersion;
-    public String at;
-    public boolean connected;
-    public long inBytesTotal;
-    public long outBytesTotal;
-    public String type;
-    public String address;
+    public String address = "";
+    public String at = "";                      // "0001-01-01T00:00:00Z"
+    public String clientVersion = "";
+    public boolean connected = false;
+    public long inBytesTotal = 0;
+    public long outBytesTotal= 0;
+    public boolean paused = false;
+    public String type = "";
 
     // These fields are not sent from Syncthing, but are populated on the client side.
-    public int completion;
-    public long inBits;
-    public long outBits;
+    public int completion = 100;
+    public long inBits = 0;
+    public long outBits = 0;
 
     public void setTransferRate(Connection previous, long msElapsed) {
         long secondsElapsed = msElapsed / 1000;
@@ -22,7 +22,6 @@ public class Connection {
         long outBytes = 8 * (outBytesTotal - previous.outBytesTotal) / secondsElapsed;
         inBits = Math.max(0, inBytes);
         outBits = Math.max(0, outBytes);
-
     }
 
 }
