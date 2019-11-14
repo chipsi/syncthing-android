@@ -778,8 +778,6 @@ public class RestApi {
      * Device percentage means remotes currently pull changes from us.
      */
     public int getTotalSyncCompletion() {
-        int totalFolderCompletion = mLocalCompletion.getTotalFolderCompletion();
-
         // We only look at connected devices to calculate the overall sync progress.
         int deviceCount = 0;
         int totalDeviceCompletion =  0;
@@ -798,6 +796,7 @@ public class RestApi {
         }
 
         // Calculate overall sync completion percentage.
+        int totalFolderCompletion = mLocalCompletion.getTotalFolderCompletion();
         int totalSyncCompletion = (int) Math.floor((double) (totalFolderCompletion + totalDeviceCompletion) / 2);
         if (totalSyncCompletion < 0) {
             totalSyncCompletion = 0;
