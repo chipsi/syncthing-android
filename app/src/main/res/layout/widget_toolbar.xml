@@ -2,6 +2,7 @@
 <androidx.appcompat.widget.Toolbar
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/toolbar"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
@@ -53,6 +54,7 @@
         android:id="@+id/topRelTotalSyncProgress"
         android:layout_width="30dp"
         android:layout_height="match_parent"
+        android:layout_toEndOf="@+id/topRel1"
         android:layout_toRightOf="@+id/topRel1"
         android:visibility="gone" >
 
@@ -75,14 +77,17 @@
             android:layout_centerVertical="true"
             android:gravity="center"
             android:layout_alignLeft="@id/pbTotalSyncComplete"
+            android:layout_alignStart="@id/pbTotalSyncComplete"
             android:layout_alignTop="@id/pbTotalSyncComplete"
+            android:layout_alignEnd="@id/pbTotalSyncComplete"
             android:layout_alignRight="@id/pbTotalSyncComplete"
             android:layout_alignBottom="@id/pbTotalSyncComplete"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="@null"
             android:textSize="11sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:ignore="SmallSp" />
     </RelativeLayout>
 
 </androidx.appcompat.widget.Toolbar>
