@@ -774,6 +774,35 @@ public class RestApi {
     }
 
     /**
+     * Returns status information about the device with the given id from cache.
+     */
+    public final Connection getRemoteDeviceStatus(
+            final String deviceId) {
+        Connection cacheEntry = mRemoteCompletion.getDeviceStatus(deviceId);
+        if (cacheEntry.at.isEmpty()) {
+            /**
+             * Cache miss.
+             * Query the required information so it will be available on a future call to this function.
+             */
+            LogV("getRemoteDeviceStatus: Cache miss, deviceId=\"" + deviceId + "\". Performing query.");
+            new GetRequest(mContext, mUrl, GetRequest.URI_CONNECTIONS, mApiKey, null, result -> {
+                    /**
+                     * We got connection status information for ALL devices instead of one.
+                     * It does not hurt storing all of them.
+                     */
+                    Connections connections = mGson.fromJson(result, Connections.class);
+                    for (Map.Entry<String, Connection> e : connections.connections.entrySet()) {
+                        mRemoteCompletion.setDeviceStatus(
+                                e.getKey(),             // deviceId
+                                e.getValue()            // connection
+                        );
+                    }
+            });
+        }
+        return cacheEntry;
+    }
+
+    /**
      * Returns overall sync completion percentage representing all
      * currently running folder and device transfers.
      * Folder percentage means we are currently pulling changes from remotes.
