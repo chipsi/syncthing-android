@@ -283,6 +283,9 @@ public class RestApi {
         final List<Folder> tmpFolders = getFolders();
         mLocalCompletion.updateFromConfig(tmpFolders);
         mRemoteCompletion.updateFromConfig(getDevices(true), tmpFolders);
+
+        // Perform first query for remote device status by forcing a cache miss.
+        getRemoteDeviceStatus("");
     }
 
     /**
@@ -775,6 +778,7 @@ public class RestApi {
 
     /**
      * Returns status information about the device with the given id from cache.
+     * Set deviceId to "" to query status for an initially empty cache.
      */
     public final Connection getRemoteDeviceStatus(
             final String deviceId) {
