@@ -55,13 +55,18 @@
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/topRel1" >
 
-        <TextView
-            android:id="@+id/topStatus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Syncing (100%)"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:visibility="visible" />
+        <ProgressBar
+            android:id="@+id/pbTotalSyncComplete"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:background="@drawable/circular_shape"
+            android:ellipsize="end"
+            android:indeterminate="false"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:max="100"
+            android:progress="0"
+            android:progressDrawable="@drawable/circular_progress_bar"
+            android:visibility="gone" />
 
     </RelativeLayout>
 
