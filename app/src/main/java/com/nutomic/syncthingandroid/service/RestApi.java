@@ -24,6 +24,7 @@ import com.nutomic.syncthingandroid.http.GetRequest;
 import com.nutomic.syncthingandroid.http.PostRequest;
 import com.nutomic.syncthingandroid.model.CachedFolderStatus;
 import com.nutomic.syncthingandroid.model.Config;
+import com.nutomic.syncthingandroid.model.Connection;
 import com.nutomic.syncthingandroid.model.Connections;
 import com.nutomic.syncthingandroid.model.Device;
 import com.nutomic.syncthingandroid.model.DiscoveredDevice;
@@ -755,17 +756,17 @@ public class RestApi {
 
             mPreviousConnectionTime = now;
             Connections connections = mGson.fromJson(result, Connections.class);
-            for (Map.Entry<String, Connections.Connection> e : connections.connections.entrySet()) {
+            for (Map.Entry<String, Connection> e : connections.connections.entrySet()) {
                 e.getValue().completion = mRemoteCompletion.getDeviceCompletion(e.getKey());
 
-                Connections.Connection prev =
+                Connection prev =
                         (mPreviousConnections.isPresent() && mPreviousConnections.get().connections.containsKey(e.getKey()))
                                 ? mPreviousConnections.get().connections.get(e.getKey())
-                                : new Connections.Connection();
+                                : new Connection();
                 e.getValue().setTransferRate(prev, msElapsed);
             }
-            Connections.Connection prev =
-                    mPreviousConnections.transform(c -> c.total).or(new Connections.Connection());
+            Connection prev =
+                    mPreviousConnections.transform(c -> c.total).or(new Connection());
             connections.total.setTransferRate(prev, msElapsed);
             mPreviousConnections = Optional.of(connections);
             listener.onResult(deepCopy(connections, Connections.class));

@@ -23,6 +23,7 @@ import com.nutomic.syncthingandroid.SyncthingApp;
 import com.nutomic.syncthingandroid.activities.MainActivity;
 import com.nutomic.syncthingandroid.activities.SettingsActivity;
 import com.nutomic.syncthingandroid.activities.SyncthingActivity;
+import com.nutomic.syncthingandroid.model.Connection;
 import com.nutomic.syncthingandroid.model.Connections;
 import com.nutomic.syncthingandroid.model.SystemStatus;
 import com.nutomic.syncthingandroid.service.AppPrefs;
@@ -329,7 +330,7 @@ public class StatusFragment extends ListFragment implements SyncthingService.OnS
         if (getActivity() == null) {
             return;
         }
-        Connections.Connection total = connections.total;
+        Connection total = connections.total;
         synchronized (mStatusHolderLock) {
             /**
              * "Hide" rates on the UI if they are lower than 1 KByte/sec. We don't like to

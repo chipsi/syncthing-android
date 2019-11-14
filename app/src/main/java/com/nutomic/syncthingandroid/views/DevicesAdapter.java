@@ -12,6 +12,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.nutomic.syncthingandroid.R;
+import com.nutomic.syncthingandroid.model.Connection;
 import com.nutomic.syncthingandroid.model.Connections;
 import com.nutomic.syncthingandroid.model.Device;
 import com.nutomic.syncthingandroid.service.RestApi;
@@ -60,7 +61,7 @@ public class DevicesAdapter extends ArrayAdapter<Device> {
         name.setText(getItem(position).getDisplayName());
         Resources r = getContext().getResources();
 
-        Connections.Connection conn = null;
+        Connection conn = null;
         if (mConnections != null && mConnections.connections.containsKey(deviceId)) {
             conn = mConnections.connections.get(deviceId);
         }
