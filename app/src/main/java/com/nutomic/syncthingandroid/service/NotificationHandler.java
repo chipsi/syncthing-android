@@ -97,6 +97,11 @@ public class NotificationHandler {
      * Shows, updates or hides the notification.
      */
     public void updatePersistentNotification(SyncthingService service) {
+        // Do not show sync progress.
+        updatePersistentNotification(service, -1);
+    }
+
+    public void updatePersistentNotification(SyncthingService service, int totalSyncCompletion) {
         boolean startServiceOnBoot = mPreferences.getBoolean(Constants.PREF_START_SERVICE_ON_BOOT, false);
         State currentServiceState = service.getCurrentState();
         boolean syncthingRunning = currentServiceState == SyncthingService.State.ACTIVE ||
@@ -134,21 +139,27 @@ public class NotificationHandler {
         }
 
         // Prepare notification builder.
-        int title = R.string.syncthing_terminated;
+        String text;
         switch (currentServiceState) {
             case ERROR:
             case INIT:
+                text = mContext.getString(R.string.syncthing_terminated);
                 break;
             case DISABLED:
-                title = R.string.syncthing_disabled;
+                text = mContext.getString(R.string.syncthing_disabled);
                 break;
             case STARTING:
-                title = R.string.syncthing_starting;
+                text = mContext.getString(R.string.syncthing_starting);
                 break;
             case ACTIVE:
-                title = R.string.syncthing_active;
+                if (totalSyncCompletion == -1) {
+                    text = mContext.getString(R.string.syncthing_active);
+                } else {
+                    text = mContext.getString(R.string.syncthing_active_syncing, totalSyncCompletion);
+                }
                 break;
             default:
+                text = mContext.getString(R.string.syncthing_terminated);
                 break;
         }
 
@@ -161,7 +172,7 @@ public class NotificationHandler {
         Intent intent = new Intent(mContext, MainActivity.class);
         NotificationChannel channel = syncthingRunning ? mPersistentChannel : mPersistentChannelWaiting;
         NotificationCompat.Builder builder = getNotificationBuilder(channel)
-                .setContentTitle(mContext.getString(title))
+                .setContentTitle(text)
                 .setSmallIcon(R.drawable.ic_stat_notify)
                 .setOngoing(true)
                 .setOnlyAlertOnce(true)
