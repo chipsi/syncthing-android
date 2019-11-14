@@ -50,10 +50,11 @@
     </RelativeLayout>
 
     <RelativeLayout
-        android:id="@+id/topRel2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/topRel1" >
+        android:id="@+id/topRelTotalSyncProgress"
+        android:layout_width="30dp"
+        android:layout_height="match_parent"
+        android:layout_toRightOf="@+id/topRel1"
+        android:visibility="gone" >
 
         <ProgressBar
             android:id="@+id/pbTotalSyncComplete"
@@ -61,13 +62,27 @@
             android:background="@drawable/circular_shape"
             android:ellipsize="end"
             android:indeterminate="false"
-            android:layout_width="50dp"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:max="100"
             android:progress="0"
-            android:progressDrawable="@drawable/circular_progress_bar"
-            android:visibility="gone" />
+            android:progressDrawable="@drawable/circular_progress_bar" />
 
+        <TextView
+            android:id="@+id/tvTotalSyncComplete"
+            android:background="#00000000"
+            android:color="@android:color/white"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            android:layout_alignLeft="@id/pbTotalSyncComplete"
+            android:layout_alignTop="@id/pbTotalSyncComplete"
+            android:layout_alignRight="@id/pbTotalSyncComplete"
+            android:layout_alignBottom="@id/pbTotalSyncComplete"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@null"
+            android:textSize="11sp"
+            android:textStyle="bold" />
     </RelativeLayout>
 
 </androidx.appcompat.widget.Toolbar>
