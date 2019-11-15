@@ -24,6 +24,7 @@ public class RemoteCompletion {
 
     private static final String TAG = "RemoteCompletion";
 
+    private Boolean ENABLE_DEBUG_LOG = true;
     private Boolean ENABLE_VERBOSE_LOG = false;
 
     HashMap<String, Map.Entry<Connection, HashMap<String, RemoteCompletionInfo>>> deviceFolderMap =
@@ -267,7 +268,7 @@ public class RemoteCompletion {
             );
         }
 
-        if (ENABLE_VERBOSE_LOG) {
+        if (ENABLE_DEBUG_LOG) {
             Log.d(TAG, "setDeviceStatus: deviceId=\"" + deviceId + "\"" +
                     ", connected=" + Boolean.toString(connection.connected) +
                     ", paused=" + Boolean.toString(connection.paused)
