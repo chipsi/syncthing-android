@@ -282,9 +282,12 @@ public class StatusFragment extends ListFragment implements SyncthingService.OnS
             return;
         }
         LogV("Invoking REST status queries");
+
+        // Force a cache-miss to query status of all devices asynchronously.
+        restApi.getRemoteDeviceStatus("");
+
+        // onReceiveSystemStatus will call {@link #updateStatus}.
         restApi.getSystemStatus(this::onReceiveSystemStatus);
-        restApi.getConnections(this::onReceiveConnections);
-        // onReceiveSystemStatus, onReceiveConnections will call {@link #updateStatus}.
     }
 
     /**
@@ -319,19 +322,15 @@ public class StatusFragment extends ListFragment implements SyncthingService.OnS
             } else {
                 mUptime = String.format(Locale.getDefault(), "%dm", uptimeMinutes);
             }
-        }
-        updateStatus();
-    }
 
-    /**
-     * Populates status holders with status received via {@link RestApi#getConnections}.
-     */
-    private void onReceiveConnections(Connections connections) {
-        if (getActivity() == null) {
-            return;
-        }
-        Connection total = connections.total;
-        synchronized (mStatusHolderLock) {
+            Connection total = new Connection();
+            RestApi restApi = getRestApiSafe();
+            if  (restApi != null) {
+                if (restApi.isConfigLoaded()) {
+                    total = restApi.getTotalConnectionStatistic();
+                }
+            }
+
             /**
              * "Hide" rates on the UI if they are lower than 1 KByte/sec. We don't like to
              * bother the user looking at discovery or index exchange traffic.
@@ -356,6 +355,20 @@ public class StatusFragment extends ListFragment implements SyncthingService.OnS
         LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(mActivity);
         Intent intent = new Intent(ACTION_UPDATE_SHOULDRUN_DECISION);
         localBroadcastManager.sendBroadcast(intent);
+    }
+
+    private RestApi getRestApiSafe() {
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity == null) {
+            return null;
+        }
+        if (mainActivity.isFinishing()) {
+            return null;
+        }
+        if (mServiceState != SyncthingService.State.ACTIVE) {
+            return null;
+        }
+        return mainActivity.getApi();
     }
 
     private void LogV(String logMessage) {
