@@ -747,37 +747,6 @@ public class RestApi {
     }
 
     /**
-     * Returns connection info for the local device and all connected devices.
-     */
-    public void getConnections(final OnResultListener1<Connections> listener) {
-        new GetRequest(mContext, mUrl, GetRequest.URI_CONNECTIONS, mApiKey, null, result -> {
-            Long now = System.currentTimeMillis();
-            Long msElapsed = now - mPreviousConnectionTime;
-            if (msElapsed < Constants.GUI_UPDATE_INTERVAL) {
-                listener.onResult(deepCopy(mPreviousConnections.get(), Connections.class));
-                return;
-            }
-
-            mPreviousConnectionTime = now;
-            Connections connections = mGson.fromJson(result, Connections.class);
-            for (Map.Entry<String, Connection> e : connections.connections.entrySet()) {
-                e.getValue().completion = mRemoteCompletion.getDeviceCompletion(e.getKey());
-
-                Connection prev =
-                        (mPreviousConnections.isPresent() && mPreviousConnections.get().connections.containsKey(e.getKey()))
-                                ? mPreviousConnections.get().connections.get(e.getKey())
-                                : new Connection();
-                e.getValue().setTransferRate(prev, msElapsed);
-            }
-            Connection prev =
-                    mPreviousConnections.transform(c -> c.total).or(new Connection());
-            connections.total.setTransferRate(prev, msElapsed);
-            mPreviousConnections = Optional.of(connections);
-            listener.onResult(deepCopy(connections, Connections.class));
-        });
-    }
-
-    /**
      * Returns status information about the device with the given id from cache.
      * Set deviceId to "" to query status for an initially empty cache.
      */
@@ -796,6 +765,7 @@ public class RestApi {
                      * It does not hurt storing all of them.
                      */
                     Connections connections = mGson.fromJson(result, Connections.class);
+                    calculateConnectionStats(connections);
                     for (Map.Entry<String, Connection> e : connections.connections.entrySet()) {
                         mRemoteCompletion.setDeviceStatus(
                                 e.getKey(),             // deviceId
@@ -805,6 +775,43 @@ public class RestApi {
             });
         }
         return cacheEntry;
+    }
+
+    public final int getRemoteDeviceCompletion(
+            final String deviceId) {
+        return mRemoteCompletion.getDeviceCompletion(deviceId);
+    }
+
+    public final Connection getTotalConnectionStatistic() {
+        if (!mPreviousConnections.isPresent()) {
+            return new Connection();
+        }
+        return deepCopy(mPreviousConnections.get().total, Connection.class);
+    }
+
+    /**
+     * Calculate transfer rates for each remote device connection and the "total device" stats.
+     */
+    private void calculateConnectionStats(Connections connections) {
+        Long now = System.currentTimeMillis();
+        Long msElapsed = now - mPreviousConnectionTime;
+        if (msElapsed < Constants.GUI_UPDATE_INTERVAL) {
+            connections = deepCopy(mPreviousConnections.get(), Connections.class);
+            return;
+        }
+
+        mPreviousConnectionTime = now;
+        for (Map.Entry<String, Connection> e : connections.connections.entrySet()) {
+            Connection prev =
+                    (mPreviousConnections.isPresent() && mPreviousConnections.get().connections.containsKey(e.getKey()))
+                            ? mPreviousConnections.get().connections.get(e.getKey())
+                            : new Connection();
+            e.getValue().setTransferRate(prev, msElapsed);
+        }
+        Connection prev =
+                mPreviousConnections.transform(c -> c.total).or(new Connection());
+        connections.total.setTransferRate(prev, msElapsed);
+        mPreviousConnections = Optional.of(connections);
     }
 
     /**
