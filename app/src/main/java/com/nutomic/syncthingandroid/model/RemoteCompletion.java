@@ -252,6 +252,16 @@ public class RemoteCompletion {
         return deepCopy(connection, new TypeToken<Connection>(){}.getType());
     }
 
+    public int getOnlineDeviceCount() {
+        int onlineDeviceCount = 0;
+        for (Map.Entry<Connection, HashMap<String, RemoteCompletionInfo>> device : deviceFolderMap.values()) {
+            if (device.getKey().connected) {
+                onlineDeviceCount++;
+            }
+        }
+        return onlineDeviceCount;
+    }
+
     /**
      * Store remote device status for later when we need info for the UI.
      */

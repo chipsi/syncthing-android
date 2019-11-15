@@ -99,11 +99,12 @@ public class NotificationHandler {
      */
     public void updatePersistentNotification(SyncthingService service) {
         // Persist previous notification details.
-        updatePersistentNotification(service, true, 0);
+        updatePersistentNotification(service, true, 0, 0);
     }
 
     public void updatePersistentNotification(SyncthingService service,
                                                     Boolean persistNotificationDetails,
+                                                    int onlineDeviceCount,
                                                     int totalSyncCompletion) {
         boolean startServiceOnBoot = mPreferences.getBoolean(Constants.PREF_START_SERVICE_ON_BOOT, false);
         State currentServiceState = service.getCurrentState();
@@ -161,8 +162,22 @@ public class NotificationHandler {
                                 R.string.syncthing_active_details,
                                 mContext.getString(R.string.no_remote_devices_connected)
                         );
+                    } else if (totalSyncCompletion == 100) {
+                        lastNotificationText = mContext.getString(
+                                R.string.syncthing_active_details,
+                                mContext.getResources().getQuantityString(
+                                        R.plurals.device_online_up_to_date,
+                                        onlineDeviceCount,
+                                        onlineDeviceCount
+                                )
+                        );
                     } else {
-                        lastNotificationText = mContext.getString(R.string.syncthing_active_syncing, totalSyncCompletion);
+                        lastNotificationText = mContext.getResources().getQuantityString(
+                                R.plurals.syncthing_active_syncing_device_online,
+                                onlineDeviceCount,
+                                totalSyncCompletion,
+                                onlineDeviceCount
+                        );
                     }
                 }
                 text = lastNotificationText;

@@ -143,6 +143,7 @@ public class RestApi {
      */
     private LocalCompletion mLocalCompletion;
     private RemoteCompletion mRemoteCompletion;
+    private int mLastOnlineDeviceCount = 0;
     private int mLastTotalSyncCompletion = -1;
 
     private Gson mGson;
@@ -1163,15 +1164,20 @@ public class RestApi {
         if (mNotificationHandler == null) {
             return;
         }
+
+        int onlineDeviceCount = mRemoteCompletion.getOnlineDeviceCount();
         int totalSyncCompletion = getTotalSyncCompletion();
-        if (totalSyncCompletion == mLastTotalSyncCompletion) {
+        if ((onlineDeviceCount == mLastOnlineDeviceCount) &&
+                (totalSyncCompletion == mLastTotalSyncCompletion)) {
             return;
         }
         mNotificationHandler.updatePersistentNotification(
                 (SyncthingService) mContext,
                 false,                                              // Do not persist previous notification text.
+                onlineDeviceCount,
                 totalSyncCompletion
         );
+        mLastOnlineDeviceCount = onlineDeviceCount;
         mLastTotalSyncCompletion = totalSyncCompletion;
     }
 
