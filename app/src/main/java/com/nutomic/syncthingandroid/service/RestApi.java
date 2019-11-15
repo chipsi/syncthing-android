@@ -143,6 +143,7 @@ public class RestApi {
      */
     private LocalCompletion mLocalCompletion;
     private RemoteCompletion mRemoteCompletion;
+    private int mLastTotalSyncCompletion = -1;
 
     private Gson mGson;
 
@@ -1132,11 +1133,16 @@ public class RestApi {
         if (mNotificationHandler == null) {
             return;
         }
+        int totalSyncCompletion = getTotalSyncCompletion();
+        if (totalSyncCompletion == mLastTotalSyncCompletion) {
+            return;
+        }
         mNotificationHandler.updatePersistentNotification(
                 (SyncthingService) mContext,
                 false,                                              // Do not persist previous notification text.
-                getTotalSyncCompletion()
+                totalSyncCompletion
         );
+        mLastTotalSyncCompletion = totalSyncCompletion;
     }
 
     private Gson getGson() {
