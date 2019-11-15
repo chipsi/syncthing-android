@@ -111,7 +111,7 @@ public class RestApi {
     private Optional<Connections> mPreviousConnections = Optional.absent();
 
     /**
-     * Stores the timestamp of the last successful request to {@link GetRequest#URI_CONNECTIONS}.
+     * Stores the timestamp of the last result of the REST API endpoint {@link GetRequest#URI_CONNECTIONS}.
      */
     private long mPreviousConnectionTime = 0;
 
