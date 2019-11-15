@@ -139,9 +139,14 @@ public class RemoteCompletion {
      * Returns "-1" if sync completion is not applicable.
      */
     public int getTotalDeviceCompletion() {
+        int connectedDeviceCount = 0;
         int folderCount = 0;
         double sumCompletion = 0;
         for (Map.Entry<Connection, HashMap<String, RemoteCompletionInfo>> device : deviceFolderMap.values()) {
+            if (device.getKey().connected) {
+                connectedDeviceCount++;
+            }
+
             //                                                 HashMap   RemoteCompletionInfo
             for (RemoteCompletionInfo completionInfo : device.getValue().values())
             {
@@ -151,13 +156,19 @@ public class RemoteCompletion {
                 } else if (folderCompletion > 100) {
                     folderCompletion = 100;
                 }
-                sumCompletion += folderCompletion;
-                folderCount++;
+
+                // Syncthing's WebUI considers remote folders with 0% and 100% completion as up-to-date.
+                if (folderCompletion != 0 && folderCompletion != 100) {
+                    sumCompletion += folderCompletion;
+                    folderCount++;
+                }
             }
         }
-        if (folderCount == 0) {
-            // No devices and no folders present in model.
+        if (connectedDeviceCount == 0) {
             return -1;
+        }
+        if (folderCount == 0) {
+            return 100;
         }
         int totalDeviceCompletion = (int) Math.floor(sumCompletion / folderCount);
         if (totalDeviceCompletion < 0) {
@@ -178,20 +189,30 @@ public class RemoteCompletion {
         HashMap<String, RemoteCompletionInfo> folderMap = deviceFolderMap.get(deviceId).getValue();
         if (folderMap != null) {
             for (Map.Entry<String, RemoteCompletionInfo> folder : folderMap.entrySet()) {
-                sumCompletion += folder.getValue().completion;
-                folderCount++;
+                double folderCompletion = folder.getValue().completion;
+                if (folderCompletion < 0) {
+                    folderCompletion = 0;
+                } else if (folderCompletion > 100) {
+                    folderCompletion = 100;
+                }
+
+                // Syncthing's WebUI considers remote folders with 0% and 100% completion as up-to-date.
+                if (folderCompletion != 0 && folderCompletion != 100) {
+                    sumCompletion += folderCompletion;
+                    folderCount++;
+                }
             }
         }
         if (folderCount == 0) {
             return 100;
         }
-        int totalDeviceCompletion = (int) Math.floor(sumCompletion / folderCount);
-        if (totalDeviceCompletion < 0) {
-            totalDeviceCompletion = 0;
-        } else if (totalDeviceCompletion > 100) {
-            totalDeviceCompletion = 100;
+        int deviceCompletion = (int) Math.floor(sumCompletion / folderCount);
+        if (deviceCompletion < 0) {
+            deviceCompletion = 0;
+        } else if (deviceCompletion > 100) {
+            deviceCompletion = 100;
         }
-        return totalDeviceCompletion;
+        return deviceCompletion;
     }
 
     /**
