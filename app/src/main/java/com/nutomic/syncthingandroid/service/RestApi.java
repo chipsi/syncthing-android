@@ -827,9 +827,17 @@ public class RestApi {
             return -1;
         }
 
-        // Calculate overall sync completion percentage.
         int totalFolderCompletion = mLocalCompletion.getTotalFolderCompletion();
-        int totalSyncCompletion = (int) Math.floor((double) (totalFolderCompletion + totalDeviceCompletion) / 2);
+
+        // Calculate overall sync completion percentage.
+        int totalSyncCompletion;
+        if (totalFolderCompletion == 100) {
+            totalSyncCompletion = totalDeviceCompletion;
+        } else {
+            totalSyncCompletion = (int) Math.floor((double) (totalFolderCompletion + totalDeviceCompletion) / 2);
+        }
+
+        // Filter invalid percentage values.
         if (totalSyncCompletion < 0) {
             totalSyncCompletion = 0;
         } else if (totalSyncCompletion > 100) {

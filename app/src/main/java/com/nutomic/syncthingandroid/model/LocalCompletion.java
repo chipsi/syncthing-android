@@ -87,8 +87,17 @@ public class LocalCompletion {
         int folderCount = 0;
         double sumCompletion = 0;
         for (Map.Entry<String, Map.Entry<FolderStatus, CachedFolderStatus>> folder : folderMap.entrySet()) {
-            CachedFolderStatus cachedFolderStatus  = folder.getValue().getValue();
-            if (!cachedFolderStatus.paused) {
+            CachedFolderStatus cachedFolderStatus = folder.getValue().getValue();
+
+            // Filter invalid percentage values we may have got from the REST API.
+            if (cachedFolderStatus.completion < 0) {
+                cachedFolderStatus.completion = 0;
+            } else if (cachedFolderStatus.completion > 100) {
+                cachedFolderStatus.completion = 100;
+            }
+
+            if (!cachedFolderStatus.paused &&
+                    cachedFolderStatus.completion != 100) {
                 sumCompletion += cachedFolderStatus.completion;
                 folderCount++;
             }
