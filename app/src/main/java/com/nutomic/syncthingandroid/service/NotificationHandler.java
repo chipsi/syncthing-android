@@ -43,7 +43,7 @@ public class NotificationHandler {
     private final NotificationChannel mPersistentChannelWaiting;
     private final NotificationChannel mInfoChannel;
 
-    private String lastNotificationText = null;
+    private String mLastNotificationText = null;
     private Boolean lastStartForegroundService = false;
     private Boolean appShutdownInProgress = false;
 
@@ -156,14 +156,14 @@ public class NotificationHandler {
                 text = mContext.getString(R.string.syncthing_starting);
                 break;
             case ACTIVE:
-                if (lastNotificationText == null || !persistNotificationDetails) {
+                if (mLastNotificationText == null || !persistNotificationDetails) {
                     if (totalSyncCompletion == -1) {
-                        lastNotificationText = mContext.getString(
+                        mLastNotificationText = mContext.getString(
                                 R.string.syncthing_active_details,
                                 mContext.getString(R.string.no_remote_devices_connected)
                         );
                     } else if (totalSyncCompletion == 100) {
-                        lastNotificationText = mContext.getString(
+                        mLastNotificationText = mContext.getString(
                                 R.string.syncthing_active_details,
                                 mContext.getResources().getQuantityString(
                                         R.plurals.device_online_up_to_date,
@@ -172,7 +172,7 @@ public class NotificationHandler {
                                 )
                         );
                     } else {
-                        lastNotificationText = mContext.getResources().getQuantityString(
+                        mLastNotificationText = mContext.getResources().getQuantityString(
                                 R.plurals.syncthing_active_syncing_device_online,
                                 onlineDeviceCount,
                                 totalSyncCompletion,
@@ -180,7 +180,7 @@ public class NotificationHandler {
                         );
                     }
                 }
-                text = lastNotificationText;
+                text = mLastNotificationText;
                 break;
             default:
                 text = mContext.getString(R.string.syncthing_terminated);
