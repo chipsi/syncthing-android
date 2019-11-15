@@ -984,6 +984,21 @@ public class RestApi {
         mLocalCompletion.setFolderStatus(folderId, cacheEntry.getKey());
     }
 
+    public void updateRemoteDeviceConnected(final String deviceId, final Boolean newConnected) {
+        Connection cacheEntry = mRemoteCompletion.getDeviceStatus(deviceId);
+        cacheEntry.connected = newConnected;
+        mRemoteCompletion.setDeviceStatus(deviceId, cacheEntry);
+        onTotalSyncCompletionChange();
+    }
+
+    public void updateRemoteDevicePaused(final String deviceId, final Boolean newPaused) {
+        Connection cacheEntry = mRemoteCompletion.getDeviceStatus(deviceId);
+        cacheEntry.connected = false;
+        cacheEntry.paused = newPaused;
+        mRemoteCompletion.setDeviceStatus(deviceId, cacheEntry);
+        onTotalSyncCompletionChange();
+    }
+
     /**
      * Returns prettyfied usage report.
      */

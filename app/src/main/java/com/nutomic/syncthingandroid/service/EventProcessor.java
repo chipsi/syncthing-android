@@ -108,6 +108,24 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
                     mRestApi.reloadConfig();
                 }
                 break;
+            case "DeviceConnected":
+                mRestApi.updateRemoteDeviceConnected(
+                        (String) event.data.get("id"),          // deviceId
+                        true
+                );
+                break;
+            case "DeviceDisconnected":
+                mRestApi.updateRemoteDeviceConnected(
+                        (String) event.data.get("id"),          // deviceId
+                        false
+                );
+                break;
+            case "DevicePaused":
+                mRestApi.updateRemoteDevicePaused(
+                        (String) event.data.get("id"),          // deviceId
+                        true
+                );
+                break;
             case "DeviceRejected":
                 /**
                  * This is obsolete since v0.14.51, https://github.com/syncthing/syncthing/pull/5084
@@ -122,6 +140,12 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
                     (String) event.data.get("name")             // deviceName
                 );
                 */
+                break;
+            case "DeviceResumed":
+                mRestApi.updateRemoteDevicePaused(
+                        (String) event.data.get("id"),          // deviceId
+                        false
+                );
                 break;
             case "FolderCompletion":
                 onFolderCompletion(event.data);
@@ -195,8 +219,6 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
                         (String) event.data.get("to")
                 );
                 break;
-            case "DeviceConnected":
-            case "DeviceDisconnected":
             case "DeviceDiscovered":
             case "DownloadProgress":
             case "FolderScanProgress":
