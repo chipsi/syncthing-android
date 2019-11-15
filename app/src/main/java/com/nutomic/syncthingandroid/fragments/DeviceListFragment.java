@@ -170,6 +170,9 @@ public class DeviceListFragment extends ListFragment implements SyncthingService
         } else {
             // Syncthing is running and REST API is available.
             devices = restApi.getDevices(false);
+
+            // Force a cache-miss to query status of all devices asynchronously.
+            restApi.getRemoteDeviceStatus("");
         }
         if (devices == null) {
             return;
