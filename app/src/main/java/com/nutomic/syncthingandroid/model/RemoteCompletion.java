@@ -185,6 +185,11 @@ public class RemoteCompletion {
      * shared with the device.
      */
     public int getDeviceCompletion(String deviceId) {
+        if (!deviceFolderMap.containsKey(deviceId)) {
+            Log.v(TAG, "getDeviceCompletion: Cache miss for deviceId=[" + deviceId + "]");
+            return 100;
+        }
+
         int folderCount = 0;
         double sumCompletion = 0;
         HashMap<String, RemoteCompletionInfo> folderMap = deviceFolderMap.get(deviceId).getValue();
