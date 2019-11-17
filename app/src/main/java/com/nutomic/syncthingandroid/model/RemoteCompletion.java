@@ -27,7 +27,7 @@ public class RemoteCompletion {
     private Boolean ENABLE_DEBUG_LOG = false;
     private Boolean ENABLE_VERBOSE_LOG = false;
 
-    HashMap<String, Map.Entry<Connection, HashMap<String, RemoteCompletionInfo>>> deviceFolderMap =
+    HashMap<String, Map.Entry<Connection, HashMap<String, RemoteCompletionInfo>>> mDeviceFolderMap =
         new HashMap<String, Map.Entry<Connection, HashMap<String, RemoteCompletionInfo>>>();
 
     public RemoteCompletion(Boolean enableVerboseLog) {
@@ -38,7 +38,7 @@ public class RemoteCompletion {
      * Removes a folder from the cache model.
      */
     private void removeFolder(String folderId) {
-        for (Map.Entry<Connection, HashMap<String, RemoteCompletionInfo>> folderMapEntry : deviceFolderMap.values()) {
+        for (Map.Entry<Connection, HashMap<String, RemoteCompletionInfo>> folderMapEntry : mDeviceFolderMap.values()) {
             HashMap<String, RemoteCompletionInfo> folderMap = folderMapEntry.getValue();
             if (folderMap.containsKey(folderId)) {
                 folderMap.remove(folderId);
@@ -57,7 +57,7 @@ public class RemoteCompletion {
         // Handle devices that were removed from the config.
         List<String> removedDevices = new ArrayList<>();
         Boolean deviceFound;
-        for (String deviceId : deviceFolderMap.keySet()) {
+        for (String deviceId : mDeviceFolderMap.keySet()) {
             deviceFound = false;
             for (Device device : newDevices) {
                 if (device.deviceID.equals(deviceId)) {
@@ -71,14 +71,14 @@ public class RemoteCompletion {
         }
         for (String deviceId : removedDevices) {
             LogV("updateFromConfig: Remove device '" + getShortenedDeviceId(deviceId) + "' from cache model");
-            deviceFolderMap.remove(deviceId);
+            mDeviceFolderMap.remove(deviceId);
         }
 
         // Handle devices that were added to the config.
         for (Device device : newDevices) {
-            if (!deviceFolderMap.containsKey(device.deviceID)) {
+            if (!mDeviceFolderMap.containsKey(device.deviceID)) {
                 LogV("updateFromConfig: Add device '" + getShortenedDeviceId(device.deviceID) + "' to cache model");
-                deviceFolderMap.put(
+                mDeviceFolderMap.put(
                         device.deviceID,
                         new SimpleEntry(
                                 new Connection(),
@@ -91,7 +91,7 @@ public class RemoteCompletion {
         // Handle folders that were removed from the config.
         List<String> removedFolders = new ArrayList<>();
         Boolean folderFound;
-        for (Map.Entry<String, Map.Entry<Connection, HashMap<String, RemoteCompletionInfo>>> device : deviceFolderMap.entrySet()) {
+        for (Map.Entry<String, Map.Entry<Connection, HashMap<String, RemoteCompletionInfo>>> device : mDeviceFolderMap.entrySet()) {
             //                            Map.Entry   HashMap    String
             for (String folderId : device.getValue().getValue().keySet()) {
                 folderFound = false;
@@ -116,7 +116,7 @@ public class RemoteCompletion {
             for (Device device : newDevices) {
                 if (folder.getDevice(device.deviceID) != null) {
                     // folder is shared with device.
-                    folderMap = deviceFolderMap.get(device.deviceID).getValue();
+                    folderMap = mDeviceFolderMap.get(device.deviceID).getValue();
                     if (!folderMap.containsKey(folder.id)) {
                         LogV("updateFromConfig: Add folder '" + folder.id +
                                 "' shared with device '" + getShortenedDeviceId(device.deviceID) + "' to cache model.");
@@ -135,7 +135,7 @@ public class RemoteCompletion {
         int connectedDeviceCount = 0;
         int folderCount = 0;
         double sumCompletion = 0;
-        for (Map.Entry<Connection, HashMap<String, RemoteCompletionInfo>> device : deviceFolderMap.values()) {
+        for (Map.Entry<Connection, HashMap<String, RemoteCompletionInfo>> device : mDeviceFolderMap.values()) {
             if (device.getKey().connected) {
                 connectedDeviceCount++;
             }
@@ -177,14 +177,14 @@ public class RemoteCompletion {
      * shared with the device.
      */
     public int getDeviceCompletion(String deviceId) {
-        if (!deviceFolderMap.containsKey(deviceId)) {
+        if (!mDeviceFolderMap.containsKey(deviceId)) {
             LogV("getDeviceCompletion: Cache miss for deviceId=[" + deviceId + "]");
             return 100;
         }
 
         int folderCount = 0;
         double sumCompletion = 0;
-        HashMap<String, RemoteCompletionInfo> folderMap = deviceFolderMap.get(deviceId).getValue();
+        HashMap<String, RemoteCompletionInfo> folderMap = mDeviceFolderMap.get(deviceId).getValue();
         if (folderMap != null) {
             for (Map.Entry<String, RemoteCompletionInfo> folder : folderMap.entrySet()) {
                 double folderCompletion = folder.getValue().completion;
@@ -219,8 +219,8 @@ public class RemoteCompletion {
     public void setCompletionInfo(String deviceId, String folderId,
                                     final RemoteCompletionInfo completionInfo) {
         // Add device parent node if it does not exist.
-        if (!deviceFolderMap.containsKey(deviceId)) {
-            deviceFolderMap.put(
+        if (!mDeviceFolderMap.containsKey(deviceId)) {
+            mDeviceFolderMap.put(
                     deviceId,
                     new SimpleEntry(
                             new Connection(),
@@ -232,24 +232,24 @@ public class RemoteCompletion {
                 folderId + "\" at device \"" +
                 getShortenedDeviceId(deviceId) + "\".");
         // Add folder or update existing folder entry.
-        deviceFolderMap.get(deviceId).getValue().put(folderId, completionInfo);
+        mDeviceFolderMap.get(deviceId).getValue().put(folderId, completionInfo);
     }
 
     /**
      * Returns remote device status.
      */
     public final Connection getDeviceStatus(final String deviceId) {
-        if (!deviceFolderMap.containsKey(deviceId)) {
+        if (!mDeviceFolderMap.containsKey(deviceId)) {
             return new Connection();
         }
         //                                      Map.Entry     Connection
-        Connection connection = deviceFolderMap.get(deviceId).getKey();
+        Connection connection = mDeviceFolderMap.get(deviceId).getKey();
         return deepCopy(connection, new TypeToken<Connection>(){}.getType());
     }
 
     public int getOnlineDeviceCount() {
         int onlineDeviceCount = 0;
-        for (Map.Entry<Connection, HashMap<String, RemoteCompletionInfo>> device : deviceFolderMap.values()) {
+        for (Map.Entry<Connection, HashMap<String, RemoteCompletionInfo>> device : mDeviceFolderMap.values()) {
             if (device.getKey().connected) {
                 onlineDeviceCount++;
             }
@@ -263,8 +263,8 @@ public class RemoteCompletion {
     public void setDeviceStatus(final String deviceId,
                                     final Connection connection) {
         // Add device parent node if it does not exist.
-        if (!deviceFolderMap.containsKey(deviceId)) {
-            deviceFolderMap.put(
+        if (!mDeviceFolderMap.containsKey(deviceId)) {
+            mDeviceFolderMap.put(
                     deviceId,
                     new SimpleEntry(
                             new Connection(),
@@ -284,11 +284,11 @@ public class RemoteCompletion {
         Map.Entry updatedEntry = new SimpleEntry(
                 deepCopy(connection, new TypeToken<Connection>(){}.getType()),
                 deepCopy(
-                        deviceFolderMap.get(deviceId).getValue(),
+                        mDeviceFolderMap.get(deviceId).getValue(),
                         new TypeToken<HashMap<String, RemoteCompletionInfo>>(){}.getType()
                 )
         );
-        deviceFolderMap.put(deviceId, updatedEntry);
+        mDeviceFolderMap.put(deviceId, updatedEntry);
     }
 
     /**
