@@ -489,7 +489,6 @@
         <item>TiB/s</item>
     </string-array>
 
-    <string name="state_idle">閒置</string>
     <string name="state_scanning">正在掃描</string>
     <string name="state_syncing">正在同步 (%1$d%%)</string>
     <string name="state_error">錯誤</string>

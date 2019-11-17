@@ -606,7 +606,6 @@
         <item>Тб/с</item>
     </string-array>
 
-    <string name="state_idle">Бездействие</string>
     <string name="state_scanning">Сканирование</string>
     <string name="state_syncing">Синхронизация (%1$d%%)</string>
     <string name="state_error">Ошибка</string>
