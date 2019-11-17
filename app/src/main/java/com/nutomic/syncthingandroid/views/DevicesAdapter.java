@@ -75,8 +75,8 @@ public class DevicesAdapter extends ArrayAdapter<Device> {
             return convertView;
         }
 
-        final Connection conn = mRestApi.getRemoteDeviceStatus("xyz");
-        int completion = mRestApi.getRemoteDeviceCompletion("xyz");
+        final Connection conn = mRestApi.getRemoteDeviceStatus(deviceId);
+        int completion = mRestApi.getRemoteDeviceCompletion(deviceId);
         if (conn.paused) {
             progressBar.setVisibility(GONE);
             rateInOutView.setVisibility(GONE);
