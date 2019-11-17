@@ -70,18 +70,14 @@ public class RemoteCompletion {
             }
         }
         for (String deviceId : removedDevices) {
-            if (ENABLE_VERBOSE_LOG) {
-                Log.v(TAG, "updateFromConfig: Remove device '" + getShortenedDeviceId(deviceId) + "' from cache model");
-            }
+            LogV("updateFromConfig: Remove device '" + getShortenedDeviceId(deviceId) + "' from cache model");
             deviceFolderMap.remove(deviceId);
         }
 
         // Handle devices that were added to the config.
         for (Device device : newDevices) {
             if (!deviceFolderMap.containsKey(device.deviceID)) {
-                if (ENABLE_VERBOSE_LOG) {
-                    Log.v(TAG, "updateFromConfig: Add device '" + getShortenedDeviceId(device.deviceID) + "' to cache model");
-                }
+                LogV("updateFromConfig: Add device '" + getShortenedDeviceId(device.deviceID) + "' to cache model");
                 deviceFolderMap.put(
                         device.deviceID,
                         new SimpleEntry(
@@ -111,9 +107,7 @@ public class RemoteCompletion {
             }
         }
         for (String folderId : removedFolders) {
-            if (ENABLE_VERBOSE_LOG) {
-                Log.v(TAG, "updateFromConfig: Remove folder '" + folderId + "' from cache model");
-            }
+            LogV("updateFromConfig: Remove folder '" + folderId + "' from cache model");
             removeFolder(folderId);
         }
 
@@ -124,10 +118,8 @@ public class RemoteCompletion {
                     // folder is shared with device.
                     folderMap = deviceFolderMap.get(device.deviceID).getValue();
                     if (!folderMap.containsKey(folder.id)) {
-                        if (ENABLE_VERBOSE_LOG) {
-                            Log.v(TAG, "updateFromConfig: Add folder '" + folder.id +
-                                        "' shared with device '" + getShortenedDeviceId(device.deviceID) + "' to cache model.");
-                        }
+                        LogV("updateFromConfig: Add folder '" + folder.id +
+                                "' shared with device '" + getShortenedDeviceId(device.deviceID) + "' to cache model.");
                         folderMap.put(folder.id, new RemoteCompletionInfo());
                     }
                 }
@@ -186,7 +178,7 @@ public class RemoteCompletion {
      */
     public int getDeviceCompletion(String deviceId) {
         if (!deviceFolderMap.containsKey(deviceId)) {
-            Log.v(TAG, "getDeviceCompletion: Cache miss for deviceId=[" + deviceId + "]");
+            LogV("getDeviceCompletion: Cache miss for deviceId=[" + deviceId + "]");
             return 100;
         }
 
@@ -236,11 +228,9 @@ public class RemoteCompletion {
                     )
             );
         }
-        if (ENABLE_VERBOSE_LOG) {
-            Log.v(TAG, "setCompletionInfo: Storing " + completionInfo.completion + "% for folder \"" +
-                    folderId + "\" at device \"" +
-                    getShortenedDeviceId(deviceId) + "\".");
-        }
+        LogV("setCompletionInfo: Storing " + completionInfo.completion + "% for folder \"" +
+                folderId + "\" at device \"" +
+                getShortenedDeviceId(deviceId) + "\".");
         // Add folder or update existing folder entry.
         deviceFolderMap.get(deviceId).getValue().put(folderId, completionInfo);
     }
@@ -316,5 +306,11 @@ public class RemoteCompletion {
     private <T> T deepCopy(T object, Type type) {
         Gson gson = new Gson();
         return gson.fromJson(gson.toJson(object, type), type);
+    }
+
+    private void LogV(String logMessage) {
+        if (ENABLE_VERBOSE_LOG) {
+            Log.v(TAG, logMessage);
+        }
     }
 }
