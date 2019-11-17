@@ -489,6 +489,7 @@
         <item>TiB/s</item>
     </string-array>
 
+    <string name="state_up_to_date">最新</string>
     <string name="state_scanning">正在掃描</string>
     <string name="state_syncing">正在同步 (%1$d%%)</string>
     <string name="state_error">錯誤</string>

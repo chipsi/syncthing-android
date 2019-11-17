@@ -606,6 +606,7 @@
         <item>Тб/с</item>
     </string-array>
 
+    <string name="state_up_to_date">уточненный</string>
     <string name="state_scanning">Сканирование</string>
     <string name="state_syncing">Синхронизация (%1$d%%)</string>
     <string name="state_error">Ошибка</string>
