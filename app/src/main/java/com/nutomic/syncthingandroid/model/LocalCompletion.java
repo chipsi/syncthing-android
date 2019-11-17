@@ -27,7 +27,7 @@ public class LocalCompletion {
     private Boolean ENABLE_DEBUG_LOG = false;
     private Boolean ENABLE_VERBOSE_LOG = false;
 
-    HashMap<String, Map.Entry<FolderStatus, CachedFolderStatus>> folderMap =
+    HashMap<String, Map.Entry<FolderStatus, CachedFolderStatus>> mFolderMap =
         new HashMap<String, Map.Entry<FolderStatus, CachedFolderStatus>>();
 
     public LocalCompletion(Boolean enableVerboseLog) {
@@ -42,7 +42,7 @@ public class LocalCompletion {
         // Handle folders that were removed from the config.
         List<String> removedFolders = new ArrayList<>();
         Boolean folderFound;
-        for (String folderId : folderMap.keySet()) {
+        for (String folderId : mFolderMap.keySet()) {
             folderFound = false;
             for (Folder folder : newFolders) {
                 if (folder.id.equals(folderId)) {
@@ -56,16 +56,16 @@ public class LocalCompletion {
         }
         for (String folderId : removedFolders) {
             LogV("updateFromConfig: Remove folder '" + folderId + "' from cache model");
-            if (folderMap.containsKey(folderId)) {
-                folderMap.remove(folderId);
+            if (mFolderMap.containsKey(folderId)) {
+                mFolderMap.remove(folderId);
             }
         }
 
         // Handle folders that were added to the config.
         for (Folder folder : newFolders) {
-            if (!folderMap.containsKey(folder.id)) {
+            if (!mFolderMap.containsKey(folder.id)) {
                 LogV("updateFromConfig: Add folder '" + folder.id + "' to cache model.");
-                folderMap.put(
+                mFolderMap.put(
                         folder.id,
                         new SimpleEntry(
                                 new FolderStatus(),
@@ -82,7 +82,7 @@ public class LocalCompletion {
     public int getTotalFolderCompletion() {
         int folderCount = 0;
         double sumCompletion = 0;
-        for (Map.Entry<String, Map.Entry<FolderStatus, CachedFolderStatus>> folder : folderMap.entrySet()) {
+        for (Map.Entry<String, Map.Entry<FolderStatus, CachedFolderStatus>> folder : mFolderMap.entrySet()) {
             CachedFolderStatus cachedFolderStatus = folder.getValue().getValue();
 
             // Filter invalid percentage values we may have got from the REST API.
@@ -114,13 +114,13 @@ public class LocalCompletion {
      * Returns local folder status including completion info.
      */
     public final Map.Entry<FolderStatus, CachedFolderStatus> getFolderStatus (final String folderId) {
-        if (!folderMap.containsKey(folderId)) {
+        if (!mFolderMap.containsKey(folderId)) {
             return new SimpleEntry(
                     new FolderStatus(),
                     new CachedFolderStatus()
             );
         }
-        Map.Entry<FolderStatus, CachedFolderStatus> folderEntry = folderMap.get(folderId);
+        Map.Entry<FolderStatus, CachedFolderStatus> folderEntry = mFolderMap.get(folderId);
         return new SimpleEntry(
                 deepCopy(folderEntry.getKey(), new TypeToken<FolderStatus>(){}.getType()),
                 deepCopy(folderEntry.getValue(), new TypeToken<CachedFolderStatus>(){}.getType())
@@ -150,7 +150,7 @@ public class LocalCompletion {
         }
 
         // Add folder or update existing folder entry.
-        folderMap.put(folderId, new SimpleEntry(folderStatus, cachedFolderStatus));
+        mFolderMap.put(folderId, new SimpleEntry(folderStatus, cachedFolderStatus));
     }
 
     public void setFolderStatus(final String folderId,
