@@ -55,9 +55,7 @@ public class LocalCompletion {
             }
         }
         for (String folderId : removedFolders) {
-            if (ENABLE_VERBOSE_LOG) {
-                Log.v(TAG, "updateFromConfig: Remove folder '" + folderId + "' from cache model");
-            }
+            LogV("updateFromConfig: Remove folder '" + folderId + "' from cache model");
             if (folderMap.containsKey(folderId)) {
                 folderMap.remove(folderId);
             }
@@ -66,9 +64,7 @@ public class LocalCompletion {
         // Handle folders that were added to the config.
         for (Folder folder : newFolders) {
             if (!folderMap.containsKey(folder.id)) {
-                if (ENABLE_VERBOSE_LOG) {
-                    Log.v(TAG, "updateFromConfig: Add folder '" + folder.id + "' to cache model.");
-                }
+                LogV("updateFromConfig: Add folder '" + folder.id + "' to cache model.");
                 folderMap.put(
                         folder.id,
                         new SimpleEntry(
@@ -172,5 +168,11 @@ public class LocalCompletion {
     private <T> T deepCopy(T object, Type type) {
         Gson gson = new Gson();
         return gson.fromJson(gson.toJson(object, type), type);
+    }
+
+    private void LogV(String logMessage) {
+        if (ENABLE_VERBOSE_LOG) {
+            Log.v(TAG, logMessage);
+        }
     }
 }
