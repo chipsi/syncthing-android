@@ -8,7 +8,7 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'com.google.zxing:android-integration:3.3.0'
     implementation 'com.google.code.gson:gson:2.8.6'
-    implementation 'org.mindrot:jbcrypt:0.4'
+    implementation 'org.mindrot:jbcrypt:0.4-atlassian-1'
     // com.google.guava:guava:x.y-jre will crash on Android 5.x
     implementation 'com.google.guava:guava:28.1-android'
     implementation 'com.annimon:stream:1.2.1'
