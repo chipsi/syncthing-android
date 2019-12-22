@@ -19,34 +19,38 @@ GO_VERSION = '1.13.5'
 GO_EXPECTED_SHASUM_LINUX = '512103d7ad296467814a6e3f635631bd35574cab3369a97a323c9a585ccaa569'
 GO_EXPECTED_SHASUM_WINDOWS = '027275e04d795fbadc898ba7a50ed0ab2161ff4c5e613c94dbb066b2ca24ec11'
 
-NDK_VERSION = 'r20b'
-NDK_EXPECTED_SHASUM_LINUX = 'd903fdf077039ad9331fb6c3bee78aa46d45527b'
-NDK_EXPECTED_SHASUM_WINDOWS = 'ead0846608040b8344ad2bc9bc721b88cf13fb8d'
+NDK_VERSION = 'r15c'
+NDK_EXPECTED_SHASUM_LINUX = '0bf02d4e8b85fd770fd7b9b2cdec57f9441f27a2'
+NDK_EXPECTED_SHASUM_WINDOWS = '970bb2496de0eada74674bb1b06d79165f725696'
 
 BUILD_TARGETS = [
     {
         'arch': 'arm',
         'goarch': 'arm',
         'jni_dir': 'armeabi',
-        'clang': 'armv7a-linux-androideabi16-clang',
+        'clang': 'arm-linux-androideabi-clang',
+        'min_sdk': '16',
     },
     {
         'arch': 'arm64',
         'goarch': 'arm64',
         'jni_dir': 'arm64-v8a',
-        'clang': 'aarch64-linux-android21-clang',
+        'clang': 'aarch64-linux-android-clang',
+        'min_sdk': '21',
     },
     {
         'arch': 'x86',
         'goarch': '386',
         'jni_dir': 'x86',
-        'clang': 'i686-linux-android16-clang',
+        'clang': 'i686-linux-android-clang',
+        'min_sdk': '16',
     },
     {
         'arch': 'x86_64',
         'goarch': 'amd64',
         'jni_dir': 'x86_64',
-        'clang': 'x86_64-linux-android21-clang',
+        'clang': 'x86_64-linux-android-clang',
+        'min_sdk': '21',
     }
 ]
 
@@ -383,15 +387,27 @@ subprocess.check_call([go_bin, 'clean', '-cache'], cwd=syncthing_dir)
 
 print('Building syncthing version', syncthingVersion);
 for target in BUILD_TARGETS:
+    standalone_ndk_dir = os.environ['ANDROID_NDK_HOME'] + os.path.sep + 'standalone-ndk' + os.path.sep + 'android-' + target['min_sdk'] + '-' + target['arch']
+    if not os.path.isdir(standalone_ndk_dir):
+        print('')
+        print('*** Building standalone NDK for', target['arch'])
+        subprocess.check_call([
+            sys.executable,
+            os.path.join(os.environ['ANDROID_NDK_HOME'], 'build', 'tools', 'make_standalone_toolchain.py'),
+            '--arch',
+            target['arch'],
+            '--api',
+            target['min_sdk'],
+            '--install-dir',
+            standalone_ndk_dir,
+            '-v'
+        ])
+
     print('')
     print('*** Building for', target['arch'])
 
     ndk_clang_fullfn = os.path.join(
-        os.environ['ANDROID_NDK_HOME'],
-        'toolchains',
-        'llvm',
-        'prebuilt',
-        'windows-x86_64' if sys.platform == 'win32' else 'linux-x86_64',
+        standalone_ndk_dir,
         'bin',
         target['clang'],
     )
