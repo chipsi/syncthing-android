@@ -381,6 +381,9 @@ else:
 print('Cleaning go-build cache')
 subprocess.check_call([go_bin, 'clean', '-cache'], cwd=syncthing_dir)
 
+print('Get go modules')
+subprocess.check_call([go_bin, 'get', 'golang.org/x/sys@0732a990476f'], cwd=syncthing_dir)  
+
 print('Building syncthing version', syncthingVersion);
 for target in BUILD_TARGETS:
     print('')
