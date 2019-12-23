@@ -2,6 +2,7 @@ package com.nutomic.syncthingandroid.fragments;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -16,6 +17,10 @@ import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
 import com.nutomic.syncthingandroid.BuildConfig;
 import com.nutomic.syncthingandroid.R;
 import com.nutomic.syncthingandroid.activities.MainActivity;
@@ -23,9 +28,7 @@ import com.nutomic.syncthingandroid.activities.RecentChangesActivity;
 import com.nutomic.syncthingandroid.activities.SettingsActivity;
 import com.nutomic.syncthingandroid.activities.TipsAndTricksActivity;
 import com.nutomic.syncthingandroid.activities.WebGuiActivity;
-import com.nutomic.syncthingandroid.http.ImageGetRequest;
 import com.nutomic.syncthingandroid.service.Constants;
-import com.nutomic.syncthingandroid.service.RestApi;
 import com.nutomic.syncthingandroid.service.SyncthingService;
 import com.nutomic.syncthingandroid.util.Util;
 
@@ -152,28 +155,42 @@ public class DrawerFragment extends Fragment implements SyncthingService.OnServi
     private void showQrCode() {
         String localDeviceID = PreferenceManager.getDefaultSharedPreferences(mActivity).getString(Constants.PREF_LOCAL_DEVICE_ID, "");
         if (TextUtils.isEmpty(localDeviceID)) {
-            Toast.makeText(mActivity, R.string.syncthing_terminated, Toast.LENGTH_SHORT).show();
+            Toast.makeText(mActivity, R.string.could_not_access_deviceid, Toast.LENGTH_SHORT).show();
             return;
         }
-        RestApi restApi = mActivity.getApi();
-        Boolean syncthingRunning = mServiceState == SyncthingService.State.ACTIVE;
-        if (!syncthingRunning || restApi == null) {
-            mActivity.showQrCodeDialog(localDeviceID, null);
-            mActivity.closeDrawer();
-            return;
-        }
+        final int qrCodeSize = 232;
+        Bitmap qrCodeBitmap = null;
         try {
-            String apiKey = restApi.getGui().apiKey;
-            URL url = restApi.getUrl();
-            // The QRCode request takes one parameter called "text", which is the text to be converted to a QRCode.
-            new ImageGetRequest(mActivity, url, ImageGetRequest.QR_CODE_GENERATOR, apiKey,
-                    ImmutableMap.of("text", localDeviceID),qrCodeBitmap -> {
-                mActivity.showQrCodeDialog(localDeviceID, qrCodeBitmap);
-                mActivity.closeDrawer();
-            }, error -> Toast.makeText(mActivity, R.string.could_not_access_deviceid, Toast.LENGTH_SHORT).show());
-        } catch (Exception e) {
-            Log.e(TAG, "showQrCode", e);
+            qrCodeBitmap = generateQrCodeBitmap(localDeviceID, qrCodeSize, qrCodeSize);
+        } catch (WriterException | NullPointerException ex) {
+            Log.e(TAG, "showQrCode: generateQrCodeBitmap failed", ex);
         }
+        mActivity.showQrCodeDialog(localDeviceID, qrCodeBitmap);
+        mActivity.closeDrawer();
+    }
+
+    private Bitmap generateQrCodeBitmap(String text, int width, int height) throws WriterException, NullPointerException {
+        BitMatrix bitMatrix;
+        try {
+            bitMatrix = new MultiFormatWriter().encode(text, BarcodeFormat.DATA_MATRIX.QR_CODE,
+            width, height, null);
+        } catch (IllegalArgumentException ex) {
+            return null;
+        }
+        int bitMatrixWidth = bitMatrix.getWidth();
+        int bitMatrixHeight = bitMatrix.getHeight();
+        int[] pixels = new int[bitMatrixWidth * bitMatrixHeight];
+        int colorWhite = 0xFFFFFFFF;
+        int colorBlack = 0xFF000000;
+        for (int y = 0; y < bitMatrixHeight; y++) {
+            int offset = y * bitMatrixWidth;
+            for (int x = 0; x < bitMatrixWidth; x++) {
+                pixels[offset + x] = bitMatrix.get(x, y) ? colorBlack : colorWhite;
+            }
+        }
+        Bitmap bitmap = Bitmap.createBitmap(bitMatrixWidth, bitMatrixHeight, Bitmap.Config.ARGB_4444);
+        bitmap.setPixels(pixels, 0, width, 0, 0, bitMatrixWidth, bitMatrixHeight);
+        return bitmap;
     }
 
     @Override
