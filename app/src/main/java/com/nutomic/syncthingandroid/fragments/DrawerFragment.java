@@ -3,6 +3,7 @@ package com.nutomic.syncthingandroid.fragments;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -128,7 +129,7 @@ public class DrawerFragment extends Fragment implements SyncthingService.OnServi
         Boolean syncthingRunning = mServiceState == SyncthingService.State.ACTIVE;
 
         // Update action button availability. Show buttons if syncthing is running.
-        mDrawerActionShowQrCode.setVisibility(syncthingRunning ? View.VISIBLE : View.GONE);
+        mDrawerActionShowQrCode.setVisibility(View.VISIBLE);
         mDrawerRecentChanges.setVisibility(syncthingRunning ? View.VISIBLE : View.GONE);
         /**
          * Show Web UI menu item on Android TV for debug builds only.
@@ -149,19 +150,25 @@ public class DrawerFragment extends Fragment implements SyncthingService.OnServi
      * Gets QRCode and displays it in a Dialog.
      */
     private void showQrCode() {
-        RestApi restApi = mActivity.getApi();
-        if (restApi == null) {
+        String localDeviceID = PreferenceManager.getDefaultSharedPreferences(mActivity).getString(Constants.PREF_LOCAL_DEVICE_ID, "");
+        if (TextUtils.isEmpty(localDeviceID)) {
             Toast.makeText(mActivity, R.string.syncthing_terminated, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        RestApi restApi = mActivity.getApi();
+        Boolean syncthingRunning = mServiceState == SyncthingService.State.ACTIVE;
+        if (!syncthingRunning || restApi == null) {
+            mActivity.showQrCodeDialog(localDeviceID, null);
+            mActivity.closeDrawer();
             return;
         }
         try {
             String apiKey = restApi.getGui().apiKey;
-            String deviceId = restApi.getLocalDevice().deviceID;
             URL url = restApi.getUrl();
             // The QRCode request takes one parameter called "text", which is the text to be converted to a QRCode.
             new ImageGetRequest(mActivity, url, ImageGetRequest.QR_CODE_GENERATOR, apiKey,
-                    ImmutableMap.of("text", deviceId),qrCodeBitmap -> {
-                mActivity.showQrCodeDialog(deviceId, qrCodeBitmap);
+                    ImmutableMap.of("text", localDeviceID),qrCodeBitmap -> {
+                mActivity.showQrCodeDialog(localDeviceID, qrCodeBitmap);
                 mActivity.closeDrawer();
             }, error -> Toast.makeText(mActivity, R.string.could_not_access_deviceid, Toast.LENGTH_SHORT).show());
         } catch (Exception e) {
