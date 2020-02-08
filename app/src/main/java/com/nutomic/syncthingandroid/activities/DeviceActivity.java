@@ -13,6 +13,7 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,6 +37,7 @@ import com.nutomic.syncthingandroid.SyncthingApp;
 import com.nutomic.syncthingandroid.model.Connection;
 import com.nutomic.syncthingandroid.model.Device;
 import com.nutomic.syncthingandroid.model.DiscoveredDevice;
+import com.nutomic.syncthingandroid.model.Folder;
 import com.nutomic.syncthingandroid.model.Options;
 import com.nutomic.syncthingandroid.service.Constants;
 import com.nutomic.syncthingandroid.service.RestApi;
@@ -55,6 +57,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import static android.text.TextUtils.isEmpty;
+import static android.util.TypedValue.COMPLEX_UNIT_DIP;
 import static android.view.Gravity.CENTER_VERTICAL;
 import static android.view.View.VISIBLE;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -106,6 +109,7 @@ public class DeviceActivity extends SyncthingActivity {
     private SwitchCompat mCustomSyncConditionsSwitch;
     private TextView mCustomSyncConditionsDescription;
     private TextView mCustomSyncConditionsDialog;
+    private ViewGroup mFoldersContainer;
     private TextView mSyncthingVersionView;
 
     @Inject
@@ -221,6 +225,7 @@ public class DeviceActivity extends SyncthingActivity {
         mCustomSyncConditionsSwitch = findViewById(R.id.customSyncConditionsSwitch);
         mCustomSyncConditionsDescription = findViewById(R.id.customSyncConditionsDescription);
         mCustomSyncConditionsDialog = findViewById(R.id.customSyncConditionsDialog);
+        mFoldersContainer = findViewById(R.id.foldersContainer);
         mSyncthingVersionView = findViewById(R.id.syncthingVersion);
 
         if (Util.isRunningOnTV(this)) {
@@ -401,6 +406,18 @@ public class DeviceActivity extends SyncthingActivity {
         mCustomSyncConditionsDialog.setFocusable(mCustomSyncConditionsSwitch.isChecked());
         mCustomSyncConditionsDialog.setEnabled(mCustomSyncConditionsSwitch.isChecked());
 
+        // Populate foldersList.
+        RestApi restApi = getApi();
+        List<Folder> foldersList = mConfig.getFolders(restApi);
+        mFoldersContainer.removeAllViews();
+        if (foldersList.isEmpty()) {
+            addEmptyFolderListView();
+        } else {
+            for (Folder folder : foldersList) {
+                addFolderViewAndSetListener(folder, getLayoutInflater());
+            }
+        }
+
         // Keep state updated
         mEditDeviceId.addTextChangedListener(mIdTextWatcher);
         mNameView.addTextChangedListener(mNameTextWatcher);
@@ -476,6 +493,8 @@ public class DeviceActivity extends SyncthingActivity {
             if (ENABLE_TEST_DATA) {
                 mEditDeviceId.setText(TestData.DEVICE_A_ID);
             }
+        } else if (resultCode == Activity.RESULT_OK && requestCode == FolderActivity.FOLDER_ADD_CODE) {
+            updateViewsAndSetListeners();
         }
     }
 
@@ -491,6 +510,40 @@ public class DeviceActivity extends SyncthingActivity {
         mDevice.introducer = false;
         mDevice.paused = false;
         mDevice.introducedBy = "";
+    }
+
+    private void addEmptyFolderListView() {
+        int height = (int) TypedValue.applyDimension(COMPLEX_UNIT_DIP, 48, getResources().getDisplayMetrics());
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(WRAP_CONTENT, height);
+        int dividerInset = getResources().getDimensionPixelOffset(R.dimen.material_divider_inset);
+        int contentInset = getResources().getDimensionPixelOffset(R.dimen.abc_action_bar_content_inset_material);
+        setMarginStart(params, dividerInset);
+        setMarginEnd(params, contentInset);
+        TextView emptyView = new TextView(mFoldersContainer.getContext());
+        emptyView.setGravity(CENTER_VERTICAL);
+        emptyView.setText(R.string.folders_list_empty);
+        mFoldersContainer.addView(emptyView, params);
+        mFoldersContainer.setOnClickListener(view -> showAddFolderDialog());
+    }
+
+    private void addFolderViewAndSetListener(Folder folder, LayoutInflater inflater) {
+        Boolean folderSharedWithDevice = false;
+        List<Device> devices = folder.getDevices();
+        for (Device device : devices) {
+            if (mDevice.deviceID.equals(device.deviceID)) {
+                folderSharedWithDevice = true;
+                break;
+            }
+        }
+
+        inflater.inflate(R.layout.item_folder_form, mFoldersContainer);
+        SwitchCompat folderView = (SwitchCompat) mFoldersContainer.getChildAt(mFoldersContainer.getChildCount()-1);
+        folderView.setOnCheckedChangeListener(null);
+        folderView.setChecked(folderSharedWithDevice);
+        folderView.setText(folder.toString());
+        folderView.setTag(folder);
+        folderView.setEnabled(false);
+        // ToDo folderView.setOnCheckedChangeListener(mCheckedListener);
     }
 
     private void onSave() {
@@ -596,6 +649,13 @@ public class DeviceActivity extends SyncthingActivity {
 
     private void onCompressionContainerClick() {
         showCompressionDialog();
+    }
+
+    /**
+     * Open dialog if the user clicked on empty folder list view.
+     */
+    private void showAddFolderDialog() {
+        startActivityForResult(FolderActivity.createIntent(this), FolderActivity.FOLDER_ADD_CODE);
     }
 
     /**
