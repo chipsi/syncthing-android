@@ -173,6 +173,15 @@ public class DeviceActivity extends SyncthingActivity {
         @Override
         public void onCheckedChanged(CompoundButton view, boolean isChecked) {
             switch (view.getId()) {
+                case R.id.folder_toggle:
+                    Folder folder = (Folder) view.getTag();
+                    if (isChecked) {
+                        mDevice.addFolder(folder.id);
+                    } else {
+                        mDevice.removeFolder(folder.id);
+                    }
+                    // ToDo mDeviceNeedsToUpdate = true;
+                    break;
                 case R.id.introducer:
                     mDevice.introducer = isChecked;
                     mDeviceNeedsToUpdate = true;
@@ -542,8 +551,7 @@ public class DeviceActivity extends SyncthingActivity {
         folderView.setChecked(folderSharedWithDevice);
         folderView.setText(folder.toString());
         folderView.setTag(folder);
-        folderView.setEnabled(false);
-        // ToDo folderView.setOnCheckedChangeListener(mCheckedListener);
+        folderView.setOnCheckedChangeListener(mCheckedListener);
     }
 
     private void onSave() {
