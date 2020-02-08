@@ -537,11 +537,13 @@ public class DeviceActivity extends SyncthingActivity {
 
     private void addFolderViewAndSetListener(Folder folder, LayoutInflater inflater) {
         Boolean folderSharedWithDevice = false;
-        List<Device> devices = folder.getDevices();
-        for (Device device : devices) {
-            if (mDevice.deviceID.equals(device.deviceID)) {
-                folderSharedWithDevice = true;
-                break;
+        if (mDevice.deviceID != null) {
+            List<Device> devices = folder.getDevices();
+            for (Device device : devices) {
+                if (mDevice.deviceID.equals(device.deviceID)) {
+                    folderSharedWithDevice = true;
+                    break;
+                }
             }
         }
 
