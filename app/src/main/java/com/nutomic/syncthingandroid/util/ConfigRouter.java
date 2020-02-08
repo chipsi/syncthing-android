@@ -35,6 +35,17 @@ public class ConfigRouter {
         configXml = new ConfigXml(mContext);
     }
 
+    public List<Folder> getFoldersSharedWithDevice(RestApi restApi, final String deviceId) {
+        List<Folder> foldersList = getFolders(restApi);
+        for (Iterator<Folder> it = foldersList.iterator(); it.hasNext();) {
+            String currentId = it.next().deviceID;
+            if (!currentId.equals(deviceId)) {
+                it.remove();
+            }
+        }
+        return foldersList;
+    }
+
     public List<Folder> getFolders(RestApi restApi) {
         if (restApi == null || !restApi.isConfigLoaded()) {
             // Syncthing is not running or REST API is not (yet) available.
