@@ -30,11 +30,11 @@ def ourVersionName = "${versionMajor}.${versionMinor}.${versionPatch}.${versionW
 
 android {
     // Changes to these values need to be reflected in `.travis.yml`
-    compileSdkVersion 'android-R'
-    buildToolsVersion '30.0.0-rc1'
+    compileSdkVersion 29
+    buildToolsVersion '29.0.2'
 
     buildTypes.debug.applicationIdSuffix ".debug"
-    buildFeatures.dataBinding = true
+    dataBinding.enabled = true
 
     playConfigs {
         defaultAccountConfig {
@@ -44,7 +44,7 @@ android {
     defaultConfig {
         applicationId "com.github.catfriend1.syncthingandroid"
         minSdkVersion 16
-        targetSdkVersion 'R'
+        targetSdkVersion 29
         versionCode ourVersionCode
         versionName ourVersionName
         testApplicationId 'com.github.catfriend1.syncthingandroid.test'
