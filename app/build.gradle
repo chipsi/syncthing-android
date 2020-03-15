@@ -33,7 +33,7 @@ android {
     buildToolsVersion '30.0.0-rc1'
 
     buildTypes.debug.applicationIdSuffix ".debug"
-    dataBinding.enabled = true
+    buildFeatures.dataBinding = true
 
     defaultConfig {
         applicationId "com.github.catfriend1.syncthingandroid"
