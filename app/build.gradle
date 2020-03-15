@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.github.ben-manes.versions'
-apply plugin: 'com.github.triplet.play'
 
 dependencies {
     implementation 'eu.chainfire:libsuperuser:1.1.0.201907261845'
@@ -34,11 +33,6 @@ android {
     buildTypes.debug.applicationIdSuffix ".debug"
     dataBinding.enabled = true
 
-    playConfigs {
-        defaultAccountConfig {
-            serviceAccountCredentials = file(System.getenv("SYNCTHING_RELEASE_PLAY_ACCOUNT_CONFIG_FILE") ?: 'keys.json')
-        }
-    }
     defaultConfig {
         applicationId "com.github.catfriend1.syncthingandroid"
         minSdkVersion 16
@@ -95,13 +89,6 @@ android {
         disable "IconMissingDensityFolder"
         abortOnError true
     }
-}
-
-play {
-    serviceAccountCredentials = file(System.getenv("SYNCTHING_RELEASE_PLAY_ACCOUNT_CONFIG_FILE") ?: 'keys.json')
-    track = 'beta'
-    resolutionStrategy = 'ignore'
-    defaultToAppBundles = true
 }
 
 tasks.whenTaskAdded { task ->
