@@ -32,7 +32,7 @@ public class Device {
      * Those properties are not present in Syncthing's config.
      * They are only required by the device edit dialog. {@link DeviceActivity}
      */
-    private Set<String> folders = new HashSet<>();
+    private transient Set<String> folders = new HashSet<>();
 
     public void addFolder(final String folderId) {
         folders.add(folderId);
