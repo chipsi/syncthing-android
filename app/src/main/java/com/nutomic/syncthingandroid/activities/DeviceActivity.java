@@ -470,14 +470,8 @@ public class DeviceActivity extends SyncthingActivity {
         }
     }
 
-
     private void showDeleteDialog(){
-        mDeleteDialog = createDeleteDialog();
-        mDeleteDialog.show();
-    }
-
-    private Dialog createDeleteDialog(){
-        return new AlertDialog.Builder(this)
+        mDeleteDialog = new AlertDialog.Builder(this)
                 .setMessage(R.string.remove_device_confirm)
                 .setPositiveButton(android.R.string.yes, (dialogInterface, i) -> {
                     mConfig.removeDevice(getApi(), mDevice.deviceID);
@@ -487,6 +481,7 @@ public class DeviceActivity extends SyncthingActivity {
                 })
                 .setNegativeButton(android.R.string.no, null)
                 .create();
+        mDeleteDialog.show();
     }
 
     /**
