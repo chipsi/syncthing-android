@@ -261,6 +261,7 @@ public class FolderActivity extends SyncthingActivity {
                 }
                 if (mFolder == null) {
                     Log.w(TAG, "Folder not found in API update, maybe it was deleted?");
+                    setResult(Activity.RESULT_CANCELED);
                     finish();
                     return;
                 }
@@ -764,6 +765,7 @@ public class FolderActivity extends SyncthingActivity {
         // Edit mode.
         if (!mFolderNeedsToUpdate) {
             // We've got nothing to save.
+            setResult(AppCompatActivity.RESULT_CANCELED);
             finish();
             return;
         }
@@ -787,6 +789,7 @@ public class FolderActivity extends SyncthingActivity {
 
         // Update folder using RestApi or ConfigXml.
         mConfig.updateFolder(restApi, mFolder);
+        setResult(AppCompatActivity.RESULT_OK);
         finish();
         return;
     }
@@ -865,7 +868,10 @@ public class FolderActivity extends SyncthingActivity {
     private void showDiscardDialog(){
         mDiscardDialog = new AlertDialog.Builder(this)
                 .setMessage(R.string.dialog_discard_changes)
-                .setPositiveButton(android.R.string.ok, (dialog, which) -> finish())
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                        setResult(AppCompatActivity.RESULT_CANCELED);
+                        finish();
+                })
                 .setNegativeButton(android.R.string.cancel, null)
                 .create();
         mDiscardDialog.show();
