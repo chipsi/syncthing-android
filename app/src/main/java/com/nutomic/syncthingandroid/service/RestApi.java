@@ -618,6 +618,18 @@ public class RestApi {
         synchronized (mConfigLock) {
             removeDeviceInternal(newDevice.deviceID);
             mConfig.devices.add(newDevice);
+
+            Set<String> deviceSharesFolders = newDevice.getFolders();
+            for (Folder folder : mConfig.folders) {
+                if (deviceSharesFolders.contains(folder.id)) {
+                    LogV("updateDevice: Device '" + newDevice.getDisplayName() + "' shares folder '" + folder.toString() + "'");
+                    folder.addDevice(newDevice);
+                } else {
+                    LogV("updateDevice: Device '" + newDevice.getDisplayName() + "' does not share folder '" + folder.toString() + "'");
+                    folder.removeDevice(newDevice.deviceID);
+                }
+            }
+
             sendConfig();
         }
     }
