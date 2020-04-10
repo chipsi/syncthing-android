@@ -885,10 +885,12 @@ public class ConfigXml {
                     for (Folder folder : getFolders()) {
                         if (deviceSharesFolders.contains(folder.id)) {
                             LogV("updateDevice: Device '" + device.getDisplayName() + "' shares folder '" + folder.toString() + "'");
-                            // ToDo folder.addDevice(newDevice);
+                            folder.addDevice(device);
+                            updateFolder(folder);
                         } else {
                             LogV("updateDevice: Device '" + device.getDisplayName() + "' does not share folder '" + folder.toString() + "'");
-                            // ToDo folder.removeDevice(device.deviceID);
+                            folder.removeDevice(device.deviceID);
+                            updateFolder(folder);
                         }
                     }
 
