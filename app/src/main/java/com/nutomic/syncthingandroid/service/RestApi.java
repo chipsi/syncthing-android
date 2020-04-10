@@ -455,9 +455,7 @@ public class RestApi {
         synchronized (mConfigLock) {
             jsonConfig = mGson.toJson(mConfig);
         }
-        if (true) {
-            LogVMultipleLines("sendConfig: config=" + jsonToPrettyFormat(jsonConfig));
-        }
+        // LogVMultipleLines("sendConfig: config=" + jsonToPrettyFormat(jsonConfig));
         new PostRequest(mContext, mUrl, PostRequest.URI_SYSTEM_CONFIG, mApiKey,
             null, jsonConfig, null);
         mOnConfigChangedListener.onConfigChanged();
