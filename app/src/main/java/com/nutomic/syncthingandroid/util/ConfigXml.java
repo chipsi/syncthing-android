@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -876,6 +877,18 @@ public class ConfigXml {
                             r.appendChild(nodeAddress);
                             Element elementAddress = (Element) nodeAddress;
                             elementAddress.setTextContent(address);
+                        }
+                    }
+
+                    // Folders
+                    Set<String> deviceSharesFolders = device.getFolders();
+                    for (Folder folder : getFolders()) {
+                        if (deviceSharesFolders.contains(folder.id)) {
+                            LogV("updateDevice: Device '" + device.getDisplayName() + "' shares folder '" + folder.toString() + "'");
+                            // ToDo folder.addDevice(newDevice);
+                        } else {
+                            LogV("updateDevice: Device '" + device.getDisplayName() + "' does not share folder '" + folder.toString() + "'");
+                            // ToDo folder.removeDevice(device.deviceID);
                         }
                     }
 
