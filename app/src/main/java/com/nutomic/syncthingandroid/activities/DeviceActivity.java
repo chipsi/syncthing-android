@@ -180,7 +180,7 @@ public class DeviceActivity extends SyncthingActivity {
                     } else {
                         mDevice.removeFolder(folder.id);
                     }
-                    // ToDo mDeviceNeedsToUpdate = true;
+                    mDeviceNeedsToUpdate = true;
                     break;
                 case R.id.introducer:
                     mDevice.introducer = isChecked;
@@ -536,6 +536,7 @@ public class DeviceActivity extends SyncthingActivity {
             List<Device> devices = folder.getDevices();
             for (Device device : devices) {
                 if (mDevice.deviceID.equals(device.deviceID)) {
+                    mDevice.addFolder(folder.id);
                     folderSharedWithDevice = true;
                     break;
                 }
