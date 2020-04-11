@@ -10,13 +10,15 @@
             android:persistent="false"
             android:selectable="false"
             android:title="@string/run_conditions_title"
-            android:summary="@string/run_conditions_summary"/>
+            android:summary="@string/run_conditions_summary"
+            android:singleLineTitle="false" />
 
         <!-- Sync on WiFi -->
         <CheckBoxPreference
             android:key="run_on_wifi"
             android:title="@string/run_on_wifi_title"
             android:summary="@string/run_on_wifi_summary"
+            android:singleLineTitle="false"
             android:defaultValue="true" />
 
         <!-- Sync on metered WiFi -->
@@ -24,6 +26,7 @@
             android:key="run_on_metered_wifi"
             android:title="@string/run_on_metered_wifi_title"
             android:summary="@string/run_on_metered_wifi_summary"
+            android:singleLineTitle="false"
             android:defaultValue="false" />
 
         <!-- Use WiFi Ssid whitelist -->
@@ -31,19 +34,22 @@
             android:key="use_wifi_whitelist"
             android:title="@string/run_on_whitelisted_wifi_title"
             android:summary="@string/run_on_whitelisted_wifi_summary"
+            android:singleLineTitle="false"
             android:defaultValue="false" />
 
         <!-- Select whitelisted WiFi Ssid -->
         <com.nutomic.syncthingandroid.views.WifiSsidPreference
             android:key="wifi_ssid_whitelist"
             android:title="@string/specify_wifi_ssid_whitelist"
-            android:summary="@null" />
+            android:summary="@null"
+            android:singleLineTitle="false" />
 
         <!-- Sync on mobile data -->
         <CheckBoxPreference
             android:key="run_on_mobile_data"
             android:title="@string/run_on_mobile_data_title"
             android:summary="@string/run_on_mobile_data_summary"
+            android:singleLineTitle="false"
             android:defaultValue="false" />
 
         <!-- Sync while roaming -->
@@ -51,6 +57,7 @@
             android:key="run_on_roaming"
             android:title="@string/run_on_roaming_title"
             android:summary="@string/run_on_roaming_summary"
+            android:singleLineTitle="false"
             android:defaultValue="false" />
 
         <ListPreference
@@ -59,24 +66,29 @@
             android:entryValues="@array/power_source_values"
             android:entries="@array/power_source_entries"
             android:summary="@null"
+            android:singleLineTitle="false"
             android:defaultValue="ac_and_battery_power" />
 
+        <!-- Respect Android battery optimization -->
         <CheckBoxPreference
             android:key="respect_battery_saving"
             android:title="@string/respect_battery_saving_title"
             android:summary="@string/respect_battery_saving_summary"
+            android:singleLineTitle="false"
             android:defaultValue="true" />
 
         <CheckBoxPreference
             android:key="respect_master_sync"
             android:title="@string/respect_master_sync_title"
             android:summary="@string/respect_master_sync_summary"
+            android:singleLineTitle="false"
             android:defaultValue="false" />
 
         <CheckBoxPreference
             android:key="run_in_flight_mode"
             android:title="@string/run_in_flight_mode_title"
             android:summary="@string/run_in_flight_mode_summary"
+            android:singleLineTitle="false"
             android:defaultValue="false" />
 
         <!-- Run on time schedule -->
@@ -84,6 +96,7 @@
             android:key="run_on_time_schedule"
             android:title="@string/run_on_time_schedule_title"
             android:summary="@string/run_on_time_schedule_summary"
+            android:singleLineTitle="false"
             android:defaultValue="false" />
 
     </PreferenceScreen>
@@ -124,6 +137,7 @@
             android:key="always_run_in_background"
             android:title="@string/behaviour_autostart_title"
             android:summary="@string/behaviour_autostart_summary"
+            android:singleLineTitle="false"
             android:defaultValue="false" />
 
         <!-- Use root -->
@@ -131,6 +145,7 @@
             android:key="use_root"
             android:title="@string/use_root_title"
             android:summary="@string/use_root_summary"
+            android:singleLineTitle="false"
             android:defaultValue="false" />
 
         <!-- Folder root suggestion -->
@@ -140,6 +155,7 @@
             android:entryValues="@array/suggest_new_folder_root_values"
             android:entries="@array/suggest_new_folder_root_entries"
             android:summary="@null"
+            android:singleLineTitle="false"
             android:defaultValue="external_android_data" />
 
         <!-- Show "Syncthing Camera" icon in launcher -->
@@ -147,6 +163,7 @@
             android:key="launcher_show_camera_icon"
             android:title="@string/launcher_show_camera_icon_title"
             android:summary="@string/launcher_show_camera_icon_summary"
+            android:singleLineTitle="false"
             android:defaultValue="true" />
 
     </PreferenceScreen>
