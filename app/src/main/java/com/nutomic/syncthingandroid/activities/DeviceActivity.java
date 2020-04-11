@@ -582,7 +582,7 @@ public class DeviceActivity extends SyncthingActivity {
 
         if (mIsCreateMode) {
             Log.v(TAG, "onSave: Adding device with ID = \'" + mDevice.deviceID + "\'");
-            mConfig.addDevice(getApi(), mDevice);
+            mConfig.updateDevice(getApi(), mDevice);
             setResult(AppCompatActivity.RESULT_OK);
             finish();
             return;
