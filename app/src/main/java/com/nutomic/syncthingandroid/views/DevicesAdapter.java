@@ -1,5 +1,6 @@
 package com.nutomic.syncthingandroid.views;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.text.TextUtils;
@@ -68,6 +69,7 @@ public class DevicesAdapter extends ArrayAdapter<Device> {
         return binding.getRoot();
     }
 
+    @SuppressLint("SetTextI18n")
     private void updateDeviceStatusView(ItemDeviceListBinding binding, Device device) {
         View rateInOutView = binding.getRoot().findViewById(R.id.rateInOutContainer);
 
