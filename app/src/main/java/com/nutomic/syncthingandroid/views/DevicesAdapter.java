@@ -73,8 +73,10 @@ public class DevicesAdapter extends ArrayAdapter<Device> {
 
         if (device.getFolderCount() == 0) {
             binding.sharedFoldersTitle.setText(R.string.device_state_unused);
+            binding.sharedFolders.setVisibility(GONE);
         } else {
             binding.sharedFoldersTitle.setText(R.string.shared_folders_title_colon);
+            binding.sharedFolders.setVisibility(VISIBLE);
             binding.sharedFolders.setText("\u2022 " + TextUtils.join("\n\u2022 ", device.getFolders()));
         }
 
