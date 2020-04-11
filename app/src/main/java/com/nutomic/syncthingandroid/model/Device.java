@@ -38,6 +38,13 @@ public class Device {
         folders.add(folderId);
     }
 
+    public int getFolderCount() {
+        if (folders == null) {
+            return 0;
+        }
+        return folders.size();
+    }
+
     public final Set<String> getFolders() {
         return folders;
     }
