@@ -221,8 +221,6 @@ Bitte melden Sie auftretende Probleme via GitHub.</string>
     <!-- Same as upload_title with a colon and space appended -->
     <string name="upload_title_colon">Hochladen:\u0020</string>
 
-    <!-- Title for current CPU usage -->
-
     <!-- Title for current RAM usage -->
     <string name="ram_usage">RAM-Auslastung</string>
 
