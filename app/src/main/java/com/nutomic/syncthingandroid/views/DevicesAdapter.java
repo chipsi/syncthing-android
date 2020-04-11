@@ -24,8 +24,6 @@ import com.nutomic.syncthingandroid.model.Folder;
 import com.nutomic.syncthingandroid.service.RestApi;
 import com.nutomic.syncthingandroid.util.Util;
 
-import java.util.Set;
-
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
