@@ -59,7 +59,7 @@ public class StatusFragment extends ListFragment implements SyncthingService.OnS
         @Override
         public void run() {
             onTimerEvent();
-            mRestApiQueryHandler.postDelayed(this, Constants.GUI_UPDATE_INTERVAL);
+            mRestApiQueryHandler.postDelayed(this, Constants.REST_UPDATE_INTERVAL);
         }
     };
 
