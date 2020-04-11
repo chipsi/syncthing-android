@@ -197,6 +197,9 @@ Bitte melden Sie auftretende Probleme via GitHub.</string>
     <!-- Indicates that the device connection is unknown -->
     <string name="device_state_unknown">Unbekannt</string>
 
+    <!-- Title for the listing of shared folders with a colon and space appended -->
+    <string name="shared_folders_title_colon">Ordner:\u0020</string>
+
     <!-- Title for current download rate -->
     <string name="download_title">Download</string>
 
