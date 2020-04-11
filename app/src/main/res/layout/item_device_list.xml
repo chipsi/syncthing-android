@@ -41,10 +41,34 @@
                 android:theme="@style/progressBarBlue" />
 
             <RelativeLayout
-                android:id="@+id/rateInOutContainer"
+                android:id="@+id/deviceInfoContainer"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_below="@+id/progressBar">
+
+                <TextView
+                    android:id="@+id/sharedFoldersTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/shared_folders_title_colon"
+                    android:textAppearance="?textAppearanceListItemSecondary" />
+
+                <TextView
+                    android:id="@+id/sharedFolders"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBaseline="@id/sharedFoldersTitle"
+                    android:layout_toEndOf="@id/sharedFoldersTitle"
+                    android:layout_toRightOf="@id/sharedFoldersTitle"
+                    android:textAppearance="?textAppearanceListItemSecondary" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/rateInOutContainer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/deviceInfoContainer">
 
                 <TextView
                     android:id="@+id/download_title"
