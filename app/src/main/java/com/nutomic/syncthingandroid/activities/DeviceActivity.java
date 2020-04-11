@@ -536,7 +536,6 @@ public class DeviceActivity extends SyncthingActivity {
             List<Device> devices = folder.getDevices();
             for (Device device : devices) {
                 if (mDevice.deviceID.equals(device.deviceID)) {
-                    mDevice.addFolder(folder.id);
                     folderSharedWithDevice = true;
                     break;
                 }
