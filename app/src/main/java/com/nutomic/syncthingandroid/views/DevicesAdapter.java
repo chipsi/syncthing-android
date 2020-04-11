@@ -74,7 +74,7 @@ public class DevicesAdapter extends ArrayAdapter<Device> {
         if (device.getFolderCount() == 0) {
             binding.sharedFoldersTitle.setText(R.string.device_state_unused);
         } else {
-            binding.sharedFolders.setText(TextUtils.join(", ", device.getFolders()));
+            binding.sharedFolders.setText("\u2022 " + TextUtils.join("\n\u2022 ", device.getFolders()));
         }
 
         if (device.paused) {
@@ -90,9 +90,8 @@ public class DevicesAdapter extends ArrayAdapter<Device> {
             // Syncthing is not running.
             binding.progressBar.setVisibility(GONE);
             rateInOutView.setVisibility(GONE);
-            binding.status.setVisibility(GONE);
-            binding.status.setText(R.string.device_state_unknown);
-            binding.status.setTextColor(ContextCompat.getColor(getContext(), R.color.text_purple));
+            binding.status.setText(R.string.device_disconnected);
+            binding.status.setTextColor(ContextCompat.getColor(getContext(), R.color.text_red));
             return;
         }
 
