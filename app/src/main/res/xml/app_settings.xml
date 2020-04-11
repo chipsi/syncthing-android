@@ -111,6 +111,7 @@
             android:title="@string/preference_app_theme_title"
             android:entries="@array/app_theme_names"
             android:entryValues="@array/app_theme_values"
+            android:singleLineTitle="false"
             android:defaultValue="1" />
 
         <!-- Expert mode -->
@@ -118,13 +119,15 @@
             android:key="expert_mode"
             android:title="@string/expert_mode_title"
             android:summary="@string/expert_mode_summary"
+            android:singleLineTitle="false"
             android:defaultValue="false" />
 
         <!-- Language -->
         <ListPreference
             android:key="pref_current_language"
             android:title="@string/preference_language_title"
-            android:summary="@string/preference_language_summary" />
+            android:summary="@string/preference_language_summary"
+            android:singleLineTitle="false" />
 
     </PreferenceScreen>
 
