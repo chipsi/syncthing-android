@@ -147,7 +147,7 @@ public class ConfigRouter {
             for (Folder folder : folders) {
                 if (folder.getDevice(device.deviceID) != null) {
                     // "device" is sharing "folder".
-                    device.addFolder(folder.id);
+                    device.addFolder(folder);
                 }
             }
         }
