@@ -605,13 +605,9 @@ public class RestApi {
         throw new RuntimeException("RestApi.getLocalDevice: Failed to get the local device crucial to continuing execution.");
     }
 
-    public void addDevice(Device device) {
-        synchronized (mConfigLock) {
-            mConfig.devices.add(device);
-            sendConfig();
-        }
-    }
-
+    /**
+     * Adds or updates a device identified by its device ID.
+     */
     public void updateDevice(Device newDevice) {
         synchronized (mConfigLock) {
             removeDeviceInternal(newDevice.deviceID);
