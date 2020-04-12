@@ -221,6 +221,8 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
         }
         // concat += " " + Util.getPathEllipsis(cachedFolderStatus.lastItemFinishedItem);
         Util.getPathEllipsis("");
+        Util.getPathEllipsis("/");
+        Util.getPathEllipsis("//");
         Util.getPathEllipsis("jp2iexp.dll");
         Util.getPathEllipsis("TP-LINK-/Easy Smart Configuration Utility/jre/bin/jp2iexp.dll");
         Util.getPathEllipsis("TP-LINK-Ich-bin-ein-ASSHOLE-und-mach-lang/Easy Smart Configuration Utility/jre/bin/jp2iexp.dll");
