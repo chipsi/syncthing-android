@@ -346,14 +346,10 @@ public class Util {
      * where we have little space to display it.
      */
     public static final String getPathEllipsis(final String fullFN) {
-        final boolean FUNC_LOG = true;
+        final boolean FUNC_LOG_D = true;
+        final boolean FUNC_LOG_V = false;
         final int MAX_CHARS_SUBDIR = 15;
         final int MAX_CHARS_FILENAME = MAX_CHARS_SUBDIR * 2;
-
-        if (FUNC_LOG) {
-            Log.v(TAG, "getPathEllipsis: *** START ***");
-            Log.v(TAG, "getPathEllipsis: I [" + fullFN + "]");
-        }
 
         int index;
         String part;
@@ -363,18 +359,20 @@ public class Util {
             index = workIn.indexOf('/');
             if (index < 0) {
                 // Last part is the filename.
-                if (FUNC_LOG) {
+                if (FUNC_LOG_V) {
                     Log.v(TAG, "getPathEllipsis: workIn [" + workIn + "] @ index <= 0");
                 }
                 if (workIn.length() > MAX_CHARS_FILENAME) {
-                    String fileExt = "";
-                    String fileName = "";
                     int indexFileExt = workIn.lastIndexOf(".");
                     if (indexFileExt > 0) {
-                        workIn = workIn.substring(0, indexFileExt).substring(0, MAX_CHARS_FILENAME) +
-                                    "\u22ef" +
-                                    workIn.substring(indexFileExt);
+                        // Filename with extension.
+                        String fileName = workIn.substring(0, indexFileExt);
+                        if (fileName.length() > MAX_CHARS_FILENAME) {
+                            fileName = fileName.substring(0, MAX_CHARS_FILENAME);
+                        }
+                        workIn = fileName + "\u22ef" + workIn.substring(indexFileExt);
                     } else {
+                        // Filename without extension
                         workIn = workIn.substring(0, MAX_CHARS_FILENAME) + "\u22ef";
                     }
                 }
@@ -382,7 +380,7 @@ public class Util {
                 break;
             }
             part = workIn.substring(0, index);
-            if (FUNC_LOG) {
+            if (FUNC_LOG_V) {
                 Log.v(TAG, "getPathEllipsis: part [" + part + "]");
             }
             if (part.length() > MAX_CHARS_SUBDIR) {
@@ -390,16 +388,14 @@ public class Util {
             }
             workOut += part + "/";
             workIn = workIn.substring(index + 1);
-            if (FUNC_LOG) {
+            if (FUNC_LOG_V) {
                 Log.v(TAG, "getPathEllipsis: workIn [" + workIn + "], workOut [" + workOut + "]");
             }
         }
-
-        if (FUNC_LOG && !workOut.equals(fullFN)) {
-            Log.v(TAG, "getPathEllipsis: I [" + fullFN + "]");
-            Log.v(TAG, "getPathEllipsis: O [" + workOut + "]");
+        if (FUNC_LOG_D) {
+            Log.v(TAG, "getPathEllipsis: INP [" + fullFN + "]");
+            Log.v(TAG, "getPathEllipsis: OUT [" + workOut + "]");
         }
-        Log.v(TAG, "getPathEllipsis: *** END ***");
         return workOut;
     }
 
