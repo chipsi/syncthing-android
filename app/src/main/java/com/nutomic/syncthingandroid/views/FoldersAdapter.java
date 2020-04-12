@@ -219,7 +219,18 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
             default:
                 concat += " \u2049";
         }
-        concat += " " + Util.getPathEllipsis(cachedFolderStatus.lastItemFinishedItem, 44);
+        // concat += " " + Util.getPathEllipsis(cachedFolderStatus.lastItemFinishedItem);
+        Util.getPathEllipsis("");
+        Util.getPathEllipsis("jp2iexp.dll");
+        Util.getPathEllipsis("TP-LINK-/Easy Smart Configuration Utility/jre/bin/jp2iexp.dll");
+        Util.getPathEllipsis("TP-LINK-Ich-bin-ein-ASSHOLE-und-mach-lang/Easy Smart Configuration Utility/jre/bin/jp2iexp.dll");
+        Util.getPathEllipsis("TP-LINK-Ich-bin-ein-ASSHOLE-und-mach-lang-textdatei-ist-cool.txt");
+        Util.getPathEllipsis("TP-LINK-/Easy Smart Configuration Utility/jre/bin-Ich-bin-ein-ASSHOLE-und-mach-lang/jp2iexp-lang-textdatei-ist-cool.dll");
+        Util.getPathEllipsis("TP-LINK-//Easy Smart Configuration Utility/jre/bin-Ich-bin-ein-ASSHOLE-und-mach-lang/jp2iexp-lang-textdatei-ist-cool.dll");
+        Util.getPathEllipsis("TP-LINK-//Easy Smart Configuration Utility/jre/bin-Ich-bin-ein-ASSHOLE-und-mach-lang//jp2iexp-lang-textdatei-ist-cool.dll");
+        Util.getPathEllipsis("TP-LINK-//Easy Smart Configuration Utility/jre/bin-Ich-bin-ein-ASSHOLE-und-mach-lang//jp2iexp-lang-textdatei-ist-cool");
+        Util.getPathEllipsis("TP-LINK-//Easy Smart Configuration Utility/jre/bin-Ich-bin-ein-ASSHOLE-und-mach-lang//jp2iexp-lang-textdatei-ist-cool.richtiglangeextensionswassolldas-denn-bitte");
+        Util.getPathEllipsis("TP-LINK-Ich-bin-ein-ASSHOLE-und-mach-lang/Easy Smart Configuration Utility/jre/bin/jp2iexp.dllrichtiglangeextensionswassolldas-denn-bitte");
         return concat;
     }
 
