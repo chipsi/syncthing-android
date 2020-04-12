@@ -382,14 +382,14 @@ public class Util {
 
         // STRATEGY 2
         // Check if MAX_CHARS_PATH is exceeded by the remaining PATH in front of the FILENAME.EXT
-        lastIndex = fullFN.lastIndexOf('/');
+        lastIndex = ellipsizedPath.lastIndexOf('/');
         if (lastIndex > 0 &&
                 lastIndex > MAX_CHARS_PATH) {
             // The path alone exceeds our total max chars for path+filename.
             if (FUNC_LOG) {
                 Log.v(TAG, "getPathEllipsis: A Applying strategy 2 - MAX_CHARS_PATH=" + Integer.toString(MAX_CHARS_PATH));
             }
-            ellipsizedPath = "\u22ef" + ellipsizedPath.substring(lastIndex - MAX_CHARS_PATH, MAX_CHARS_PATH);
+            ellipsizedPath = "\u22ef" + ellipsizedPath.substring(lastIndex - MAX_CHARS_PATH);
         }
 
         if (FUNC_LOG && !ellipsizedPath.equals(fullFN)) {
