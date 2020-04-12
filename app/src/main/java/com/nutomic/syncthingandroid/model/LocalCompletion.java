@@ -177,7 +177,7 @@ public class LocalCompletion {
     }
 
     /**
-     * Getters and setters of additionally stored information
+     * Setters of additionally stored information
      * e.g. "ItemFinished" event details arriving through {@link EventProcessor} > {@link RestApi}
      */
     public void setLastItemFinished(final String folderId,
