@@ -12,7 +12,7 @@ public class CachedFolderStatus {
     public double completion = 100;
 
     /**
-     * Accessed by getters and setters
+     * Accessed by setters
      */
     // Example: "update"
     public String lastItemFinishedAction = "";
