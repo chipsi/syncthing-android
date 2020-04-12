@@ -177,6 +177,39 @@ public class LocalCompletion {
     }
 
     /**
+     * Getters and setters of additionally stored information
+     * e.g. "ItemFinished" event details arriving through {@link EventProcessor} > {@link RestApi}
+     */
+    /*
+    public String getLastItemFinished(final String folderId) {
+        synchronized(mFolderMapLock) {
+            final Map.Entry<FolderStatus, CachedFolderStatus> cacheEntry = getFolderStatus(folderId);
+            CachedFolderStatus cachedFolderStatus = cacheEntry.getValue();
+            if (TextUtils.isEmpty(cachedFolderStatus.lastItemFinishedAction)) {
+                return "";
+            }
+            return cachedFolderStatus.lastItemFinishedAction + " " + cachedFolderStatus.lastItemFinishedItem + " @" + cachedFolderStatus.lastItemFinishedTime;
+        }
+    }
+    */
+
+    public void setLastItemFinished(final String folderId,
+                                        final String lastItemFinishedAction,
+                                        final String lastItemFinishedItem,
+                                        final String lastItemFinishedTime) {
+        synchronized(mFolderMapLock) {
+            final Map.Entry<FolderStatus, CachedFolderStatus> cacheEntry = getFolderStatus(folderId);
+            CachedFolderStatus cachedFolderStatus = cacheEntry.getValue();
+            cachedFolderStatus.lastItemFinishedAction = lastItemFinishedAction;
+            cachedFolderStatus.lastItemFinishedItem = lastItemFinishedItem;
+            cachedFolderStatus.lastItemFinishedTime = lastItemFinishedTime;
+
+            // Add folder or update existing folder entry.
+            mFolderMap.put(folderId, new SimpleEntry(cacheEntry.getKey(), cachedFolderStatus));
+        }
+    }
+
+    /**
      * Returns a deep copy of object.
      *
      * This method uses Gson and only works with objects that can be converted with Gson.
