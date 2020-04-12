@@ -373,4 +373,16 @@ public class Util {
         DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).withLocale(Locale.getDefault());
         return formatter.format(zonedDateTime);
     }
+
+    public static String formatTime(String dateTime) {
+        // Convert dateTime to readable localized string.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            return dateTime;
+        }
+
+        ZonedDateTime parsedDateTime = ZonedDateTime.parse(dateTime);
+        ZonedDateTime zonedDateTime = parsedDateTime.withZoneSameInstant(ZoneId.systemDefault());
+        DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.MEDIUM).withLocale(Locale.getDefault());
+        return formatter.format(zonedDateTime);
+    }
 }
