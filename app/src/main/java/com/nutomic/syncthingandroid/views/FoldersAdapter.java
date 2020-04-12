@@ -59,7 +59,7 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
 
         Folder folder = getItem(position);
         binding.label.setText(TextUtils.isEmpty(folder.label) ? folder.id : folder.label);
-        binding.directory.setText(folder.path);
+        binding.directory.setText(getShortPathForUI(folder.path));
         binding.override.setOnClickListener(view -> { onClickOverride(view, folder); } );
         binding.revert.setOnClickListener(view -> { onClickRevert(view, folder); } );
         binding.openFolder.setOnClickListener(view -> { FileUtils.openFolder(mContext, folder.path); } );
@@ -236,6 +236,13 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
             view.setText(text);
             view.setVisibility(VISIBLE);
         }
+    }
+
+    private final String getShortPathForUI(final String path) {
+        String shortenedPath = path.replaceFirst("/storage/emulated/0", "[int]");
+        shortenedPath = shortenedPath.replaceFirst("/storage/[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}", "[ext]");
+        shortenedPath = shortenedPath.replaceFirst("/" + mContext.getPackageName(), "/[app]");
+        return Util.getPathEllipsis(shortenedPath);
     }
 
     private void onClickOverride(View view, Folder folder) {
