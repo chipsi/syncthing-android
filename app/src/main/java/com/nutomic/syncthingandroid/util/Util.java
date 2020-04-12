@@ -374,6 +374,7 @@ public class Util {
         return formatter.format(zonedDateTime);
     }
 
+    /*
     public static String formatTime(String dateTime) {
         // Convert dateTime to readable localized string.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
@@ -385,4 +386,5 @@ public class Util {
         DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.MEDIUM).withLocale(Locale.getDefault());
         return formatter.format(zonedDateTime);
     }
+    */
 }
