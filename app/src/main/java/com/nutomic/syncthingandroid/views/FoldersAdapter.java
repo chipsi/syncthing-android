@@ -221,7 +221,9 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
         binding.lastItemFinishedItem.setText(finishedItemText);
         binding.lastItemFinishedItem.setVisibility(VISIBLE);
 
-        binding.lastItemFinishedTime.setText("\u21cc \u231a " + Util.formatTime(cachedFolderStatus.lastItemFinishedTime));
+        String finishedItemTime = "\u21cc \u231a ";
+        finishedItemTime += Util.formatTime(cachedFolderStatus.lastItemFinishedTime);
+        binding.lastItemFinishedTime.setText(finishedItemTime);
         binding.lastItemFinishedTime.setVisibility(VISIBLE);
 
         return;
