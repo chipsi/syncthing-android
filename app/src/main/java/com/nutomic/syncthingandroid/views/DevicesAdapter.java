@@ -102,6 +102,8 @@ public class DevicesAdapter extends ArrayAdapter<Device> {
         final int completion = mRestApi.getRemoteDeviceCompletion(device.deviceID);
 
         if (conn.connected) {
+            binding.status.setVisibility(VISIBLE);
+
             String bandwidthUpDownText = "\u21f5 ";     // down+up arrow
             bandwidthUpDownText += mContext.getString(R.string.download_title);
             bandwidthUpDownText += " \u02c5 ";          // down arrow
@@ -112,8 +114,7 @@ public class DevicesAdapter extends ArrayAdapter<Device> {
             bandwidthUpDownText += Util.readableTransferRate(getContext(), conn.outBits);
             binding.bandwidthUpDown.setText(bandwidthUpDownText);
             rateInOutView.setVisibility(VISIBLE);
-            binding.bandwidthUpDown.setVisibility(VISIBLE);
-
+            
             Boolean syncingState = !(completion == 100);
             binding.progressBar.setVisibility(syncingState ? VISIBLE : GONE);
             if (!syncingState) {
