@@ -180,19 +180,6 @@ public class LocalCompletion {
      * Getters and setters of additionally stored information
      * e.g. "ItemFinished" event details arriving through {@link EventProcessor} > {@link RestApi}
      */
-    /*
-    public String getLastItemFinished(final String folderId) {
-        synchronized(mFolderMapLock) {
-            final Map.Entry<FolderStatus, CachedFolderStatus> cacheEntry = getFolderStatus(folderId);
-            CachedFolderStatus cachedFolderStatus = cacheEntry.getValue();
-            if (TextUtils.isEmpty(cachedFolderStatus.lastItemFinishedAction)) {
-                return "";
-            }
-            return cachedFolderStatus.lastItemFinishedAction + " " + cachedFolderStatus.lastItemFinishedItem + " @" + cachedFolderStatus.lastItemFinishedTime;
-        }
-    }
-    */
-
     public void setLastItemFinished(final String folderId,
                                         final String lastItemFinishedAction,
                                         final String lastItemFinishedItem,
