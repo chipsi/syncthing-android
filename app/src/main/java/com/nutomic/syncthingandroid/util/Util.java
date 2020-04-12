@@ -341,6 +341,36 @@ public class Util {
         return new File(path).toURI().normalize().getPath();
     }
 
+    /**
+     * Shorten a path using ellipsis to display it on UI
+     * where we have little space to display it.
+     * Recommended: evenMaxCharsTotal = 44
+     */
+    public static final String getPathEllipsis(final String fullFN, final int evenMaxCharsTotal) {
+        final int MAX_CHARS_SUBDIR = evenMaxCharsTotal / 2;
+        if (fullFN.length() <= evenMaxCharsTotal) {
+            return fullFN;
+        }
+        int firstIndex = fullFN.indexOf('/');
+        int lastIndex = fullFN.lastIndexOf('/');
+        String ellipsizedPath = fullFN;
+        if (firstIndex > 0 &&
+                lastIndex > 0 &&
+                firstIndex != lastIndex) {
+            // There is path in between we could ellipsize if it's too long to display.
+            if (lastIndex - firstIndex + 1 > MAX_CHARS_SUBDIR) {
+                ellipsizedPath = fullFN.substring(0, firstIndex + (MAX_CHARS_SUBDIR / 2)) +
+                        "\u22ef" +
+                        fullFN.substring(lastIndex - (MAX_CHARS_SUBDIR / 2) + 1);
+            }
+        }
+        if (true && !ellipsizedPath.equals(fullFN)) {
+            Log.v(TAG, "getPathEllipsis: O [" + fullFN + "]");
+            Log.v(TAG, "getPathEllipsis: E [" + ellipsizedPath + "]");
+        }
+        return ellipsizedPath;
+    }
+
     public static boolean containsIgnoreCase(String src, String what) {
         final int length = what.length();
         if (length == 0) {
