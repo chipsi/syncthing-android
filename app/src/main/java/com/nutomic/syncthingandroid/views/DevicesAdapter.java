@@ -105,7 +105,7 @@ public class DevicesAdapter extends ArrayAdapter<Device> {
             String bandwidthUpDownText = "\u21e9 ";     // down arrow
             bandwidthUpDownText += Util.readableTransferRate(getContext(), conn.inBits);
             bandwidthUpDownText += " \u2022";           // dot
-            bandwidthUpDownText += " \u21eb ";          // up arrow
+            bandwidthUpDownText += " \u21e7 ";          // up arrow
             bandwidthUpDownText += Util.readableTransferRate(getContext(), conn.outBits);
             binding.bandwidthUpDown.setText(bandwidthUpDownText);
             rateInOutView.setVisibility(VISIBLE);
