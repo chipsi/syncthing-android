@@ -89,7 +89,6 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
             binding.override.setVisibility(GONE);
             binding.progressBar.setVisibility(GONE);
             binding.revert.setVisibility(GONE);
-            binding.size.setVisibility(GONE);
             binding.state.setVisibility(GONE);
             setTextOrHide(binding.invalid, folder.invalid);
             return;
@@ -186,13 +185,14 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
         showLastItemFinishedUI(binding, cachedFolderStatus);
 
         binding.items.setVisibility(folder.paused ? GONE : VISIBLE);
-        binding.items.setText(mContext.getResources()
-                .getQuantityString(R.plurals.files, (int) folderStatus.inSyncFiles, folderStatus.inSyncFiles, folderStatus.globalFiles));
-
-        binding.size.setVisibility(folder.paused ? GONE : VISIBLE);
-        binding.size.setText(mContext.getString(R.string.folder_size_format,
+        String itemsAndSize = "\u2211 ";
+        itemsAndSize += mContext.getResources()
+                .getQuantityString(R.plurals.files, (int) folderStatus.inSyncFiles, folderStatus.inSyncFiles, folderStatus.globalFiles);
+        itemsAndSize += " \u2022 ";
+        itemsAndSize += mContext.getString(R.string.folder_size_format,
                 Util.readableFileSize(mContext, folderStatus.inSyncBytes),
-                Util.readableFileSize(mContext, folderStatus.globalBytes)));
+                Util.readableFileSize(mContext, folderStatus.globalBytes));
+        binding.items.setText(itemsAndSize);
 
         setTextOrHide(binding.invalid, folderStatus.invalid);
     }
