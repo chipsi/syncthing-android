@@ -83,6 +83,7 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
 
     private void updateFolderStatusView(ItemFolderListBinding binding, Folder folder) {
         if  (mRestApi == null || !mRestApi.isConfigLoaded()) {
+            binding.lastItemFinished.setVisibility(GONE);
             binding.items.setVisibility(GONE);
             binding.override.setVisibility(GONE);
             binding.progressBar.setVisibility(GONE);
@@ -98,8 +99,6 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
         final FolderStatus folderStatus = folderEntry.getKey();
         final CachedFolderStatus cachedFolderStatus = folderEntry.getValue();
 
-        binding.items.setVisibility(folder.paused ? GONE : VISIBLE);
-
         boolean failedItems = folderStatus.errors > 0;
 
         long neededItems = folderStatus.needFiles + folderStatus.needDirectories + folderStatus.needSymlinks + folderStatus.needDeletes;
@@ -112,7 +111,6 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
         boolean revertButtonVisible = folder.type.equals(Constants.FOLDER_TYPE_RECEIVE_ONLY) && (folderStatus.receiveOnlyTotalItems > 0);
         binding.revert.setVisibility(revertButtonVisible ? VISIBLE : GONE);
 
-        binding.size.setVisibility(folder.paused ? GONE : VISIBLE);
         binding.state.setVisibility(VISIBLE);
         if (outOfSync) {
             binding.state.setText(mContext.getString(R.string.status_outofsync));
@@ -184,14 +182,45 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
             }
         }
 
+        String lastItemFinished = getLastItemFinishedUI(cachedFolderStatus);
+        binding.lastItemFinished.setVisibility(folder.paused || TextUtils.isEmpty(lastItemFinished) ? GONE : VISIBLE);
+        binding.lastItemFinished.setText(lastItemFinished);
+
+        binding.items.setVisibility(folder.paused ? GONE : VISIBLE);
         binding.items.setText(mContext.getResources()
                 .getQuantityString(R.plurals.files, (int) folderStatus.inSyncFiles, folderStatus.inSyncFiles, folderStatus.globalFiles));
 
+        binding.size.setVisibility(folder.paused ? GONE : VISIBLE);
         binding.size.setText(mContext.getString(R.string.folder_size_format,
                 Util.readableFileSize(mContext, folderStatus.inSyncBytes),
                 Util.readableFileSize(mContext, folderStatus.globalBytes)));
 
         setTextOrHide(binding.invalid, folderStatus.invalid);
+    }
+
+    private final String getLastItemFinishedUI(final CachedFolderStatus cachedFolderStatus) {
+        if (TextUtils.isEmpty(cachedFolderStatus.lastItemFinishedAction) ||
+                TextUtils.isEmpty(cachedFolderStatus.lastItemFinishedItem)) {
+            return "";
+        }
+        String concat = "\u21cc";
+        /*
+        if (!TextUtils.isEmpty(cachedFolderStatus.lastItemFinishedTime)) {
+            concat += " " + Util.formatTime(cachedFolderStatus.lastItemFinishedTime);
+        }
+        */
+        switch (cachedFolderStatus.lastItemFinishedAction) {
+            case "update":
+                concat += " \u229b";
+                break;
+            case "delete":
+                concat += " \u2297";
+                break;
+            default:
+                concat += " \u2049";
+        }
+        concat += " " + Util.getPathEllipsis(cachedFolderStatus.lastItemFinishedItem, 44);
+        return concat;
     }
 
     private void setTextOrHide(TextView view, String text) {
