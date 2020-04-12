@@ -28,6 +28,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.text.DecimalFormat;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.time.ZonedDateTime;
+import java.time.ZoneId;
+import java.util.Locale;
 
 import eu.chainfire.libsuperuser.Shell;
 
@@ -352,5 +357,20 @@ public class Util {
     public static Boolean isRunningOnTV(Context context) {
         UiModeManager uiModeManager = (UiModeManager) context.getSystemService(Context.UI_MODE_SERVICE);
         return uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION;
+    }
+
+    /**
+     * Converts dateTime to readable localized string.
+     */
+    public static String formatDateTime(String dateTime) {
+        // Convert dateTime to readable localized string.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            return dateTime;
+        }
+
+        ZonedDateTime parsedDateTime = ZonedDateTime.parse(dateTime);
+        ZonedDateTime zonedDateTime = parsedDateTime.withZoneSameInstant(ZoneId.systemDefault());
+        DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).withLocale(Locale.getDefault());
+        return formatter.format(zonedDateTime);
     }
 }
