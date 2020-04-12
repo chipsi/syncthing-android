@@ -102,10 +102,14 @@ public class DevicesAdapter extends ArrayAdapter<Device> {
         final int completion = mRestApi.getRemoteDeviceCompletion(device.deviceID);
 
         if (conn.connected) {
-            binding.download.setText(Util.readableTransferRate(getContext(), conn.inBits));
-            binding.upload.setText(Util.readableTransferRate(getContext(), conn.outBits));
+            String bandwidthUpDownText = "\u21e9 ";     // down arrow
+            bandwidthUpDownText += Util.readableTransferRate(getContext(), conn.inBits);
+            bandwidthUpDownText += " \u2022";          // dot
+            bandwidthUpDownText += " \u21eb ";         // up arrow
+            bandwidthUpDownText += Util.readableTransferRate(getContext(), conn.outBits);
+            binding.bandwidthUpDown.setText(bandwidthUpDownText);
             rateInOutView.setVisibility(VISIBLE);
-            binding.status.setVisibility(VISIBLE);
+            binding.bandwidthUpDown.setVisibility(VISIBLE);
 
             Boolean syncingState = !(completion == 100);
             binding.progressBar.setVisibility(syncingState ? VISIBLE : GONE);
