@@ -242,7 +242,7 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
         String shortenedPath = path.replaceFirst("/storage/emulated/0", "[int]");
         shortenedPath = shortenedPath.replaceFirst("/storage/[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}", "[ext]");
         shortenedPath = shortenedPath.replaceFirst("/" + mContext.getPackageName(), "/[app]");
-        return Util.getPathEllipsis(shortenedPath);
+        return "\u2756 " + Util.getPathEllipsis(shortenedPath);
     }
 
     private void onClickOverride(View view, Folder folder) {
