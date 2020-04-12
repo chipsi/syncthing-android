@@ -347,26 +347,54 @@ public class Util {
      * Recommended: evenMaxCharsTotal = 44
      */
     public static final String getPathEllipsis(final String fullFN, final int evenMaxCharsTotal) {
+        final boolean FUNC_LOG = true;
         final int MAX_CHARS_SUBDIR = evenMaxCharsTotal / 2;
+        final int MAX_CHARS_PATH = evenMaxCharsTotal * 3 / 4;
         if (fullFN.length() <= evenMaxCharsTotal) {
             return fullFN;
         }
+        String ellipsizedPath = fullFN;
+
+        // STRATEGY 1
+        // Check if we could ellipsize the middle part of a full path and filename.
+        // e.g.       "TEST/THIS IS THE/PART OF...ELLIPSIS UNTIL/HERE/FILENAME.EXT"
+        // Looking at      ^--- firstIndex              lastIndex ---^
+        // Enforce         ^---        MAX_CHARS_SUBDIR           ---^
         int firstIndex = fullFN.indexOf('/');
         int lastIndex = fullFN.lastIndexOf('/');
-        String ellipsizedPath = fullFN;
         if (firstIndex > 0 &&
                 lastIndex > 0 &&
                 firstIndex != lastIndex) {
             // There is path in between we could ellipsize if it's too long to display.
             if (lastIndex - firstIndex + 1 > MAX_CHARS_SUBDIR) {
+                if (FUNC_LOG) {
+                    Log.v(TAG, "getPathEllipsis: A Applying strategy 1 - MAX_CHARS_SUBDIR=" + Integer.toString(MAX_CHARS_SUBDIR));
+                }
                 ellipsizedPath = fullFN.substring(0, firstIndex + (MAX_CHARS_SUBDIR / 2)) +
                         "\u22ef" +
                         fullFN.substring(lastIndex - (MAX_CHARS_SUBDIR / 2) + 1);
             }
         }
-        if (true && !ellipsizedPath.equals(fullFN)) {
-            Log.v(TAG, "getPathEllipsis: O [" + fullFN + "]");
-            Log.v(TAG, "getPathEllipsis: E [" + ellipsizedPath + "]");
+        if (FUNC_LOG && !ellipsizedPath.equals(fullFN)) {
+            Log.v(TAG, "getPathEllipsis: I [" + fullFN + "]");
+            Log.v(TAG, "getPathEllipsis: O [" + ellipsizedPath + "]");
+        }
+
+        // STRATEGY 2
+        // Check if MAX_CHARS_PATH is exceeded by the remaining PATH in front of the FILENAME.EXT
+        lastIndex = fullFN.lastIndexOf('/');
+        if (lastIndex > 0 &&
+                lastIndex > MAX_CHARS_PATH) {
+            // The path alone exceeds our total max chars for path+filename.
+            if (FUNC_LOG) {
+                Log.v(TAG, "getPathEllipsis: A Applying strategy 2 - MAX_CHARS_PATH=" + Integer.toString(MAX_CHARS_PATH));
+            }
+            ellipsizedPath = "\u22ef" + ellipsizedPath.substring(lastIndex - MAX_CHARS_PATH, MAX_CHARS_PATH);
+        }
+
+        if (FUNC_LOG && !ellipsizedPath.equals(fullFN)) {
+            Log.v(TAG, "getPathEllipsis: I [" + fullFN + "]");
+            Log.v(TAG, "getPathEllipsis: O [" + ellipsizedPath + "]");
         }
         return ellipsizedPath;
     }
