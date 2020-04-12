@@ -114,7 +114,7 @@ public class DevicesAdapter extends ArrayAdapter<Device> {
             bandwidthUpDownText += Util.readableTransferRate(getContext(), conn.outBits);
             binding.bandwidthUpDown.setText(bandwidthUpDownText);
             rateInOutView.setVisibility(VISIBLE);
-            
+
             Boolean syncingState = !(completion == 100);
             binding.progressBar.setVisibility(syncingState ? VISIBLE : GONE);
             if (!syncingState) {
