@@ -83,7 +83,8 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
 
     private void updateFolderStatusView(ItemFolderListBinding binding, Folder folder) {
         if  (mRestApi == null || !mRestApi.isConfigLoaded()) {
-            binding.lastItemFinished.setVisibility(GONE);
+            binding.lastItemFinishedItem.setVisibility(GONE);
+            binding.lastItemFinishedTime.setVisibility(GONE);
             binding.items.setVisibility(GONE);
             binding.override.setVisibility(GONE);
             binding.progressBar.setVisibility(GONE);
@@ -182,9 +183,7 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
             }
         }
 
-        String lastItemFinished = getLastItemFinishedUI(cachedFolderStatus);
-        binding.lastItemFinished.setVisibility(folder.paused || TextUtils.isEmpty(lastItemFinished) ? GONE : VISIBLE);
-        binding.lastItemFinished.setText(lastItemFinished);
+        showLastItemFinishedUI(binding, cachedFolderStatus);
 
         binding.items.setVisibility(folder.paused ? GONE : VISIBLE);
         binding.items.setText(mContext.getResources()
@@ -198,29 +197,34 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
         setTextOrHide(binding.invalid, folderStatus.invalid);
     }
 
-    private final String getLastItemFinishedUI(final CachedFolderStatus cachedFolderStatus) {
+    private void showLastItemFinishedUI(ItemFolderListBinding binding, final CachedFolderStatus cachedFolderStatus) {
         if (TextUtils.isEmpty(cachedFolderStatus.lastItemFinishedAction) ||
-                TextUtils.isEmpty(cachedFolderStatus.lastItemFinishedItem)) {
-            return "";
+                TextUtils.isEmpty(cachedFolderStatus.lastItemFinishedItem) ||
+                TextUtils.isEmpty(cachedFolderStatus.lastItemFinishedTime)) {
+            binding.lastItemFinishedItem.setVisibility(GONE);
+            binding.lastItemFinishedTime.setVisibility(GONE);
+            return;
         }
-        String concat = "\u21cc";
-        /*
-        if (!TextUtils.isEmpty(cachedFolderStatus.lastItemFinishedTime)) {
-            concat += " " + Util.formatTime(cachedFolderStatus.lastItemFinishedTime);
-        }
-        */
+        String finishedItemText = "\u21cc";
         switch (cachedFolderStatus.lastItemFinishedAction) {
             case "update":
-                concat += " \u229b";
+                finishedItemText += " \u229b";
                 break;
             case "delete":
-                concat += " \u2297";
+                finishedItemText += " \u2297";
                 break;
             default:
-                concat += " \u2049";
+                finishedItemText += " \u2049";
         }
-        concat += " " + Util.getPathEllipsis(cachedFolderStatus.lastItemFinishedItem);
-        return concat;
+        finishedItemText += " " + Util.getPathEllipsis(cachedFolderStatus.lastItemFinishedItem);
+
+        binding.lastItemFinishedItem.setText(finishedItemText);
+        binding.lastItemFinishedItem.setVisibility(VISIBLE);
+
+        binding.lastItemFinishedTime.setText("\u21cc \u231a " + Util.formatTime(cachedFolderStatus.lastItemFinishedTime));
+        binding.lastItemFinishedTime.setVisibility(VISIBLE);
+
+        return;
     }
 
     private void setTextOrHide(TextView view, String text) {
