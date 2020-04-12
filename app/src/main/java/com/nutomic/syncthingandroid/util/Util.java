@@ -346,7 +346,7 @@ public class Util {
      * where we have little space to display it.
      */
     public static final String getPathEllipsis(final String fullFN) {
-        final boolean FUNC_LOG_D = true;
+        final boolean FUNC_LOG_D = false;
         final boolean FUNC_LOG_V = false;
         final int MAX_CHARS_SUBDIR = 15;
         final int MAX_CHARS_FILENAME = MAX_CHARS_SUBDIR * 2;
@@ -368,9 +368,9 @@ public class Util {
                         // Filename with extension.
                         String fileName = workIn.substring(0, indexFileExt);
                         if (fileName.length() > MAX_CHARS_FILENAME) {
-                            fileName = fileName.substring(0, MAX_CHARS_FILENAME);
+                            fileName = fileName.substring(0, MAX_CHARS_FILENAME) + "\u22ef";
                         }
-                        workIn = fileName + "\u22ef" + workIn.substring(indexFileExt);
+                        workIn = fileName + workIn.substring(indexFileExt);
                     } else {
                         // Filename without extension
                         workIn = workIn.substring(0, MAX_CHARS_FILENAME) + "\u22ef";
@@ -379,6 +379,7 @@ public class Util {
                 workOut += workIn;
                 break;
             }
+            // Handle one directory from the path.
             part = workIn.substring(0, index);
             if (FUNC_LOG_V) {
                 Log.v(TAG, "getPathEllipsis: part [" + part + "]");
@@ -397,6 +398,22 @@ public class Util {
             Log.v(TAG, "getPathEllipsis: OUT [" + workOut + "]");
         }
         return workOut;
+    }
+
+    public static void testPathEllipsis() {
+        getPathEllipsis("");
+        getPathEllipsis("/");
+        getPathEllipsis("//");
+        getPathEllipsis("go2sync.dll");
+        getPathEllipsis("MY-LINK-/Cool 12345 Configuration Utility/sdk/bin/go2sync.dll");
+        getPathEllipsis("MY-LINK-Iam-bin-sum-another-and-make-long/Cool 12345 Configuration Utility/sdk/bin/go2sync.dll");
+        getPathEllipsis("MY-LINK-Iam-bin-sum-another-and-make-long-textfiles-are-cool.txt");
+        getPathEllipsis("MY-LINK-/Cool 12345 Configuration Utility/sdk/bin-Iam-bin-sum-another-and-make-long/go2sync-long-textfiles-are-cool.dll");
+        getPathEllipsis("MY-LINK-//Cool 12345 Configuration Utility/sdk/bin-Iam-bin-sum-another-and-make-long/go2sync-long-textfiles-are-cool.dll");
+        getPathEllipsis("MY-LINK-//Cool 12345 Configuration Utility/sdk/bin-Iam-bin-sum-another-and-make-long//go2sync-long-textfiles-are-cool.dll");
+        getPathEllipsis("MY-LINK-//Cool 12345 Configuration Utility/sdk/bin-Iam-bin-sum-another-and-make-long//go2sync-long-textfiles-are-cool");
+        getPathEllipsis("MY-LINK-//Cool 12345 Configuration Utility/sdk/bin-Iam-bin-sum-another-and-make-long//go2sync-long-textfiles-are-cool.correctlongeextensionswassolldas-denn-bitte");
+        getPathEllipsis("MY-LINK-Iam-bin-sum-another-and-make-long/Cool 12345 Configuration Utility/sdk/bin/go2sync.dllcorrectlongeextensionswassolldas-denn-bitte");
     }
 
     public static boolean containsIgnoreCase(String src, String what) {
