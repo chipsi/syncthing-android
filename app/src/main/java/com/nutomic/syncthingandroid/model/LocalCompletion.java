@@ -146,7 +146,8 @@ public class LocalCompletion {
                                     final Boolean folderPaused,
                                     final FolderStatus folderStatus) {
         synchronized(mFolderMapLock) {
-            CachedFolderStatus cachedFolderStatus = new CachedFolderStatus();
+            final Map.Entry<FolderStatus, CachedFolderStatus> cacheEntry = getFolderStatus(folderId);
+            CachedFolderStatus cachedFolderStatus = cacheEntry.getValue();
             cachedFolderStatus.paused = folderPaused;
             if (folderStatus.globalBytes == 0 ||
                     (folderStatus.inSyncBytes > folderStatus.globalBytes)) {
