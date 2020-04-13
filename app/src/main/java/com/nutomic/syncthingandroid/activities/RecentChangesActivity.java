@@ -29,6 +29,7 @@ import com.nutomic.syncthingandroid.views.ChangeListAdapter.ItemClickListener;
 import java.io.File;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
@@ -183,6 +184,9 @@ public class RecentChangesActivity extends SyncthingActivity
             getTestData(diskEvents);
         }
 
+        // Hide disk events that are useless to display.
+        removeUselessDiskEvents(diskEvents);
+
         // Show text if the list is empty.
         findViewById(R.id.no_recent_changes).setVisibility(diskEvents.size() > 0 ? View.GONE : View.VISIBLE);
 
@@ -213,7 +217,7 @@ public class RecentChangesActivity extends SyncthingActivity
         }
         */
 
-        int id = 13;
+        int id = 8;
         DiskEvent fakeDiskEvent = new DiskEvent();
         fakeDiskEvent.globalID = 84;
         fakeDiskEvent.type = "RemoteChangeDetected";
@@ -257,6 +261,43 @@ public class RecentChangesActivity extends SyncthingActivity
     private void addFakeDiskEvent(List<DiskEvent> diskEvents,
                                         final DiskEvent fakeDiskEvent) {
         diskEvents.add(deepCopy(fakeDiskEvent, new TypeToken<DiskEvent>(){}.getType()));
+    }
+
+    private void removeUselessDiskEvents(List<DiskEvent> diskEvents) {
+        /**
+         * Pass 1
+         * Remove invalid disk events
+         */
+        for (Iterator<DiskEvent> it = diskEvents.iterator(); it.hasNext();) {
+            DiskEvent diskEvent = it.next();
+            if (diskEvent.data == null) {
+                Log.d(TAG, "removeUselessDiskEvents: Pass 1: Clearing event with data == null");
+                it.remove();
+            }
+        }
+
+        /**
+         * Pass 2
+         * Check if a file has been created and deleted afterwards.
+         * We can remove the creation event for the non-existent file.
+         */
+        for (Iterator<DiskEvent> it = diskEvents.iterator(); it.hasNext();) {
+            DiskEvent diskEvent = it.next();
+            for (Iterator<DiskEvent> it2 = diskEvents.iterator(); it2.hasNext();) {
+                DiskEvent diskEvent2 = it2.next();
+                if (diskEvent2.id > diskEvent.id) {
+                    // diskEvent2 occured after diskEvent.
+                    Log.v(TAG, "removeUselessDiskEvents: Pass 2: curId=" + diskEvent.id + ", foundId=" + diskEvent2.id);
+                    if (diskEvent2.data.path.equals(diskEvent.data.path) &&
+                            diskEvent.data.action.equals("added") &&
+                            diskEvent2.data.action.equals("deleted")) {
+                        Log.d(TAG, "removeUselessDiskEvents: Pass 2: Removing \"added\" event because file was deleted afterwards, path=[" + diskEvent.data.path + "]");
+                        it.remove();
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     /**
