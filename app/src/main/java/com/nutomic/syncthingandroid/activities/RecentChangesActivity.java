@@ -67,11 +67,11 @@ public class RecentChangesActivity extends SyncthingActivity
             new ItemClickListener() {
                 @Override
                 public void onItemClick(DiskEvent diskEvent) {
-                    Log.v(TAG, "User clicked item with title \'" + diskEvent.data.path + "\'");
                     switch (diskEvent.data.action) {
                         case "deleted":
                             return;
                     }
+                    Log.v(TAG, "User clicked item with title \'" + diskEvent.data.path + "\'");
                     if (mServiceState != SyncthingService.State.ACTIVE) {
                         return;
                     }
