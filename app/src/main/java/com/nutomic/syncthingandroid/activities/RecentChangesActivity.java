@@ -206,6 +206,14 @@ public class RecentChangesActivity extends SyncthingActivity
 
     private void getTestData(List<DiskEvent> diskEvents) {
         Random random = new Random();
+        /*
+        if (random.nextInt(2) == 0) {
+            diskEvents.clear();
+            return;
+        }
+        */
+
+        int id = 13;
         DiskEvent fakeDiskEvent = new DiskEvent();
         fakeDiskEvent.globalID = 84;
         fakeDiskEvent.type = "RemoteChangeDetected";
@@ -215,29 +223,40 @@ public class RecentChangesActivity extends SyncthingActivity
         fakeDiskEvent.data.modifiedBy = "SRV01";
         fakeDiskEvent.data.type = "file";
 
+        // - "document2.txt"
+        fakeDiskEvent.id = --id;
+        fakeDiskEvent.data.action = "deleted";
+        fakeDiskEvent.data.path = "document2.txt";
+        fakeDiskEvent.time = "2020-04-13T15:01:00.6183215+01:00";
+        addFakeDiskEvent(diskEvents, fakeDiskEvent);
+
+        // + "document2.txt"
+        fakeDiskEvent.id = --id;
+        fakeDiskEvent.data.action = "added";
+        fakeDiskEvent.time = "2020-04-13T15:00:00.6183215+01:00";
+        addFakeDiskEvent(diskEvents, fakeDiskEvent);
+
         // + "document1.txt"
-        fakeDiskEvent.id = 10;
+        fakeDiskEvent.id = --id;
         fakeDiskEvent.data.action = "added";
         fakeDiskEvent.data.path = "document1.txt";
-        fakeDiskEvent.time = "2018-10-29T17:08:" +
-                String.format(Locale.getDefault(), "%02d", random.nextInt(60)) +
-                ".6183215+01:00";
-        diskEvents.add(fakeDiskEvent);
+        fakeDiskEvent.time = "2018-10-29T17:08:00.6183215+01:00";
+        addFakeDiskEvent(diskEvents, fakeDiskEvent);
 
         // - "document1.txt"
-        for (int i = 9; i > 0; i--) {
-            fakeDiskEvent = deepCopy(fakeDiskEvent, new TypeToken<DiskEvent>(){}.getType());
+        for (int i = --id; i > 0; i--) {
             fakeDiskEvent.id = i;
             fakeDiskEvent.data.action = "deleted";
             fakeDiskEvent.time = "2018-10-28T14:08:" +
                     String.format(Locale.getDefault(), "%02d", random.nextInt(60)) +
                     ".6183215+01:00";
-            diskEvents.add(fakeDiskEvent);
+            addFakeDiskEvent(diskEvents, fakeDiskEvent);
         }
+    }
 
-        if (random.nextInt(2) == 0) {
-            diskEvents.clear();
-        }
+    private void addFakeDiskEvent(List<DiskEvent> diskEvents,
+                                        final DiskEvent fakeDiskEvent) {
+        diskEvents.add(deepCopy(fakeDiskEvent, new TypeToken<DiskEvent>(){}.getType()));
     }
 
     /**
