@@ -350,7 +350,7 @@ public class RecentChangesActivity extends SyncthingActivity
         /**
          * Pass 3
          * Check if a folder has been removed.
-         * We can remove prior file events corresponding to the folder.
+         * We can remove prior events corresponding to the folder.
          */
         for (Iterator<DiskEvent> it = diskEvents.iterator(); it.hasNext();) {
             DiskEvent diskEvent = it.next();
