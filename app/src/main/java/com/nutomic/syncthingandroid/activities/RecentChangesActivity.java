@@ -1,6 +1,7 @@
 package com.nutomic.syncthingandroid.activities;
 
 import android.content.ComponentName;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -16,9 +17,11 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
 import com.nutomic.syncthingandroid.R;
+import com.nutomic.syncthingandroid.SyncthingApp;
 import com.nutomic.syncthingandroid.model.Device;
 import com.nutomic.syncthingandroid.model.DiskEvent;
 import com.nutomic.syncthingandroid.model.Folder;
+import com.nutomic.syncthingandroid.service.AppPrefs;
 import com.nutomic.syncthingandroid.service.RestApi;
 import com.nutomic.syncthingandroid.service.SyncthingService;
 import com.nutomic.syncthingandroid.service.SyncthingServiceBinder;
@@ -34,6 +37,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
+import javax.inject.Inject;
+
 import static com.nutomic.syncthingandroid.service.Constants.ENABLE_TEST_DATA;
 
 /**
@@ -46,15 +51,21 @@ public class RecentChangesActivity extends SyncthingActivity
 
     private static int DISK_EVENT_LIMIT = 100;
 
+    private Boolean ENABLE_VERBOSE_LOG = false;
+
     private List<Device> mDevices;
     private ChangeListAdapter mRecentChangeAdapter;
     private RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
     private SyncthingService.State mServiceState = SyncthingService.State.INIT;
 
+    @Inject SharedPreferences mPreferences;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ((SyncthingApp) getApplication()).component().inject(this);
+        ENABLE_VERBOSE_LOG = AppPrefs.getPrefVerboseLog(mPreferences);
         setContentView(R.layout.activity_recent_changes);
         mRecyclerView = findViewById(R.id.changes_recycler_view);
         mRecyclerView.setHasFixedSize(true);
@@ -71,7 +82,7 @@ public class RecentChangesActivity extends SyncthingActivity
                         case "deleted":
                             return;
                     }
-                    Log.v(TAG, "User clicked item with title \'" + diskEvent.data.path + "\'");
+                    LogV("User clicked item with title \'" + diskEvent.data.path + "\'");
                     if (mServiceState != SyncthingService.State.ACTIVE) {
                         return;
                     }
@@ -133,7 +144,7 @@ public class RecentChangesActivity extends SyncthingActivity
 
     @Override
     public void onServiceStateChange(SyncthingService.State newState) {
-        Log.v(TAG, "onServiceStateChange(" + newState + ")");
+        LogV("onServiceStateChange(" + newState + ")");
         mServiceState = newState;
         if (newState == SyncthingService.State.ACTIVE) {
             onTimerEvent();
@@ -167,7 +178,7 @@ public class RecentChangesActivity extends SyncthingActivity
             return;
         }
         mDevices = restApi.getDevices(true);
-        Log.v(TAG, "Querying disk events");
+        LogV("Querying disk events");
         restApi.getDiskEvents(DISK_EVENT_LIMIT, this::onReceiveDiskEvents);
         if (ENABLE_TEST_DATA) {
             onReceiveDiskEvents(new ArrayList());
@@ -175,7 +186,7 @@ public class RecentChangesActivity extends SyncthingActivity
     }
 
     private void onReceiveDiskEvents(List<DiskEvent> diskEvents) {
-        Log.v(TAG, "onReceiveDiskEvents");
+        LogV("onReceiveDiskEvents");
         if (isFinishing()) {
             return;
         }
@@ -324,7 +335,7 @@ public class RecentChangesActivity extends SyncthingActivity
                 DiskEvent diskEvent2 = it2.next();
                 if (diskEvent2.id > diskEvent.id) {
                     // diskEvent2 occured after diskEvent.
-                    Log.v(TAG, "removeUselessDiskEvents: Pass 2: curId=" + diskEvent.id + ", foundId=" + diskEvent2.id);
+                    LogV("removeUselessDiskEvents: Pass 2: curId=" + diskEvent.id + ", foundId=" + diskEvent2.id);
                     if (diskEvent2.data.path.equals(diskEvent.data.path) &&
                             diskEvent.data.action.equals("added") &&
                             diskEvent2.data.action.equals("deleted")) {
@@ -347,7 +358,7 @@ public class RecentChangesActivity extends SyncthingActivity
                 DiskEvent diskEvent2 = it2.next();
                 if (diskEvent2.id > diskEvent.id) {
                     // diskEvent2 occured after diskEvent.
-                    Log.v(TAG, "removeUselessDiskEvents: Pass 3: curId=" + diskEvent.id + ", foundId=" + diskEvent2.id);
+                    LogV("removeUselessDiskEvents: Pass 3: curId=" + diskEvent.id + ", foundId=" + diskEvent2.id);
                     if (diskEvent2.data.type.equals("dir") &&
                             diskEvent2.data.action.equals("deleted") &&
                             diskEvent.data.path.startsWith(diskEvent2.data.path + "/")) {
@@ -368,5 +379,11 @@ public class RecentChangesActivity extends SyncthingActivity
     private <T> T deepCopy(T object, Type type) {
         Gson gson = new Gson();
         return gson.fromJson(gson.toJson(object, type), type);
+    }
+
+    private void LogV(String logMessage) {
+        if (ENABLE_VERBOSE_LOG) {
+            Log.v(TAG, logMessage);
+        }
     }
 }
