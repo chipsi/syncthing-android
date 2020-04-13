@@ -217,7 +217,7 @@ public class RecentChangesActivity extends SyncthingActivity
         }
         */
 
-        int id = 8;
+        int id = 11;
         DiskEvent fakeDiskEvent = new DiskEvent();
         fakeDiskEvent.globalID = 84;
         fakeDiskEvent.type = "RemoteChangeDetected";
@@ -225,19 +225,35 @@ public class RecentChangesActivity extends SyncthingActivity
         fakeDiskEvent.data.folderID = "abcd-efgh";
         fakeDiskEvent.data.label = "label_abcd-efgh";
         fakeDiskEvent.data.modifiedBy = "SRV01";
-        fakeDiskEvent.data.type = "file";
+
+        // - "Camera - Copy" folder
+        fakeDiskEvent.id = --id;
+        fakeDiskEvent.data.action = "deleted";
+        fakeDiskEvent.data.path = "Camera - Copy";
+        fakeDiskEvent.data.type = "dir";
+        fakeDiskEvent.time = "2018-10-29T15:18:52.6183215+01:00";
+        addFakeDiskEvent(diskEvents, fakeDiskEvent);
 
         // - "document2.txt"
         fakeDiskEvent.id = --id;
         fakeDiskEvent.data.action = "deleted";
         fakeDiskEvent.data.path = "document2.txt";
+        fakeDiskEvent.data.type = "file";
         fakeDiskEvent.time = "2020-04-13T15:01:00.6183215+01:00";
         addFakeDiskEvent(diskEvents, fakeDiskEvent);
 
-        // + "document2.txt"
+        // + "document2.txt" - to be removed by Pass 2
         fakeDiskEvent.id = --id;
         fakeDiskEvent.data.action = "added";
+        fakeDiskEvent.data.path = "document2.txt";
         fakeDiskEvent.time = "2020-04-13T15:00:00.6183215+01:00";
+        addFakeDiskEvent(diskEvents, fakeDiskEvent);
+
+        // - "Camera - Copy/IMG_20200413_130936.jpg"
+        fakeDiskEvent.id = --id;
+        fakeDiskEvent.data.action = "deleted";
+        fakeDiskEvent.data.path = "Camera - Copy/IMG_20200413_130936.jpg";
+        fakeDiskEvent.time = "2018-10-29T15:18:50.6183215+01:00";
         addFakeDiskEvent(diskEvents, fakeDiskEvent);
 
         // + "document1.txt"
@@ -247,10 +263,25 @@ public class RecentChangesActivity extends SyncthingActivity
         fakeDiskEvent.time = "2018-10-29T17:08:00.6183215+01:00";
         addFakeDiskEvent(diskEvents, fakeDiskEvent);
 
+        // - "Camera - Copy/IMG_20200413_132532.jpg"
+        fakeDiskEvent.id = --id;
+        fakeDiskEvent.data.action = "deleted";
+        fakeDiskEvent.data.path = "Camera - Copy/IMG_20200413_132532.jpg";
+        fakeDiskEvent.time = "2018-10-29T15:18:50.6183215+01:00";
+        addFakeDiskEvent(diskEvents, fakeDiskEvent);
+
+        // - "Camera - Copy/IMG_20200413_132049.jpg"
+        fakeDiskEvent.id = --id;
+        fakeDiskEvent.data.action = "deleted";
+        fakeDiskEvent.data.path = "Camera - Copy/IMG_20200413_132049.jpg";
+        fakeDiskEvent.time = "2018-10-29T15:18:50.6183215+01:00";
+        addFakeDiskEvent(diskEvents, fakeDiskEvent);
+
         // - "document1.txt"
         for (int i = --id; i > 0; i--) {
             fakeDiskEvent.id = i;
             fakeDiskEvent.data.action = "deleted";
+            fakeDiskEvent.data.path = "document1.txt";
             fakeDiskEvent.time = "2018-10-28T14:08:" +
                     String.format(Locale.getDefault(), "%02d", random.nextInt(60)) +
                     ".6183215+01:00";
