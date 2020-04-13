@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 public class Constants {
 
     // Always set ENABLE_TEST_DATA to false before building debug or release APK's.
-    public static final Boolean ENABLE_TEST_DATA = true;
+    public static final Boolean ENABLE_TEST_DATA = false;
 
     public static final String FILENAME_SYNCTHING_BINARY        = "libsyncthingnative.so";
     public static final String FILENAME_STIGNORE                = ".stignore";
