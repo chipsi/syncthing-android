@@ -217,6 +217,12 @@ public class RecentChangesActivity extends SyncthingActivity
         }
         */
 
+        /**
+         * Items on UI without "removeUselessDiskEvents"
+         *  10
+         * Items on UI after "removeUselessDiskEvents"
+         *  6
+         */
         int id = 11;
         DiskEvent fakeDiskEvent = new DiskEvent();
         fakeDiskEvent.globalID = 84;
@@ -249,7 +255,7 @@ public class RecentChangesActivity extends SyncthingActivity
         fakeDiskEvent.time = "2020-04-13T15:00:00.6183215+01:00";
         addFakeDiskEvent(diskEvents, fakeDiskEvent);
 
-        // - "Camera - Copy/IMG_20200413_130936.jpg"
+        // - "Camera - Copy/IMG_20200413_130936.jpg" - to be removed by Pass 3
         fakeDiskEvent.id = --id;
         fakeDiskEvent.data.action = "deleted";
         fakeDiskEvent.data.path = "Camera - Copy/IMG_20200413_130936.jpg";
@@ -263,14 +269,14 @@ public class RecentChangesActivity extends SyncthingActivity
         fakeDiskEvent.time = "2018-10-29T17:08:00.6183215+01:00";
         addFakeDiskEvent(diskEvents, fakeDiskEvent);
 
-        // - "Camera - Copy/IMG_20200413_132532.jpg"
+        // - "Camera - Copy/IMG_20200413_132532.jpg" - to be removed by Pass 3
         fakeDiskEvent.id = --id;
         fakeDiskEvent.data.action = "deleted";
         fakeDiskEvent.data.path = "Camera - Copy/IMG_20200413_132532.jpg";
         fakeDiskEvent.time = "2018-10-29T15:18:50.6183215+01:00";
         addFakeDiskEvent(diskEvents, fakeDiskEvent);
 
-        // - "Camera - Copy/IMG_20200413_132049.jpg"
+        // - "Camera - Copy/IMG_20200413_132049.jpg" - to be removed by Pass 3
         fakeDiskEvent.id = --id;
         fakeDiskEvent.data.action = "deleted";
         fakeDiskEvent.data.path = "Camera - Copy/IMG_20200413_132049.jpg";
@@ -323,6 +329,29 @@ public class RecentChangesActivity extends SyncthingActivity
                             diskEvent.data.action.equals("added") &&
                             diskEvent2.data.action.equals("deleted")) {
                         Log.d(TAG, "removeUselessDiskEvents: Pass 2: Removing \"added\" event because file was deleted afterwards, path=[" + diskEvent.data.path + "]");
+                        it.remove();
+                        break;
+                    }
+                }
+            }
+        }
+
+        /**
+         * Pass 3
+         * Check if a folder has been removed.
+         * We can remove prior file events corresponding to the folder.
+         */
+        for (Iterator<DiskEvent> it = diskEvents.iterator(); it.hasNext();) {
+            DiskEvent diskEvent = it.next();
+            for (Iterator<DiskEvent> it2 = diskEvents.iterator(); it2.hasNext();) {
+                DiskEvent diskEvent2 = it2.next();
+                if (diskEvent2.id > diskEvent.id) {
+                    // diskEvent2 occured after diskEvent.
+                    Log.v(TAG, "removeUselessDiskEvents: Pass 3: curId=" + diskEvent.id + ", foundId=" + diskEvent2.id);
+                    if (diskEvent2.data.type.equals("dir") &&
+                            diskEvent2.data.action.equals("deleted") &&
+                            diskEvent.data.path.startsWith(diskEvent2.data.path + "/")) {
+                        Log.d(TAG, "removeUselessDiskEvents: Pass 3: Removing event because folder was deleted afterwards, path=[" + diskEvent.data.path + "]");
                         it.remove();
                         break;
                     }
