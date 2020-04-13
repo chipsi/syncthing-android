@@ -335,11 +335,11 @@ public class RecentChangesActivity extends SyncthingActivity
                 DiskEvent diskEvent2 = it2.next();
                 if (diskEvent2.id > diskEvent.id) {
                     // diskEvent2 occured after diskEvent.
-                    LogV("removeUselessDiskEvents: Pass 2: curId=" + diskEvent.id + ", foundId=" + diskEvent2.id);
+                    // LogV("removeUselessDiskEvents: Pass 2: curId=" + diskEvent.id + ", foundId=" + diskEvent2.id);
                     if (diskEvent2.data.path.equals(diskEvent.data.path) &&
                             diskEvent.data.action.equals("added") &&
                             diskEvent2.data.action.equals("deleted")) {
-                        Log.d(TAG, "removeUselessDiskEvents: Pass 2: Removing \"added\" event because file was deleted afterwards, path=[" + diskEvent.data.path + "]");
+                        LogV("removeUselessDiskEvents: Pass 2: Removing \"added\" event because file was deleted afterwards, path=[" + diskEvent.data.path + "]");
                         it.remove();
                         break;
                     }
@@ -358,11 +358,11 @@ public class RecentChangesActivity extends SyncthingActivity
                 DiskEvent diskEvent2 = it2.next();
                 if (diskEvent2.id > diskEvent.id) {
                     // diskEvent2 occured after diskEvent.
-                    LogV("removeUselessDiskEvents: Pass 3: curId=" + diskEvent.id + ", foundId=" + diskEvent2.id);
+                    // LogV("removeUselessDiskEvents: Pass 3: curId=" + diskEvent.id + ", foundId=" + diskEvent2.id);
                     if (diskEvent2.data.type.equals("dir") &&
                             diskEvent2.data.action.equals("deleted") &&
                             diskEvent.data.path.startsWith(diskEvent2.data.path + "/")) {
-                        Log.d(TAG, "removeUselessDiskEvents: Pass 3: Removing event because folder was deleted afterwards, path=[" + diskEvent.data.path + "]");
+                        LogV("removeUselessDiskEvents: Pass 3: Removing event because folder was deleted afterwards, path=[" + diskEvent.data.path + "]");
                         it.remove();
                         break;
                     }
