@@ -180,32 +180,7 @@ public class RecentChangesActivity extends SyncthingActivity
         }
 
         if (ENABLE_TEST_DATA) {
-            DiskEvent fakeDiskEvent = new DiskEvent();
-            fakeDiskEvent.id = 10;
-            fakeDiskEvent.globalID = 84;
-            fakeDiskEvent.time = "2018-10-28T14:08:" +
-                    String.format(Locale.getDefault(), "%02d", new Random().nextInt(60)) +
-                    ".6183215+01:00";
-            fakeDiskEvent.type = "RemoteChangeDetected";
-            fakeDiskEvent.data.action = "added";
-            fakeDiskEvent.data.folder = "abcd-efgh";
-            fakeDiskEvent.data.folderID = "abcd-efgh";
-            fakeDiskEvent.data.label = "label_abcd-efgh";
-            fakeDiskEvent.data.modifiedBy = "SRV01";
-            fakeDiskEvent.data.path = "document1.txt";
-            fakeDiskEvent.data.type = "file";
-            diskEvents.add(fakeDiskEvent);
-
-            for (int i = 9; i > 0; i--) {
-                fakeDiskEvent = deepCopy(fakeDiskEvent, new TypeToken<DiskEvent>(){}.getType());
-                fakeDiskEvent.id = i;
-                fakeDiskEvent.data.action = "deleted";
-                diskEvents.add(fakeDiskEvent);
-            }
-
-            if (new Random().nextInt(2) == 0) {
-                diskEvents.clear();
-            }
+            getTestData(diskEvents);
         }
 
         // Show text if the list is empty.
@@ -227,6 +202,42 @@ public class RecentChangesActivity extends SyncthingActivity
             }
         }
         mRecentChangeAdapter.notifyDataSetChanged();
+    }
+
+    private void getTestData(List<DiskEvent> diskEvents) {
+        Random random = new Random();
+        DiskEvent fakeDiskEvent = new DiskEvent();
+        fakeDiskEvent.globalID = 84;
+        fakeDiskEvent.type = "RemoteChangeDetected";
+        fakeDiskEvent.data.folder = "abcd-efgh";
+        fakeDiskEvent.data.folderID = "abcd-efgh";
+        fakeDiskEvent.data.label = "label_abcd-efgh";
+        fakeDiskEvent.data.modifiedBy = "SRV01";
+        fakeDiskEvent.data.type = "file";
+
+        // + "document1.txt"
+        fakeDiskEvent.id = 10;
+        fakeDiskEvent.data.action = "added";
+        fakeDiskEvent.data.path = "document1.txt";
+        fakeDiskEvent.time = "2018-10-29T17:08:" +
+                String.format(Locale.getDefault(), "%02d", random.nextInt(60)) +
+                ".6183215+01:00";
+        diskEvents.add(fakeDiskEvent);
+
+        // - "document1.txt"
+        for (int i = 9; i > 0; i--) {
+            fakeDiskEvent = deepCopy(fakeDiskEvent, new TypeToken<DiskEvent>(){}.getType());
+            fakeDiskEvent.id = i;
+            fakeDiskEvent.data.action = "deleted";
+            fakeDiskEvent.time = "2018-10-28T14:08:" +
+                    String.format(Locale.getDefault(), "%02d", random.nextInt(60)) +
+                    ".6183215+01:00";
+            diskEvents.add(fakeDiskEvent);
+        }
+
+        if (random.nextInt(2) == 0) {
+            diskEvents.clear();
+        }
     }
 
     /**
