@@ -28,10 +28,16 @@ public class NumberPickerFragment extends Fragment {
     }
 
     public void setOnValueChangedListener(NumberPicker.OnValueChangeListener onValueChangeListener){
+        if (mNumberPicker == null) {
+            return;
+        }
         mNumberPicker.setOnValueChangedListener(onValueChangeListener);
     }
 
     public void updateNumberPicker(int maxValue, int minValue, int currentValue){
+        if (mNumberPicker == null) {
+            return;
+        }
         mNumberPicker.setMaxValue(maxValue);
         mNumberPicker.setMinValue(minValue);
         mNumberPicker.setValue(currentValue);
