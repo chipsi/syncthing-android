@@ -27,13 +27,14 @@
             android:layout_margin="10dp"
             android:textStyle="bold"/>
 
-        <fragment
+        <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fragment"
             android:name="com.nutomic.syncthingandroid.fragments.NumberPickerFragment"
             android:layout_width="match_parent"
             android:layout_height="100dp"
             android:tag="numberpicker_trashcan_versioning"
-            tools:layout="@layout/numberpicker_fragment" />
+            tools:layout="@layout/numberpicker_fragment">
+        </androidx.fragment.app.FragmentContainerView>
 
         <TextView
             android:layout_width="match_parent"
