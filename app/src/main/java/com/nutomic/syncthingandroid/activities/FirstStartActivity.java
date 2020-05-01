@@ -50,6 +50,7 @@ public class FirstStartActivity extends AppCompatActivity {
     private static String TAG = "FirstStartActivity";
     private static final int REQUEST_COARSE_LOCATION = 141;
     private static final int REQUEST_BACKGROUND_LOCATION = 142;
+    private static final int REQUEST_FINE_LOCATION = 144;
     private static final int REQUEST_WRITE_STORAGE = 143;
 
     private static class Slide {
@@ -473,7 +474,16 @@ public class FirstStartActivity extends AppCompatActivity {
     }
 
     private void requestLocationPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R || true) {
+            ActivityCompat.requestPermissions(
+                    this,
+                    new String[]{
+                            Manifest.permission.ACCESS_FINE_LOCATION
+                    },
+                    REQUEST_FINE_LOCATION
+            );
+            return;
+        } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
             ActivityCompat.requestPermissions(
                     this,
                     new String[]{
@@ -523,6 +533,25 @@ public class FirstStartActivity extends AppCompatActivity {
                     Toast.makeText(this, R.string.permission_granted, Toast.LENGTH_SHORT).show();
                     Log.i(TAG, "User granted ACCESS_BACKGROUND_LOCATION permission.");
                     mNextButton.requestFocus();
+                }
+                break;
+            case REQUEST_FINE_LOCATION:
+                if (grantResults.length == 0 ||
+                        grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    Log.i(TAG, "User denied ACCESS_FINE_LOCATION permission.");
+                    return;
+                }
+                Toast.makeText(this, R.string.permission_granted, Toast.LENGTH_SHORT).show();
+                Log.i(TAG, "User granted ACCESS_FINE_LOCATION permission.");
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R || true) {
+                    ActivityCompat.requestPermissions(
+                            this,
+                            new String[]{
+                                    Manifest.permission.ACCESS_BACKGROUND_LOCATION
+                            },
+                            REQUEST_BACKGROUND_LOCATION
+                    );
+                    return;
                 }
                 break;
             case REQUEST_WRITE_STORAGE:
