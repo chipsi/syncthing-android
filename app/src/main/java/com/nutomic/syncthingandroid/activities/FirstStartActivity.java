@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.PowerManager;
 import android.provider.Settings;
 import androidx.annotation.NonNull;
@@ -446,10 +447,9 @@ public class FirstStartActivity extends AppCompatActivity {
     /**
      * Permission check and request functions
      */
+    @TargetApi(30)
     private boolean haveAllFilesAccessPermission() {
-        int permissionState = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.MANAGE_EXTERNAL_STORAGE);
-        return permissionState == PackageManager.PERMISSION_GRANTED;
+        return Environment.isExternalStorageManager();
     }
 
     @TargetApi(30)
