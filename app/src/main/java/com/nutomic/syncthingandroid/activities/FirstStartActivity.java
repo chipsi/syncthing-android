@@ -122,7 +122,7 @@ public class FirstStartActivity extends AppCompatActivity {
 
         // Make notification bar transparent (API level 21+)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
-                Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q && false) {
+                Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
                     View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
         }
@@ -336,7 +336,7 @@ public class FirstStartActivity extends AppCompatActivity {
      */
     private void changeStatusBarColor() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
-                Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q && false) {
+                Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
             Window window = getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.TRANSPARENT);
@@ -476,7 +476,7 @@ public class FirstStartActivity extends AppCompatActivity {
     }
 
     private void requestLocationPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R || true) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             ActivityCompat.requestPermissions(
                     this,
                     new String[]{
@@ -545,7 +545,7 @@ public class FirstStartActivity extends AppCompatActivity {
                 }
                 Toast.makeText(this, R.string.permission_granted, Toast.LENGTH_SHORT).show();
                 Log.i(TAG, "User granted ACCESS_FINE_LOCATION permission.");
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R || true) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     ActivityCompat.requestPermissions(
                             this,
                             new String[]{

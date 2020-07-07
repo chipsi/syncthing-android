@@ -32,7 +32,7 @@ def ourVersionName = "${versionMajor}.${versionMinor}.${versionPatch}.${versionW
 android {
     // Changes to these values need to be reflected in `.travis.yml`
     compileSdkVersion 'android-R'
-    buildToolsVersion '30.0.0-rc2'
+    buildToolsVersion '30.0.0'
 
     buildTypes.debug.applicationIdSuffix ".debug"
     buildFeatures.dataBinding = true
