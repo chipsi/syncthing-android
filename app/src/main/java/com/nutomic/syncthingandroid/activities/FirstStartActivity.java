@@ -105,6 +105,9 @@ public class FirstStartActivity extends AppCompatActivity {
          * If anything mandatory is missing, the according welcome slide(s) will be shown.
          */
         Boolean showSlideStoragePermission = !haveStoragePermission();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                showSlideStoragePermission = showSlideStoragePermission || !haveAllFilesAccessPermission();
+        }
         Boolean showSlideIgnoreDozePermission = !haveIgnoreDozePermission();
         Boolean showSlideLocationPermission = !haveLocationPermission();
         Boolean showSlideKeyGeneration = !checkForParseableConfig();
@@ -118,6 +121,20 @@ public class FirstStartActivity extends AppCompatActivity {
                 !showSlideKeyGeneration) {
             startApp();
             return;
+        }
+
+        // Log what's missing and preventing us from directly starting into MainActivity.
+        if (showSlideStoragePermission) {
+            Log.d(TAG, "We (no longer?) have storage permission and will politely ask for it.");
+        }
+        if (showSlideIgnoreDozePermission) {
+            Log.d(TAG, "We (no longer?) have ignore doze permission and will politely ask for it on phones.");
+        }
+        if (showSlideLocationPermission) {
+            Log.d(TAG, "We (no longer?) have location permission and will politely ask for it.");
+        }
+        if (showSlideKeyGeneration) {
+            Log.d(TAG, "We (no longer?) have a valid Syncthing config and will attempt to generate a fresh config.");
         }
 
         // Make notification bar transparent (API level 21+)
@@ -232,7 +249,11 @@ public class FirstStartActivity extends AppCompatActivity {
         // Check if we are allowed to advance to the next slide.
         if (mViewPager.getCurrentItem() == mSlidePosStoragePermission) {
             // As the storage permission is a prerequisite to run syncthing, refuse to continue without it.
-            if (!haveStoragePermission()) {
+            Boolean storagePermissionsGranted = haveStoragePermission();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    storagePermissionsGranted = storagePermissionsGranted && haveAllFilesAccessPermission();
+            }
+            if (!storagePermissionsGranted) {
                 Toast.makeText(this, R.string.toast_write_storage_permission_required,
                         Toast.LENGTH_LONG).show();
                 return;
@@ -425,6 +446,41 @@ public class FirstStartActivity extends AppCompatActivity {
     /**
      * Permission check and request functions
      */
+    private boolean haveAllFilesAccessPermission() {
+        int permissionState = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.MANAGE_EXTERNAL_STORAGE);
+        return permissionState == PackageManager.PERMISSION_GRANTED;
+    }
+
+    @TargetApi(30)
+    private void requestAllFilesAccessPermission() {
+        Boolean intentFailed = false;
+        Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+        intent.setData(Uri.parse("package:" + getPackageName()));
+        try {
+            ComponentName componentName = intent.resolveActivity(getPackageManager());
+            if (componentName != null) {
+                String className = componentName.getClassName();
+                if (className != null) {
+                    // Launch "Allow all files access?" dialog.
+                    startActivity(intent);
+                    return;
+                }
+                intentFailed = true;
+            } else {
+                Log.w(TAG, "Request all files access not supported");
+                intentFailed = true;
+            }
+        } catch (ActivityNotFoundException e) {
+            Log.w(TAG, "Request all files access not supported", e);
+            intentFailed = true;
+        }
+        if (intentFailed) {
+            // Some devices don't support this request.
+            Toast.makeText(this, R.string.dialog_all_files_access_not_supported, Toast.LENGTH_LONG).show();
+        }
+    }
+
     private boolean haveIgnoreDozePermission() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             // Older android version don't have the doze feature so we'll assume having the anti-doze permission.
@@ -563,6 +619,9 @@ public class FirstStartActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(this, R.string.permission_granted, Toast.LENGTH_SHORT).show();
                     Log.i(TAG, "User granted WRITE_EXTERNAL_STORAGE permission.");
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        requestAllFilesAccessPermission();
+                    }
                     mNextButton.requestFocus();
                 }
                 break;
