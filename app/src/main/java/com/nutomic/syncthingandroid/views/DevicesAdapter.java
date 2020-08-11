@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.text.TextUtils;
+// import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -78,9 +79,11 @@ public class DevicesAdapter extends ArrayAdapter<Device> {
         String deviceLastSeen = sharedPreferences.getString(
             Constants.PREF_CACHE_DEVICE_LASTSEEN_PREFIX + device.deviceID, ""
         );
+        String formattedDeviceLastSeen = Util.formatDateTime(deviceLastSeen);
+        final String TIMESTAMP_NEVER_SEEN = "1970-01-01T00:00:00Z";
         binding.lastSeen.setText(mContext.getString(R.string.device_last_seen,
-                TextUtils.isEmpty(deviceLastSeen) || deviceLastSeen.equals("1970-01-01T00:00:00Z") ?
-                        mContext.getString(R.string.device_last_seen_never) : deviceLastSeen)
+                TextUtils.isEmpty(deviceLastSeen) || deviceLastSeen.equals(TIMESTAMP_NEVER_SEEN) ?
+                        mContext.getString(R.string.device_last_seen_never) : formattedDeviceLastSeen)
         );
 
         if (device.getFolderCount() == 0) {
