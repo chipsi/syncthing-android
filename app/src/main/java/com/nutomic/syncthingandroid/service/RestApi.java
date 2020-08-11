@@ -793,7 +793,7 @@ public class RestApi {
             });
             new GetRequest(mContext, mUrl, GetRequest.URI_STATS_DEVICE, mApiKey, null, result -> {
                     /**
-                     * We got the last seen timestamp for ALL devices instead of one.
+                     * We got the last seen timestamp for ALL devices - including the local device - instead of one.
                      * It does not hurt storing all of them.
                      */
                     if (result == null) {
@@ -802,6 +802,7 @@ public class RestApi {
                     }
                     JsonObject jsonObject = new JsonParser().parse(result).getAsJsonObject();
                     if (jsonObject == null) {
+                        Log.e(TAG, "getRemoteDeviceStatus: URI_STATS_DEVICE, jsonObject == null");
                         return;
                     }
                     Set<Map.Entry<String, JsonElement>> entries = jsonObject.entrySet();
