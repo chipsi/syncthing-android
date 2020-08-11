@@ -806,11 +806,11 @@ public class RestApi {
                     }
                     Set<Map.Entry<String, JsonElement>> entries = jsonObject.entrySet();
                     for (Map.Entry<String, JsonElement> entry: entries) {
-                        DeviceStat deviceStat = mGson.fromJson(entry.getValue(), DeviceStat.class);
-                        mRemoteCompletion.setDeviceLastSeen(
-                                entry.getKey(),             // deviceId
-                                deviceStat.lastSeen
-                        );
+                        final String resultDeviceId = entry.getKey();
+                        final DeviceStat deviceStat = mGson.fromJson(entry.getValue(), DeviceStat.class);
+                        PreferenceManager.getDefaultSharedPreferences(mContext).edit()
+                                .putString(Constants.PREF_CACHE_DEVICE_LASTSEEN_PREFIX + resultDeviceId, deviceStat.lastSeen)
+                                .apply();
                     }
             });
         }
