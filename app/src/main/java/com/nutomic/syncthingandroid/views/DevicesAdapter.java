@@ -2,6 +2,7 @@ package com.nutomic.syncthingandroid.views;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
+import androidx.preference.PreferenceManager;
 
 import com.nutomic.syncthingandroid.R;
 import com.nutomic.syncthingandroid.databinding.ItemDeviceListBinding;
@@ -21,6 +23,7 @@ import com.nutomic.syncthingandroid.model.Connection;
 import com.nutomic.syncthingandroid.model.Connections;
 import com.nutomic.syncthingandroid.model.Device;
 import com.nutomic.syncthingandroid.model.Folder;
+import com.nutomic.syncthingandroid.service.Constants;
 import com.nutomic.syncthingandroid.service.RestApi;
 import com.nutomic.syncthingandroid.util.Util;
 
@@ -70,6 +73,15 @@ public class DevicesAdapter extends ArrayAdapter<Device> {
     @SuppressLint("SetTextI18n")
     private void updateDeviceStatusView(ItemDeviceListBinding binding, Device device) {
         View rateInOutView = binding.getRoot().findViewById(R.id.rateInOutContainer);
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+        String deviceLastSeen = sharedPreferences.getString(
+            Constants.PREF_CACHE_DEVICE_LASTSEEN_PREFIX + device.deviceID, ""
+        );
+        binding.lastSeen.setText(mContext.getString(R.string.device_last_seen,
+                TextUtils.isEmpty(deviceLastSeen) || deviceLastSeen.equals("1970-01-01T00:00:00Z") ?
+                        mContext.getString(R.string.device_last_seen_never) : deviceLastSeen)
+        );
 
         if (device.getFolderCount() == 0) {
             binding.sharedFoldersTitle.setText(R.string.device_state_unused);
