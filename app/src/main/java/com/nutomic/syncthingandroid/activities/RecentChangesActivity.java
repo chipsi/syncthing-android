@@ -276,7 +276,7 @@ public class RecentChangesActivity extends SyncthingActivity
         // + "document1.txt"
         fakeDiskEvent.id = --id;
         fakeDiskEvent.data.action = "added";
-        fakeDiskEvent.data.path = "#document1.txt";
+        fakeDiskEvent.data.path = "document1.txt";
         fakeDiskEvent.time = "2018-10-29T17:08:00.6183215+01:00";
         addFakeDiskEvent(diskEvents, fakeDiskEvent);
 
