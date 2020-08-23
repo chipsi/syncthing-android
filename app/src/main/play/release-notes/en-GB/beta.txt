@@ -7,4 +7,4 @@ Fixed
 Enhanced
 --
 - Always show all actions in the menu
-- Removed unnecessary restarts (#)
+- Removed unnecessary restarts (#698)
