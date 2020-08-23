@@ -472,23 +472,6 @@ public class RestApi {
     }
 
     /**
-     * Sends current config and restarts Syncthing.
-     */
-    public void saveConfigAndRestart() {
-        String jsonConfig;
-        synchronized (mConfigLock) {
-            jsonConfig = mGson.toJson(mConfig);
-        }
-        new PostRequest(mContext, mUrl, PostRequest.URI_SYSTEM_CONFIG, mApiKey,
-                null, jsonConfig, result -> {
-            Intent intent = new Intent(mContext, SyncthingService.class)
-                    .setAction(SyncthingService.ACTION_RESTART);
-            mContext.startService(intent);
-        });
-        mOnConfigChangedListener.onConfigChanged();
-    }
-
-    /**
      * Posts shutdown request.
      * This will cause SyncthingNative to exit and not restart.
      */
