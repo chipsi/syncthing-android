@@ -460,7 +460,7 @@ public class RestApi {
      * Will result in a "ConfigSaved" event.
      * EventProcessor will trigger this.reloadConfig().
      */
-    private void sendConfig() {
+    public void sendConfig() {
         String jsonConfig;
         synchronized (mConfigLock) {
             jsonConfig = mGson.toJson(mConfig);
