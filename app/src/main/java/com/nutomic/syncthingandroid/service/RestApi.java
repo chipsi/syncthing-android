@@ -915,6 +915,8 @@ public class RestApi {
      * Listener for {@link #getEvents}.
      */
     public interface OnReceiveEventListener {
+        void onError();
+
         /**
          * Called for each event.
          */
@@ -954,7 +956,6 @@ public class RestApi {
 
             listener.onDone(lastId);
         }, error -> {
-            Log.d(TAG, "getEvents: Event sink aborted");
             listener.onError();
         });
     }
