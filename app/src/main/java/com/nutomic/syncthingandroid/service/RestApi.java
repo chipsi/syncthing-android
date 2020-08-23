@@ -50,6 +50,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -92,7 +93,7 @@ public class RestApi {
     }
 
     private final Context mContext;
-    private final URL mUrl;
+    private URL mUrl;
     private final String mApiKey;
 
     private String mVersion;
@@ -455,6 +456,17 @@ public class RestApi {
             ImmutableMap.of("folder", folderId), null, null);
     }
 
+    public URL getWebGuiUrl() {
+        synchronized (mConfigLock) {
+            String urlProtocol = Constants.osSupportsTLS12() ? "https" : "http";
+            try {
+                return new URL(urlProtocol + "://" + mConfig.gui.address);
+            } catch (MalformedURLException e) {
+                throw new RuntimeException("Failed to parse web interface URL", e);
+            }
+        }
+    }
+
     /**
      * Sends current config to Syncthing.
      * Will result in a "ConfigSaved" event.
@@ -468,6 +480,7 @@ public class RestApi {
         // LogVMultipleLines("sendConfig: config=" + jsonToPrettyFormat(jsonConfig));
         new PostRequest(mContext, mUrl, PostRequest.URI_SYSTEM_CONFIG, mApiKey,
             null, jsonConfig, null);
+        mUrl = getWebGuiUrl();
         mOnConfigChangedListener.onConfigChanged();
     }
 
