@@ -936,7 +936,9 @@ public class RestApi {
     public final void getEvents(final long sinceId, final long limit, final OnReceiveEventListener listener) {
         Map<String, String> params =
                 ImmutableMap.of("since", String.valueOf(sinceId), "limit", String.valueOf(limit));
+        LogV("getEvents: Create event sink");
         new GetRequest(mContext, mUrl, GetRequest.URI_EVENTS, mApiKey, params, result -> {
+            LogV("getEvents: Got event sink result");
             JsonArray jsonEvents = new JsonParser().parse(result).getAsJsonArray();
             long lastId = 0;
 
@@ -951,7 +953,10 @@ public class RestApi {
             }
 
             listener.onDone(lastId);
-        }, error -> {});
+        }, error -> {
+            Log.d(TAG, "getEvents: Event sink aborted");
+            listener.onError();
+        });
     }
 
     /**
