@@ -59,7 +59,7 @@
                 android:layout_height="wrap_content"
                 android:layout_toEndOf="@+id/ivIcon"
                 android:contentDescription="@string/grant_permission"
-                android:drawableStart="@android:drawable/ic_menu_mylocation"
+                app:drawableStartCompat="@android:drawable/ic_menu_mylocation"
                 app:drawableLeftCompat="@android:drawable/ic_menu_mylocation"
                 android:paddingStart="@dimen/grant_button_padding"
                 android:paddingEnd="@dimen/grant_button_padding"

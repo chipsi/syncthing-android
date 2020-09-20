@@ -71,7 +71,7 @@
                     android:paddingStart="20dp"
                     android:text="@string/override_changes"
                     app:drawableLeftCompat="@drawable/ic_cloud_upload_red_24"
-                    android:drawableStart="@drawable/ic_cloud_upload_red_24"
+                    app:drawableStartCompat="@drawable/ic_cloud_upload_red_24"
                     android:drawablePadding="5sp"
                     android:textSize="12sp" />
 
@@ -86,7 +86,7 @@
                     android:paddingStart="20dp"
                     android:text="@string/revert_local_changes"
                     app:drawableLeftCompat="@drawable/ic_cloud_download_red_24"
-                    android:drawableStart="@drawable/ic_cloud_download_red_24"
+                    app:drawableStartCompat="@drawable/ic_cloud_download_red_24"
                     android:drawablePadding="5sp"
                     android:textSize="12sp" />
 

@@ -56,7 +56,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:drawableLeftCompat="@drawable/ic_folder_black_24dp"
-            android:drawableStart="@drawable/ic_folder_black_24dp"
+            app:drawableStartCompat="@drawable/ic_folder_black_24dp"
             android:focusable="true"
             android:hint="@string/directory"/>
 

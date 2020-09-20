@@ -128,7 +128,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="6dp"
                 app:drawableLeftCompat="@drawable/ic_folder_black_24dp"
-                android:drawableStart="@drawable/ic_folder_black_24dp"
+                app:drawableStartCompat="@drawable/ic_folder_black_24dp"
                 android:focusable="true"
                 android:hint="@string/no_sub_folder_is_selected"
                 app:layout_constraintHorizontal_bias="0.0"

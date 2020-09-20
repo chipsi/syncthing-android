@@ -49,7 +49,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:contentDescription="@string/grant_permission"
-            android:drawableStart="@android:drawable/ic_menu_manage"
+            app:drawableStartCompat="@android:drawable/ic_menu_manage"
             app:drawableLeftCompat="@android:drawable/ic_menu_manage"
             android:paddingStart="@dimen/grant_button_padding"
             android:paddingEnd="@dimen/grant_button_padding"

@@ -37,7 +37,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     app:drawableLeftCompat="@drawable/ic_cellphone_black_24dp"
-                    android:drawableStart="@drawable/ic_cellphone_black_24dp"
+                    app:drawableStartCompat="@drawable/ic_cellphone_black_24dp"
                     android:contentDescription="@string/device_id"
                     android:imeOptions="actionNext"
                     android:inputType="textNoSuggestions|textMultiLine"
@@ -64,7 +64,7 @@
                 android:layout_marginEnd="@dimen/abc_action_bar_content_inset_material"
                 android:clickable="true"
                 app:drawableLeftCompat="@drawable/ic_device_hub_black_24dp_active"
-                android:drawableStart="@drawable/ic_device_hub_black_24dp_active"
+                app:drawableStartCompat="@drawable/ic_device_hub_black_24dp_active"
                 android:drawableEnd="@drawable/ic_refresh_black_24"
                 android:focusable="true"
                 android:text="@string/discovered_devices_title"
@@ -97,7 +97,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     app:drawableLeftCompat="@drawable/ic_cellphone_black_24dp"
-                    android:drawableStart="@drawable/ic_cellphone_black_24dp"
+                    app:drawableStartCompat="@drawable/ic_cellphone_black_24dp"
                     android:hint="@string/device_id"
                     android:imeOptions="actionNext"
                     android:inputType="textNoSuggestions|textMultiLine" />
@@ -121,7 +121,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:drawableLeftCompat="@drawable/ic_tag_text_outline_black_24dp_active"
-                android:drawableStart="@drawable/ic_tag_text_outline_black_24dp_active"
+                app:drawableStartCompat="@drawable/ic_tag_text_outline_black_24dp_active"
                 android:hint="@string/name"
                 android:imeOptions="actionNext"
                 android:inputType="textCapWords"
@@ -134,7 +134,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:drawableLeftCompat="@drawable/ic_link_black_24dp_active"
-                android:drawableStart="@drawable/ic_link_black_24dp_active"
+                app:drawableStartCompat="@drawable/ic_link_black_24dp_active"
                 android:hint="@string/addresses"
                 android:imeOptions="actionDone"
                 android:inputType="textNoSuggestions"
@@ -145,7 +145,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:drawableLeftCompat="@drawable/ic_device_hub_black_24dp_active"
-                android:drawableStart="@drawable/ic_device_hub_black_24dp_active"
+                app:drawableStartCompat="@drawable/ic_device_hub_black_24dp_active"
                 android:focusable="false"
                 android:text="@string/folders" />
 
@@ -174,7 +174,7 @@
                     android:background="@null"
                     android:checked="false"
                     app:drawableLeftCompat="@drawable/ic_zip_box_black_24dp_active"
-                    android:drawableStart="@drawable/ic_zip_box_black_24dp_active"
+                    app:drawableStartCompat="@drawable/ic_zip_box_black_24dp_active"
                     android:text="@string/compression" />
 
                 <TextView
@@ -192,7 +192,7 @@
                 android:layout_height="wrap_content"
                 android:checked="false"
                 app:drawableLeftCompat="@drawable/ic_phonelink_black_24dp_active"
-                android:drawableStart="@drawable/ic_phonelink_black_24dp_active"
+                app:drawableStartCompat="@drawable/ic_phonelink_black_24dp_active"
                 android:text="@string/introducer" />
 
             <androidx.appcompat.widget.SwitchCompat
@@ -202,7 +202,7 @@
                 android:layout_height="wrap_content"
                 android:checked="false"
                 app:drawableLeftCompat="@drawable/ic_pause_circle_outline_black_24dp"
-                android:drawableStart="@drawable/ic_pause_circle_outline_black_24dp"
+                app:drawableStartCompat="@drawable/ic_pause_circle_outline_black_24dp"
                 android:text="@string/pause_device" />
 
             <!-- Custom sync conditions -->
@@ -221,7 +221,7 @@
                     android:layout_height="wrap_content"
                     android:checked="false"
                     app:drawableLeftCompat="@drawable/ic_autorenew_black_24dp"
-                    android:drawableStart="@drawable/ic_autorenew_black_24dp"
+                    app:drawableStartCompat="@drawable/ic_autorenew_black_24dp"
                     android:text="@string/custom_sync_conditions_title" />
 
                 <TextView
@@ -260,7 +260,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:drawableLeftCompat="@drawable/ic_info_black_24dp_inactive"
-                android:drawableStart="@drawable/ic_info_black_24dp_inactive"
+                app:drawableStartCompat="@drawable/ic_info_black_24dp_inactive"
                 android:enabled="false"
                 android:hint="@string/current_address"
                 android:visibility="gone"

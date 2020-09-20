@@ -21,7 +21,7 @@
             android:layout_width="match_parent"
             android:layout_height="48dp"
             app:drawableLeftCompat="@drawable/ic_settings_black_24dp"
-            android:drawableStart="@drawable/ic_settings_black_24dp"
+            app:drawableStartCompat="@drawable/ic_settings_black_24dp"
             android:text="@string/settings_title"
             android:clickable="true"
             android:focusable="true" />
@@ -32,7 +32,7 @@
             android:layout_width="match_parent"
             android:layout_height="48dp"
             app:drawableLeftCompat="@drawable/ic_close_black_24dp"
-            android:drawableStart="@drawable/ic_close_black_24dp"
+            app:drawableStartCompat="@drawable/ic_close_black_24dp"
             android:text="@string/exit"
             android:clickable="true"
             android:focusable="true" />
@@ -73,7 +73,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:drawableLeftCompat="@drawable/ic_syncthing_logo_black"
-                    android:drawableStart="@drawable/ic_syncthing_logo_black"
+                    app:drawableStartCompat="@drawable/ic_syncthing_logo_black"
                     android:text="@string/app_name"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                     android:textColor="@color/text_blue"
@@ -94,7 +94,7 @@
                 android:layout_height="48dp"
                 android:clickable="true"
                 app:drawableLeftCompat="@drawable/ic_qrcode_black_24dp_active"
-                android:drawableStart="@drawable/ic_qrcode_black_24dp_active"
+                app:drawableStartCompat="@drawable/ic_qrcode_black_24dp_active"
                 android:focusable="true"
                 android:text="@string/show_device_id" />
 
@@ -104,7 +104,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 app:drawableLeftCompat="@drawable/ic_history_black_24dp_active"
-                android:drawableStart="@drawable/ic_history_black_24dp_active"
+                app:drawableStartCompat="@drawable/ic_history_black_24dp_active"
                 android:text="@string/recent_changes_title"
                 android:clickable="true"
                 android:focusable="true" />
@@ -115,7 +115,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 app:drawableLeftCompat="@drawable/ic_web_black_24dp"
-                android:drawableStart="@drawable/ic_web_black_24dp"
+                app:drawableStartCompat="@drawable/ic_web_black_24dp"
                 android:text="@string/web_gui_title"
                 android:clickable="true"
                 android:focusable="true" />
@@ -126,7 +126,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 app:drawableLeftCompat="@drawable/ic_import_export_black_24dp"
-                android:drawableStart="@drawable/ic_import_export_black_24dp"
+                app:drawableStartCompat="@drawable/ic_import_export_black_24dp"
                 android:text="@string/category_backup"
                 android:clickable="true"
                 android:focusable="true" />
@@ -137,7 +137,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 app:drawableLeftCompat="@drawable/ic_autorenew_black_24dp"
-                android:drawableStart="@drawable/ic_autorenew_black_24dp"
+                app:drawableStartCompat="@drawable/ic_autorenew_black_24dp"
                 android:text="@string/restart"
                 android:clickable="true"
                 android:focusable="true" />
@@ -148,7 +148,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 app:drawableLeftCompat="@drawable/ic_help_outline_black_24dp"
-                android:drawableStart="@drawable/ic_help_outline_black_24dp"
+                app:drawableStartCompat="@drawable/ic_help_outline_black_24dp"
                 android:text="@string/tips_and_tricks_title"
                 android:clickable="true"
                 android:focusable="true" />
