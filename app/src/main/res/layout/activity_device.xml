@@ -65,7 +65,7 @@
                 android:clickable="true"
                 app:drawableLeftCompat="@drawable/ic_device_hub_black_24dp_active"
                 app:drawableStartCompat="@drawable/ic_device_hub_black_24dp_active"
-                android:drawableEnd="@drawable/ic_refresh_black_24"
+                app:drawableEndCompat="@drawable/ic_refresh_black_24"
                 android:focusable="true"
                 android:text="@string/discovered_devices_title"
                 android:visibility="gone" />
