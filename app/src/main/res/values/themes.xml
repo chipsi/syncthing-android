@@ -25,7 +25,9 @@
         <item name="alertDialogTheme">@style/Theme.Syncthing.Dialog</item>
     </style>
 
-    <style name="Theme.Syncthing" parent="Theme.Syncthing.Base"/>
+    <style name="Theme.Syncthing" parent="Theme.Syncthing.Base">
+        <item name="alertDialogTheme">@style/Theme.Syncthing.Dialog</item>
+    </style>
 
     <style name="Theme.Syncthing.Translucent">
         <item name="android:windowBackground">@android:color/transparent</item>
