@@ -45,8 +45,10 @@ public class TipsAndTricksActivity extends SyncthingActivity {
          * e.g. "/storage/abcd-efgh/Android/[PACKAGE_NAME]/files"
          */
         ArrayList<File> externalFilesDir = new ArrayList<>();
-        externalFilesDir.addAll(Arrays.asList(getExternalFilesDirs(null)));
-        externalFilesDir.remove(getExternalFilesDir(null));
+        externalFilesDir.addAll(Arrays.asList(getExternalMediaDirs()));
+        if (externalFilesDir.size() > 0) {
+            externalFilesDir.remove(externalFilesDir.get(0));
+        }
         externalFilesDir.remove(null);      // getExternalFilesDirs may return null for an ejected SDcard.
         if (externalFilesDir.size() > 0) {
             String absExternalStorageAppFilesPath = externalFilesDir.get(0).getAbsolutePath();
