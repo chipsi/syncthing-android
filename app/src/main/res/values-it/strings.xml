@@ -206,7 +206,7 @@ Si prega di segnalare eventuali problemi su Github.</string>
     <string name="device_last_seen_never">Mai</string>
 
     <!-- Title for the listing of shared folders with a colon and space appended -->
-    <string name="shared_folders_title_colon">Caretelle:\u0020</string>
+    <string name="shared_folders_title_colon">Cartelle:\u0020</string>
 
     <!-- Title for current download rate -->
     <string name="download_title">Download</string>
