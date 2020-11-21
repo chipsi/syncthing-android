@@ -774,6 +774,7 @@ public class ConfigXml {
                 device.introducer =  getAttributeOrDefault(r, "introducer", device.introducer);
                 device.name = getAttributeOrDefault(r, "name", device.name);
                 device.paused = getContentOrDefault(r.getElementsByTagName("paused").item(0), device.paused);
+                device.untrusted = getContentOrDefault(r.getElementsByTagName("untrusted").item(0), device.untrusted);
 
                 // Addresses
                 /*
@@ -877,6 +878,7 @@ public class ConfigXml {
                     r.setAttribute("name", device.name);
 
                     setConfigElement(r, "paused", Boolean.toString(device.paused));
+                    setConfigElement(r, "untrusted", Boolean.toString(device.untrusted));
 
                     // Addresses
                     // Pass 1: Remove all addresses in XML.
@@ -1047,6 +1049,7 @@ public class ConfigXml {
         options.maxConcurrentIncomingRequestKiB = getContentOrDefault(elementOptions.getElementsByTagName("maxConcurrentIncomingRequestKiB").item(0), options.maxConcurrentIncomingRequestKiB);
         options.announceLanAddresses = getContentOrDefault(elementOptions.getElementsByTagName("announceLANAddresses").item(0), options.announceLanAddresses);
         options.sendFullIndexOnUpgrade = getContentOrDefault(elementOptions.getElementsByTagName("sendFullIndexOnUpgrade").item(0), options.sendFullIndexOnUpgrade);
+        options.featureFlag = getContentOrDefault(elementOptions.getElementsByTagName("featureFlag").item(0), options.featureFlag);
         return options;
     }
 
