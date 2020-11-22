@@ -504,6 +504,7 @@ public class ConfigXml {
                 if (!TextUtils.isEmpty(device.deviceID) && !device.deviceID.equals(localDeviceID)) {
                     device.introducedBy = getAttributeOrDefault(elementDevice, "introducedBy", device.introducedBy);
                     // LogV("getFolders: deviceID=" + device.deviceID + ", introducedBy=" + device.introducedBy);
+                    device.encryptionPassword = getContentOrDefault(elementDevice.getElementsByTagName("encryptionPassword").item(0), device.encryptionPassword);
                     folder.addDevice(device);
                 }
             }
