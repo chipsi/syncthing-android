@@ -122,7 +122,6 @@ public class SyncthingRunnable implements Runnable {
         }
     }
 
-    @SuppressLint("WakelockTimeout")
     public String run(boolean returnStdOut) throws ExecutableNotFoundException {
         Boolean sendStopToService = false;
         Boolean restartSyncthingNative = false;
@@ -140,30 +139,8 @@ public class SyncthingRunnable implements Runnable {
             Log.w(TAG, "chmod SyncthingNative failed with exit code " + Integer.toString(exitCode));
         }
 
-        /**
-         * Potential fix for #498, keep the CPU running while native binary is running.
-         * Only valid on Android 5 or lower.
-         */
-        PowerManager pm;
-        PowerManager.WakeLock wakeLock = null;
-        Boolean useWakeLock = mPreferences.getBoolean(Constants.PREF_USE_WAKE_LOCK, false);
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M && useWakeLock) {
-            pm = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
-            /**
-             * Since gradle 4.6, wakelock tags have to obey "app:component" naming convention.
-             */
-            wakeLock = pm.newWakeLock(
-                PowerManager.PARTIAL_WAKE_LOCK,
-                mContext.getString(R.string.app_name) + ":" + TAG
-            );
-        }
-
         Process process = null;
         try {
-            if (wakeLock != null) {
-                wakeLock.acquire();
-            }
-
             /**
              * Setup and run a new syncthing instance
              */
@@ -247,9 +224,6 @@ public class SyncthingRunnable implements Runnable {
         } catch (IOException | InterruptedException e) {
             Log.e(TAG, "Failed to execute syncthing binary or read output", e);
         } finally {
-            if (wakeLock != null) {
-                wakeLock.release();
-            }
             if (process != null) {
                 process.destroy();
             }
@@ -491,9 +465,7 @@ public class SyncthingRunnable implements Runnable {
 
         // Optimize memory usage for older devices.
         int gogc = 100;         // GO default
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            gogc = 50;
-        } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             gogc = 75;
         }
         LogV("Setting env var: [GOGC]=[" + Integer.toString(gogc) + "]");
