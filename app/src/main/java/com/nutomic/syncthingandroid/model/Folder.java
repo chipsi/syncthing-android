@@ -92,6 +92,7 @@ public class Folder {
 
         Device d = new Device();
         d.deviceID = device.deviceID;
+        d.encryptionPassword = device.encryptionPassword;
         d.introducedBy = device.introducedBy;
         devices.add(d);
     }
