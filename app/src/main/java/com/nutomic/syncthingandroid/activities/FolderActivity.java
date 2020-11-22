@@ -713,12 +713,17 @@ public class FolderActivity extends SyncthingActivity {
 
     private void addDeviceViewAndSetListener(Device device, LayoutInflater inflater) {
         inflater.inflate(R.layout.item_device_form, mDevicesContainer);
-        SwitchCompat deviceView = (SwitchCompat) mDevicesContainer.getChildAt(mDevicesContainer.getChildCount()-1);
-        deviceView.setOnCheckedChangeListener(null);
-        deviceView.setChecked(mFolder.getDevice(device.deviceID) != null);
-        deviceView.setText(device.getDisplayName());
-        deviceView.setTag(device);
-        deviceView.setOnCheckedChangeListener(mCheckedListener);
+        LinearLayout deviceView = (LinearLayout) mDevicesContainer.getChildAt(mDevicesContainer.getChildCount()-1);
+
+        SwitchCompat switchView = (SwitchCompat) deviceView.getChildAt(0);
+        switchView.setOnCheckedChangeListener(null);
+        switchView.setChecked(mFolder.getDevice(device.deviceID) != null);
+        switchView.setText(device.getDisplayName());
+        switchView.setTag(device);
+        switchView.setOnCheckedChangeListener(mCheckedListener);
+
+        EditText encryptPassView = (EditText) deviceView.getChildAt(1);
+        encryptPassView.setText(device.encryptionPassword);
     }
 
     private void onSave() {
@@ -751,6 +756,22 @@ public class FolderActivity extends SyncthingActivity {
             setResult(AppCompatActivity.RESULT_OK);
             finish();
             return;
+        }
+
+        // Loop through devices the folder is shared to and update encryptionPassword property.
+        for (int i = 0; i < mDevicesContainer.getChildCount(); i++) {
+            LinearLayout deviceView = (LinearLayout) mDevicesContainer.getChildAt(i);
+
+            SwitchCompat switchView = (SwitchCompat) deviceView.getChildAt(0);
+            Device device = mFolder.getDevice(((Device) switchView.getTag()).deviceID);
+            if (device != null) {
+                EditText encryptPassView = (EditText) deviceView.getChildAt(1);
+                String newEncryptionPassword = encryptPassView.getText().toString();
+                if (!device.encryptionPassword.equals(newEncryptionPassword)) {
+                    device.encryptionPassword = newEncryptionPassword;
+                    mFolderNeedsToUpdate = true;
+                }
+            }
         }
 
         // Edit mode.
