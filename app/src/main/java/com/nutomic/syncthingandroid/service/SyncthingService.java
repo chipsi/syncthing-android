@@ -1014,7 +1014,6 @@ public class SyncthingService extends Service {
                             case "start_into_web_gui":
                             case "suggest_new_folder_root":
                             case "use_legacy_hashing":
-                            case "wakelock_while_binary_running":
                                 LogV("importConfig: Ignoring deprecated pref \"" + prefKey + "\".");
                                 break;
                             // Cached information which is not available on SettingsActivity.

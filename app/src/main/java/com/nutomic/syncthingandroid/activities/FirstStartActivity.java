@@ -138,8 +138,9 @@ public class FirstStartActivity extends AppCompatActivity {
             Log.d(TAG, "We (no longer?) have a valid Syncthing config and will attempt to generate a fresh config.");
         }
 
-        // Make notification bar transparent (API level 21+ and <= Q)
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
+        // Make notification bar transparent (API level 21+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
+                Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
                     View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
         }
@@ -356,8 +357,8 @@ public class FirstStartActivity extends AppCompatActivity {
      * Making notification bar transparent
      */
     private void changeStatusBarColor() {
-        // API level 21+ and <= Q
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
+                Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
             Window window = getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(Color.TRANSPARENT);
@@ -480,9 +481,11 @@ public class FirstStartActivity extends AppCompatActivity {
         }
     }
 
-    // Older android version don't have the doze feature so we'll assume having the anti-doze permission.
-    @TargetApi(Build.VERSION_CODES.M)
     private boolean haveIgnoreDozePermission() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            // Older android version don't have the doze feature so we'll assume having the anti-doze permission.
+            return true;
+        }
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         return pm.isIgnoringBatteryOptimizations(getPackageName());
     }
