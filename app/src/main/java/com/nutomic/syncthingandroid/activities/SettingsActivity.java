@@ -199,6 +199,7 @@ public class SettingsActivity extends SyncthingActivity {
         private Preference mDownloadSupportBundle;
 
         /* Experimental options */
+        private CheckBoxPreference mUseWakelock;
         private CheckBoxPreference mUseTor;
         private EditTextPreference mSocksProxyAddress;
         private EditTextPreference mHttpProxyAddress;
@@ -371,8 +372,17 @@ public class SettingsActivity extends SyncthingActivity {
             mUseTor                         = (CheckBoxPreference) findPreference(Constants.PREF_USE_TOR);
             mSocksProxyAddress              = (EditTextPreference) findPreference(Constants.PREF_SOCKS_PROXY_ADDRESS);
             mHttpProxyAddress               = (EditTextPreference) findPreference(Constants.PREF_HTTP_PROXY_ADDRESS);
+            mUseWakelock                    = (CheckBoxPreference) findPreference(Constants.PREF_USE_WAKE_LOCK);
 
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                /* Wakelocks are only valid on Android 5 or lower. */
+                mUseWakelock.setEnabled(false);
+                mUseWakelock.setChecked(false);
+            }
+
+            mUseWakelock.setOnPreferenceChangeListener(this);
             mUseTor.setOnPreferenceChangeListener(this);
+
             mSocksProxyAddress.setEnabled(!(Boolean) mUseTor.isChecked());
             mSocksProxyAddress.setOnPreferenceChangeListener(this);
             handleSocksProxyPreferenceChange(screen.findPreference(Constants.PREF_SOCKS_PROXY_ADDRESS),  mPreferences.getString(Constants.PREF_SOCKS_PROXY_ADDRESS, ""));
@@ -484,8 +494,9 @@ public class SettingsActivity extends SyncthingActivity {
                 Log.w(TAG, "registerActionBar: toolbar == null");
                 return;
             }
-
-            toolbar.setTouchscreenBlocksFocus(false);       // API level 21+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                toolbar.setTouchscreenBlocksFocus(false);
+            }
             syncthingActivity.setSupportActionBar(toolbar);
             syncthingActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
@@ -756,6 +767,9 @@ public class SettingsActivity extends SyncthingActivity {
                             }
                         }
                     }
+                    mPendingConfig = true;
+                    break;
+                case Constants.PREF_USE_WAKE_LOCK:
                     mPendingConfig = true;
                     break;
                 case Constants.PREF_USE_TOR:
