@@ -611,6 +611,7 @@ public class ConfigXml {
                     Element elementDevice = (Element) nodeDevice;
                     elementDevice.setAttribute("id", device.deviceID);
                     elementDevice.setAttribute("introducedBy", device.introducedBy);
+                    setConfigElement(elementDevice, "encryptionPassword", device.encryptionPassword);
 
                     // Remove corresponding "pendingFolder" node if any exists for the current device.
                     removePendingFolder(device.deviceID, folder.id);
