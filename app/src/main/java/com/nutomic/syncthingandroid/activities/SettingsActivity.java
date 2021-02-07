@@ -853,7 +853,6 @@ public class SettingsActivity extends SyncthingActivity {
                     onDownloadSupportBundleClick();
                     return true;
                 case KEY_UNDO_IGNORED_DEVICES_FOLDERS:
-                    /* ToDo
                     new AlertDialog.Builder(getActivity())
                             .setMessage(R.string.undo_ignored_devices_folders_question)
                             .setPositiveButton(android.R.string.yes, (dialog, which) -> {
@@ -871,7 +870,6 @@ public class SettingsActivity extends SyncthingActivity {
                             })
                             .setNegativeButton(android.R.string.no, null)
                             .show();
-                    */
                     return true;
                 case KEY_ST_RESET_DATABASE:
                     intent = new Intent(getActivity(), SyncthingService.class)
