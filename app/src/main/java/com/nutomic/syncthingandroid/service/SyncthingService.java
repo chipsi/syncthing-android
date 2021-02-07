@@ -392,46 +392,6 @@ public class SyncthingService extends Service {
                 stopSelf();
                 return;
             }
-
-            // Check if pending devices are waiting for approval.
-            /* ToDo
-            List<PendingDevice> pendingDevices = configXml.getPendingDevices();
-            if (pendingDevices != null) {
-                for (final PendingDevice pendingDevice : pendingDevices) {
-                    if (mNotificationHandler != null && pendingDevice.deviceID != null) {
-                        Log.d(TAG, "AFSIS: pendingDevice.deviceID = " + pendingDevice.deviceID + "('" + pendingDevice.name + "')");
-                        mNotificationHandler.showDeviceConnectNotification(
-                            pendingDevice.deviceID,
-                            pendingDevice.name
-                        );
-                    }
-                }
-            }
-            */
-
-            // Loop through devices.
-            /* ToDo
-            List<Device> devices = configXml.getDevices(false);
-            if (devices != null) {
-                for (final Device device : devices) {
-                    // Check if folder approval notifications are pending for the device.
-                    for (final PendingFolder pendingFolder : device.pendingFolders) {
-                        if (mNotificationHandler != null && pendingFolder.id != null) {
-                            Log.d(TAG, "AFSIS: pendingFolder.id = " + pendingFolder.id + "('" + pendingFolder.label + "')");
-                            Boolean isNewFolder = Stream.of(configXml.getFolders())
-                                    .noneMatch(f -> f.id.equals(pendingFolder.id));
-                            mNotificationHandler.showFolderShareNotification(
-                                device.deviceID,
-                                device.name,
-                                pendingFolder.id,
-                                pendingFolder.label,
-                                isNewFolder
-                            );
-                        }
-                    }
-                }
-            }
-            */
         }
     }
 
