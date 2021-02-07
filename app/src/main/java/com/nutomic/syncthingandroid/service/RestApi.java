@@ -355,6 +355,7 @@ public class RestApi {
              */
             RemoteIgnoredDevice remoteIgnoredDevice = new RemoteIgnoredDevice();
             remoteIgnoredDevice.deviceID = deviceId;
+            remoteIgnoredDevice.time = "2019-08-31T14:46:13Z";
             mConfig.remoteIgnoredDevices.add(remoteIgnoredDevice);
             sendConfig();
             Log.d(TAG, "Ignored device [" + deviceId + "]");
@@ -387,6 +388,7 @@ public class RestApi {
                      */
                     IgnoredFolder ignoredFolder = new IgnoredFolder();
                     ignoredFolder.id = folderId;
+                    ignoredFolder.time = "2019-11-10T14:33:46.777Z";
                     device.ignoredFolders.add(ignoredFolder);
                     LogV("ignoreFolder: device.ignoredFolders = " + mGson.toJson(device.ignoredFolders));
                     sendConfig();
