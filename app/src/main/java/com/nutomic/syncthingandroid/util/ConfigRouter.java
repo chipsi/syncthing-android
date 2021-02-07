@@ -1,7 +1,7 @@
 package com.nutomic.syncthingandroid.util;
 
 import android.content.Context;
-// import android.util.Log;
+import android.util.Log;
 
 import com.nutomic.syncthingandroid.model.Device;
 import com.nutomic.syncthingandroid.model.Folder;
@@ -59,20 +59,15 @@ public class ConfigRouter {
         restApi.addFolder(folder);       // This will send the config afterwards.
     }
 
-    /* ToDo
     public void ignoreFolder(RestApi restApi, final String deviceId, final String folderId) {
         if (restApi == null || !restApi.isConfigLoaded()) {
-            // Syncthing is not running or REST API is not (yet) available.
-            configXml.loadConfig();
-            configXml.ignoreFolder(deviceId, folderId);
-            configXml.saveChanges();
+            Log.e(TAG, "ignoreFolder failed, Syncthing is not running or REST API is not (yet) available.");
             return;
         }
 
         // Syncthing is running and REST API is available.
         restApi.ignoreFolder(deviceId, folderId);       // This will send the config afterwards.
     }
-    */
 
     public void updateFolder(RestApi restApi, final Folder folder) {
         if (restApi == null || !restApi.isConfigLoaded()) {
@@ -185,10 +180,7 @@ public class ConfigRouter {
 
     public void ignoreDevice(RestApi restApi, final String deviceID) {
         if (restApi == null || !restApi.isConfigLoaded()) {
-            // Syncthing is not running or REST API is not (yet) available.
-            configXml.loadConfig();
-            configXml.ignoreDevice(deviceID);
-            configXml.saveChanges();
+            Log.e(TAG, "ignoreDevice failed, Syncthing is not running or REST API is not (yet) available.");
             return;
         }
 
