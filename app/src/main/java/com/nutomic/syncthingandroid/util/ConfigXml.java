@@ -790,6 +790,7 @@ public class ConfigXml {
                     // LogV("getDevices: address=" + address);
                 }
 
+                /*
                 // ignoredFolders
                 device.ignoredFolders = new ArrayList<>();
                 NodeList nodeIgnoredFolders = r.getElementsByTagName("ignoredFolder");
@@ -803,7 +804,9 @@ public class ConfigXml {
                     // LogV("getDevices: ignoredFolder=[id=" + ignoredFolder.id + ", label=" + ignoredFolder.label + ", time=" + ignoredFolder.time + "]");
                     device.ignoredFolders.add(ignoredFolder);
                 }
+                */
 
+                /* ToDo
                 // pendingFolders
                 device.pendingFolders = new ArrayList<>();
                 NodeList nodePendingFolders = r.getElementsByTagName("pendingFolder");
@@ -818,6 +821,7 @@ public class ConfigXml {
                     device.pendingFolders.add(pendingFolder);
                 }
                 Collections.sort(device.pendingFolders, PENDING_FOLDERS_COMPARATOR);
+                */
 
                 // For testing purposes only.
                 // LogV("getDevices: device.name=" + device.name + "/" +"device.id=" + device.deviceID + "/" + "device.paused=" + device.paused);

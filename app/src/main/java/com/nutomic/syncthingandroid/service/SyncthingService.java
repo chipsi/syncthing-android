@@ -357,12 +357,14 @@ public class SyncthingService extends Service {
             if (mRunConditionMonitor != null) {
                 mRunConditionMonitor.updateShouldRunDecision();
             }
+        /* ToDo
         } else if (ACTION_IGNORE_DEVICE.equals(intent.getAction())) {
             mConfigRouter.ignoreDevice(mRestApi, intent.getStringExtra(EXTRA_DEVICE_ID));
             mNotificationHandler.cancelConsentNotification(intent.getIntExtra(EXTRA_NOTIFICATION_ID, 0));
         } else if (ACTION_IGNORE_FOLDER.equals(intent.getAction())) {
             mConfigRouter.ignoreFolder(mRestApi, intent.getStringExtra(EXTRA_DEVICE_ID), intent.getStringExtra(EXTRA_FOLDER_ID));
             mNotificationHandler.cancelConsentNotification(intent.getIntExtra(EXTRA_NOTIFICATION_ID, 0));
+        */
         } else if (ACTION_OVERRIDE_CHANGES.equals(intent.getAction()) && mCurrentState == State.ACTIVE) {
             mRestApi.overrideChanges(intent.getStringExtra(EXTRA_FOLDER_ID));
         } else if (ACTION_REVERT_LOCAL_CHANGES.equals(intent.getAction()) && mCurrentState == State.ACTIVE) {
@@ -408,6 +410,7 @@ public class SyncthingService extends Service {
             }
 
             // Loop through devices.
+            /* ToDo
             List<Device> devices = configXml.getDevices(false);
             if (devices != null) {
                 for (final Device device : devices) {
@@ -428,6 +431,7 @@ public class SyncthingService extends Service {
                     }
                 }
             }
+            */
         }
     }
 

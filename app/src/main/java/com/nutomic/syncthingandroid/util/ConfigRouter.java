@@ -59,6 +59,7 @@ public class ConfigRouter {
         restApi.addFolder(folder);       // This will send the config afterwards.
     }
 
+    /* ToDo
     public void ignoreFolder(RestApi restApi, final String deviceId, final String folderId) {
         if (restApi == null || !restApi.isConfigLoaded()) {
             // Syncthing is not running or REST API is not (yet) available.
@@ -71,6 +72,7 @@ public class ConfigRouter {
         // Syncthing is running and REST API is available.
         restApi.ignoreFolder(deviceId, folderId);       // This will send the config afterwards.
     }
+    */
 
     public void updateFolder(RestApi restApi, final Folder folder) {
         if (restApi == null || !restApi.isConfigLoaded()) {
