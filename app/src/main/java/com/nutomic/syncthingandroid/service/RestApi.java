@@ -233,13 +233,13 @@ public class RestApi {
         }
         Log.d(TAG, "onReloadConfigComplete: Successfully parsed configuration.");
 
-        /* ToDo
         synchronized (mConfigLock) {
             String logRemoteIgnoredDevices = mGson.toJson(mConfig.remoteIgnoredDevices);
             if (!logRemoteIgnoredDevices.equals("[]")) {
                 LogV("ORCC: remoteIgnoredDevices = " + logRemoteIgnoredDevices);
             }
 
+            /* ToDo
             // Check if device approval notifications are pending.
             String logPendingDevices = mGson.toJson(mConfig.pendingDevices);
             if (!logPendingDevices.equals("[]")) {
@@ -256,6 +256,7 @@ public class RestApi {
                     }
                 }
             }
+            */
 
             // Loop through devices.
             for (final Device device : getDevices(false)) {
@@ -264,6 +265,7 @@ public class RestApi {
                     LogV("ORCC: device[" + device.getDisplayName() + "].ignoredFolders = " + logIgnoredFolders);
                 }
 
+                /* ToDo
                 // Check if folder approval notifications are pending for the device.
                 String logPendingFolders = mGson.toJson(device.pendingFolders);
                 if (!logPendingFolders.equals("[]")) {
@@ -285,9 +287,9 @@ public class RestApi {
                         }
                     }
                 }
+                */
             }
         }
-        */
 
         // Update cached device and folder information.
         final List<Folder> tmpFolders = getFolders();
