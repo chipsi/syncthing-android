@@ -3,7 +3,6 @@ package com.nutomic.syncthingandroid.model;
 import android.text.TextUtils;
 
 public class PendingFolder {
-    public String id = "";
     public String label = "";
     public String time = "";
 
