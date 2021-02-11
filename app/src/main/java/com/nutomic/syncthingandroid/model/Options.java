@@ -74,6 +74,10 @@ public class Options {
     // Possible values: "untrusted"
     public String featureFlag = "";
 
+    // Since v1.13.0
+    public int connectionLimitEnough = 0;
+    public int connectionLimitMax = 0;
+
     // Items that may be temporarily missing because they are empty.
     /**
      * Possible notification IDs:
