@@ -34,6 +34,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.common.io.Files;
 import com.nutomic.syncthingandroid.R;
 import com.nutomic.syncthingandroid.SyncthingApp;
 import com.nutomic.syncthingandroid.service.Constants;
@@ -42,7 +43,11 @@ import com.nutomic.syncthingandroid.util.ConfigXml;
 import com.nutomic.syncthingandroid.util.Util;
 import com.nutomic.syncthingandroid.views.CustomViewPager;
 
+import java.io.IOException;
+import java.io.File;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.inject.Inject;
 
@@ -741,7 +746,36 @@ public class FirstStartActivity extends AppCompatActivity {
         return configParseable;
     }
 
-    private void exportConfig() {
-        return;
+    private boolean exportConfig() {
+        Boolean failSuccess = true;
+        Log.d(TAG, "exportConfig BEGIN");
+
+        // Get app specific /Android/media directory.
+        ArrayList<File> externalFilesDir = new ArrayList<>();
+        externalFilesDir.addAll(Arrays.asList(getExternalMediaDirs()));
+        if (externalFilesDir.size() > 0) {
+            externalFilesDir.remove(externalFilesDir.get(0));
+        }
+        externalFilesDir.remove(null);      // getExternalFilesDirs may return null for an ejected SDcard.
+        if (externalFilesDir.size() == 0) {
+            Log.w(TAG, "Failed to export config. Could not determine app's private files directory on external storage.");
+            return false;
+        }
+        final File strExportToMediaPath = new File(externalFilesDir.get(0).getAbsolutePath());
+
+        // Copy config, privateKey and/or publicKey to export path.
+        strExportToMediaPath.mkdirs();
+        try {
+            Files.copy(Constants.getConfigFile(this),
+                    new File(strExportToMediaPath, Constants.CONFIG_FILE));
+            Files.copy(Constants.getPrivateKeyFile(this),
+                    new File(strExportToMediaPath, Constants.PRIVATE_KEY_FILE));
+            Files.copy(Constants.getPublicKeyFile(this),
+                    new File(strExportToMediaPath, Constants.PUBLIC_KEY_FILE));
+        } catch (IOException e) {
+            Log.w(TAG, "Failed to export config", e);
+            failSuccess = false;
+        }
+        return failSuccess;
     }
 }
