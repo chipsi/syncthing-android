@@ -126,8 +126,6 @@ public class RestApi {
      * e.g. SettingsFragment need "mLocalDeviceId"
      */
     private Boolean asyncQueryConfigComplete            = false;
-    private Boolean asyncQueryPendingDevicesComplete    = false;
-    private Boolean asyncQueryPendingFoldersComplete    = false;
     private Boolean asyncQueryVersionComplete           = false;
     private Boolean asyncQuerySystemStatusComplete      = false;
 
@@ -202,18 +200,6 @@ public class RestApi {
                 checkReadConfigFromRestApiCompleted();
             }
         }, error -> {});
-        new GetRequest(mContext, mUrl, GetRequest.URI_PENDING_DEVICES, mApiKey, null, result -> {
-            synchronized (mAsyncQueryCompleteLock) {
-                asyncQueryPendingDevicesComplete = true;
-                checkReadConfigFromRestApiCompleted();
-            }
-        }, error -> {});
-        new GetRequest(mContext, mUrl, GetRequest.URI_PENDING_FOLDERS, mApiKey, null, result -> {
-            synchronized (mAsyncQueryCompleteLock) {
-                asyncQueryPendingFoldersComplete = true;
-                checkReadConfigFromRestApiCompleted();
-            }
-        }, error -> {});
         getSystemStatus(info -> {
             mLocalDeviceId = info.myID;
             mUrVersionMax = info.urVersionMax;
@@ -227,8 +213,6 @@ public class RestApi {
     private void checkReadConfigFromRestApiCompleted() {
         if (asyncQueryVersionComplete &&
                 asyncQueryConfigComplete &&
-                asyncQueryPendingDevicesComplete &&
-                asyncQueryPendingFoldersComplete &&
                 asyncQuerySystemStatusComplete) {
             LogV("Reading config from REST completed. Syncthing version is " + mVersion);
             // Tell SyncthingService it can transition to State.ACTIVE.
@@ -240,14 +224,14 @@ public class RestApi {
         new GetRequest(mContext, mUrl, GetRequest.URI_CONFIG, mApiKey, null, this::onReloadConfigComplete, error -> {});
     }
 
-    private void onReloadConfigComplete(String result) {
+    private void onReloadConfigComplete(String configResult) {
         Boolean configParseSuccess;
         synchronized(mConfigLock) {
-            mConfig = mGson.fromJson(result, Config.class);
+            mConfig = mGson.fromJson(configResult, Config.class);
             configParseSuccess = mConfig != null;
         }
         if (!configParseSuccess) {
-            throw new RuntimeException("config is null: " + result);
+            throw new RuntimeException("config is null: " + configResult);
         }
         Log.d(TAG, "onReloadConfigComplete: Successfully parsed configuration.");
 
@@ -308,6 +292,50 @@ public class RestApi {
                 */
             }
         }
+
+        new GetRequest(mContext, mUrl, GetRequest.URI_PENDING_DEVICES, mApiKey, null, result -> {
+        }, error -> {});
+        new GetRequest(mContext, mUrl, GetRequest.URI_PENDING_FOLDERS, mApiKey, null, result -> {
+            if (mNotificationHandler == null) {
+                Log.e(TAG, "ORCC: URI_PENDING_FOLDERS, mNotificationHandler == null");
+                return;
+            }
+            if (result == null) {
+                Log.e(TAG, "ORCC: URI_PENDING_FOLDERS, result == null");
+                return;
+            }
+            JsonObject jsonObject = new JsonParser().parse(result).getAsJsonObject();
+            if (jsonObject == null) {
+                Log.e(TAG, "ORCC: URI_PENDING_FOLDERS, jsonObject == null");
+                return;
+            }
+            Set<Map.Entry<String, JsonElement>> entries = jsonObject.entrySet();
+            for (Map.Entry<String, JsonElement> folderEntry: entries) {
+                final String resultFolderId = folderEntry.getKey();
+                if (resultFolderId == null) {
+                    continue;
+                }
+                JsonObject jsonObjectOfferedBy = ((JsonObject) folderEntry.getValue().getAsJsonObject()).get("offeredBy").getAsJsonObject();
+                Set<Map.Entry<String, JsonElement>> offeredByEntries = jsonObjectOfferedBy.entrySet();
+                for (Map.Entry<String, JsonElement> offeredByEntry: offeredByEntries) {
+                    final String offeredByDeviceId = offeredByEntry.getKey();
+                    if (offeredByDeviceId == null) {
+                        continue;
+                    }
+                    final PendingFolder pendingFolder = mGson.fromJson(offeredByEntry.getValue(), PendingFolder.class);
+                    Log.d(TAG, "ORCC: pendingFolder.id = " + resultFolderId + "('" + pendingFolder.label + "')");
+                    Boolean isNewFolder = Stream.of(getFolders())
+                            .noneMatch(f -> f.id.equals(resultFolderId));
+                    mNotificationHandler.showFolderShareNotification(
+                        offeredByDeviceId,
+                        "ToDoDeviceName",
+                        resultFolderId,
+                        pendingFolder.label,
+                        isNewFolder
+                    );
+                }
+            }
+        }, error -> {});
 
         // Update cached device and folder information.
         final List<Folder> tmpFolders = getFolders();
