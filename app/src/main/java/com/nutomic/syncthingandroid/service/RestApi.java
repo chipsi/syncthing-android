@@ -324,11 +324,15 @@ public class RestApi {
                     }
                     final PendingFolder pendingFolder = mGson.fromJson(offeredByEntry.getValue(), PendingFolder.class);
                     Log.d(TAG, "ORCC: pendingFolder.id = " + resultFolderId + "('" + pendingFolder.label + "')");
+                    Device matchingDevice = Stream.of(getDevices(false))
+                            .filter(d -> d.deviceID.equals(offeredByDeviceId))
+                            .findFirst()
+                            .get();
                     Boolean isNewFolder = Stream.of(getFolders())
                             .noneMatch(f -> f.id.equals(resultFolderId));
                     mNotificationHandler.showFolderShareNotification(
                         offeredByDeviceId,
-                        "ToDoDeviceName",
+                        matchingDevice.getDisplayName(),
                         resultFolderId,
                         pendingFolder.label,
                         isNewFolder
