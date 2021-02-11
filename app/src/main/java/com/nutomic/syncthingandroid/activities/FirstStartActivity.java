@@ -252,6 +252,10 @@ public class FirstStartActivity extends AppCompatActivity {
             // As the storage permission is a prerequisite to run syncthing, refuse to continue without it.
             Boolean storagePermissionsGranted = haveStoragePermission();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    if (storagePermissionsGranted && !haveAllFilesAccessPermission()) {
+                        Button btnConfigExport = (Button) findViewById(R.id.btnConfigExport);
+                        btnConfigExport.setVisibility(View.VISIBLE);
+                    }
                     storagePermissionsGranted = storagePermissionsGranted && haveAllFilesAccessPermission();
             }
             if (!storagePermissionsGranted) {
@@ -381,6 +385,16 @@ public class FirstStartActivity extends AppCompatActivity {
             View view = layoutInflater.inflate(mSlides[position].layout, container, false);
 
             /* Slide: storage permission */
+            Button btnConfigExport = (Button) view.findViewById(R.id.btnConfigExport);
+            if (btnConfigExport != null) {
+                btnConfigExport.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        exportConfig();
+                    }
+                });
+            }
+
             Button btnGrantStoragePerm = (Button) view.findViewById(R.id.btnGrantStoragePerm);
             if (btnGrantStoragePerm != null) {
                 btnGrantStoragePerm.setOnClickListener(new View.OnClickListener() {
@@ -725,5 +739,9 @@ public class FirstStartActivity extends AppCompatActivity {
             Log.d(TAG, "Failed to parse existing config. Will show key generation slide ...");
         }
         return configParseable;
+    }
+
+    private void exportConfig() {
+        return;
     }
 }
