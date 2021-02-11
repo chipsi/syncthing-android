@@ -241,59 +241,45 @@ public class RestApi {
                 LogV("ORCC: remoteIgnoredDevices = " + logRemoteIgnoredDevices);
             }
 
-            /* ToDo
-            // Check if device approval notifications are pending.
-            String logPendingDevices = mGson.toJson(mConfig.pendingDevices);
-            if (!logPendingDevices.equals("[]")) {
-                LogV("ORCC: pendingDevices = " + logPendingDevices);
-            }
-            if (mConfig.pendingDevices != null) {
-                for (final PendingDevice pendingDevice : mConfig.pendingDevices) {
-                    if (mNotificationHandler != null && pendingDevice.deviceID != null) {
-                        Log.d(TAG, "ORCC: pendingDevice.deviceID = " + pendingDevice.deviceID + "('" + pendingDevice.name + "')");
-                        mNotificationHandler.showDeviceConnectNotification(
-                            pendingDevice.deviceID,
-                            pendingDevice.name
-                        );
-                    }
-                }
-            }
-            */
-
-            // Loop through devices.
+            // Loop through devices to get ignoredFolders per device.
             for (final Device device : getDevices(false)) {
                 String logIgnoredFolders = mGson.toJson(device.ignoredFolders);
                 if (!logIgnoredFolders.equals("[]")) {
                     LogV("ORCC: device[" + device.getDisplayName() + "].ignoredFolders = " + logIgnoredFolders);
                 }
-
-                /* ToDo
-                // Check if folder approval notifications are pending for the device.
-                String logPendingFolders = mGson.toJson(device.pendingFolders);
-                if (!logPendingFolders.equals("[]")) {
-                    LogV("ORCC: device[" + device.getDisplayName() + "].pendingFolders = " + logPendingFolders);
-                }
-                if (device.pendingFolders != null) {
-                    for (final PendingFolder pendingFolder : device.pendingFolders) {
-                        if (mNotificationHandler != null && pendingFolder.id != null) {
-                            Log.d(TAG, "ORCC: pendingFolder.id = " + pendingFolder.id + "('" + pendingFolder.label + "')");
-                            Boolean isNewFolder = Stream.of(getFolders())
-                                    .noneMatch(f -> f.id.equals(pendingFolder.id));
-                            mNotificationHandler.showFolderShareNotification(
-                                device.deviceID,
-                                device.name,
-                                pendingFolder.id,
-                                pendingFolder.label,
-                                isNewFolder
-                            );
-                        }
-                    }
-                }
-                */
             }
         }
 
         new GetRequest(mContext, mUrl, GetRequest.URI_PENDING_DEVICES, mApiKey, null, result -> {
+            if (mNotificationHandler == null) {
+                Log.e(TAG, "ORCC: URI_PENDING_DEVICES, mNotificationHandler == null");
+                return;
+            }
+            if (result == null) {
+                Log.e(TAG, "ORCC: URI_PENDING_DEVICES, result == null");
+                return;
+            }
+            JsonObject jsonObject = new JsonParser().parse(result).getAsJsonObject();
+            if (jsonObject == null) {
+                Log.e(TAG, "ORCC: URI_PENDING_DEVICES, jsonObject == null");
+                return;
+            }
+            Set<Map.Entry<String, JsonElement>> entries = jsonObject.entrySet();
+            for (Map.Entry<String, JsonElement> deviceEntry: entries) {
+                final String resultDeviceId = deviceEntry.getKey();
+                if (resultDeviceId == null) {
+                    continue;
+                }
+                final PendingDevice pendingDevice = mGson.fromJson(deviceEntry.getValue(), PendingDevice.class);
+                if (pendingDevice.time == null) {
+                    continue;
+                }
+                Log.d(TAG, "ORCC: resultDeviceId = " + resultDeviceId + "('" + pendingDevice.name + "')");
+                mNotificationHandler.showDeviceConnectNotification(
+                    resultDeviceId,
+                    pendingDevice.name
+                );
+            }
         }, error -> {});
         new GetRequest(mContext, mUrl, GetRequest.URI_PENDING_FOLDERS, mApiKey, null, result -> {
             if (mNotificationHandler == null) {
@@ -323,7 +309,7 @@ public class RestApi {
                         continue;
                     }
                     final PendingFolder pendingFolder = mGson.fromJson(offeredByEntry.getValue(), PendingFolder.class);
-                    Log.d(TAG, "ORCC: pendingFolder.id = " + resultFolderId + "('" + pendingFolder.label + "')");
+                    Log.d(TAG, "ORCC: resultFolderId = " + resultFolderId + "('" + pendingFolder.label + "')");
                     Device matchingDevice = Stream.of(getDevices(false))
                             .filter(d -> d.deviceID.equals(offeredByDeviceId))
                             .findFirst()
