@@ -125,9 +125,11 @@ public class RestApi {
      * {@link ../activities/SettingsActivity#SettingsFragment#onServiceStateChange} needs cached config and system information available.
      * e.g. SettingsFragment need "mLocalDeviceId"
      */
-    private Boolean asyncQueryConfigComplete = false;
-    private Boolean asyncQueryVersionComplete = false;
-    private Boolean asyncQuerySystemStatusComplete = false;
+    private Boolean asyncQueryConfigComplete            = false;
+    private Boolean asyncQueryPendingDevicesComplete    = false;
+    private Boolean asyncQueryPendingFoldersComplete    = false;
+    private Boolean asyncQueryVersionComplete           = false;
+    private Boolean asyncQuerySystemStatusComplete      = false;
 
     /**
      * Object that must be locked upon accessing the following variables:
@@ -200,6 +202,18 @@ public class RestApi {
                 checkReadConfigFromRestApiCompleted();
             }
         }, error -> {});
+        new GetRequest(mContext, mUrl, GetRequest.URI_PENDING_DEVICES, mApiKey, null, result -> {
+            synchronized (mAsyncQueryCompleteLock) {
+                asyncQueryPendingDevicesComplete = true;
+                checkReadConfigFromRestApiCompleted();
+            }
+        }, error -> {});
+        new GetRequest(mContext, mUrl, GetRequest.URI_PENDING_FOLDERS, mApiKey, null, result -> {
+            synchronized (mAsyncQueryCompleteLock) {
+                asyncQueryPendingFoldersComplete = true;
+                checkReadConfigFromRestApiCompleted();
+            }
+        }, error -> {});
         getSystemStatus(info -> {
             mLocalDeviceId = info.myID;
             mUrVersionMax = info.urVersionMax;
@@ -211,7 +225,11 @@ public class RestApi {
     }
 
     private void checkReadConfigFromRestApiCompleted() {
-        if (asyncQueryVersionComplete && asyncQueryConfigComplete && asyncQuerySystemStatusComplete) {
+        if (asyncQueryVersionComplete &&
+                asyncQueryConfigComplete &&
+                asyncQueryPendingDevicesComplete &&
+                asyncQueryPendingFoldersComplete &&
+                asyncQuerySystemStatusComplete) {
             LogV("Reading config from REST completed. Syncthing version is " + mVersion);
             // Tell SyncthingService it can transition to State.ACTIVE.
             mOnApiAvailableListener.onApiAvailable();
