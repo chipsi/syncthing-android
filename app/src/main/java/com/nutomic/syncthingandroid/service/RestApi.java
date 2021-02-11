@@ -66,6 +66,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import static com.nutomic.syncthingandroid.service.Constants.ENABLE_TEST_DATA;
+import static com.nutomic.syncthingandroid.util.Util.getLocalZonedDateTime;
 
 /**
  * Provides functions to interact with the syncthing REST API.
@@ -391,7 +392,7 @@ public class RestApi {
              */
             RemoteIgnoredDevice remoteIgnoredDevice = new RemoteIgnoredDevice();
             remoteIgnoredDevice.deviceID = deviceId;
-            remoteIgnoredDevice.time = "2019-08-31T14:46:13Z";
+            remoteIgnoredDevice.time = getLocalZonedDateTime();
             mConfig.remoteIgnoredDevices.add(remoteIgnoredDevice);
             sendConfig();
             Log.d(TAG, "Ignored device [" + deviceId + "]");
@@ -424,7 +425,7 @@ public class RestApi {
                      */
                     IgnoredFolder ignoredFolder = new IgnoredFolder();
                     ignoredFolder.id = folderId;
-                    ignoredFolder.time = "2019-11-10T14:33:46.777Z";
+                    ignoredFolder.time = getLocalZonedDateTime();
                     device.ignoredFolders.add(ignoredFolder);
                     LogV("ignoreFolder: device.ignoredFolders = " + mGson.toJson(device.ignoredFolders));
                     sendConfig();
