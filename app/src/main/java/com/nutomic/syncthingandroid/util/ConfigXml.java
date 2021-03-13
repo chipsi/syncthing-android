@@ -438,99 +438,104 @@ public class ConfigXml {
     public List<Folder> getFolders() {
         String localDeviceID = getLocalDeviceIDfromPref();
         List<Folder> folders = new ArrayList<>();
-        NodeList nodeFolders = mConfig.getDocumentElement().getElementsByTagName("folder");
-        for (int i = 0; i < nodeFolders.getLength(); i++) {
-            Element r = (Element) nodeFolders.item(i);
-            Folder folder = new Folder();
-            folder.id = getAttributeOrDefault(r, "id", "");
-            folder.label = getAttributeOrDefault(r, "label", folder.label);
-            folder.path = getAttributeOrDefault(r, "path", "");
-            folder.type = getAttributeOrDefault(r, "type", Constants.FOLDER_TYPE_SEND_RECEIVE);
-            folder.autoNormalize = getAttributeOrDefault(r, "autoNormalize", folder.autoNormalize);
-            folder.fsWatcherDelayS =getAttributeOrDefault(r, "fsWatcherDelayS", folder.fsWatcherDelayS);
-            folder.fsWatcherEnabled = getAttributeOrDefault(r, "fsWatcherEnabled", folder.fsWatcherEnabled);
-            folder.ignorePerms = getAttributeOrDefault(r, "ignorePerms", folder.ignorePerms);
-            folder.rescanIntervalS = getAttributeOrDefault(r, "rescanIntervalS", folder.rescanIntervalS);
 
-            folder.copiers = getContentOrDefault(r.getElementsByTagName("copiers").item(0), folder.copiers);
-            folder.hashers = getContentOrDefault(r.getElementsByTagName("hashers").item(0), folder.hashers);
-            folder.order = getContentOrDefault(r.getElementsByTagName("order").item(0), folder.order);
-            folder.paused = getContentOrDefault(r.getElementsByTagName("paused").item(0), folder.paused);
-            folder.ignoreDelete = getContentOrDefault(r.getElementsByTagName("ignoreDelete").item(0), folder.ignoreDelete);
-            folder.copyOwnershipFromParent = getContentOrDefault(r.getElementsByTagName("copyOwnershipFromParent").item(0), folder.copyOwnershipFromParent);
-            folder.modTimeWindowS = getContentOrDefault(r.getElementsByTagName("modTimeWindowS").item(0), folder.modTimeWindowS);
-            folder.blockPullOrder = getContentOrDefault(r.getElementsByTagName("blockPullOrder").item(0), folder.blockPullOrder);
-            folder.disableFsync = getContentOrDefault(r.getElementsByTagName("disableFsync").item(0), folder.disableFsync);
-            folder.maxConcurrentWrites = getContentOrDefault(r.getElementsByTagName("maxConcurrentWrites").item(0), folder.maxConcurrentWrites);
-            folder.copyRangeMethod = getContentOrDefault(r.getElementsByTagName("copyRangeMethod").item(0), folder.copyRangeMethod);
-            folder.caseSensitiveFS = getContentOrDefault(r.getElementsByTagName("caseSensitiveFS").item(0), folder.caseSensitiveFS);
+        // Prevent enumerating "<folder>" tags below "<default>" nodes by enumerating child nodes manually.
+        NodeList childNodes = mConfig.getDocumentElement().getChildNodes();
+        for (int i = 0; i < childNodes.getLength(); i++) {
+            Node node = childNodes.item(i);
+            if (node.getNodeName().equals("folder")) {
+                Element r = (Element) nodeFolders.item(i);
+                Folder folder = new Folder();
+                folder.id = getAttributeOrDefault(r, "id", "");
+                folder.label = getAttributeOrDefault(r, "label", folder.label);
+                folder.path = getAttributeOrDefault(r, "path", "");
+                folder.type = getAttributeOrDefault(r, "type", Constants.FOLDER_TYPE_SEND_RECEIVE);
+                folder.autoNormalize = getAttributeOrDefault(r, "autoNormalize", folder.autoNormalize);
+                folder.fsWatcherDelayS =getAttributeOrDefault(r, "fsWatcherDelayS", folder.fsWatcherDelayS);
+                folder.fsWatcherEnabled = getAttributeOrDefault(r, "fsWatcherEnabled", folder.fsWatcherEnabled);
+                folder.ignorePerms = getAttributeOrDefault(r, "ignorePerms", folder.ignorePerms);
+                folder.rescanIntervalS = getAttributeOrDefault(r, "rescanIntervalS", folder.rescanIntervalS);
 
-            // Devices
-            /*
-            <device id="[DEVICE_ID]" introducedBy=""/>
-            */
-            NodeList nodeDevices = r.getElementsByTagName("device");
-            for (int j = 0; j < nodeDevices.getLength(); j++) {
-                Element elementDevice = (Element) nodeDevices.item(j);
-                Device device = new Device();
-                device.deviceID = getAttributeOrDefault(elementDevice, "id", "");
+                folder.copiers = getContentOrDefault(r.getElementsByTagName("copiers").item(0), folder.copiers);
+                folder.hashers = getContentOrDefault(r.getElementsByTagName("hashers").item(0), folder.hashers);
+                folder.order = getContentOrDefault(r.getElementsByTagName("order").item(0), folder.order);
+                folder.paused = getContentOrDefault(r.getElementsByTagName("paused").item(0), folder.paused);
+                folder.ignoreDelete = getContentOrDefault(r.getElementsByTagName("ignoreDelete").item(0), folder.ignoreDelete);
+                folder.copyOwnershipFromParent = getContentOrDefault(r.getElementsByTagName("copyOwnershipFromParent").item(0), folder.copyOwnershipFromParent);
+                folder.modTimeWindowS = getContentOrDefault(r.getElementsByTagName("modTimeWindowS").item(0), folder.modTimeWindowS);
+                folder.blockPullOrder = getContentOrDefault(r.getElementsByTagName("blockPullOrder").item(0), folder.blockPullOrder);
+                folder.disableFsync = getContentOrDefault(r.getElementsByTagName("disableFsync").item(0), folder.disableFsync);
+                folder.maxConcurrentWrites = getContentOrDefault(r.getElementsByTagName("maxConcurrentWrites").item(0), folder.maxConcurrentWrites);
+                folder.copyRangeMethod = getContentOrDefault(r.getElementsByTagName("copyRangeMethod").item(0), folder.copyRangeMethod);
+                folder.caseSensitiveFS = getContentOrDefault(r.getElementsByTagName("caseSensitiveFS").item(0), folder.caseSensitiveFS);
 
-                // Exclude self.
-                if (!TextUtils.isEmpty(device.deviceID) && !device.deviceID.equals(localDeviceID)) {
-                    device.introducedBy = getAttributeOrDefault(elementDevice, "introducedBy", device.introducedBy);
-                    // LogV("getFolders: deviceID=" + device.deviceID + ", introducedBy=" + device.introducedBy);
-                    folder.addDevice(device);
+                // Devices
+                /*
+                <device id="[DEVICE_ID]" introducedBy=""/>
+                */
+                NodeList nodeDevices = r.getElementsByTagName("device");
+                for (int j = 0; j < nodeDevices.getLength(); j++) {
+                    Element elementDevice = (Element) nodeDevices.item(j);
+                    Device device = new Device();
+                    device.deviceID = getAttributeOrDefault(elementDevice, "id", "");
+
+                    // Exclude self.
+                    if (!TextUtils.isEmpty(device.deviceID) && !device.deviceID.equals(localDeviceID)) {
+                        device.introducedBy = getAttributeOrDefault(elementDevice, "introducedBy", device.introducedBy);
+                        // LogV("getFolders: deviceID=" + device.deviceID + ", introducedBy=" + device.introducedBy);
+                        folder.addDevice(device);
+                    }
                 }
-            }
 
-            // MinDiskFree
-            /*
-            <minDiskFree unit="MB">5</minDiskFree>
-            */
-            folder.minDiskFree = new Folder.MinDiskFree();
-            Element elementMinDiskFree = (Element) r.getElementsByTagName("minDiskFree").item(0);
-            if (elementMinDiskFree != null) {
-                folder.minDiskFree.unit = getAttributeOrDefault(elementMinDiskFree, "unit", folder.minDiskFree.unit);
-                folder.minDiskFree.value = getContentOrDefault(elementMinDiskFree, folder.minDiskFree.value);
-            }
-            // LogV("folder.minDiskFree.unit=" + folder.minDiskFree.unit + ", folder.minDiskFree.value=" + folder.minDiskFree.value);
-
-            // Versioning
-            /*
-            <versioning></versioning>
-            <versioning type="trashcan">
-                <param key="cleanoutDays" val="90"></param>
-                <cleanupIntervalS>0</cleanupIntervalS>
-                <fsPath></fsPath>
-                <fsType>basic</fsType>
-            </versioning>
-            */
-            folder.versioning = new Folder.Versioning();
-            Element elementVersioning = (Element) r.getElementsByTagName("versioning").item(0);
-            if (elementVersioning != null) {
-                folder.versioning.type = getAttributeOrDefault(elementVersioning, "type", "");
-                folder.versioning.cleanupIntervalS = getAttributeOrDefault(elementVersioning, "cleanupIntervalS", 0);
-                folder.versioning.fsPath = getAttributeOrDefault(elementVersioning, "fsPath", "");
-                folder.versioning.fsType = getAttributeOrDefault(elementVersioning, "fsType", "");
-                NodeList nodeVersioningParam = elementVersioning.getElementsByTagName("param");
-                for (int j = 0; j < nodeVersioningParam.getLength(); j++) {
-                    Element elementVersioningParam = (Element) nodeVersioningParam.item(j);
-                    folder.versioning.params.put(
-                            getAttributeOrDefault(elementVersioningParam, "key", ""),
-                            getAttributeOrDefault(elementVersioningParam, "val", "")
-                    );
-                    /*
-                    Log.v(TAG, "folder.versioning.type=" + folder.versioning.type +
-                            ", key=" + getAttributeOrDefault(elementVersioningParam, "key", "") +
-                            ", val=" + getAttributeOrDefault(elementVersioningParam, "val", "")
-                    );
-                    */
+                // MinDiskFree
+                /*
+                <minDiskFree unit="MB">5</minDiskFree>
+                */
+                folder.minDiskFree = new Folder.MinDiskFree();
+                Element elementMinDiskFree = (Element) r.getElementsByTagName("minDiskFree").item(0);
+                if (elementMinDiskFree != null) {
+                    folder.minDiskFree.unit = getAttributeOrDefault(elementMinDiskFree, "unit", folder.minDiskFree.unit);
+                    folder.minDiskFree.value = getContentOrDefault(elementMinDiskFree, folder.minDiskFree.value);
                 }
-            }
+                // LogV("folder.minDiskFree.unit=" + folder.minDiskFree.unit + ", folder.minDiskFree.value=" + folder.minDiskFree.value);
 
-            // For testing purposes only.
-            // LogV("folder.label=" + folder.label + "/" +"folder.type=" + folder.type + "/" + "folder.paused=" + folder.paused);
-            folders.add(folder);
+                // Versioning
+                /*
+                <versioning></versioning>
+                <versioning type="trashcan">
+                    <param key="cleanoutDays" val="90"></param>
+                    <cleanupIntervalS>0</cleanupIntervalS>
+                    <fsPath></fsPath>
+                    <fsType>basic</fsType>
+                </versioning>
+                */
+                folder.versioning = new Folder.Versioning();
+                Element elementVersioning = (Element) r.getElementsByTagName("versioning").item(0);
+                if (elementVersioning != null) {
+                    folder.versioning.type = getAttributeOrDefault(elementVersioning, "type", "");
+                    folder.versioning.cleanupIntervalS = getAttributeOrDefault(elementVersioning, "cleanupIntervalS", 0);
+                    folder.versioning.fsPath = getAttributeOrDefault(elementVersioning, "fsPath", "");
+                    folder.versioning.fsType = getAttributeOrDefault(elementVersioning, "fsType", "");
+                    NodeList nodeVersioningParam = elementVersioning.getElementsByTagName("param");
+                    for (int j = 0; j < nodeVersioningParam.getLength(); j++) {
+                        Element elementVersioningParam = (Element) nodeVersioningParam.item(j);
+                        folder.versioning.params.put(
+                                getAttributeOrDefault(elementVersioningParam, "key", ""),
+                                getAttributeOrDefault(elementVersioningParam, "val", "")
+                        );
+                        /*
+                        Log.v(TAG, "folder.versioning.type=" + folder.versioning.type +
+                                ", key=" + getAttributeOrDefault(elementVersioningParam, "key", "") +
+                                ", val=" + getAttributeOrDefault(elementVersioningParam, "val", "")
+                        );
+                        */
+                    }
+                }
+
+                // For testing purposes only.
+                // LogV("folder.label=" + folder.label + "/" +"folder.type=" + folder.type + "/" + "folder.paused=" + folder.paused);
+                folders.add(folder);
+            }
         }
         Collections.sort(folders, FOLDERS_COMPARATOR);
         return folders;
@@ -744,7 +749,7 @@ public class ConfigXml {
         String localDeviceID = getLocalDeviceIDfromPref();
         List<Device> devices = new ArrayList<>();
 
-        // Prevent enumerating "<device>" tags below "<folder>" nodes by enumerating child nodes manually.
+        // Prevent enumerating "<device>" tags below "<defaults>", "<folder>" nodes by enumerating child nodes manually.
         NodeList childNodes = mConfig.getDocumentElement().getChildNodes();
         for (int i = 0; i < childNodes.getLength(); i++) {
             Node node = childNodes.item(i);
