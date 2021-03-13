@@ -516,8 +516,8 @@ public class ConfigXml {
             if (elementVersioning != null) {
                 folder.versioning.type = getAttributeOrDefault(elementVersioning, "type", "");
                 folder.versioning.cleanupIntervalS = getAttributeOrDefault(elementVersioning, "cleanupIntervalS", 0);
-                folder.versioning.fsPath = getAttributeOrDefault(elementVersioning, "fsPath", "");
-                folder.versioning.fsType = getAttributeOrDefault(elementVersioning, "fsType", "");
+                folder.versioning.fsPath = getContentOrDefault(elementVersioning.getElementsByTagName("fsPath").item(0), "");
+                folder.versioning.fsType = getContentOrDefault(elementVersioning.getElementsByTagName("fsType").item(0), "basic");
                 NodeList nodeVersioningParam = elementVersioning.getElementsByTagName("param");
                 for (int j = 0; j < nodeVersioningParam.getLength(); j++) {
                     Element elementVersioningParam = (Element) nodeVersioningParam.item(j);
@@ -635,8 +635,8 @@ public class ConfigXml {
                 if (!TextUtils.isEmpty(folder.versioning.type)) {
                     elementVersioning.setAttribute("type", folder.versioning.type);
                     elementVersioning.setAttribute("cleanupIntervalS", Integer.toString(folder.versioning.cleanupIntervalS));
-                    elementVersioning.setAttribute("fsPath", folder.versioning.fsPath);
-                    elementVersioning.setAttribute("fsType", folder.versioning.fsType);
+                    setConfigElement(elementVersioning, "fsPath", folder.versioning.fsPath);
+                    setConfigElement(elementVersioning, "fsType", folder.versioning.fsType);
                     for (Map.Entry<String, String> param : folder.versioning.params.entrySet()) {
                         Log.d(TAG, "updateFolder: nodeVersioning: Adding param key=" + param.getKey() + ", val=" + param.getValue());
                         Node nodeParam = mConfig.createElement("param");
