@@ -1,12 +1,12 @@
-* Syncthing v1.13.1
+* Syncthing v1.14.0
 
 Enhanced
 --
-- Offer emergency config export if stuck (#747)
+
 
 Fixes
 --
-- Fix pending folder/device notifications (#743)
+
 
 Other issues
 --
