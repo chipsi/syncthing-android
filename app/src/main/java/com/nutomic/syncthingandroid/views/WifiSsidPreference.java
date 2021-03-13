@@ -43,16 +43,16 @@ import java.util.TreeSet;
  * SSIDs are formatted according to the naming convention of WifiManager, i.e. they have the
  * surrounding double-quotes (") for UTF-8 names, or they are hex strings (if not quoted).
  */
-public class WifiSsidPreferenceBase extends MultiSelectListPreference {
+public class WifiSsidPreference extends MultiSelectListPreference {
 
-    protected static final String TAG = "WifiSsidPreference";
+    private static final String TAG = "WifiSsidPreference";
 
-    public WifiSsidPreferenceBase(Context context, AttributeSet attrs) {
+    public WifiSsidPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         setDefaultValue(new TreeSet<String>());
     }
 
-    public WifiSsidPreferenceBase(Context context) {
+    public WifiSsidPreference(Context context) {
         this(context, null);
     }
 
