@@ -986,7 +986,6 @@ public class ConfigXml {
         // alwaysLocalNets
         options.overwriteRemoteDeviceNamesOnConnect = getContentOrDefault(elementOptions.getElementsByTagName("overwriteRemoteDeviceNamesOnConnect").item(0), options.overwriteRemoteDeviceNamesOnConnect);
         options.tempIndexMinBlocks = getContentOrDefault(elementOptions.getElementsByTagName("tempIndexMinBlocks").item(0), options.tempIndexMinBlocks);
-        options.defaultFolderPath = getContentOrDefault(elementOptions.getElementsByTagName("defaultFolderPath").item(0), "");
         options.setLowPriority = getContentOrDefault(elementOptions.getElementsByTagName("setLowPriority").item(0), options.setLowPriority);
         // minHomeDiskFree
         options.maxFolderConcurrency = getContentOrDefault(elementOptions.getElementsByTagName("maxFolderConcurrency").item(0), options.maxFolderConcurrency);
@@ -1116,7 +1115,7 @@ public class ConfigXml {
         folder.versioning.type = "trashcan";
         folder.versioning.params.put("cleanoutDays", Integer.toString(14));
         folder.versioning.cleanupIntervalS = 0;
-        folder.versioning.fsPath = "",
+        folder.versioning.fsPath = "";
         folder.versioning.fsType = "basic";
 
         // Add folder to config.
