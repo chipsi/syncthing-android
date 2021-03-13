@@ -16,8 +16,4 @@ public class WifiSsidPreference extends WifiSsidPreferenceBase {
         super(context, null);
     }
 
-    private List<WifiConfiguration> wifiManager_getConfiguredNetworks(WifiManager wifiManager) {
-        return null;
-    }
-
 }

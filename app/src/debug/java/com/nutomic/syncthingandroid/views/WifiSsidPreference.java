@@ -17,14 +17,4 @@ public class WifiSsidPreference extends WifiSsidPreferenceBase {
         super(context, null);
     }
 
-    private List<WifiConfiguration> wifiManager_getConfiguredNetworks(WifiManager wifiManager) {
-        try {
-            return wifiManager.getConfiguredNetworks();
-        } catch (SecurityException e) {
-            // See changes in Android Q, https://developer.android.com/reference/android/net/wifi/WifiManager.html#getConfiguredNetworks()
-            Log.e(TAG, "getConfiguredWifiSsidsAPI16to28:", e);
-            return null;
-        }
-    }
-
 }
