@@ -468,6 +468,7 @@ public class ConfigXml {
             folder.blockPullOrder = getContentOrDefault(r.getElementsByTagName("blockPullOrder").item(0), folder.blockPullOrder);
             folder.disableFsync = getContentOrDefault(r.getElementsByTagName("disableFsync").item(0), folder.disableFsync);
             folder.maxConcurrentWrites = getContentOrDefault(r.getElementsByTagName("maxConcurrentWrites").item(0), folder.maxConcurrentWrites);
+            folder.maxConflicts = getContentOrDefault(r.getElementsByTagName("maxConflicts").item(0), folder.maxConflicts);
             folder.copyRangeMethod = getContentOrDefault(r.getElementsByTagName("copyRangeMethod").item(0), folder.copyRangeMethod);
             folder.caseSensitiveFS = getContentOrDefault(r.getElementsByTagName("caseSensitiveFS").item(0), folder.caseSensitiveFS);
 
@@ -578,6 +579,7 @@ public class ConfigXml {
                 setConfigElement(r, "blockPullOrder", folder.blockPullOrder);
                 setConfigElement(r, "disableFsync", Boolean.toString(folder.disableFsync));
                 setConfigElement(r, "maxConcurrentWrites", Integer.toString(folder.maxConcurrentWrites));
+                setConfigElement(r, "maxConflicts", Integer.toString(folder.maxConflicts));
                 setConfigElement(r, "copyRangeMethod", folder.copyRangeMethod);
                 setConfigElement(r, "caseSensitiveFS", Boolean.toString(folder.caseSensitiveFS));
 
