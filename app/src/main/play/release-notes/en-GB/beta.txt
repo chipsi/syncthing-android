@@ -6,7 +6,7 @@ Enhanced
 
 Fixes
 --
-
+- Support new v1.14.x config format in the wrapper
 
 Other issues
 --
