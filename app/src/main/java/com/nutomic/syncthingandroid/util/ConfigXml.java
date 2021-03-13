@@ -501,6 +501,8 @@ public class ConfigXml {
             <versioning type="trashcan">
                 <param key="cleanoutDays" val="90"></param>
                 <cleanupIntervalS>0</cleanupIntervalS>
+                <fsPath></fsPath>
+                <fsType>basic</fsType>
             </versioning>
             */
             folder.versioning = new Folder.Versioning();
@@ -508,6 +510,8 @@ public class ConfigXml {
             if (elementVersioning != null) {
                 folder.versioning.type = getAttributeOrDefault(elementVersioning, "type", "");
                 folder.versioning.cleanupIntervalS = getAttributeOrDefault(elementVersioning, "cleanupIntervalS", 0);
+                folder.versioning.fsPath = getAttributeOrDefault(elementVersioning, "fsPath", "");
+                folder.versioning.fsType = getAttributeOrDefault(elementVersioning, "fsType", "");
                 NodeList nodeVersioningParam = elementVersioning.getElementsByTagName("param");
                 for (int j = 0; j < nodeVersioningParam.getLength(); j++) {
                     Element elementVersioningParam = (Element) nodeVersioningParam.item(j);
@@ -625,6 +629,8 @@ public class ConfigXml {
                 if (!TextUtils.isEmpty(folder.versioning.type)) {
                     elementVersioning.setAttribute("type", folder.versioning.type);
                     elementVersioning.setAttribute("cleanupIntervalS", Integer.toString(folder.versioning.cleanupIntervalS));
+                    elementVersioning.setAttribute("fsPath", folder.versioning.fsPath);
+                    elementVersioning.setAttribute("fsType", folder.versioning.fsType);
                     for (Map.Entry<String, String> param : folder.versioning.params.entrySet()) {
                         Log.d(TAG, "updateFolder: nodeVersioning: Adding param key=" + param.getKey() + ", val=" + param.getValue());
                         Node nodeParam = mConfig.createElement("param");
@@ -1110,6 +1116,8 @@ public class ConfigXml {
         folder.versioning.type = "trashcan";
         folder.versioning.params.put("cleanoutDays", Integer.toString(14));
         folder.versioning.cleanupIntervalS = 0;
+        folder.versioning.fsPath = "",
+        folder.versioning.fsType = "basic";
 
         // Add folder to config.
         LogV("addSyncthingCameraFolder: Adding folder to config ...");
