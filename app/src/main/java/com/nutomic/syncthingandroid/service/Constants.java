@@ -78,6 +78,10 @@ public class Constants {
         return objectPrefixAndId + "_" + PREF_RUN_ON_MOBILE_DATA;
     }
 
+    public static String DYN_PREF_OBJECT_SYNC_ON_POWER_SOURCE(String objectPrefixAndId) {
+        return objectPrefixAndId + "_" + PREF_POWER_SOURCE;
+    }
+
     /**
      * Cached information which is not available on SettingsActivity.
      */
