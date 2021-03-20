@@ -51,7 +51,7 @@ public class RunConditionMonitor {
     public static final String EXTRA_BEGIN_ACTIVE_TIME_WINDOW =
         "com.github.catfriend1.syncthingandroid.service.RunConditionMonitor.BEGIN_ACTIVE_TIME_WINDOW";
 
-    private static final String POWER_SOURCE_CHARGER_BATTERY = "ac_and_battery_power";
+    public static final String POWER_SOURCE_CHARGER_BATTERY = "ac_and_battery_power";
     private static final String POWER_SOURCE_CHARGER = "ac_power";
     private static final String POWER_SOURCE_BATTERY = "battery_power";
 
@@ -569,6 +569,31 @@ public class RunConditionMonitor {
      * Precondition: Object must own pref "...CustomSyncConditionsEnabled == true".
      */
     public Boolean checkObjectSyncConditions(String objectPrefixAndId) {
+        // Sync on specific power source?
+        if (mPreferences.getString(Constants.PREF_POWER_SOURCE, POWER_SOURCE_CHARGER_BATTERY).equals((POWER_SOURCE_CHARGER_BATTERY))) {
+            // do same check as for run conditions
+            String prefPowerSource = mPreferences.getString(Constants.DYN_PREF_OBJECT_SYNC_ON_POWER_SOURCE(objectPrefixAndId), POWER_SOURCE_CHARGER_BATTERY);
+            switch (prefPowerSource) {
+                case POWER_SOURCE_CHARGER:
+                    if (!isCharging_API17()) {
+                        LogV("checkObjectSyncConditions(" + objectPrefixAndId + "): POWER_SOURCE_AC && !isCharging");
+                        mRunDecisionExplanation = res.getString(R.string.reason_not_charging);
+                        return false;
+                    }
+                    break;
+                case POWER_SOURCE_BATTERY:
+                    if (isCharging_API17()) {
+                        LogV("checkObjectSyncConditions(\" + objectPrefixAndId + \"): POWER_SOURCE_BATTERY && isCharging");
+                        mRunDecisionExplanation = res.getString(R.string.reason_not_on_battery_power);
+                        return false;
+                    }
+                    break;
+                case POWER_SOURCE_CHARGER_BATTERY:
+                default:
+                    break;
+            }
+        }
+
         // Sync on mobile data?
         SyncConditionResult scr = checkConditionSyncOnMobileData(Constants.DYN_PREF_OBJECT_SYNC_ON_MOBILE_DATA(objectPrefixAndId));
         if (scr.conditionMet) {
