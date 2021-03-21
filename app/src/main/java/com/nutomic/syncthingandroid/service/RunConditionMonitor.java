@@ -20,6 +20,7 @@ import android.os.Looper;
 import android.os.PowerManager;
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import android.os.SystemClock;
 import android.util.Log;
 
 import com.nutomic.syncthingandroid.R;
@@ -109,6 +110,8 @@ public class RunConditionMonitor {
      * Initial status true because we like to sync on app start, too.
      */
     private Boolean mTimeConditionMatch = true;
+    
+    private long mLastRunTime = 0;
 
     @Inject
     SharedPreferences mPreferences;
@@ -332,6 +335,7 @@ public class RunConditionMonitor {
                 mOnShouldRunChangedListener.onShouldRunDecisionChanged(newShouldRun);
                 lastDeterminedShouldRun = newShouldRun;
             }
+            mLastRunTime = SystemClock.elapsedRealtime();
         }
     }
 
@@ -467,6 +471,8 @@ public class RunConditionMonitor {
         }
 
         // PREF_RUN_ON_TIME_SCHEDULE
+        if (SystemClock.elapsedRealtime() - mLastRunTime > Constants.WAIT_FOR_NEXT_SYNC_DELAY_SEC * 1000)
+            mTimeConditionMatch = true;
         if (prefRunOnTimeSchedule && !mTimeConditionMatch) {
             // Currently, we aren't within a "SyncthingNative should run" time frame.
             LogV("decideShouldRun: PREF_RUN_ON_TIME_SCHEDULE && !mTimeConditionMatch");
