@@ -577,14 +577,12 @@ public class RunConditionMonitor {
                 case POWER_SOURCE_CHARGER:
                     if (!isCharging_API17()) {
                         LogV("checkObjectSyncConditions(" + objectPrefixAndId + "): POWER_SOURCE_AC && !isCharging");
-                        mRunDecisionExplanation = res.getString(R.string.reason_not_charging);
                         return false;
                     }
                     break;
                 case POWER_SOURCE_BATTERY:
                     if (isCharging_API17()) {
                         LogV("checkObjectSyncConditions(\" + objectPrefixAndId + \"): POWER_SOURCE_BATTERY && isCharging");
-                        mRunDecisionExplanation = res.getString(R.string.reason_not_on_battery_power);
                         return false;
                     }
                     break;
