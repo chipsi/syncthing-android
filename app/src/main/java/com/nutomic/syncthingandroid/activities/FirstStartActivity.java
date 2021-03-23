@@ -406,7 +406,7 @@ public class FirstStartActivity extends AppCompatActivity {
                                     Toast.LENGTH_LONG).show();
                             return;
                         }
-                        final String exportToMediaPath = externalFilesDir.get(externalFilesDir.size() - 1).getAbsolutePath();
+                        final String exportToMediaPath = externalFilesDir.get(externalFilesDir.size() > 1 ? 1 : 0).getAbsolutePath();
                         if (!exportConfig(exportToMediaPath)) {
                             Toast.makeText(FirstStartActivity.this,
                                     getString(R.string.config_export_failed),
