@@ -398,18 +398,15 @@ public class FirstStartActivity extends AppCompatActivity {
                         // Get app specific /Android/media directory.
                         ArrayList<File> externalFilesDir = new ArrayList<>();
                         externalFilesDir.addAll(Arrays.asList(getExternalMediaDirs()));
-                        if (externalFilesDir.size() > 0) {
-                            externalFilesDir.remove(externalFilesDir.get(0));
-                        }
                         externalFilesDir.remove(null);      // getExternalFilesDirs may return null for an ejected SDcard.
-                        if (externalFilesDir.size() == 0) {
+                        if (externalFilesDir.isEmpty()) {
                             Log.w(TAG, "Failed to export config. Could not determine app's private files directory on external storage.");
                             Toast.makeText(FirstStartActivity.this,
                                     getString(R.string.config_export_failed),
                                     Toast.LENGTH_LONG).show();
                             return;
                         }
-                        final String exportToMediaPath = externalFilesDir.get(0).getAbsolutePath();
+                        final String exportToMediaPath = externalFilesDir.get(externalFilesDir.size() - 1).getAbsolutePath();
                         if (!exportConfig(exportToMediaPath)) {
                             Toast.makeText(FirstStartActivity.this,
                                     getString(R.string.config_export_failed),
