@@ -109,9 +109,8 @@ public class RunConditionMonitor {
      * Holds true if we are within a "SyncthingNative should run" time frame.
      * Initial status true because we like to sync on app start, too.
      */
-    private Boolean mTimeConditionMatch = true;
-    
-    private long mLastRunTime = 0;
+    private Boolean mTimeConditionMatch = false;
+    private Boolean stopJobScheduled = false;
 
     @Inject
     SharedPreferences mPreferences;
@@ -183,7 +182,7 @@ public class RunConditionMonitor {
         JobUtils.scheduleSyncTriggerServiceJob(context,
                 mTimeConditionMatch ?
                     Constants.TRIGGERED_SYNC_DURATION_SECS :
-                    Constants.WAIT_FOR_NEXT_SYNC_DELAY_SECS
+                    (int) (Constants.WAIT_FOR_NEXT_SYNC_DELAY_SECS - (SystemClock.elapsedRealtime() - mPreferences.getLong(Constants.PREF_LAST_RUN_TIME,0))/1000)
         );
     }
 
@@ -242,6 +241,7 @@ public class RunConditionMonitor {
     private class SyncTriggerReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
+            stopJobScheduled = false;
             boolean extraBeginActiveTimeWindow = intent.getBooleanExtra(EXTRA_BEGIN_ACTIVE_TIME_WINDOW, false);
             LogV("SyncTriggerReceiver: onReceive, extraBeginActiveTimeWindow=" + Boolean.toString(extraBeginActiveTimeWindow));
 
@@ -281,11 +281,13 @@ public class RunConditionMonitor {
              * let the receiver fire and change to "SyncthingNative should run" after
              * WAIT_FOR_NEXT_SYNC_DELAY_SECS seconds elapsed.
              */
-            JobUtils.cancelAllScheduledJobs(context);
-            JobUtils.scheduleSyncTriggerServiceJob(
-                    context,
-                    mTimeConditionMatch ? Constants.TRIGGERED_SYNC_DURATION_SECS : Constants.WAIT_FOR_NEXT_SYNC_DELAY_SECS
-            );
+            if (!stopJobScheduled) {
+                JobUtils.cancelAllScheduledJobs(context);
+                JobUtils.scheduleSyncTriggerServiceJob(
+                        context,
+                        Constants.WAIT_FOR_NEXT_SYNC_DELAY_SECS
+                );
+            }
         }
     }
 
@@ -335,7 +337,17 @@ public class RunConditionMonitor {
                 mOnShouldRunChangedListener.onShouldRunDecisionChanged(newShouldRun);
                 lastDeterminedShouldRun = newShouldRun;
             }
-            mLastRunTime = SystemClock.elapsedRealtime();
+            if (newShouldRun && !stopJobScheduled && mPreferences.getBoolean(Constants.PREF_RUN_ON_TIME_SCHEDULE, false)) {
+                JobUtils.cancelAllScheduledJobs(mContext);
+                JobUtils.scheduleSyncTriggerServiceJob(
+                        mContext,
+                        Constants.TRIGGERED_SYNC_DURATION_SECS
+                );
+                stopJobScheduled = true;
+            }
+            SharedPreferences.Editor editor = mPreferences.edit();
+            editor.putLong(Constants.PREF_LAST_RUN_TIME,SystemClock.elapsedRealtime());
+            editor.apply();
         }
     }
 
@@ -471,8 +483,10 @@ public class RunConditionMonitor {
         }
 
         // PREF_RUN_ON_TIME_SCHEDULE
-        if (SystemClock.elapsedRealtime() - mLastRunTime > Constants.WAIT_FOR_NEXT_SYNC_DELAY_SEC * 1000)
+        if (SystemClock.elapsedRealtime() - mPreferences.getLong(Constants.PREF_LAST_RUN_TIME,0) > Constants.WAIT_FOR_NEXT_SYNC_DELAY_SECS * 1000
+        || SystemClock.elapsedRealtime() - mPreferences.getLong(Constants.PREF_LAST_RUN_TIME,0) < 0) {
             mTimeConditionMatch = true;
+        }
         if (prefRunOnTimeSchedule && !mTimeConditionMatch) {
             // Currently, we aren't within a "SyncthingNative should run" time frame.
             LogV("decideShouldRun: PREF_RUN_ON_TIME_SCHEDULE && !mTimeConditionMatch");
