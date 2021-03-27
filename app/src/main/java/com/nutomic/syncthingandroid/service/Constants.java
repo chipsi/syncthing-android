@@ -29,7 +29,6 @@ public class Constants {
     public static final String PREF_RESPECT_MASTER_SYNC         = "respect_master_sync";
     public static final String PREF_RUN_IN_FLIGHT_MODE          = "run_in_flight_mode";
     public static final String PREF_RUN_ON_TIME_SCHEDULE        = "run_on_time_schedule";
-    public static final String PREF_LAST_RUN_TIME               = "last_run_time";
     
     // Preferences - User Interface
     public static final String PREF_APP_THEME                       = "app_theme";
@@ -86,6 +85,7 @@ public class Constants {
     public static final String PREF_KNOWN_WIFI_SSIDS            = "knownWifiSsids";
     public static final String PREF_LAST_BINARY_VERSION         = "lastBinaryVersion";
     public static final String PREF_LOCAL_DEVICE_ID             = "localDeviceID";
+    public static final String PREF_LAST_RUN_TIME               = "last_run_time";
 
     /**
      * Cached device stats.
