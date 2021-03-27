@@ -29,7 +29,7 @@ public class Constants {
     public static final String PREF_RESPECT_MASTER_SYNC         = "respect_master_sync";
     public static final String PREF_RUN_IN_FLIGHT_MODE          = "run_in_flight_mode";
     public static final String PREF_RUN_ON_TIME_SCHEDULE        = "run_on_time_schedule";
-    
+
     // Preferences - User Interface
     public static final String PREF_APP_THEME                       = "app_theme";
     public static final String PREF_EXPERT_MODE                     = "expert_mode";
