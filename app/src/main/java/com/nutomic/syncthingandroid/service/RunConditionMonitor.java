@@ -110,7 +110,7 @@ public class RunConditionMonitor {
      * Initial status true because we like to sync on app start, too.
      */
     private Boolean mTimeConditionMatch = false;
-    private Boolean stopJobScheduled = false;
+    private Boolean mRunAllowedStopScheduled = false;
 
     @Inject
     SharedPreferences mPreferences;
@@ -241,7 +241,7 @@ public class RunConditionMonitor {
     private class SyncTriggerReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            stopJobScheduled = false;
+            mRunAllowedStopScheduled = false;
             boolean extraBeginActiveTimeWindow = intent.getBooleanExtra(EXTRA_BEGIN_ACTIVE_TIME_WINDOW, false);
             LogV("SyncTriggerReceiver: onReceive, extraBeginActiveTimeWindow=" + Boolean.toString(extraBeginActiveTimeWindow));
 
@@ -281,7 +281,7 @@ public class RunConditionMonitor {
              * let the receiver fire and change to "SyncthingNative should run" after
              * WAIT_FOR_NEXT_SYNC_DELAY_SECS seconds elapsed.
              */
-            if (!stopJobScheduled) {
+            if (!mRunAllowedStopScheduled) {
                 JobUtils.cancelAllScheduledJobs(context);
                 JobUtils.scheduleSyncTriggerServiceJob(
                         context,
@@ -337,13 +337,13 @@ public class RunConditionMonitor {
                 mOnShouldRunChangedListener.onShouldRunDecisionChanged(newShouldRun);
                 lastDeterminedShouldRun = newShouldRun;
             }
-            if (newShouldRun && !stopJobScheduled && mPreferences.getBoolean(Constants.PREF_RUN_ON_TIME_SCHEDULE, false)) {
+            if (newShouldRun && !mRunAllowedStopScheduled && mPreferences.getBoolean(Constants.PREF_RUN_ON_TIME_SCHEDULE, false)) {
                 JobUtils.cancelAllScheduledJobs(mContext);
                 JobUtils.scheduleSyncTriggerServiceJob(
                         mContext,
                         Constants.TRIGGERED_SYNC_DURATION_SECS
                 );
-                stopJobScheduled = true;
+                mRunAllowedStopScheduled = true;
             }
             SharedPreferences.Editor editor = mPreferences.edit();
             editor.putLong(Constants.PREF_LAST_RUN_TIME,SystemClock.elapsedRealtime());
