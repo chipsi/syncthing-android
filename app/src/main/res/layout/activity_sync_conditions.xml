@@ -185,8 +185,9 @@
                     style="@style/Widget.Syncthing.TextView.Label.Details"
                     android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                     android:text="@string/power_source_title"
-                    app:drawableLeftCompat="@drawable/ic_signal_wifi_0_bar_black_24dp"
-                    app:drawableStartCompat="@drawable/ic_signal_wifi_0_bar_black_24dp"
+                    android:textSize="15sp"
+                    app:drawableLeftCompat="@drawable/ic_battery_lightning_black_24dp"
+                    app:drawableStartCompat="@drawable/ic_battery_lightning_black_24dp"
                     android:focusable="false"/>
 
                 <androidx.appcompat.widget.AppCompatSpinner
