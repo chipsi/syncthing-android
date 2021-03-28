@@ -238,8 +238,8 @@
          </provider>
         <service
             android:name=".service.QuickSettingsTileForce"
-            android:label="force start"
-            android:icon="@drawable/ic_refresh_white_24"
+            android:label="@string/qs_force_label"
+            android:icon="@drawable/ic_qs_force"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
@@ -247,8 +247,8 @@
         </service>
         <service
             android:name=".service.QuickSettingsTileSchedule"
-            android:label="start/stop 5 min cycle"
-            android:icon="@drawable/ic_pause_circle_outline_black_24dp"
+            android:label="@string/qs_schedule_label"
+            android:icon="@drawable/ic_qs_schedule"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
