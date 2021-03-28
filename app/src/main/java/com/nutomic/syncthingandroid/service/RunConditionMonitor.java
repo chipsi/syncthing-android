@@ -490,7 +490,13 @@ public class RunConditionMonitor {
         if (prefRunOnTimeSchedule && !mTimeConditionMatch) {
             // Currently, we aren't within a "SyncthingNative should run" time frame.
             LogV("decideShouldRun: PREF_RUN_ON_TIME_SCHEDULE && !mTimeConditionMatch");
-            mRunDecisionExplanation = res.getString(R.string.reason_not_within_time_frame);
+            int minutes = (int) (SystemClock.elapsedRealtime() - mPreferences.getLong(Constants.PREF_LAST_RUN_TIME,0))/(60*1000);
+            String minutesText;
+            if (minutes == 0)
+                minutesText = res.getString(R.string.reason_not_within_time_frame_0_min);
+            else
+                minutesText = String.format(res.getQuantityString(R.plurals.reason_not_within_time_frame_minutes,minutes),minutes);
+            mRunDecisionExplanation = String.format(res.getString(R.string.reason_not_within_time_frame),minutesText);
             return false;
         }
 
