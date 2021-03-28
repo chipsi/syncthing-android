@@ -496,7 +496,7 @@ public class RunConditionMonitor {
                 minutesText = res.getString(R.string.reason_not_within_time_frame_0_min);
             else
                 minutesText = String.format(res.getQuantityString(R.plurals.reason_not_within_time_frame_minutes,minutes),minutes);
-            mRunDecisionExplanation = String.format(res.getString(R.string.reason_not_within_time_frame),minutesText);
+            mRunDecisionExplanation = String.format(res.getString(R.string.reason_not_within_time_frame_2),minutesText);
             return false;
         }
 
