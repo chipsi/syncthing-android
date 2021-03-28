@@ -861,7 +861,8 @@ Please report any problems you encounter via Github.</string>
     <string name="reason_force_stop">Syncthing is not running because you forced it to stop regardless of the run conditions.</string>
 
     <!-- Explanations why syncthing is running or not running -->
-    <string name="reason_not_within_time_frame">You enabled \'Run according to time schedule\' and the last sync was %s ago.</string>
+    <string name="reason_not_within_time_frame">You enabled \'Run according to time schedule\' and the last sync was no more than an hour ago.</string>
+    <string name="reason_not_within_time_frame_2">You enabled \'Run according to time schedule\' and the last sync was %s ago.</string>
     <string name="reason_not_within_time_frame_0_min">less than a minute</string>
     <plurals name="reason_not_within_time_frame_minutes">
         <item quantity="one">%d minute</item>
