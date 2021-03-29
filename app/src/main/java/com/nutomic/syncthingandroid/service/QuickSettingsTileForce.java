@@ -3,6 +3,7 @@ package com.nutomic.syncthingandroid.service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Build;
 import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
@@ -10,6 +11,8 @@ import android.service.quicksettings.TileService;
 import androidx.annotation.RequiresApi;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.preference.PreferenceManager;
+
+import com.nutomic.syncthingandroid.R;
 
 import javax.inject.Inject;
 
@@ -23,14 +26,16 @@ public class QuickSettingsTileForce extends TileService {
     private Context mContext;
     @Inject
     SharedPreferences mPreferences;
+    private Resources res;
 
     @Override
     public void onStartListening() {
         Tile tile = getQsTile();
         if (tile != null) {
             mContext = getApplication().getApplicationContext();
+            res = mContext.getResources();
             mPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
-            setTileState(tile, Constants.BTNSTATE_NO_FORCE_START_STOP != mPreferences.getInt(Constants.PREF_BTNSTATE_FORCE_START_STOP, Constants.BTNSTATE_NO_FORCE_START_STOP));
+            updateTileState(tile, mPreferences.getInt(Constants.PREF_BTNSTATE_FORCE_START_STOP, Constants.BTNSTATE_NO_FORCE_START_STOP));
         }
         super.onStartListening();
     }
@@ -38,9 +43,20 @@ public class QuickSettingsTileForce extends TileService {
     @Override
     public void onClick() {
         Tile tile = getQsTile();
-        boolean isForceOn = Constants.BTNSTATE_NO_FORCE_START_STOP != mPreferences.getInt(Constants.PREF_BTNSTATE_FORCE_START_STOP, Constants.BTNSTATE_NO_FORCE_START_STOP);
+        int newState;
+        switch (mPreferences.getInt(Constants.PREF_BTNSTATE_FORCE_START_STOP, Constants.BTNSTATE_NO_FORCE_START_STOP)) {
+            case Constants.BTNSTATE_FORCE_START:
+                newState = Constants.BTNSTATE_FORCE_STOP;
+                break;
+            case Constants.BTNSTATE_NO_FORCE_START_STOP:
+                newState = Constants.BTNSTATE_FORCE_START;
+                break;
+            case Constants.BTNSTATE_FORCE_STOP:
+            default:
+                newState = Constants.BTNSTATE_NO_FORCE_START_STOP;
+        }
         SharedPreferences.Editor editor = mPreferences.edit();
-        editor.putInt(Constants.PREF_BTNSTATE_FORCE_START_STOP, isForceOn ? Constants.BTNSTATE_NO_FORCE_START_STOP : Constants.BTNSTATE_FORCE_START);
+        editor.putInt(Constants.PREF_BTNSTATE_FORCE_START_STOP, newState);
         editor.apply();
 
         LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(mContext);
@@ -48,13 +64,25 @@ public class QuickSettingsTileForce extends TileService {
         localBroadcastManager.sendBroadcast(intent);
         // if status fragement is open, force start stop button is not updated!
 
-        setTileState(tile, !isForceOn);
+        updateTileState(tile, newState);
         tile.updateTile();
     }
 
-    private void setTileState(Tile tile, boolean isForceOn) {
-        tile.setState(isForceOn ? Tile.STATE_ACTIVE : Tile.STATE_INACTIVE);
-        tile.setLabel(isForceOn ? "follow run conditions" : "force start");
+    private void updateTileState(Tile tile, int force) {
+        switch (force) {
+            case Constants.BTNSTATE_FORCE_START:
+                tile.setLabel(res.getString(R.string.qs_force_running));
+                tile.setState(Tile.STATE_ACTIVE);
+                break;
+            case Constants.BTNSTATE_FORCE_STOP:
+                tile.setLabel(res.getString(R.string.qs_force_stopped));
+                tile.setState(Tile.STATE_ACTIVE);
+                break;
+            case Constants.BTNSTATE_NO_FORCE_START_STOP:
+            default:
+                tile.setLabel(res.getString(R.string.qs_force_none));
+                tile.setState(Tile.STATE_INACTIVE);
+        }
         tile.updateTile();
     }
 
