@@ -263,6 +263,12 @@ public class RunConditionMonitor {
             if (extraBeginActiveTimeWindow) {
                 // We should immediately start SyncthingNative for TRIGGERED_SYNC_DURATION_SECS.
                 mTimeConditionMatch = true;
+                JobUtils.cancelAllScheduledJobs(context);
+                JobUtils.scheduleSyncTriggerServiceJob(
+                        context,
+                        Constants.TRIGGERED_SYNC_DURATION_SECS
+                );
+                mRunAllowedStopScheduled = true;
             } else {
                 /**
                  * Toggle the "digital input" for this condition as the condition change is
