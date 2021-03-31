@@ -371,13 +371,11 @@ public class RunConditionMonitor {
         switch (mPreferences.getString(prefNameSyncOnPowerSource, POWER_SOURCE_CHARGER_BATTERY)) {
             case POWER_SOURCE_CHARGER:
                 if (!isCharging_API17()) {
-                    mRunDecisionExplanation = res.getString(R.string.reason_not_charging);
                     return new SyncConditionResult(false, res.getString(R.string.reason_not_charging));
                 }
                 break;
             case POWER_SOURCE_BATTERY:
                 if (isCharging_API17()) {
-                    mRunDecisionExplanation = res.getString(R.string.reason_not_on_battery_power);
                     return new SyncConditionResult(false, res.getString(R.string.reason_not_on_battery_power));
                 }
                 break;
