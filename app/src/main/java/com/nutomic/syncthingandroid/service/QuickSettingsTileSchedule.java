@@ -1,5 +1,6 @@
 package com.nutomic.syncthingandroid.service;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -35,13 +36,22 @@ public class QuickSettingsTileSchedule extends TileService {
             mContext = getApplication().getApplicationContext();
             Resources res = mContext.getResources();
             mPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
-            if (!mPreferences.getBoolean(Constants.PREF_RUN_ON_TIME_SCHEDULE,false)
-               || mPreferences.getInt(Constants.PREF_BTNSTATE_FORCE_START_STOP, Constants.BTNSTATE_NO_FORCE_START_STOP) != Constants.BTNSTATE_NO_FORCE_START_STOP) {
+
+            ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+            boolean syncthingRunning = false;
+            for (ActivityManager.RunningServiceInfo service : am.getRunningServices(Integer.MAX_VALUE)) {
+                if (SyncthingService.class.getName().equals(service.service.getClassName())) {
+                    syncthingRunning = true;
+                }
+            }
+            if (!syncthingRunning || !mPreferences.getBoolean(Constants.PREF_RUN_ON_TIME_SCHEDULE,false)
+            || mPreferences.getInt(Constants.PREF_BTNSTATE_FORCE_START_STOP, Constants.BTNSTATE_NO_FORCE_START_STOP) != Constants.BTNSTATE_NO_FORCE_START_STOP) {
                 tile.setState(Tile.STATE_UNAVAILABLE);
                 tile.setLabel(res.getString(R.string.qs_schedule_disabled));
                 tile.updateTile();
                 return;
             }
+
             tile.setState(Tile.STATE_ACTIVE);
             tile.setLabel(res.getString(R.string.qs_schedule_label));
             tile.updateTile();
