@@ -42,6 +42,7 @@ public class QuickSettingsTileSchedule extends TileService {
             for (ActivityManager.RunningServiceInfo service : am.getRunningServices(Integer.MAX_VALUE)) {
                 if (SyncthingService.class.getName().equals(service.service.getClassName())) {
                     syncthingRunning = true;
+                    break;
                 }
             }
             if (!syncthingRunning || !mPreferences.getBoolean(Constants.PREF_RUN_ON_TIME_SCHEDULE,false)
