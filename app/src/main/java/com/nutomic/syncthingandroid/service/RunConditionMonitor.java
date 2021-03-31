@@ -343,7 +343,10 @@ public class RunConditionMonitor {
                 mOnShouldRunChangedListener.onShouldRunDecisionChanged(newShouldRun);
                 lastDeterminedShouldRun = newShouldRun;
             }
-            if (newShouldRun && !mRunAllowedStopScheduled && mPreferences.getBoolean(Constants.PREF_RUN_ON_TIME_SCHEDULE, false)) {
+            if (newShouldRun &&
+                    !mRunAllowedStopScheduled &&
+                    mPreferences.getBoolean(Constants.PREF_RUN_ON_TIME_SCHEDULE, false) &&
+                    mPreferences.getInt(Constants.PREF_BTNSTATE_FORCE_START_STOP, Constants.BTNSTATE_NO_FORCE_START_STOP) == Constants.BTNSTATE_NO_FORCE_START_STOP) {
                 JobUtils.cancelAllScheduledJobs(mContext);
                 JobUtils.scheduleSyncTriggerServiceJob(
                         mContext,
