@@ -42,6 +42,7 @@ public class QuickSettingsTileForce extends TileService {
             for (ActivityManager.RunningServiceInfo service : am.getRunningServices(Integer.MAX_VALUE)) {
                 if (SyncthingService.class.getName().equals(service.service.getClassName())) {
                     syncthingRunning = true;
+                    break;
                 }
             }
             if (!syncthingRunning) {
