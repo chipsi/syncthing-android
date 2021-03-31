@@ -1,5 +1,6 @@
 package com.nutomic.syncthingandroid.service;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -35,6 +36,20 @@ public class QuickSettingsTileForce extends TileService {
             mContext = getApplication().getApplicationContext();
             res = mContext.getResources();
             mPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+
+            ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+            boolean syncthingRunning = false;
+            for (ActivityManager.RunningServiceInfo service : am.getRunningServices(Integer.MAX_VALUE)) {
+                if (SyncthingService.class.getName().equals(service.service.getClassName())) {
+                    syncthingRunning = true;
+                }
+            }
+            if (!syncthingRunning) {
+                tile.setState(Tile.STATE_UNAVAILABLE);
+                tile.updateTile();
+                return;
+            }
+
             updateTileState(tile, mPreferences.getInt(Constants.PREF_BTNSTATE_FORCE_START_STOP, Constants.BTNSTATE_NO_FORCE_START_STOP));
         }
         super.onStartListening();
