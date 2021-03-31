@@ -35,7 +35,8 @@ public class QuickSettingsTileSchedule extends TileService {
             mContext = getApplication().getApplicationContext();
             Resources res = mContext.getResources();
             mPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
-            if (!mPreferences.getBoolean(Constants.PREF_RUN_ON_TIME_SCHEDULE,false)) {
+            if (!mPreferences.getBoolean(Constants.PREF_RUN_ON_TIME_SCHEDULE,false)
+               || mPreferences.getInt(Constants.PREF_BTNSTATE_FORCE_START_STOP, Constants.BTNSTATE_NO_FORCE_START_STOP) != Constants.BTNSTATE_NO_FORCE_START_STOP) {
                 tile.setState(Tile.STATE_UNAVAILABLE);
                 tile.setLabel(res.getString(R.string.qs_schedule_disabled));
                 tile.updateTile();
@@ -50,9 +51,11 @@ public class QuickSettingsTileSchedule extends TileService {
 
     @Override
     public void onClick() {
-        LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(mContext);
-        Intent intent = new Intent(ACTION_SYNC_TRIGGER_FIRED);
-        intent.putExtra(EXTRA_BEGIN_ACTIVE_TIME_WINDOW, true);
-        localBroadcastManager.sendBroadcast(intent);
+        if (getQsTile().getState() == Tile.STATE_ACTIVE) {
+            LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(mContext);
+            Intent intent = new Intent(ACTION_SYNC_TRIGGER_FIRED);
+            intent.putExtra(EXTRA_BEGIN_ACTIVE_TIME_WINDOW, true);
+            localBroadcastManager.sendBroadcast(intent);
+        }
     }
 }
