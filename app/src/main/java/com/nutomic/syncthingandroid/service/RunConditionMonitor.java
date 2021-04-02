@@ -51,10 +51,6 @@ public class RunConditionMonitor {
     public static final String EXTRA_BEGIN_ACTIVE_TIME_WINDOW =
         "com.github.catfriend1.syncthingandroid.service.RunConditionMonitor.BEGIN_ACTIVE_TIME_WINDOW";
 
-    public static final String POWER_SOURCE_CHARGER_BATTERY = "ac_and_battery_power";
-    private static final String POWER_SOURCE_CHARGER = "ac_power";
-    private static final String POWER_SOURCE_BATTERY = "battery_power";
-
     private @Nullable Object mSyncStatusObserverHandle = null;
     private final SyncStatusObserver mSyncStatusObserver = new SyncStatusObserver() {
         @Override
@@ -368,24 +364,24 @@ public class RunConditionMonitor {
     }
 
     private SyncConditionResult checkConditionSyncOnPowerSource(String prefNameSyncOnPowerSource) {
-        switch (mPreferences.getString(prefNameSyncOnPowerSource, POWER_SOURCE_CHARGER_BATTERY)) {
-            case POWER_SOURCE_CHARGER:
+        switch (mPreferences.getString(prefNameSyncOnPowerSource, Constants.PowerSource.CHARGER_BATTERY)) {
+            case Constants.PowerSource.CHARGER:
                 if (!isCharging_API17()) {
                     return new SyncConditionResult(false, res.getString(R.string.reason_not_charging));
                 }
                 break;
-            case POWER_SOURCE_BATTERY:
+            case Constants.PowerSource.BATTERY:
                 if (isCharging_API17()) {
                     return new SyncConditionResult(false, res.getString(R.string.reason_not_on_battery_power));
                 }
                 break;
-            case POWER_SOURCE_CHARGER_BATTERY:
+            case Constants.PowerSource.CHARGER_BATTERY:
             default:
                 break;
         }
         return new SyncConditionResult(true, "");
     }
-    
+
     /**
      * Constants.PREF_WIFI_SSID_WHITELIST
      */

@@ -20,7 +20,6 @@ import android.widget.TextView;
 import com.nutomic.syncthingandroid.R;
 import com.nutomic.syncthingandroid.SyncthingApp;
 import com.nutomic.syncthingandroid.service.Constants;
-import com.nutomic.syncthingandroid.service.RunConditionMonitor;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -126,7 +125,7 @@ public class SyncConditionsActivity extends SyncthingActivity {
         mGlobalWhitelistEnabled = mPreferences.getBoolean(Constants.PREF_USE_WIFI_SSID_WHITELIST, false);
         Boolean globalRunOnMeteredWifiEnabled = mPreferences.getBoolean(Constants.PREF_RUN_ON_METERED_WIFI, false);
         Boolean globalRunOnMobileDataEnabled = mPreferences.getBoolean(Constants.PREF_RUN_ON_MOBILE_DATA, false);
-        String globalRunOnPowerSource = mPreferences.getString(Constants.PREF_POWER_SOURCE, RunConditionMonitor.POWER_SOURCE_CHARGER_BATTERY);
+        String globalRunOnPowerSource = mPreferences.getString(Constants.PREF_POWER_SOURCE, Constants.PowerSource.CHARGER_BATTERY);
 
         /**
          * Load custom object preferences. If unset, use global setting as default.
@@ -147,9 +146,9 @@ public class SyncConditionsActivity extends SyncthingActivity {
         mSyncOnMobileData.setEnabled(globalRunOnMobileDataEnabled);
         mSyncOnMobileData.setOnCheckedChangeListener(mCheckedListener);
 
-        Boolean globalRunOnAnyPowerSource = globalRunOnPowerSource.equals(RunConditionMonitor.POWER_SOURCE_CHARGER_BATTERY);
+        Boolean globalRunOnAnyPowerSource = globalRunOnPowerSource.equals(Constants.PowerSource.CHARGER_BATTERY);
         mSyncOnPowerSource.setSelection(Arrays.asList(getResources().getStringArray(R.array.power_source_values))
-                .indexOf(globalRunOnAnyPowerSource ? mPreferences.getString(mPrefSyncOnPowerSource,RunConditionMonitor.POWER_SOURCE_CHARGER_BATTERY) : globalRunOnPowerSource));
+                .indexOf(globalRunOnAnyPowerSource ? mPreferences.getString(mPrefSyncOnPowerSource,Constants.PowerSource.CHARGER_BATTERY) : globalRunOnPowerSource));
         mSyncOnPowerSource.setEnabled(globalRunOnAnyPowerSource);
 
         // Read selected WiFi Ssid whitelist items.
