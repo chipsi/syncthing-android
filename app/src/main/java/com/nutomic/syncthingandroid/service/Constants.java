@@ -98,6 +98,7 @@ public class Constants {
     public static final String PREF_KNOWN_WIFI_SSIDS            = "knownWifiSsids";
     public static final String PREF_LAST_BINARY_VERSION         = "lastBinaryVersion";
     public static final String PREF_LOCAL_DEVICE_ID             = "localDeviceID";
+    // from SystemClock.elapsedRealtime()
     public static final String PREF_LAST_RUN_TIME               = "last_run_time";
 
     /**
