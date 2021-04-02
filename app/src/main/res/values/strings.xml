@@ -1086,9 +1086,9 @@ Please report any problems you encounter via Github.</string>
 
     <!-- Quick Setting icon names and labels -->
     <string name="qs_force_label">Force run</string>
-    <string name="qs_force_running">Force running</string>
-    <string name="qs_force_stopped">Force stopped</string>
-    <string name="qs_force_none">Following run conditions</string>
+    <string name="qs_forced_to_run">Forced to run</string>
+    <string name="qs_forced_to_stop">Forced to stop</string>
+    <string name="qs_following_run_conditions">Following run conditions</string>
     <string name="qs_schedule_label">Run for 5 minutes</string>
     <string name="qs_schedule_disabled">Schedule disabled</string>
 </resources>

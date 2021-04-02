@@ -87,16 +87,16 @@ public class QuickSettingsTileForce extends TileService {
     private void updateTileState(Tile tile, int force) {
         switch (force) {
             case Constants.BTNSTATE_FORCE_START:
-                tile.setLabel(res.getString(R.string.qs_force_running));
+                tile.setLabel(res.getString(R.string.qs_forced_to_run));
                 tile.setState(Tile.STATE_ACTIVE);
                 break;
             case Constants.BTNSTATE_FORCE_STOP:
-                tile.setLabel(res.getString(R.string.qs_force_stopped));
+                tile.setLabel(res.getString(R.string.qs_forced_to_stop));
                 tile.setState(Tile.STATE_ACTIVE);
                 break;
             case Constants.BTNSTATE_NO_FORCE_START_STOP:
             default:
-                tile.setLabel(res.getString(R.string.qs_force_none));
+                tile.setLabel(res.getString(R.string.qs_following_run_conditions));
                 tile.setState(Tile.STATE_INACTIVE);
         }
         tile.updateTile();
