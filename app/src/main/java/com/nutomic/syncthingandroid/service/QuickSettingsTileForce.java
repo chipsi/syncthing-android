@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.graphics.drawable.Icon;
 import android.os.Build;
 import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
@@ -89,15 +90,18 @@ public class QuickSettingsTileForce extends TileService {
             case Constants.BTNSTATE_FORCE_START:
                 tile.setLabel(res.getString(R.string.qs_forced_to_run));
                 tile.setState(Tile.STATE_ACTIVE);
+                tile.setIcon(Icon.createWithResource(mContext,R.drawable.ic_qs_forced_to_run));
                 break;
             case Constants.BTNSTATE_FORCE_STOP:
                 tile.setLabel(res.getString(R.string.qs_forced_to_stop));
                 tile.setState(Tile.STATE_ACTIVE);
+                tile.setIcon(Icon.createWithResource(mContext,R.drawable.ic_qs_forced_to_stop));
                 break;
             case Constants.BTNSTATE_NO_FORCE_START_STOP:
             default:
                 tile.setLabel(res.getString(R.string.qs_following_run_conditions));
                 tile.setState(Tile.STATE_INACTIVE);
+                tile.setIcon(Icon.createWithResource(mContext,R.drawable.ic_qs_force));
         }
         tile.updateTile();
     }
