@@ -103,7 +103,7 @@ public class RunConditionMonitor {
      * Only relevant if the user has enabled turning Syncthing on by
      * time schedule for a specific amount of time periodically.
      * Holds true if we are within a "SyncthingNative should run" time frame.
-     * Initial status true because we like to sync on app start, too.
+     * Initial status false because we check if the last sync was more than one hour ago on app start.
      */
     private Boolean mTimeConditionMatch = false;
     private Boolean mRunAllowedStopScheduled = false;
@@ -176,13 +176,18 @@ public class RunConditionMonitor {
 
         // Initially schedule the SyncTrigger job.
         long lastSyncTimeSinceBootMillisecs = mPreferences.getLong(Constants.PREF_LAST_RUN_TIME, 0);
-        int elapsedSecondsSinceLastSync = (int) (SystemClock.elapsedRealtime() - lastSyncTimeSinceBootMillisecs) / 1000;
+        long elapsedRealtime = SystemClock.elapsedRealtime();
+        int elapsedSecondsSinceLastSync = (int) (elapsedRealtime - lastSyncTimeSinceBootMillisecs) / 1000;
         Log.d(TAG, "JobPrepare: mTimeConditionMatch=" + mTimeConditionMatch.toString() +
-                ", elapsedRealtime=" + SystemClock.elapsedRealtime() +
+                ", elapsedRealtime=" + elapsedRealtime +
                 ", lastSyncTimeSinceBootMillisecs=" + lastSyncTimeSinceBootMillisecs +
                 ", elapsedSecondsSinceLastSync=" + elapsedSecondsSinceLastSync
         );
-        JobUtils.scheduleSyncTriggerServiceJob(context, Constants.WAIT_FOR_NEXT_SYNC_DELAY_SECS - elapsedSecondsSinceLastSync);
+        JobUtils.scheduleSyncTriggerServiceJob(context,
+                mTimeConditionMatch ?
+                    Constants.TRIGGERED_SYNC_DURATION_SECS :
+                    Constants.WAIT_FOR_NEXT_SYNC_DELAY_SECS - elapsedSecondsSinceLastSync
+        );
     }
 
     public void shutdown() {
