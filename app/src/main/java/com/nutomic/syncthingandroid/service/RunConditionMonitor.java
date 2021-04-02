@@ -176,11 +176,11 @@ public class RunConditionMonitor {
 
         // Initially schedule the SyncTrigger job.
         int elapsedSecondsSinceLastSync = (int) (SystemClock.elapsedRealtime() - mPreferences.getLong(Constants.PREF_LAST_RUN_TIME, 0)) / 1000;
-        JobUtils.scheduleSyncTriggerServiceJob(context,
-                mTimeConditionMatch ?
-                    Constants.TRIGGERED_SYNC_DURATION_SECS :
-                    Constants.WAIT_FOR_NEXT_SYNC_DELAY_SECS - elapsedSecondsSinceLastSync
+        Log.d(TAG, "JobPrepare: mTimeConditionMatch=" + mTimeConditionMatch.toString() +
+                ", elapsedRealtime=" + SystemClock.elapsedRealtime() +
+                ", elapsedSecondsSinceLastSync=" + elapsedSecondsSinceLastSync
         );
+        JobUtils.scheduleSyncTriggerServiceJob(context, Constants.WAIT_FOR_NEXT_SYNC_DELAY_SECS - elapsedSecondsSinceLastSync);
     }
 
     public void shutdown() {
@@ -508,7 +508,7 @@ public class RunConditionMonitor {
 
         // PREF_RUN_ON_TIME_SCHEDULE
         if (SystemClock.elapsedRealtime() - mPreferences.getLong(Constants.PREF_LAST_RUN_TIME,0) > Constants.WAIT_FOR_NEXT_SYNC_DELAY_SECS * 1000
-        || SystemClock.elapsedRealtime() - mPreferences.getLong(Constants.PREF_LAST_RUN_TIME,0) < 0) {
+                || SystemClock.elapsedRealtime() - mPreferences.getLong(Constants.PREF_LAST_RUN_TIME,0) < 0) {
             mTimeConditionMatch = true;
         }
         if (prefRunOnTimeSchedule && !mTimeConditionMatch) {
