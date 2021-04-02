@@ -359,7 +359,7 @@ public class RunConditionMonitor {
                 mRunAllowedStopScheduled = true;
             }
             SharedPreferences.Editor editor = mPreferences.edit();
-            editor.putLong(Constants.PREF_LAST_RUN_TIME,SystemClock.elapsedRealtime());
+            editor.putLong(Constants.PREF_LAST_RUN_TIME, SystemClock.elapsedRealtime());
             editor.apply();
         }
     }
