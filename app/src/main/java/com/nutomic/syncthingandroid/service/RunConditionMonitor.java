@@ -175,10 +175,11 @@ public class RunConditionMonitor {
         updateShouldRunDecision();
 
         // Initially schedule the SyncTrigger job.
+        int elapsedSecondsSinceLastSync = (int) (SystemClock.elapsedRealtime() - mPreferences.getLong(Constants.PREF_LAST_RUN_TIME, 0)) / 1000;
         JobUtils.scheduleSyncTriggerServiceJob(context,
                 mTimeConditionMatch ?
                     Constants.TRIGGERED_SYNC_DURATION_SECS :
-                    (int) (Constants.WAIT_FOR_NEXT_SYNC_DELAY_SECS - (SystemClock.elapsedRealtime() - mPreferences.getLong(Constants.PREF_LAST_RUN_TIME,0))/1000)
+                    Constants.WAIT_FOR_NEXT_SYNC_DELAY_SECS - elapsedSecondsSinceLastSync
         );
     }
 
