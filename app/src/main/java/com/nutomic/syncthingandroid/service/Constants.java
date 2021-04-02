@@ -174,8 +174,8 @@ public class Constants {
      * If the user enabled hourly one-time shot sync, the following
      * parameters are effective.
      */
-    public static final int WAIT_FOR_NEXT_SYNC_DELAY_SECS       = isRunningOnEmulator() ? 180 : 3600;
-    public static final int TRIGGERED_SYNC_DURATION_SECS        = isRunningOnEmulator() ? 20 : 300;
+    public static final int WAIT_FOR_NEXT_SYNC_DELAY_SECS       = isRunningOnEmulator() ? 20 : 3600;        // "off" state duration
+    public static final int TRIGGERED_SYNC_DURATION_SECS        = isRunningOnEmulator() ? 10 : 300;         // "on" state duration
 
     /**
      * Directory where config is exported to and imported from.
