@@ -156,7 +156,7 @@ public class StatusFragment extends ListFragment implements SyncthingService.OnS
         mActivity = (MainActivity) getActivity();
 
         // Create button group.
-         btnForceStartStop = (SegmentedButton) mActivity.findViewById(R.id.forceStartStop);
+        btnForceStartStop = (SegmentedButton) mActivity.findViewById(R.id.forceStartStop);
         btnForceStartStop.clearButtons();
         btnForceStartStop.addButtons(
                 getString(R.string.button_follow_run_conditions),
