@@ -38,6 +38,7 @@ public class QuickSettingsTileForce extends TileService {
             res = mContext.getResources();
             mPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
 
+            // search through running services to see whether the app is currently running
             ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
             boolean syncthingRunning = false;
             for (ActivityManager.RunningServiceInfo service : am.getRunningServices(Integer.MAX_VALUE)) {
@@ -46,12 +47,14 @@ public class QuickSettingsTileForce extends TileService {
                     break;
                 }
             }
+            // disable tile if app is not running
             if (!syncthingRunning) {
                 tile.setState(Tile.STATE_UNAVAILABLE);
                 tile.updateTile();
                 return;
             }
 
+            // update tile to reflect forced-state
             updateTileState(tile, mPreferences.getInt(Constants.PREF_BTNSTATE_FORCE_START_STOP, Constants.BTNSTATE_NO_FORCE_START_STOP));
         }
         super.onStartListening();
