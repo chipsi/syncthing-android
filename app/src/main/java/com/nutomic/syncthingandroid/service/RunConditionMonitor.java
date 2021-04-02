@@ -52,10 +52,6 @@ public class RunConditionMonitor {
     public static final String EXTRA_BEGIN_ACTIVE_TIME_WINDOW =
         "com.github.catfriend1.syncthingandroid.service.RunConditionMonitor.BEGIN_ACTIVE_TIME_WINDOW";
 
-    private static final String POWER_SOURCE_CHARGER_BATTERY = "ac_and_battery_power";
-    private static final String POWER_SOURCE_CHARGER = "ac_power";
-    private static final String POWER_SOURCE_BATTERY = "battery_power";
-
     private @Nullable Object mSyncStatusObserverHandle = null;
     private final SyncStatusObserver mSyncStatusObserver = new SyncStatusObserver() {
         @Override
@@ -392,6 +388,25 @@ public class RunConditionMonitor {
         return new SyncConditionResult(false, "\n" + res.getString(R.string.reason_not_on_wifi));
     }
 
+    private SyncConditionResult checkConditionSyncOnPowerSource(String prefNameSyncOnPowerSource) {
+        switch (mPreferences.getString(prefNameSyncOnPowerSource, Constants.PowerSource.CHARGER_BATTERY)) {
+            case Constants.PowerSource.CHARGER:
+                if (!isCharging_API17()) {
+                    return new SyncConditionResult(false, res.getString(R.string.reason_not_charging));
+                }
+                break;
+            case Constants.PowerSource.BATTERY:
+                if (isCharging_API17()) {
+                    return new SyncConditionResult(false, res.getString(R.string.reason_not_on_battery_power));
+                }
+                break;
+            case Constants.PowerSource.CHARGER_BATTERY:
+            default:
+                break;
+        }
+        return new SyncConditionResult(true, "");
+    }
+
     /**
      * Constants.PREF_WIFI_SSID_WHITELIST
      */
@@ -473,7 +488,6 @@ public class RunConditionMonitor {
 
         // Get sync condition preferences.
         int prefBtnStateForceStartStop = mPreferences.getInt(Constants.PREF_BTNSTATE_FORCE_START_STOP, Constants.BTNSTATE_NO_FORCE_START_STOP);
-        String prefPowerSource = mPreferences.getString(Constants.PREF_POWER_SOURCE, POWER_SOURCE_CHARGER_BATTERY);
         boolean prefRespectPowerSaving = mPreferences.getBoolean(Constants.PREF_RESPECT_BATTERY_SAVING, true);
         boolean prefRespectMasterSync = mPreferences.getBoolean(Constants.PREF_RESPECT_MASTER_SYNC, false);
         boolean prefRunInFlightMode = mPreferences.getBoolean(Constants.PREF_RUN_IN_FLIGHT_MODE, false);
@@ -510,24 +524,11 @@ public class RunConditionMonitor {
         }
 
         // PREF_POWER_SOURCE
-        switch (prefPowerSource) {
-            case POWER_SOURCE_CHARGER:
-                if (!isCharging_API17()) {
-                    LogV("decideShouldRun: POWER_SOURCE_AC && !isCharging");
-                    mRunDecisionExplanation = res.getString(R.string.reason_not_charging);
-                    return false;
-                }
-                break;
-            case POWER_SOURCE_BATTERY:
-                if (isCharging_API17()) {
-                    LogV("decideShouldRun: POWER_SOURCE_BATTERY && isCharging");
-                    mRunDecisionExplanation = res.getString(R.string.reason_not_on_battery_power);
-                    return false;
-                }
-                break;
-            case POWER_SOURCE_CHARGER_BATTERY:
-            default:
-                break;
+        SyncConditionResult scr = checkConditionSyncOnPowerSource(Constants.PREF_POWER_SOURCE);
+        if (!scr.conditionMet) {
+            LogV("checkConditionSyncOnPowerSource: " + scr.explanation);
+            mRunDecisionExplanation = scr.explanation;
+            return false;
         }
 
         // Power saving
@@ -547,7 +548,7 @@ public class RunConditionMonitor {
         }
 
         // Run on mobile data?
-        SyncConditionResult scr = checkConditionSyncOnMobileData(Constants.PREF_RUN_ON_MOBILE_DATA);
+        scr = checkConditionSyncOnMobileData(Constants.PREF_RUN_ON_MOBILE_DATA);
         mRunDecisionExplanation += scr.explanation;
         if (scr.conditionMet) {
             // Mobile data is connected.
@@ -604,8 +605,15 @@ public class RunConditionMonitor {
      * Precondition: Object must own pref "...CustomSyncConditionsEnabled == true".
      */
     public Boolean checkObjectSyncConditions(String objectPrefixAndId) {
+        // Sync on specific power source?
+        SyncConditionResult scr = checkConditionSyncOnPowerSource(Constants.DYN_PREF_OBJECT_SYNC_ON_POWER_SOURCE(objectPrefixAndId));
+        if (!scr.conditionMet) {
+            LogV("checkObjectSyncConditions(" + objectPrefixAndId + "): checkConditionSyncOnPowerSource");
+            return false;
+        }
+
         // Sync on mobile data?
-        SyncConditionResult scr = checkConditionSyncOnMobileData(Constants.DYN_PREF_OBJECT_SYNC_ON_MOBILE_DATA(objectPrefixAndId));
+        scr = checkConditionSyncOnMobileData(Constants.DYN_PREF_OBJECT_SYNC_ON_MOBILE_DATA(objectPrefixAndId));
         if (scr.conditionMet) {
             // Mobile data is connected.
             LogV("checkObjectSyncConditions(" + objectPrefixAndId + "): checkConditionSyncOnMobileData");
