@@ -79,7 +79,6 @@ public class QuickSettingsTileForce extends TileService {
         LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(mContext);
         Intent intent = new Intent(ACTION_UPDATE_SHOULDRUN_DECISION);
         localBroadcastManager.sendBroadcast(intent);
-        // if status fragement is open, force start stop button is not updated!
 
         updateTileState(tile, newState);
         tile.updateTile();
