@@ -106,6 +106,7 @@ public class RunConditionMonitor {
      * Initial status false because we check if the last sync was more than one hour ago on app start.
      */
     private Boolean mTimeConditionMatch = false;
+    // Avoid re-scheduling start if run conditions change while already running.
     private Boolean mRunAllowedStopScheduled = false;
 
     @Inject
