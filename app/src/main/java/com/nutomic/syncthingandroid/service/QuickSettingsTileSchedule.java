@@ -37,6 +37,7 @@ public class QuickSettingsTileSchedule extends TileService {
             Resources res = mContext.getResources();
             mPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
 
+            // look through running services to see whether the app is currently running
             ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
             boolean syncthingRunning = false;
             for (ActivityManager.RunningServiceInfo service : am.getRunningServices(Integer.MAX_VALUE)) {
@@ -45,8 +46,9 @@ public class QuickSettingsTileSchedule extends TileService {
                     break;
                 }
             }
+            // disable tile if app is not running, schedule is off, or syncthing is force-started/stopped
             if (!syncthingRunning || !mPreferences.getBoolean(Constants.PREF_RUN_ON_TIME_SCHEDULE,false)
-            || mPreferences.getInt(Constants.PREF_BTNSTATE_FORCE_START_STOP, Constants.BTNSTATE_NO_FORCE_START_STOP) != Constants.BTNSTATE_NO_FORCE_START_STOP) {
+                    || mPreferences.getInt(Constants.PREF_BTNSTATE_FORCE_START_STOP, Constants.BTNSTATE_NO_FORCE_START_STOP) != Constants.BTNSTATE_NO_FORCE_START_STOP) {
                 tile.setState(Tile.STATE_UNAVAILABLE);
                 tile.setLabel(res.getString(R.string.qs_schedule_disabled));
                 tile.updateTile();
