@@ -201,9 +201,9 @@ public class RunConditionMonitor {
                 mTimeConditionMatch ?
                     Constants.TRIGGERED_SYNC_DURATION_SECS :
                        /**
-                        * negative delays can't be passed to JobUtils.scheduleSyncTriggerServiceJob:
-                        * if elapsedSecondsSinceLastSync > Constants.WAIT_FOR_NEXT_SYNC_DELAY_SECS
-                        * then mTimeConditionMatch is set to true during updateShouldRunDecision()
+                        * if Constants.WAIT_FOR_NEXT_SYNC_DELAY_SECS - elapsedSecondsSinceLastSync is < 0,
+                        * mTimeConditionMatch is set to true during updateShouldRunDecision().
+                        * Thus the false case cannot be triggered if the delay for scheduleSyncTriggerServiceJob would be negative
                         */
                     Constants.WAIT_FOR_NEXT_SYNC_DELAY_SECS - elapsedSecondsSinceLastSync
         );
