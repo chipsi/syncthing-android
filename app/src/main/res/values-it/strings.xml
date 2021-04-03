@@ -169,8 +169,6 @@ Si prega di segnalare eventuali problemi su Github.</string>
 
     <!-- Suggest File Manager App Dialog -->
     <string name="suggest_file_manager_app_dialog_title">Non è stato trovato un file manager compatibile</string>
-    <string name="suggest_file_manager_app_dialog_text">Consigliamo di installare il file manager open-source \"Simple File Manager\" da F-Droid. Vuoi aprire la sua pagina sull\'app store?</string>
-
     <!-- DeviceListFragment -->
 
     <!-- Devices tab title -->
@@ -258,7 +256,6 @@ Si prega di segnalare eventuali problemi su Github.</string>
 
     <!-- Setting title -->
     <string name="directory">Cartella</string>
-
     <!-- Setting title and description -->
     <string name="folder_fileWatcher">Monitorare i cambiamenti</string>
     <string name="folder_fileWatcherDescription">Chiede al sistema operativo di notificare le modifiche ai file. Se disabilitato, ritorna a scansioni orarie periodiche.</string>
@@ -519,8 +516,6 @@ Si prega di segnalare eventuali problemi su Github.</string>
     <string name="run_in_flight_mode_summary">Abilitando questa opzione permetterai a Syncthing di funzionare anche quando sei offline. Da utilizzare se il tuo dispositivo ha problemi a rilevare le connessioni Wi-Fi in modalità aereo.</string>
 
     <string name="run_on_time_schedule_title">Esegui secondo programmazione</string>
-    <string name="run_on_time_schedule_summary">Abilitando questa opzione la sincronizzazione verrà eseguita ogni ora per 5 minuti. Permette di risparmiare molta batteria ma necessita che il ricevente sia online. Nota bene: potrebbe lasciare alcuni file non sincronizzati fino alla successiva esecuzione.</string>
-
     <!-- Preferences - Behaviour -->
     <string name="behaviour_autostart_title">Avvio automatico</string>
     <string name="behaviour_autostart_summary">Esegui l\'app automaticamente quando viene avviato il dispositivo.</string>

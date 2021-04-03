@@ -25,6 +25,8 @@
     <string name="storage_permission_title">存储器读写权限</string>
     <string name="storage_permission_desc">Syncthing 需要获取存储器读写权限以进行同步操作</string>
     <string name="dialog_all_files_access_not_supported">您的设备不支持所有的文件访问</string>
+    <string name="storage_permission_emergency_export">卡住了吗？紧急导出你的配置</string>
+
     <!-- Slide "Ignore battery optimizations" -->
     <string name="ignore_doze_permission_title">电池优化</string>
     <string name="ignore_doze_permission_os_notice">众所周知，当应用程序在后台运行时，Android TV偶尔会终止它。您可以在项目百科页面\'%1$s/%2$s\'找到一个解决方案。</string>
@@ -168,8 +170,6 @@
 
     <!-- Suggest File Manager App Dialog -->
     <string name="suggest_file_manager_app_dialog_title">没有找到兼容的文件管理器</string>
-    <string name="suggest_file_manager_app_dialog_text">我们建议你安装来自F-Droid的开源文件管理软件“Simple file manager”。你想打开它的应用商店页面吗?</string>
-
     <!-- DeviceListFragment -->
 
     <!-- Devices tab title -->
@@ -257,7 +257,6 @@
 
     <!-- Setting title -->
     <string name="directory">目录</string>
-
     <!-- Setting title and description -->
     <string name="folder_fileWatcher">监视更改</string>
     <string name="folder_fileWatcherDescription">请求操作系统通知文件的更改。如果禁用，则退回到定期每小时扫描。</string>
@@ -462,6 +461,10 @@
 
     <string name="preference_app_theme_title">主题</string>
 
+    <string name="preference_app_theme_follow_system">跟随系统</string>
+    <string name="preference_app_theme_follow_light">浅色</string>
+    <string name="preference_app_theme_follow_dark">深色</string>
+
     <string name="category_behaviour">行为</string>
 
     <string name="category_syncthing_options">同步设置</string>
@@ -519,8 +522,6 @@
     <string name="run_in_flight_mode_summary">启用这个选项会让Syncthing在你离线时也运行。如果您的设备在飞行模式下检测手动Wi-Fi连接有问题，请启用。</string>
 
     <string name="run_on_time_schedule_title">按照时间表运行</string>
-    <string name="run_on_time_schedule_summary">启用此选项将尝试每小时进行一次5分钟的同步。这可以节省大量的电池，但需要同步伙伴处于在线状态。请注意:这可能会在下一次计划的同步发生前留下不完整的临时文件。</string>
-
     <!-- Preferences - Behaviour -->
     <string name="behaviour_autostart_title">自动启动</string>
     <string name="behaviour_autostart_summary">系统开启时自动启动 Syncthing </string>
