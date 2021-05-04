@@ -70,7 +70,6 @@ public class Options {
 
     // Since v1.12.0
     // See https://github.com/syncthing/syncthing/pull/7055
-    // Possible values: "untrusted"
     public String featureFlag = "";
 
     // Since v1.13.0

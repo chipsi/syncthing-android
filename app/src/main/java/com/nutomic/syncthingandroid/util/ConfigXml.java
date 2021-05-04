@@ -342,11 +342,6 @@ public class ConfigXml {
             changed = addSyncthingCameraFolder() || changed;
         }
 
-        Boolean prefExpertMode =
-                PreferenceManager.getDefaultSharedPreferences(mContext)
-                        .getBoolean(Constants.PREF_EXPERT_MODE, false);
-        changed = setConfigElement(options, "featureFlag", prefExpertMode ? "untrusted" : "") || changed;
-
         // Save changes if we made any.
         if (changed) {
             saveChanges();
