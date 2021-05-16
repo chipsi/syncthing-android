@@ -283,7 +283,7 @@ public class FolderPickerActivity extends SyncthingActivity
             TextView title = convertView.findViewById(android.R.id.text1);
             File f = getItem(position);
             title.setText(f.getName());
-            title.setTypeface(title.getTypeface(), f.isDirectory() ? Typeface.BOLD : Typeface.NORMAL);
+            title.setTypeface(title.getTypeface(), f.isFile() ? Typeface.ITALIC : Typeface.NORMAL);
             return convertView;
         }
     }
