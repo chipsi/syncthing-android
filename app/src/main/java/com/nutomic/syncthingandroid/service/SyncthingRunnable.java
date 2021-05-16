@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.wifi.WifiManager;
+import android.net.wifi.WifiManager.MulticastLock;
 import android.os.Build;
 import android.os.Environment;
 import android.os.PowerManager;
@@ -164,6 +166,12 @@ public class SyncthingRunnable implements Runnable {
                 wakeLock.acquire();
             }
 
+            // See issue #735: Android 11 blocks local discovery if we did not acquire MulticastLock.
+            WifiManager wifi = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
+            MulticastLock multicastLock = wifi.createMulticastLock("multicastLock");
+            multicastLock.setReferenceCounted(true);
+            multicastLock.acquire();
+
             /**
              * Setup and run a new syncthing instance
              */
@@ -249,6 +257,10 @@ public class SyncthingRunnable implements Runnable {
         } finally {
             if (wakeLock != null) {
                 wakeLock.release();
+            }
+            if (multicastLock != null) {
+                multicastLock.release();
+                multicastLock = null;
             }
             if (process != null) {
                 process.destroy();
