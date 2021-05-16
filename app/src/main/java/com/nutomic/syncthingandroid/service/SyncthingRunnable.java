@@ -168,7 +168,7 @@ public class SyncthingRunnable implements Runnable {
             }
 
             // See issue #735: Android 11 blocks local discovery if we did not acquire MulticastLock.
-            WifiManager wifi = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
+            WifiManager wifi = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
             multicastLock = wifi.createMulticastLock("multicastLock");
             multicastLock.setReferenceCounted(true);
             multicastLock.acquire();
