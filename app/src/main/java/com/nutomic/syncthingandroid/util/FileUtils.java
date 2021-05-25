@@ -185,7 +185,7 @@ public class FileUtils {
                 externalFilesDir.remove(context.getExternalFilesDir(null));
                 break;
             case INT_MEDIA:
-                externalFilesDir.add(Environment.getExternalStorageDirectory());
+                externalFilesDir.add(new File(Environment.getExternalStorageDirectory() + "/Android/media/" + context.getPackageName()));
                 break;
             case EXT_MEDIA:
                 externalFilesDir.addAll(Arrays.asList(context.getExternalMediaDirs()));
