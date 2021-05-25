@@ -292,16 +292,4 @@ public class PhotoShootActivity extends AppCompatActivity {
         mBtnGrantCameraPerm.setVisibility(haveCameraPermission() ? View.GONE : View.VISIBLE);
         mBtnGrantStoragePerm.setVisibility(haveStoragePermission() ? View.GONE : View.VISIBLE);
     }
-
-    public static File getExternalFilesDir(Context context, String type) {
-    	// There is a bug on Huawei devices running Android 7, which returns the wrong external path.
-        // See https://github.com/Catfriend1/syncthing-android/issues/541
-    	// ... and: https://stackoverflow.com/questions/39895579/fileprovider-error-onhuawei-devices
-        File[] externalFilesDirs = ContextCompat.getExternalFilesDirs(context, type);
-        if (externalFilesDirs.length > 0) {
-            return externalFilesDirs[0];
-        } else {
-            return null;
-        }
-    }
 }
