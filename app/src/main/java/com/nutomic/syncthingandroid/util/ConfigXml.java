@@ -1106,7 +1106,7 @@ public class ConfigXml {
         }
 
         // Get app specific directory, e.g. "/storage/emulated/0/Android/media/[PACKAGE_NAME]/Pictures".
-        File storageDir = FileUtils.getExternalFilesDir(mContext, ExternalStorageDirType.MEDIA, Environment.DIRECTORY_PICTURES);
+        File storageDir = FileUtils.getExternalFilesDir(mContext, ExternalStorageDirType.INT_MEDIA, Environment.DIRECTORY_PICTURES);
         if (storageDir == null) {
             Log.e(TAG, "addSyncthingCameraFolder: storageDir == null");
             return false;

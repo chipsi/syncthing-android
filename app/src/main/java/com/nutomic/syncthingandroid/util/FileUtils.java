@@ -51,7 +51,8 @@ public class FileUtils {
 
     public enum ExternalStorageDirType {
         DATA,
-        MEDIA
+        EXT_MEDIA,
+        INT_MEDIA
     }
 
     @Nullable
@@ -183,21 +184,25 @@ public class FileUtils {
                 externalFilesDir.addAll(Arrays.asList(ContextCompat.getExternalFilesDirs(context, null)));
                 externalFilesDir.remove(context.getExternalFilesDir(null));
                 break;
-            case MEDIA:
+            case INT_MEDIA:
+                externalFilesDir.add(Environment.getExternalStorageDirectory());
+                break;
+            case EXT_MEDIA:
                 externalFilesDir.addAll(Arrays.asList(context.getExternalMediaDirs()));
-                if (externalFilesDir.size() > 0) {
+                if (!externalFilesDir.isEmpty()) {
                     externalFilesDir.remove(externalFilesDir.get(0));
                 }
                 break;
         }
         externalFilesDir.remove(null);      // getExternalFilesDirs may return null for an ejected SDcard.
-        if (externalFilesDir.size() == 0) {
+        if (externalFilesDir.isEmpty()) {
             Log.w(TAG, "Could not determine app's private files directory on external storage.");
             return null;
         }
         if (type != null) {
             switch(extDirType) {
-                case MEDIA:
+                case EXT_MEDIA:
+                case INT_MEDIA:
                     if (type.equals(Environment.DIRECTORY_PICTURES)) {
                         return new File(externalFilesDir.get(0), Environment.DIRECTORY_PICTURES);
                     }
@@ -241,7 +246,8 @@ public class FileUtils {
                         "content://com.android.externalstorage.documents/document/" +
                         volumeId + "%3AAndroid%2Fdata%2F" +
                         context.getPackageName() + "%2Ffiles");
-                case MEDIA:
+                case EXT_MEDIA:
+                case INT_MEDIA:
                     // Build the content Uri for our private ".../media/[PKG_NAME]" folder.
                     return android.net.Uri.parse(
                         "content://com.android.externalstorage.documents/document/" +
