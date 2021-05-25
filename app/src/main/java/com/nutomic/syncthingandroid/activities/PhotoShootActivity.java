@@ -199,6 +199,7 @@ public class PhotoShootActivity extends AppCompatActivity {
             Log.e(TAG, "createImageFile: storageDir == null");
             return null;
         }
+        storageDir.mkdirs();
         File image = File.createTempFile(
                         imageFileName,  /* prefix */
                         ".jpg",         /* suffix */
