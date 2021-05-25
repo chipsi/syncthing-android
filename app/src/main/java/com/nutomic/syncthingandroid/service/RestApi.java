@@ -929,26 +929,7 @@ public class RestApi {
                         JsonArray jsonDiskEvents = new JsonParser().parse(result).getAsJsonArray();
                         for (int i = jsonDiskEvents.size()-1; i >= 0; i--) {
                             JsonElement jsonDiskEvent = jsonDiskEvents.get(i);
-                            DiskEvent diskEvent = mGson.fromJson(jsonDiskEvent, DiskEvent.class);
-                            if (diskEvent.data == null ||
-                                    diskEvent.data.action == null ||
-                                    diskEvent.data.path == null) {
-                                continue;
-                            }
-
-                            // Check if the file was modified or added in reality.
-                            if (diskEvent.data.action.equals("modified")) {
-                                Folder folder = getFolderByID(diskEvent.data.folderID);
-                                if (!(folder == null || folder.path == null)) {
-                                    Log.e(TAG,"TEST:" + folder.path + "/" + diskEvent.data.path);
-                                    boolean fileExists = (new File (folder.path + "/" + diskEvent.data.path)).exists();
-                                    if (fileExists) {
-                                        diskEvent.data.action = "added";
-                                    }
-                                }
-                            }
-
-                            diskEvents.add(diskEvent);
+                            diskEvents.add(mGson.fromJson(jsonDiskEvent, DiskEvent.class));
                         }
                         listener.onResult(diskEvents);
                     } catch (Exception e) {
