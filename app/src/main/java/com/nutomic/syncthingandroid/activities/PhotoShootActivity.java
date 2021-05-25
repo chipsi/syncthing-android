@@ -26,6 +26,7 @@ import androidx.core.content.FileProvider;
 import com.nutomic.syncthingandroid.R;
 import com.nutomic.syncthingandroid.SyncthingApp;
 import com.nutomic.syncthingandroid.service.Constants;
+import com.nutomic.syncthingandroid.util.FileUtils;
 
 import java.io.IOException;
 import java.io.File;
@@ -193,7 +194,7 @@ public class PhotoShootActivity extends AppCompatActivity {
                           Locale.getDefault()).format(new Date());
         String imageFileName = "IMG_" + timeStamp + "_";
         File storageDir =
-                    this.getExternalFilesDir(this, Environment.DIRECTORY_PICTURES);
+                    FileUtils.getExternalFilesDir(this, Environment.DIRECTORY_PICTURES);
         if (storageDir == null) {
             Log.e(TAG, "createImageFile: storageDir == null");
             return null;
