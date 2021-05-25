@@ -222,6 +222,7 @@ public class PhotoShootActivity extends AppCompatActivity {
             } catch (Exception e) {
                 Log.d(TAG, "User cancelled or failed to take a picture.");
             }
+
             if (!takePhotoSucceeded) {
                 if (lastPhotoURI != null) {
                     Log.v(TAG, "Deleting temporary file [" + lastPhotoURI.getPath() + "]");
@@ -233,7 +234,11 @@ public class PhotoShootActivity extends AppCompatActivity {
                     }
                     lastPhotoURI = null;
                 }
+                Toast.makeText(this, R.string.photo_shoot_take_picture_failure, Toast.LENGTH_SHORT).show();
+                return;
             }
+
+            Toast.makeText(this, R.string.photo_shoot_take_picture_success, Toast.LENGTH_SHORT).show();
             finish();
         }
     }
