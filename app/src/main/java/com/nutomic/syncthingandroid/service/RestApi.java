@@ -1031,9 +1031,24 @@ public class RestApi {
                                                     final String lastItemFinishedAction,
                                                     final String lastItemFinishedItem,
                                                     final String lastItemFinishedTime) {
+        /**
+         * lastItemFinishedAction RAW data from Syncthing
+         *  update:     A file was changed or deleted
+         */
+        String realLastItemFinishedAction = lastItemFinishedAction;
+
+        // Check if the file was updated or deleted in reality.
+        if (lastItemFinishedAction.equals("update")) {
+            Folder folder = getFolderByID(folderId);
+            if (!(folder == null || folder.path == null)) {
+                if (!(new File (folder.path + "/" + lastItemFinishedItem)).exists()) {
+                    realLastItemFinishedAction = "delete";
+                }
+            }
+        }
         mLocalCompletion.setLastItemFinished(
                 folderId,
-                lastItemFinishedAction,
+                realLastItemFinishedAction,
                 lastItemFinishedItem,
                 lastItemFinishedTime
         );
