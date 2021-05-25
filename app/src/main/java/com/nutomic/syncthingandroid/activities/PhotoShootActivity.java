@@ -193,8 +193,7 @@ public class PhotoShootActivity extends AppCompatActivity {
              new SimpleDateFormat("yyyyMMdd_HHmmss",
                           Locale.getDefault()).format(new Date());
         String imageFileName = "IMG_" + timeStamp + "_";
-        File storageDir =
-                    FileUtils.getExternalFilesDir(this, Environment.DIRECTORY_PICTURES);
+        File storageDir = FileUtils.getExternalFilesDir(this, Environment.DIRECTORY_PICTURES);
         if (storageDir == null) {
             Log.e(TAG, "createImageFile: storageDir == null");
             return null;
