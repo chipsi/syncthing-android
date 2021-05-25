@@ -18,6 +18,7 @@ import com.google.common.io.Files;
 import com.nutomic.syncthingandroid.R;
 import com.nutomic.syncthingandroid.SyncthingApp;
 import com.nutomic.syncthingandroid.service.Constants;
+import com.nutomic.syncthingandroid.util.FileUtils;
 import com.nutomic.syncthingandroid.util.Util;
 
 import java.io.BufferedReader;
@@ -455,7 +456,7 @@ public class SyncthingRunnable implements Runnable {
             int lineCount = lnr.getLineNumber();
             lnr.close();
 
-            File tempFile = new File(mContext.getExternalFilesDir(null), "syncthing.log.tmp");
+            File tempFile = new File(FileUtils.getExternalFilesDir(mContext, null), "syncthing.log.tmp");
 
             BufferedReader reader = new BufferedReader(new FileReader(mLogFile));
             BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
