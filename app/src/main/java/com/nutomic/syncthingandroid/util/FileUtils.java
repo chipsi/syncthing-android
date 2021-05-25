@@ -247,10 +247,15 @@ public class FileUtils {
                         volumeId + "%3AAndroid%2Fdata%2F" +
                         context.getPackageName() + "%2Ffiles");
                 case EXT_MEDIA:
-                case INT_MEDIA:
                     // Build the content Uri for our private ".../media/[PKG_NAME]" folder.
                     return android.net.Uri.parse(
                         "content://com.android.externalstorage.documents/document/" +
+                        volumeId + "%3AAndroid%2Fmedia%2F" +
+                        context.getPackageName());
+                case INT_MEDIA:
+                    // Build the content Uri for our private ".../media/[PKG_NAME]" folder.
+                    return android.net.Uri.parse(
+                        "content://com.android.externalstorage.documents/tree/" +
                         volumeId + "%3AAndroid%2Fmedia%2F" +
                         context.getPackageName());
             }
