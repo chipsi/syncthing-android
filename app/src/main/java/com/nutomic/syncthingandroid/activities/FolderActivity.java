@@ -332,6 +332,7 @@ public class FolderActivity extends SyncthingActivity {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
         if (externalFilesDirUri != null) {
             intent.putExtra("android.provider.extra.INITIAL_URI", externalFilesDirUri);
+            FileUtils.getExternalFilesDir(FolderActivity.this, ExternalStorageDirType.INT_MEDIA, null).mkdirs();
         } else {
             android.net.Uri internalFilesDirUri = FileUtils.getInternalStorageRootUri();
             if (internalFilesDirUri != null) {
