@@ -482,9 +482,10 @@ public class SyncthingRunnable implements Runnable {
         targetEnv.put("HOME", Environment.getExternalStorageDirectory().getAbsolutePath());
         targetEnv.put("STTRACE", TextUtils.join(" ",
                 mPreferences.getStringSet(Constants.PREF_DEBUG_FACILITIES_ENABLED, new HashSet<>())));
-        File externalFilesDir = mContext.getExternalFilesDir(null);
-        if (externalFilesDir != null)
+        File externalFilesDir = FileUtils.getExternalFilesDir(mContext, null);
+        if (externalFilesDir != null) {
             targetEnv.put("STGUIASSETS", externalFilesDir.getAbsolutePath() + "/gui");
+        }
         targetEnv.put("STMONITORED", "1");
         targetEnv.put("STNOUPGRADE", "1");
         if (mPreferences.getBoolean(Constants.PREF_USE_TOR, false)) {
