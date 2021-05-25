@@ -3,6 +3,4 @@
     <external-files-path name="my_images" />
     <external-media-path name="my_images" />
     <external-path name="external" path="." />
-    <external-files-path name="external_files" path="." />
-    <files-path name="files" path="." />
 </paths>
