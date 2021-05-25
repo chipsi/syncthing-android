@@ -255,8 +255,8 @@ public class FileUtils {
                 case INT_MEDIA:
                     // Build the content Uri for our private ".../media/[PKG_NAME]" folder.
                     return android.net.Uri.parse(
-                        "content://com.android.externalstorage.documents/tree/primary" +
-                        "%3AAndroid%2Fmedia%2F" +
+                        "content://com.android.externalstorage.documents/document/" +
+                        "primary" + "%3AAndroid%2Fmedia%2F" +
                         context.getPackageName());
             }
         } catch (Exception e) {
