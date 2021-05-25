@@ -195,6 +195,14 @@ public class FileUtils {
             Log.w(TAG, "Could not determine app's private files directory on external storage.");
             return null;
         }
+        if (type != null) {
+            switch(extDirType) {
+                case MEDIA:
+                    if (type.equals(Environment.DIRECTORY_PICTURES)) {
+                        return new File(externalFilesDir.get(0), Environment.DIRECTORY_PICTURES);
+                    }
+            }
+        }
         return externalFilesDir.get(0);
     }
 
