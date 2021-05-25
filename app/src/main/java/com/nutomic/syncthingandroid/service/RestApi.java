@@ -1042,10 +1042,7 @@ public class RestApi {
             Folder folder = getFolderByID(folderId);
             if (!(folder == null || folder.path == null)) {
                 boolean fileExists = (new File (folder.path + "/" + lastItemFinishedItem)).exists();
-                if (fileExists) {
-                    // "create" is only known by the wrapper, not by SyncthingNative.
-                    realLastItemFinishedAction = "create";
-                } else {
+                if (!fileExists) {
                     realLastItemFinishedAction = "delete";
                 }
             }

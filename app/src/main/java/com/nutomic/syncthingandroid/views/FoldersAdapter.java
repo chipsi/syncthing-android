@@ -215,10 +215,6 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
         }
         String finishedItemText = "\u21cc";
         switch (cachedFolderStatus.lastItemFinishedAction) {
-            case "create":
-                // (+)
-                finishedItemText += " \u2295";
-                break;
             case "delete":
                 // (x)
                 finishedItemText += " \u2297";
