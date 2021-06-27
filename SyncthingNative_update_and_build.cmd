@@ -53,6 +53,11 @@ git checkout %DESIRED_SUBMODULE_VERSION% 2>&1 | find /i "HEAD is now at"
 SET RESULT=%ERRORLEVEL%
 IF NOT "%RESULT%" == "0" echo [ERROR] git checkout FAILED. & goto :eos
 REM
+REM Apply upstream PR #7794 lib/fs: Set expiry after DirNames in case-fs
+git cherry-pick --quiet 08e3cd1cce02a65b0bab502b1c953e6ce7b5aef8
+SET RESULT=%ERRORLEVEL%
+IF NOT "%RESULT%" == "0" echo [ERROR] git cherry-pick FAILED. & goto :eos
+REM
 :afterCheckoutSrc
 cd /d "%SCRIPT_PATH%"
 REM
