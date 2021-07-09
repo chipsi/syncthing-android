@@ -1,20 +1,17 @@
-* Syncthing v1.16.0
+* Syncthing v1.17.0
 
 Enhanced
 --
-- Support two-way synchronization on external sd cards (Android 11) (#787)
-- Hide notification from lock screen (#790)
+-
 
 
 Fixes
 --
-- Bring back WiFi SSID based run condition (#794)
-- Minor stability fixes (#776, #777, #778, #780)
-- Minor theme and UI fixes (#793, #797)
-- Syncthing Camera compatibility (Android 11) (#798)
-- Local device discovery (Android 11) (#800)
+- Fix opening file intents used in "Recent Changes" dialog (#816)
+- Clear prefs when importing backup from Syncthing app (#821)
+- Fix device orientation change in settings menus (#824 @vbh)
 
 
 Others
 --
--
+- Breaking change: Syncthing Camera folder is now /Android/media (#809)
