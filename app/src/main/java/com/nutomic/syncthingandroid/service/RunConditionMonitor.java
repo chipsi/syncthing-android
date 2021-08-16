@@ -303,12 +303,19 @@ public class RunConditionMonitor {
 
             /**
              * Reschedule the job.
-             * If we are within a "SyncthingNative should run" time frame,
-             * let the receiver fire and change to "SyncthingNative shouldn't run" after
-             * TRIGGERED_SYNC_DURATION_SECS seconds elapsed.
              * If we are within a "SyncthingNative shouldn't run" time frame,
              * let the receiver fire and change to "SyncthingNative should run" after
              * WAIT_FOR_NEXT_SYNC_DELAY_SECS seconds elapsed.
+             * If we are within a "SyncthingNative should run" time frame,
+             * the change to "SyncthingNative shouldn't run" after
+             * TRIGGERED_SYNC_DURATION_SECS seconds elapsed should actually
+             * be scheduled inside updateShouldRunDecision(), but his might
+             * not always be the case: https://github.com/Catfriend1/syncthing-android/issues/803
+             * Thus we schedule an additional change to "SyncthingNative shouldn't run"
+             * after TRIGGERED_SYNC_DURATION_SECS seconds elapsed, but without
+             * cancelling other jobs. This should only serve as a backup job and
+             * will not fire if the job inside updateShouldRunDecision() is
+             * scheduled correctly.
              */
             if (!mRunAllowedStopScheduled) {
                 JobUtils.cancelAllScheduledJobs(context);
@@ -316,6 +323,10 @@ public class RunConditionMonitor {
                         context,
                         Constants.WAIT_FOR_NEXT_SYNC_DELAY_SECS
                 );
+            } else {
+                JobUtils.scheduleSyncTriggerServiceJob(
+                    context,
+                    Constants.TRIGGERED_SYNC_DURATION_SECS);
             }
         }
     }
