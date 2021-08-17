@@ -86,6 +86,10 @@ Please report any problems you encounter via Github.</string>
 
     <string name="photo_shoot_intro_permission_desc">Syncthing Camera requires your consent to shoot pictures and store them on your device. This feature is optional. To use it, grant permissions and tap \"Continue\". We will setup a Syncthing Camera folder for you which you can share with other Syncthing devices later.</string>
 
+    <string name="photo_shoot_take_picture_success">Successfully saved picture to the Syncthing Camera folder.</string>
+
+    <string name="photo_shoot_take_picture_failure">Failed to take a picture or you\'ve cancelled.</string>
+
     <!-- Label of the folder created by the Syncthing Camera feature. -->
     <string name="default_syncthing_camera_folder_label">Syncthing Camera</string>
 
@@ -434,6 +438,8 @@ Please report any problems you encounter via Github.</string>
     <string name="modified_by_device">Device: %1$s</string>
     <string name="modification_time">Time: %1$s</string>
 
+    <string name="this_device">This device</string>
+
 
     <!-- WebGuiActivity -->
 
@@ -537,17 +543,17 @@ Please report any problems you encounter via Github.</string>
 
     <string name="use_root_title">Run Syncthing as Superuser</string>
 
-    <string name="use_root_summary">Running Syncthing as root allows it to write to folders Android normally restricts to be readonly accessed. Use this feature cautious.</string>
+    <string name="use_root_summary">Running Syncthing as root allows it to write to folders Android normally restricts to be readonly accessed. Use this feature with caution.</string>
 
     <string name="launcher_show_camera_icon_title">Show camera icon in launcher</string>
 
-    <string name="launcher_show_camera_icon_summary">Disable this option if you do not like to use the \'Syncthing Camera\' feature. This does not work with launcher apps that do not support hiding icons.</string>
+    <string name="launcher_show_camera_icon_summary">Disable this option if you do not like to use the \'Syncthing Camera\' feature. This only works with launcher apps that support hiding icons.</string>
 
     <string name="toast_show_hide_launcher_icon_failed">Failed to show or hide the launcher icon.</string>
 
     <string name="expert_mode_title">Expert mode</string>
 
-    <string name="expert_mode_summary">Enabling this option will show advanced configuration options. You should have a look at the Syncthing Docs first to make sure you know how to use them correctly. Incorrect settings may cause battery drain, system resource exhaust or incomplete synchronization.</string>
+    <string name="expert_mode_summary">Enabling this option will show advanced configuration options. You should have a look at the Syncthing Docs first to make sure you know how to use them correctly. Incorrect settings may cause battery drain, system resource exhaustion or incomplete synchronization.</string>
 
     <string name="preference_language_title">Language</string>
 
@@ -1084,4 +1090,11 @@ Please report any problems you encounter via Github.</string>
     <string name="custom_sync_conditions_description">Allows you to specify exceptions to the global run conditions.</string>
     <string name="custom_sync_conditions_dialog">Specify sync conditions</string>
 
+    <!-- Quick Setting icon names and labels -->
+    <string name="qs_force_label">Force run</string>
+    <string name="qs_forced_to_run">Forced to run</string>
+    <string name="qs_forced_to_stop">Forced to stop</string>
+    <string name="qs_following_run_conditions">Following run conditions</string>
+    <string name="qs_schedule_label">Run for 5 minutes</string>
+    <string name="qs_schedule_disabled">Schedule disabled</string>
 </resources>

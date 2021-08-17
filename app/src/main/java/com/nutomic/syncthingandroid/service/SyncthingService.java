@@ -590,7 +590,7 @@ public class SyncthingService extends Service {
          */
         if (mPollWebGuiAvailableTask == null) {
             mPollWebGuiAvailableTask = new PollWebGuiAvailableTask(
-                    this, getWebGuiUrl(), mConfig.getApiKey(), result -> {
+                    this, mConfig.getWebGuiUrl(), mConfig.getApiKey(), result -> {
                 Log.i(TAG, "Web GUI has come online at " + mConfig.getWebGuiUrl());
                 if (mRestApi != null) {
                     mRestApi.readConfigFromRestApi();
@@ -775,10 +775,6 @@ public class SyncthingService extends Service {
                 }
             }
         });
-    }
-
-    public URL getWebGuiUrl() {
-        return mConfig.getWebGuiUrl();
     }
 
     public State getCurrentState() {
@@ -984,6 +980,7 @@ public class SyncthingService extends Service {
                             case Constants.PREF_EVENT_PROCESSOR_LAST_SYNC_ID:
                             case Constants.PREF_LAST_BINARY_VERSION:
                             case Constants.PREF_LOCAL_DEVICE_ID:
+                            case Constants.PREF_LAST_RUN_TIME:
                                 LogV("importConfig: Ignoring cache pref \"" + prefKey + "\".");
                                 break;
                             default:
@@ -1022,8 +1019,11 @@ public class SyncthingService extends Service {
                 Log.w(TAG, "importConfig: SharedPreferences file missing. This is expected if you migrate from the official app to the forked app.");
                 /**
                  * Don't fail as the file might be expectedly missing when users migrate
-                 * to the forked app.
+                 * to the forked app. Clear cached info like the local deviceID from prefs.
                  */
+                SharedPreferences.Editor editor = mPreferences.edit();
+                editor.clear();
+                editor.apply();
             }
         } catch (IOException | ClassNotFoundException e) {
             Log.e(TAG, "importConfig: Failed to import SharedPreferences #1", e);

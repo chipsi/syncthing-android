@@ -1,19 +1,15 @@
-* Syncthing v1.15.0-rc.6
+* Syncthing v1.18.1
 
 Enhanced
 --
-- A11: Folder picker (#690)
-- Time schedule, per folder/device power source (thanks@Helium314 #666 #592)
+-
 
 
 Fixes
 --
-- Stop qr scanner (#748)
-- A11: Fix opening file manager (#762)
+-
 
 
 Others
 --
-- Play version
--+ "whitelisted WiFi" feature no longer available
--+ Android 11? you may experience problems as G limited storage access and doesn't allow the app request the new and required "all files access" permission. See GitHub for more info.
+-
