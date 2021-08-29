@@ -57,6 +57,7 @@ public class SyncthingRunnable implements Runnable {
     private static final String TAG_NICE = "SyncthingRunnableIoNice";
 
     private Boolean ENABLE_VERBOSE_LOG = false;
+    private Boolean DISABLE_SYNCTHING_FILE_LOG = false;
     private static final int LOG_FILE_MAX_LINES = 10;
 
     private static final AtomicReference<Process> mSyncthing = new AtomicReference<>();
@@ -88,10 +89,15 @@ public class SyncthingRunnable implements Runnable {
     public SyncthingRunnable(Context context, Command command) {
         ((SyncthingApp) context.getApplicationContext()).component().inject(this);
         ENABLE_VERBOSE_LOG = AppPrefs.getPrefVerboseLog(mPreferences);
+        DISABLE_SYNCTHING_FILE_LOG = mPreferences.getBoolean(Constants.PREF_DISABLE_SYNCTHING_FILE_LOG, false);
         mContext = context;
         // Example: mSyncthingBinary="/data/app/com.github.catfriend1.syncthingandroid.debug-8HsN-IsVtZXc8GrE5-Hepw==/lib/x86/libsyncthingnative.so"
         mSyncthingBinary = Constants.getSyncthingBinary(mContext);
-        mLogFile = Constants.getLogFile(mContext);
+        if (DISABLE_SYNCTHING_FILE_LOG == true){
+            mLogFile = null;
+        } else {
+            mLogFile = Constants.getLogFile(mContext);
+        }
 
         // Get preferences relevant to starting syncthing core.
         mUseRoot = mPreferences.getBoolean(Constants.PREF_USE_ROOT, false) && Shell.SU.available();
@@ -422,7 +428,7 @@ public class SyncthingRunnable implements Runnable {
                 while ((line = br.readLine()) != null) {
                     Log.println(priority, TAG_NATIVE, line);
 
-                    if (saveLog) {
+                    if (saveLog && mLogFile != null) {
                         Files.append(line + "\n", mLogFile, Charsets.UTF_8);
                     }
                 }
@@ -445,7 +451,7 @@ public class SyncthingRunnable implements Runnable {
      * Only keep last {@link #LOG_FILE_MAX_LINES} lines in log file, to avoid bloat.
      */
     private void trimLogFile() {
-        if (!mLogFile.exists()) {
+        if (mLogFile == null || !mLogFile.exists()) {
             return;
         }
 

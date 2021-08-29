@@ -728,6 +728,10 @@ Please report any problems you encounter via Github.</string>
 
     <string name="verbose_log_summary">Enabling this option will help to generate debug logs at a very detailed level.</string>
 
+    <string name="disable_syncthing_file_log_title">Disable Syncthing File Log</string>
+
+    <string name="disable_syncthing_file_log_summary">Enabling this option will stop app from writing syncthing.log on internal storage/sdcard.</string>
+
     <!-- Settings item that opens the log activity -->
     <string name="open_log">Open Log</string>
 

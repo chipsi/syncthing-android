@@ -321,6 +321,14 @@
             android:singleLineTitle="false"
             android:defaultValue="false" />
 
+        <!-- Disable syncthing log file -->
+        <CheckBoxPreference
+            android:key="disable_syncthing_file_log"
+            android:title="@string/disable_syncthing_file_log_title"
+            android:summary="@string/disable_syncthing_file_log_summary"
+            android:singleLineTitle="false"
+            android:defaultValue="false" />
+
         <!-- Open Android or SyncthingNative log -->
         <Preference
             android:title="@string/open_log"
