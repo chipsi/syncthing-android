@@ -51,6 +51,7 @@ public class Constants {
 
     // Preferences - Troubleshooting
     public static final String PREF_VERBOSE_LOG                 = "verbose_log";
+    public static final String PREF_DISABLE_SYNCTHING_FILE_LOG  = "disable_syncthing_file_log";
     public static final String PREF_ENVIRONMENT_VARIABLES       = "environment_variables";
     public static final String PREF_DEBUG_FACILITIES_ENABLED    = "debug_facilities_enabled";
 
