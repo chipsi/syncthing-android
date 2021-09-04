@@ -545,12 +545,8 @@ public class RunConditionMonitor {
 
         // PREF_RUN_ON_TIME_SCHEDULE
         // set mTimeConditionMatch to true if the last run was more than WAIT_FOR_NEXT_SYNC_DELAY_SECS ago
-        if (SystemClock.elapsedRealtime() - mPreferences.getLong(Constants.PREF_LAST_RUN_TIME,0) > Constants.WAIT_FOR_NEXT_SYNC_DELAY_SECS * 1000) {
+        if (SystemClock.elapsedRealtime() - mPreferences.getLong(Constants.PREF_LAST_RUN_TIME,0) > Constants.WAIT_FOR_NEXT_SYNC_DELAY_SECS * 1000)
             mTimeConditionMatch = true;
-            SharedPreferences.Editor editor = mPreferences.edit();
-            editor.putLong(Constants.PREF_LAST_RUN_TIME, SystemClock.elapsedRealtime());
-            editor.apply();
-        }
         if (prefRunOnTimeSchedule && !mTimeConditionMatch) {
             // Currently, we aren't within a "SyncthingNative should run" time frame.
             LogV("decideShouldRun: PREF_RUN_ON_TIME_SCHEDULE && !mTimeConditionMatch");
