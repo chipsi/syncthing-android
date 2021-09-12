@@ -972,6 +972,10 @@ public class FolderActivity extends SyncthingActivity {
                 setFolderTypeDescription(getString(R.string.folder_type_receiveonly),
                         getString(R.string.folder_type_receiveonly_description));
                 break;
+            case Constants.FOLDER_TYPE_RECEIVE_ENCRYPTED:
+                setFolderTypeDescription(getString(R.string.folder_type_receive_encrypted),
+                        getString(R.string.folder_type_receive_encrypted_description));
+                break;
         }
 
         // Disable "file pull order" option for sendOnly folders. See issue syncthing/syncthing#6807

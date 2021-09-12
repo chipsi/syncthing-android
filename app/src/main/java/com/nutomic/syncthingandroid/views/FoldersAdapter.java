@@ -109,7 +109,10 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
 
         binding.progressBar.setVisibility(folderStatus.state.equals("syncing") ? VISIBLE : GONE);
 
-        boolean revertButtonVisible = folder.type.equals(Constants.FOLDER_TYPE_RECEIVE_ONLY) && (folderStatus.receiveOnlyTotalItems > 0);
+        boolean revertButtonVisible = (folder.type.equals(Constants.FOLDER_TYPE_RECEIVE_ONLY) ||
+                                            folder.type.equals(Constants.FOLDER_TYPE_RECEIVE_ENCRYPTED)
+                                        ) &&
+                                        (folderStatus.receiveOnlyTotalItems > 0);
         binding.revert.setVisibility(revertButtonVisible ? VISIBLE : GONE);
 
         binding.state.setVisibility(VISIBLE);
