@@ -415,12 +415,12 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
                     fullFilePath,           // this will be passed to "onUpdatedComplete#cookie"
                     contentUri,
                     MediaStore.Images.ImageColumns.DATA + " LIKE ?",
-                    new String[]{new File(fullFilePath).getPath()}
+                    new String[]{fullFilePath}
                 );
                 break;
             case "update":          // file contents changed
                 Log.i(TAG, "onItemFinished: MediaScanner, Rescanning file: " + fullFilePath);
-                MediaScannerConnection.scanFile(mContext, new String[]{new File(fullFilePath).getPath()},
+                MediaScannerConnection.scanFile(mContext, new String[]{fullFilePath},
                         null, null);
                 break;
             case "metadata":        // file metadata changed but not contents
