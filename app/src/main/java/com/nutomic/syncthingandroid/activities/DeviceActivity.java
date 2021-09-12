@@ -37,6 +37,7 @@ import com.nutomic.syncthingandroid.model.Device;
 import com.nutomic.syncthingandroid.model.DiscoveredDevice;
 import com.nutomic.syncthingandroid.model.Folder;
 import com.nutomic.syncthingandroid.model.Options;
+import com.nutomic.syncthingandroid.model.SharedWithDevice;
 import com.nutomic.syncthingandroid.service.Constants;
 import com.nutomic.syncthingandroid.service.RestApi;
 import com.nutomic.syncthingandroid.service.SyncthingService;
@@ -531,8 +532,8 @@ public class DeviceActivity extends SyncthingActivity {
     private void addFolderViewAndSetListener(Folder folder, LayoutInflater inflater) {
         Boolean folderSharedWithDevice = false;
         if (mDevice.deviceID != null) {
-            List<Device> devices = folder.getDevices();
-            for (Device device : devices) {
+            List<SharedWithDevice> devices = folder.getDevices();
+            for (SharedWithDevice device : devices) {
                 if (mDevice.deviceID.equals(device.deviceID)) {
                     folderSharedWithDevice = true;
                     break;

@@ -38,6 +38,7 @@ import com.nutomic.syncthingandroid.SyncthingApp;
 import com.nutomic.syncthingandroid.model.Device;
 import com.nutomic.syncthingandroid.model.Folder;
 import com.nutomic.syncthingandroid.model.FolderIgnoreList;
+import com.nutomic.syncthingandroid.model.SharedWithDevice;
 import com.nutomic.syncthingandroid.service.Constants;
 import com.nutomic.syncthingandroid.service.RestApi;
 import com.nutomic.syncthingandroid.service.SyncthingService;
@@ -146,7 +147,7 @@ public class FolderActivity extends SyncthingActivity {
                 LinearLayout deviceView = (LinearLayout) mDevicesContainer.getChildAt(i);
 
                 SwitchCompat switchView = (SwitchCompat) deviceView.getChildAt(0);
-                Device device = mFolder.getDevice(((Device) switchView.getTag()).deviceID);
+                SharedWithDevice device = mFolder.getDevice(((SharedWithDevice) switchView.getTag()).deviceID);
                 if (device != null) {
                     EditText encryptPassView = (EditText) deviceView.getChildAt(1);
                     String newEncryptionPassword = encryptPassView.getText().toString();
@@ -192,13 +193,13 @@ public class FolderActivity extends SyncthingActivity {
                     mFolderNeedsToUpdate = true;
                     break;
                 case R.id.device_toggle:
-                    Device device = (Device) view.getTag();
+                    SharedWithDevice device = (SharedWithDevice) view.getTag();
 
                     // Loop through devices the folder is shared to and show/hide encryptionPassword UI.
                     for (int i = 0; i < mDevicesContainer.getChildCount(); i++) {
                         LinearLayout deviceView = (LinearLayout) mDevicesContainer.getChildAt(i);
                         SwitchCompat switchView = (SwitchCompat) deviceView.getChildAt(0);
-                        if (device == ((Device) switchView.getTag())) {
+                        if (device == ((SharedWithDevice) switchView.getTag())) {
                             EditText encryptPassView = (EditText) deviceView.getChildAt(1);
                             encryptPassView.setVisibility(isChecked ? View.VISIBLE : View.GONE);
                             break;
@@ -313,7 +314,7 @@ public class FolderActivity extends SyncthingActivity {
 
             // If the extra is set, we should automatically share the current folder with the given device.
             if (getIntent().hasExtra(EXTRA_DEVICE_ID)) {
-                Device device = new Device();
+                SharedWithDevice device = new SharedWithDevice();
                 device.deviceID = getIntent().getStringExtra(EXTRA_DEVICE_ID);
                 mFolder.addDevice(device);
                 mFolderNeedsToUpdate = true;
@@ -761,6 +762,10 @@ public class FolderActivity extends SyncthingActivity {
     }
 
     private void addDeviceViewAndSetListener(Device device, LayoutInflater inflater) {
+        SharedWithDevice sharedWithDevice = new SharedWithDevice();
+        sharedWithDevice.deviceID = device.deviceID;
+        sharedWithDevice.introducedBy = device.introducedBy;
+
         inflater.inflate(R.layout.item_device_form, mDevicesContainer);
         LinearLayout deviceView = (LinearLayout) mDevicesContainer.getChildAt(mDevicesContainer.getChildCount()-1);
 
@@ -768,7 +773,7 @@ public class FolderActivity extends SyncthingActivity {
         switchView.setOnCheckedChangeListener(null);
         switchView.setChecked(mFolder.getDevice(device.deviceID) != null);
         switchView.setText(device.getDisplayName());
-        switchView.setTag(device);
+        switchView.setTag(sharedWithDevice);
         switchView.setOnCheckedChangeListener(mCheckedListener);
 
         EditText encryptPassView = (EditText) deviceView.getChildAt(1);
