@@ -323,6 +323,8 @@ Please report any problems you encounter via Github.</string>
     <!-- Toast shown if the user selected an invalid location for a new syncthing folder -->
     <string name="toast_invalid_folder_selected">Sorry. The selected folder cannot be used. Please select a folder located on the internal or external storage.</string>
 
+    <string name="folder_type_switch_to_receive_encrypted_not_allowed">Switching existing folders to \'Receive Encrypted\' is not supported.</string>
+
     <string name="ignore_patterns">Ignore Patterns</string>
     <!-- DeviceActivity -->
 
