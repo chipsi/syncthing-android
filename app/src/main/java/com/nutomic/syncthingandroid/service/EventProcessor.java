@@ -406,7 +406,7 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
 
         switch (action) {
             case "delete":          // file deleted
-                Log.i(TAG, "MediaStore, Deleting file: " + fullFilePath);
+                Log.i(TAG, "onItemFinished: MediaStore, Deleting file: " + fullFilePath);
                 Uri contentUri = MediaStore.Files.getContentUri("external");
                 ContentResolver resolver = mContext.getContentResolver();
                 LoggingAsyncQueryHandler asyncQueryHandler = new LoggingAsyncQueryHandler(resolver);
@@ -419,12 +419,12 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
                 );
                 break;
             case "update":          // file contents changed
-                Log.i(TAG, "MediaScanner, Rescanning file: " + fullFilePath);
+                Log.i(TAG, "onItemFinished: MediaScanner, Rescanning file: " + fullFilePath);
                 MediaScannerConnection.scanFile(mContext, new String[]{new File(fullFilePath).getPath()},
                         null, null);
                 break;
             case "metadata":        // file metadata changed but not contents
-                Log.i(TAG, "MediaScanner, Skipping file: " + fullFilePath);
+                Log.i(TAG, "onItemFinished: MediaScanner, Skipping file: " + fullFilePath);
                 break;
             default:
                 Log.w(TAG, "onItemFinished: Unhandled action \"" + action + "\"");
