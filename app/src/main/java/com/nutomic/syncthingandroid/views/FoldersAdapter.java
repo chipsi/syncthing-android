@@ -116,6 +116,10 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
                                             folder.type.equals(Constants.FOLDER_TYPE_RECEIVE_ENCRYPTED)
                                         ) &&
                                         (folderStatus.receiveOnlyTotalItems > 0);
+        binding.revert.setText(mContext.getString(folder.type.equals(Constants.FOLDER_TYPE_RECEIVE_ONLY) ?
+                                    R.string.revert_local_changes :
+                                    R.string.delete_unexpected_items
+                                ));
         binding.revert.setVisibility(revertButtonVisible ? VISIBLE : GONE);
 
         binding.state.setVisibility(VISIBLE);

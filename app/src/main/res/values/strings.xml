@@ -169,6 +169,9 @@ Please report any problems you encounter via Github.</string>
 
     <string name="revert_local_changes">Revert local changes</string>
 
+    <string name="delete_unexpected_items">Delete unexpected items</string>
+
+
     <!-- Revert Local Changes Confirmation Dialog -->
     <string name="revert_local_changes_question">This will undo all changes made on this device within that folder. Proceed?</string>
 
