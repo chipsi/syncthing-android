@@ -68,6 +68,9 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
         // Update folder icon.
         int drawableId = R.drawable.ic_folder_black_24dp_active;
         switch (folder.type) {
+            case Constants.FOLDER_TYPE_RECEIVE_ENCRYPTED:
+                drawableId = R.drawable.outline_lock_black_24;
+                break;
             case Constants.FOLDER_TYPE_RECEIVE_ONLY:
                 drawableId = R.drawable.ic_folder_receive_only;
                 break;
