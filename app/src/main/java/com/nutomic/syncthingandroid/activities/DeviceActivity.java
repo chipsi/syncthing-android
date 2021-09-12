@@ -548,8 +548,6 @@ public class DeviceActivity extends SyncthingActivity {
         folderView.setText(folder.toString());
         folderView.setTag(folder);
         folderView.setOnCheckedChangeListener(mCheckedListener);
-        // ToDo: We need to implement and sow the untrusted password entry UI here.
-        folderView.setEnabled(!mDevice.untrusted);
     }
 
     private void onSave() {
