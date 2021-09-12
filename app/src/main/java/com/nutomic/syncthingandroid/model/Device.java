@@ -32,7 +32,6 @@ public class Device {
 
     // Since v1.12.0
     // See https://github.com/syncthing/syncthing/pull/7055
-    public String encryptionPassword = "";
     public boolean untrusted = false;
 
     // private static final String TAG = "Device";
