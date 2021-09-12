@@ -180,22 +180,25 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
 
                 // Lookup folder.path for the given folder.id if all fields were contained in the event.data.
                 String folderPath = null;
+                String folderType = null;
                 if (!TextUtils.isEmpty(action) &&
                         !TextUtils.isEmpty(folderId) &&
                         !TextUtils.isEmpty(relativeFilePath)) {
                     for (Folder folder : mRestApi.getFolders()) {
                         if (folder.id.equals(folderId)) {
                             folderPath = folder.path;
+                            folderType = folder.type;
                             break;
                         }
                     }
                 }
-                if (!TextUtils.isEmpty(folderPath)) {
+                if (!TextUtils.isEmpty(folderPath) ||
+                        !TextUtils.isEmpty(folderType)) {
                     if (TextUtils.isEmpty(error)) {
                         // We don't intend to show errors as the last synced item on the UI.
                         mRestApi.setLocalFolderLastItemFinished(folderId, action, relativeFilePath, event.time);
                     }
-                    onItemFinished(action, error, new File(folderPath, relativeFilePath));
+                    onItemFinished(action, error, folderType, folderPath + File.separator + relativeFilePath);
                 } else {
                     Log.w(TAG, "ItemFinished: Failed to determine folder.path for folder.id=\"" + (TextUtils.isEmpty(folderId) ? "" : folderId) + "\"");
                 }
@@ -387,15 +390,14 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
     /**
      * Precondition: action != null
      */
-    private void onItemFinished(String action, String error, File updatedFile) {
-        String relativeFilePath = updatedFile.toString();
+    private void onItemFinished(String action, String error, final String folderType, final String fullFilePath) {
         if (!TextUtils.isEmpty(error)) {
-            Log.e(TAG, "onItemFinished: Error \"" + error + "\" reported on file: " + relativeFilePath);
+            Log.e(TAG, "onItemFinished: Error \"" + error + "\" reported on file: " + fullFilePath);
             if (error.contains("no space left on device")) {
-                String[] segments = relativeFilePath.split(File.separator);
+                String[] segments = fullFilePath.split(File.separator);
                 String shortenedFileAndFolder =
                         segments.length < 2 ?
-                        relativeFilePath :
+                        fullFilePath :
                         segments[segments.length-2] + File.separator + segments[segments.length-1];
                 mNotificationHandler.showCrashedNotification(R.string.notification_out_of_disk_space, shortenedFileAndFolder);
             }
@@ -404,23 +406,25 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
 
         switch (action) {
             case "delete":          // file deleted
-                Log.i(TAG, "Deleting file from MediaStore: " + relativeFilePath);
+                Log.i(TAG, "MediaStore, Deleting file: " + fullFilePath);
                 Uri contentUri = MediaStore.Files.getContentUri("external");
                 ContentResolver resolver = mContext.getContentResolver();
                 LoggingAsyncQueryHandler asyncQueryHandler = new LoggingAsyncQueryHandler(resolver);
                 asyncQueryHandler.startDelete(
                     0,                          // this will be passed to "onUpdatedComplete#token"
-                    relativeFilePath,           // this will be passed to "onUpdatedComplete#cookie"
+                    fullFilePath,           // this will be passed to "onUpdatedComplete#cookie"
                     contentUri,
                     MediaStore.Images.ImageColumns.DATA + " LIKE ?",
-                    new String[]{updatedFile.getPath()}
+                    new String[]{new File(fullFilePath).getPath()}
                 );
                 break;
             case "update":          // file contents changed
-            case "metadata":        // file metadata changed but not contents
-                Log.i(TAG, "Rescanning file via MediaScanner: " + relativeFilePath);
-                MediaScannerConnection.scanFile(mContext, new String[]{updatedFile.getPath()},
+                Log.i(TAG, "MediaScanner, Rescanning file: " + fullFilePath);
+                MediaScannerConnection.scanFile(mContext, new String[]{new File(fullFilePath).getPath()},
                         null, null);
+                break;
+            case "metadata":        // file metadata changed but not contents
+                Log.i(TAG, "MediaScanner, Skipping file: " + fullFilePath);
                 break;
             default:
                 Log.w(TAG, "onItemFinished: Unhandled action \"" + action + "\"");
