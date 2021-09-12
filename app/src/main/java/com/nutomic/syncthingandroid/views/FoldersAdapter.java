@@ -112,10 +112,12 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
 
         binding.progressBar.setVisibility(folderStatus.state.equals("syncing") ? VISIBLE : GONE);
 
-        boolean revertButtonVisible = (folder.type.equals(Constants.FOLDER_TYPE_RECEIVE_ONLY) ||
-                                            folder.type.equals(Constants.FOLDER_TYPE_RECEIVE_ENCRYPTED)
-                                        ) &&
-                                        (folderStatus.receiveOnlyTotalItems > 0);
+        boolean revertButtonVisible = false;
+        if (folder.type.equals(Constants.FOLDER_TYPE_RECEIVE_ONLY)) {
+            revertButtonVisible = (folderStatus.receiveOnlyTotalItems > 0);
+        } else if (folder.type.equals(Constants.FOLDER_TYPE_RECEIVE_ENCRYPTED)) {
+            revertButtonVisible = ((folderStatus.receiveOnlyTotalItems - folderStatus.receiveOnlyChangedDeletes) > 0);
+        }
         binding.revert.setText(mContext.getString(folder.type.equals(Constants.FOLDER_TYPE_RECEIVE_ONLY) ?
                                     R.string.revert_local_changes :
                                     R.string.delete_unexpected_items
