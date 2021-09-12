@@ -367,6 +367,11 @@ Please report any problems you encounter via Github.</string>
     <!-- Setting title -->
     <string name="pause_device">Pause Device</string>
 
+    <!-- Setting title -->
+    <string name="untrusted_device">Untrusted Device</string>
+
+    <string name="untrusted_device_explanation">All folders shared with this device must be protected by a password, such that all sent data is unreadable without the given password.</string>
+
     <!-- ActionBar item -->
     <string name="delete_device">Delete Device</string>
 
