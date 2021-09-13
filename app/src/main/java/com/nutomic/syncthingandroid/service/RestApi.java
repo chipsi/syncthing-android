@@ -292,7 +292,6 @@ public class RestApi {
                 Log.e(TAG, "ORCC: URI_PENDING_FOLDERS, result == null");
                 return;
             }
-            Log.e(TAG, "MIP-F:'" + result + "'");
             JsonObject jsonObject = new JsonParser().parse(result).getAsJsonObject();
             if (jsonObject == null) {
                 Log.e(TAG, "ORCC: URI_PENDING_FOLDERS, jsonObject == null");
