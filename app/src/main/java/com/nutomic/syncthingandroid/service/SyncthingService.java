@@ -121,10 +121,28 @@ public class SyncthingService extends Service {
             "com.github.catfriend1.syncthingandroid.SyncthingService.EXTRA_DEVICE_ID";
 
     /**
+     * Extra used together with ACTION_IGNORE_DEVICE
+     */
+    public static final String EXTRA_DEVICE_ADDRESS =
+            "com.github.catfriend1.syncthingandroid.SyncthingService.EXTRA_DEVICE_ADDRESS";
+
+    /**
+     * Extra used together with ACTION_IGNORE_DEVICE
+     */
+    public static final String EXTRA_DEVICE_NAME =
+            "com.github.catfriend1.syncthingandroid.SyncthingService.EXTRA_DEVICE_NAME";
+
+    /**
      * Extra used together with ACTION_IGNORE_FOLDER
      */
     public static final String EXTRA_FOLDER_ID =
             "com.github.catfriend1.syncthingandroid.SyncthingService.EXTRA_FOLDER_ID";
+
+    /**
+     * Extra used together with ACTION_IGNORE_FOLDER
+     */
+    public static final String EXTRA_FOLDER_LABEL =
+            "com.github.catfriend1.syncthingandroid.SyncthingService.EXTRA_FOLDER_LABEL";
 
     /**
      * Extra used together with ACTION_STOP.
