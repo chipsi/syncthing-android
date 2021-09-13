@@ -750,7 +750,12 @@ public class FolderActivity extends SyncthingActivity {
             mFolder.label = mFolder.label.trim();
         }
         mFolder.paused = false;
-        mFolder.type = Constants.FOLDER_TYPE_SEND_RECEIVE;      // Default for {@link #checkWriteAndUpdateUI}.
+        String extraReceiveEncrypted = getIntent().getStringExtra(EXTRA_RECEIVE_ENCRYPTED);
+        if (extraReceiveEncrypted != null && Boolean.parseBoolean(extraReceiveEncrypted)) {
+            mFolder.type = Constants.FOLDER_TYPE_RECEIVE_ENCRYPTED;
+        } else {
+            mFolder.type = Constants.FOLDER_TYPE_SEND_RECEIVE;      // Default for {@link #checkWriteAndUpdateUI}.
+        }
         mFolder.minDiskFree = new Folder.MinDiskFree();
         mFolder.versioning = new Folder.Versioning();
         mFolder.versioning.type = "trashcan";
