@@ -14,6 +14,8 @@ import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
 
+import androidx.core.util.Consumer;
+
 import com.annimon.stream.Stream;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -29,6 +31,7 @@ import com.nutomic.syncthingandroid.model.FolderStatus;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -130,12 +133,6 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
                         true
                 );
                 break;
-            case "DeviceRejected":
-                onDeviceRejected(
-                    (String) event.data.get("device"),          // deviceId
-                    (String) event.data.get("name")             // deviceName
-                );
-                break;
             case "DeviceResumed":
                 mRestApi.updateRemoteDevicePaused(
                         (String) event.data.get("device"),          // deviceId
@@ -152,13 +149,6 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
             case "FolderPaused":
                 onFolderPaused(
                         (String) event.data.get("id")              // folderId
-                );
-                break;
-            case "FolderRejected":
-                onFolderRejected(
-                    (String) event.data.get("device"),          // deviceId
-                    (String) event.data.get("folder"),          // folderId
-                    (String) event.data.get("folderLabel")      // folderLabel
                 );
                 break;
             case "FolderResumed":
@@ -206,6 +196,12 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
             case "LocalIndexUpdated":
                 LogV("Event " + event.type + ", data " + event.data);
                 onLocalIndexUpdated(json, (String) event.data.get("folder"), event.time);
+                break;
+            case "PendingDevicesChanged":
+                mapNullable((List<Map<String,String>>) event.data.get("added"), this::onPendingDevicesChanged);
+                break;
+            case "PendingFoldersChanged":
+                mapNullable((List<Map<String,String>>) event.data.get("added"), this::onPendingFoldersChanged);
                 break;
             case "Ping":
                 // Ignored.
@@ -282,17 +278,24 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
         }
     }
 
-    private void onDeviceRejected(String deviceId, String deviceName) {
+    private void onPendingDevicesChanged(Map<String, String> added) {
+        String deviceId = added.get("deviceID");
+        String deviceName = added.get("name");
+        String deviceAddress = added.get("address");
         if (deviceId == null) {
             return;
         }
         Log.d(TAG, "Unknown device '" + deviceName + "' (" + deviceId + ") wants to connect");
         // Show device approve/ignore notification.
-        mNotificationHandler.showDeviceConnectNotification(deviceId, deviceName);
+        mNotificationHandler.showDeviceConnectNotification(deviceId, deviceName, deviceAddress);
     }
 
-    private void onFolderRejected(String deviceId, String folderId,
-                                    String folderLabel) {
+    private void onPendingFoldersChanged(Map<String, String> added) {
+        String deviceId = added.get("deviceID");
+        String folderId = added.get("folderID");
+        String folderLabel = added.get("folderLabel");
+        Boolean receiveEncrypted = Boolean.parseBoolean(added.get("receiveEncrypted"));
+        Boolean remoteEncrypted = Boolean.parseBoolean(added.get("remoteEncrypted"));
         if (deviceId == null || folderId == null) {
             return;
         }
@@ -314,6 +317,8 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
             deviceName,
             folderId,
             folderLabel,
+            receiveEncrypted,
+            remoteEncrypted,
             isNewFolder
         );
     }
@@ -485,6 +490,14 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
             super.onUpdateComplete(token, cookie, result);
             if (result == 1 && cookie != null) {
                 // Log.v(TAG, "onItemFinished: onDeleteComplete: [ok] file=" + cookie.toString() + ", token=" + Integer.toString(token));
+            }
+        }
+    }
+
+    private <T> void mapNullable(List<T> l, Consumer<T> c) {
+        if (l != null) {
+            for (T m : l) {
+                c.accept(m);
             }
         }
     }
