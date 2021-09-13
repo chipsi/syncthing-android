@@ -336,8 +336,8 @@ public class FolderActivity extends SyncthingActivity {
             mPathView.setFocusable(false);
             mPathView.setEnabled(false);
             mSelectAdvancedDirectory.setVisibility(View.GONE);
-            folderTypeContainer.setEnabled(!mFolder.type.equals(Constants.FOLDER_TYPE_RECEIVE_ENCRYPTED));
         }
+        folderTypeContainer.setEnabled(!mFolder.type.equals(Constants.FOLDER_TYPE_RECEIVE_ENCRYPTED));
         checkWriteAndUpdateUI();
         updateViewsAndSetListeners();
 
