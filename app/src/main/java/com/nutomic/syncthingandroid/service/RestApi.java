@@ -278,7 +278,8 @@ public class RestApi {
                 Log.d(TAG, "ORCC: resultDeviceId = " + resultDeviceId + "('" + pendingDevice.name + "')");
                 mNotificationHandler.showDeviceConnectNotification(
                     resultDeviceId,
-                    pendingDevice.name
+                    pendingDevice.name,
+                    pendingDevice.address
                 );
             }
         }, error -> {});
@@ -291,6 +292,7 @@ public class RestApi {
                 Log.e(TAG, "ORCC: URI_PENDING_FOLDERS, result == null");
                 return;
             }
+            Log.e(TAG, "MIP-F:'" + result + "'");
             JsonObject jsonObject = new JsonParser().parse(result).getAsJsonObject();
             if (jsonObject == null) {
                 Log.e(TAG, "ORCC: URI_PENDING_FOLDERS, jsonObject == null");
@@ -322,6 +324,8 @@ public class RestApi {
                         matchingDevice.getDisplayName(),
                         resultFolderId,
                         pendingFolder.label,
+                        pendingFolder.receiveEncrypted,
+                        pendingFolder.remoteEncrypted,
                         isNewFolder
                     );
                 }
@@ -375,7 +379,9 @@ public class RestApi {
      * Ignored devices will not trigger the "DeviceRejected" event
      * in {@link EventProcessor#onEvent}.
      */
-    public void ignoreDevice(String deviceId) {
+    public void ignoreDevice(String deviceId,
+                                    String deviceName,
+                                    String deviceAddress) {
         synchronized (mConfigLock) {
             // Check if the device has already been ignored.
             for (RemoteIgnoredDevice remoteIgnoredDevice : mConfig.remoteIgnoredDevices) {
@@ -392,6 +398,8 @@ public class RestApi {
              */
             RemoteIgnoredDevice remoteIgnoredDevice = new RemoteIgnoredDevice();
             remoteIgnoredDevice.deviceID = deviceId;
+            remoteIgnoredDevice.address = deviceAddress;
+            remoteIgnoredDevice.name = deviceName;
             remoteIgnoredDevice.time = getLocalZonedDateTime();
             mConfig.remoteIgnoredDevices.add(remoteIgnoredDevice);
             sendConfig();
@@ -404,7 +412,9 @@ public class RestApi {
      * Ignored folders will not trigger the "FolderRejected" event
      * in {@link EventProcessor#onEvent}.
      */
-    public void ignoreFolder(String deviceId, String folderId) {
+    public void ignoreFolder(String deviceId,
+                                    String folderId,
+                                    String folderLabel) {
         synchronized (mConfigLock) {
             for (Device device : mConfig.devices) {
                 if (deviceId.equals(device.deviceID)) {
@@ -425,6 +435,7 @@ public class RestApi {
                      */
                     IgnoredFolder ignoredFolder = new IgnoredFolder();
                     ignoredFolder.id = folderId;
+                    ignoredFolder.label = folderLabel;
                     ignoredFolder.time = getLocalZonedDateTime();
                     device.ignoredFolders.add(ignoredFolder);
                     LogV("ignoreFolder: device.ignoredFolders = " + mGson.toJson(device.ignoredFolders));
