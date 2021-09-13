@@ -201,7 +201,7 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
                 mapNullable((List<Map<String,String>>) event.data.get("added"), this::onPendingDevicesChanged);
                 break;
             case "PendingFoldersChanged":
-                mapNullable((List<Map<String,String>>) event.data.get("added"), this::onPendingFoldersChanged);
+                mapNullable((List<Map<String,Object>>) event.data.get("added"), this::onPendingFoldersChanged);
                 break;
             case "Ping":
                 // Ignored.
@@ -290,12 +290,12 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
         mNotificationHandler.showDeviceConnectNotification(deviceId, deviceName, deviceAddress);
     }
 
-    private void onPendingFoldersChanged(Map<String, String> added) {
-        String deviceId = added.get("deviceID");
-        String folderId = added.get("folderID");
-        String folderLabel = added.get("folderLabel");
-        Boolean receiveEncrypted = Boolean.parseBoolean(added.get("receiveEncrypted"));
-        Boolean remoteEncrypted = Boolean.parseBoolean(added.get("remoteEncrypted"));
+    private void onPendingFoldersChanged(Map<String, Object> added) {
+        String deviceId = added.get("deviceID").toString();
+        String folderId = added.get("folderID").toString();
+        String folderLabel = added.get("folderLabel").toString();
+        Boolean receiveEncrypted = (Boolean) added.get("receiveEncrypted");
+        Boolean remoteEncrypted = (Boolean) added.get("remoteEncrypted");
         if (deviceId == null || folderId == null) {
             return;
         }
