@@ -340,7 +340,9 @@ public class NotificationHandler {
         mNotificationManager.notify(ID_STOP_BACKGROUND_WARNING, nb.build());
     }
 
-    public void showDeviceConnectNotification(String deviceId, String deviceName) {
+    public void showDeviceConnectNotification(String deviceId,
+                                                    String deviceName,
+                                                    String deviceAddress) {
         if (deviceId == null) {
             Log.e(TAG, "showDeviceConnectNotification: deviceId == null");
             return;
@@ -361,7 +363,9 @@ public class NotificationHandler {
         // Prepare "ignore" action.
         Intent intentIgnore = new Intent(mContext, SyncthingService.class)
                 .putExtra(SyncthingService.EXTRA_NOTIFICATION_ID, notificationId)
-                .putExtra(SyncthingService.EXTRA_DEVICE_ID, deviceId);
+                .putExtra(SyncthingService.EXTRA_DEVICE_ID, deviceId)
+                .putExtra(SyncthingService.EXTRA_DEVICE_NAME, deviceName)
+                .putExtra(SyncthingService.EXTRA_DEVICE_ADDRESS, deviceAddress);
         intentIgnore.setAction(SyncthingService.ACTION_IGNORE_DEVICE);
         PendingIntent piIgnore = PendingIntent.getService(mContext, 0,
             intentIgnore, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -374,6 +378,8 @@ public class NotificationHandler {
                                                 String deviceName,
                                                 String folderId,
                                                 String folderLabel,
+                                                Boolean receiveEncrypted,
+                                                Boolean remoteEncrypted,
                                                 Boolean isNewFolder) {
         if (deviceId == null) {
             Log.e(TAG, "showFolderShareNotification: deviceId == null");
@@ -393,7 +399,9 @@ public class NotificationHandler {
                 .putExtra(FolderActivity.EXTRA_IS_CREATE, isNewFolder)
                 .putExtra(FolderActivity.EXTRA_DEVICE_ID, deviceId)
                 .putExtra(FolderActivity.EXTRA_FOLDER_ID, folderId)
-                .putExtra(FolderActivity.EXTRA_FOLDER_LABEL, folderLabel);
+                .putExtra(FolderActivity.EXTRA_FOLDER_LABEL, folderLabel)
+                .putExtra(FolderActivity.EXTRA_RECEIVE_ENCRYPTED, receiveEncrypted)
+                .putExtra(FolderActivity.EXTRA_REMOTE_ENCRYPTED, remoteEncrypted);
         PendingIntent piAccept = PendingIntent.getActivity(mContext, notificationId,
             intentAccept, PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -401,7 +409,8 @@ public class NotificationHandler {
         Intent intentIgnore = new Intent(mContext, SyncthingService.class)
                 .putExtra(SyncthingService.EXTRA_NOTIFICATION_ID, notificationId)
                 .putExtra(SyncthingService.EXTRA_DEVICE_ID, deviceId)
-                .putExtra(SyncthingService.EXTRA_FOLDER_ID, folderId);
+                .putExtra(SyncthingService.EXTRA_FOLDER_ID, folderId)
+                .putExtra(SyncthingService.EXTRA_FOLDER_LABEL, folderLabel);
         intentIgnore.setAction(SyncthingService.ACTION_IGNORE_FOLDER);
         PendingIntent piIgnore = PendingIntent.getService(mContext, 0,
             intentIgnore, PendingIntent.FLAG_UPDATE_CURRENT);
