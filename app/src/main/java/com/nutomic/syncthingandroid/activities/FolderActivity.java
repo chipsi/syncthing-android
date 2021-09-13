@@ -750,8 +750,7 @@ public class FolderActivity extends SyncthingActivity {
             mFolder.label = mFolder.label.trim();
         }
         mFolder.paused = false;
-        String extraReceiveEncrypted = getIntent().getStringExtra(EXTRA_RECEIVE_ENCRYPTED);
-        if (extraReceiveEncrypted != null && Boolean.parseBoolean(extraReceiveEncrypted)) {
+        if (getIntent().getBooleanExtra(EXTRA_RECEIVE_ENCRYPTED, false)) {
             mFolder.type = Constants.FOLDER_TYPE_RECEIVE_ENCRYPTED;
         } else {
             mFolder.type = Constants.FOLDER_TYPE_SEND_RECEIVE;      // Default for {@link #checkWriteAndUpdateUI}.
