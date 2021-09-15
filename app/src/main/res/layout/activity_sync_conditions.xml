@@ -63,8 +63,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:checked="false"
-                    app:drawableLeftCompat="@drawable/ic_wifi_black_24dp"
-                    app:drawableStartCompat="@drawable/ic_wifi_black_24dp"
+                    app:drawableLeftCompat="@drawable/baseline_wifi_24"
+                    app:drawableStartCompat="@drawable/baseline_wifi_24"
                     android:text="@string/run_on_wifi_title" />
 
                 <TextView
