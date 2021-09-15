@@ -109,7 +109,7 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="@dimen/abc_action_bar_content_inset_material"
                     android:contentDescription="@string/scan_qr_code_description"
-                    app:srcCompat="@drawable/ic_content_copy_black_24dp" />
+                    app:srcCompat="@drawable/baseline_content_copy_24" />
 
             </LinearLayout>
 

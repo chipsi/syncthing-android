@@ -235,8 +235,8 @@
                     android:layout_weight="1"
                     android:background="@null"
                     android:checked="false"
-                    app:drawableLeftCompat="@drawable/ic_content_copy_black_24dp"
-                    app:drawableStartCompat="@drawable/ic_content_copy_black_24dp"
+                    app:drawableLeftCompat="@drawable/baseline_content_copy_24"
+                    app:drawableStartCompat="@drawable/baseline_content_copy_24"
                     android:text="@string/pull_order" />
 
                 <TextView
