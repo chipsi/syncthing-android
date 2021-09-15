@@ -301,21 +301,6 @@ public class NotificationHandler {
         mNotificationManager.notify(ID_MISSING_PERM, n);
     }
 
-    public void showRestartNotification() {
-        Intent intent = new Intent(mContext, SyncthingService.class)
-                .setAction(SyncthingService.ACTION_RESTART);
-        PendingIntent pi = PendingIntent.getService(mContext, 0, intent, 0);
-
-        Notification n = getNotificationBuilder(mInfoChannel)
-                .setContentTitle(mContext.getString(R.string.restart_title))
-                .setContentText(mContext.getString(R.string.restart_notification_text))
-                .setSmallIcon(R.drawable.ic_stat_notify)
-                .setContentIntent(pi)
-                .build();
-        n.flags |= Notification.FLAG_ONLY_ALERT_ONCE | Notification.FLAG_AUTO_CANCEL;
-        mNotificationManager.notify(ID_RESTART, n);
-    }
-
     public void cancelRestartNotification() {
         mNotificationManager.cancel(ID_RESTART);
     }
@@ -333,10 +318,7 @@ public class NotificationHandler {
                         new Intent(mContext, MainActivity.class),
                         PendingIntent.FLAG_UPDATE_CURRENT));
 
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            nb.setCategory(Notification.CATEGORY_ERROR);
-        }
+        nb.setCategory(Notification.CATEGORY_ERROR);
         mNotificationManager.notify(ID_STOP_BACKGROUND_WARNING, nb.build());
     }
 
