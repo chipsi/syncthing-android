@@ -42,9 +42,7 @@ public abstract class SyncthingActivity extends ThemedAppCompatActivity implemen
         }
         toolbar.setNavigationContentDescription(R.string.main_menu);
         toolbar.setNavigationIcon(R.drawable.baseline_arrow_back_24);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            toolbar.setTouchscreenBlocksFocus(false);
-        }
+        toolbar.setTouchscreenBlocksFocus(false);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
