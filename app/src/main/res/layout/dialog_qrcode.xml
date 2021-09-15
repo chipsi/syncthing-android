@@ -38,7 +38,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:padding="8dp"
-                app:drawableEndCompat="@drawable/activity_share"
+                app:drawableEndCompat="@drawable/baseline_share_24"
                 android:clickable="true"
                 android:focusable="true"
                 android:contentDescription="@string/share_title" />
