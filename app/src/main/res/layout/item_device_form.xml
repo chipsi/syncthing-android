@@ -20,7 +20,6 @@
         android:id="@+id/device_encryptionPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="144dp"
         android:layout_marginStart="144dp"
         android:hint="@string/deviceEncryptionPasswordHint"
         android:inputType="textPassword|textNoSuggestions"
