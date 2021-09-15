@@ -273,8 +273,8 @@
                     android:layout_weight="1"
                     android:background="@null"
                     android:checked="false"
-                    app:drawableLeftCompat="@drawable/ic_history_black_24dp_active"
-                    app:drawableStartCompat="@drawable/ic_history_black_24dp_active"
+                    app:drawableLeftCompat="@drawable/outline_restore_24"
+                    app:drawableStartCompat="@drawable/outline_restore_24"
                     android:text="@string/file_versioning" />
 
                 <TextView
