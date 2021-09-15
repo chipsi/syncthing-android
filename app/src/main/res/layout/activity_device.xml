@@ -200,8 +200,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:checked="false"
-                app:drawableLeftCompat="@drawable/ic_pause_circle_outline_black_24dp"
-                app:drawableStartCompat="@drawable/ic_pause_circle_outline_black_24dp"
+                app:drawableLeftCompat="@drawable/baseline_pause_circle_outline_24"
+                app:drawableStartCompat="@drawable/baseline_pause_circle_outline_24"
                 android:text="@string/pause_device" />
 
             <LinearLayout
