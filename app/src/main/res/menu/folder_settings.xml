@@ -5,7 +5,7 @@
 
     <item
         android:id="@+id/save"
-        android:icon="@drawable/ic_done_white_24dp"
+        android:icon="@drawable/baseline_done_24"
         android:title="@string/create"
         app:showAsAction="always|withText" />
 
