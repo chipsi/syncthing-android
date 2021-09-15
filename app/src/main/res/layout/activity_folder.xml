@@ -317,8 +317,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:checked="false"
-                    app:drawableLeftCompat="@drawable/ic_delete_forever_black_24"
-                    app:drawableStartCompat="@drawable/ic_delete_forever_black_24"
+                    app:drawableLeftCompat="@drawable/baseline_delete_forever_24"
+                    app:drawableStartCompat="@drawable/baseline_delete_forever_24"
                     android:text="@string/folder_ignore_delete_caption" />
 
                 <TextView
