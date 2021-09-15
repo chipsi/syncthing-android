@@ -76,7 +76,7 @@
                     android:contentDescription="@string/advanced_directory_selection"
                     android:clickable="true"
                     android:focusable="true"
-                    app:srcCompat="@drawable/ic_settings_black_24" />
+                    app:srcCompat="@drawable/baseline_settings_24" />
 
             </LinearLayout>
 

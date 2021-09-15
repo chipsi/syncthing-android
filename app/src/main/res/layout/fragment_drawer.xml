@@ -20,8 +20,8 @@
             style="@style/Widget.Syncthing.TextView.Label"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            app:drawableLeftCompat="@drawable/ic_settings_black_24dp"
-            app:drawableStartCompat="@drawable/ic_settings_black_24dp"
+            app:drawableLeftCompat="@drawable/baseline_settings_24"
+            app:drawableStartCompat="@drawable/baseline_settings_24"
             android:text="@string/settings_title"
             android:clickable="true"
             android:focusable="true" />
