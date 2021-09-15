@@ -92,8 +92,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:checked="false"
-                    app:drawableLeftCompat="@drawable/ic_signal_wifi_0_bar_black_24dp"
-                    app:drawableStartCompat="@drawable/ic_signal_wifi_0_bar_black_24dp"
+                    app:drawableLeftCompat="@drawable/outline_signal_wifi_4_bar_24"
+                    app:drawableStartCompat="@drawable/outline_signal_wifi_4_bar_24"
                     android:text="@string/run_on_whitelisted_wifi_title" />
 
                 <TextView
@@ -156,8 +156,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:checked="false"
-                    app:drawableLeftCompat="@drawable/ic_signal_cellular_connected_no_internet_4_bar_black_24dp"
-                    app:drawableStartCompat="@drawable/ic_signal_cellular_connected_no_internet_4_bar_black_24dp"
+                    app:drawableLeftCompat="@drawable/outline_signal_cellular_connected_no_internet_4_bar_24"
+                    app:drawableStartCompat="@drawable/outline_signal_cellular_connected_no_internet_4_bar_24"
                     android:text="@string/run_on_mobile_data_title" />
 
                 <TextView
