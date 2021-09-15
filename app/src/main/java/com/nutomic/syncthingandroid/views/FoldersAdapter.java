@@ -69,7 +69,7 @@ public class FoldersAdapter extends ArrayAdapter<Folder> {
         int drawableId = R.drawable.baseline_folder_24;
         switch (folder.type) {
             case Constants.FOLDER_TYPE_RECEIVE_ENCRYPTED:
-                drawableId = R.drawable.outline_lock_black_24;
+                drawableId = R.drawable.outline_lock_24;
                 break;
             case Constants.FOLDER_TYPE_RECEIVE_ONLY:
                 drawableId = R.drawable.ic_folder_receive_only;
