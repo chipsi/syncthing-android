@@ -52,7 +52,7 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="@dimen/abc_action_bar_content_inset_material"
                     android:contentDescription="@string/scan_qr_code_description"
-                    app:srcCompat="@drawable/ic_qrcode_black_24dp_active" />
+                    app:srcCompat="@drawable/outline_qr_code_2_24" />
 
             </LinearLayout>
 
@@ -249,8 +249,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:checked="false"
-                    app:drawableLeftCompat="@drawable/ic_autorenew_black_24dp"
-                    app:drawableStartCompat="@drawable/ic_autorenew_black_24dp"
+                    app:drawableLeftCompat="@drawable/outline_autorenew_24"
+                    app:drawableStartCompat="@drawable/outline_autorenew_24"
                     android:text="@string/custom_sync_conditions_title" />
 
                 <TextView

@@ -148,8 +148,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:checked="false"
-                app:drawableLeftCompat="@drawable/ic_autorenew_black_24dp"
-                app:drawableStartCompat="@drawable/ic_autorenew_black_24dp"
+                app:drawableLeftCompat="@drawable/outline_autorenew_24"
+                app:drawableStartCompat="@drawable/outline_autorenew_24"
                 android:text="@string/folder_fileWatcher" />
 
             <TextView
@@ -186,8 +186,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:checked="false"
-                    app:drawableLeftCompat="@drawable/ic_autorenew_black_24dp"
-                    app:drawableStartCompat="@drawable/ic_autorenew_black_24dp"
+                    app:drawableLeftCompat="@drawable/outline_autorenew_24"
+                    app:drawableStartCompat="@drawable/outline_autorenew_24"
                     android:text="@string/custom_sync_conditions_title" />
 
                 <TextView
