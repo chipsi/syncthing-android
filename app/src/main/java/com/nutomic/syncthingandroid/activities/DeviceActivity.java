@@ -139,6 +139,14 @@ public class DeviceActivity extends SyncthingActivity {
         }
     };
 
+    private final TextWatcher mEncryptionPasswordTextWatcher = new TextWatcherAdapter() {
+        @Override
+        public void afterTextChanged(Editable s) {
+            // ToDo: Read Folder object from TAG, loop through getSharedWithDevices and compare sharedWithDevice.deviceID with mDevice.deviceID. Check if encryption password has changed.
+            mDeviceNeedsToUpdate = true;
+        }
+    };
+
     private final TextWatcher mIdTextWatcher = new TextWatcherAdapter() {
         @Override
         public void afterTextChanged(Editable s) {
@@ -176,7 +184,6 @@ public class DeviceActivity extends SyncthingActivity {
             int id = view.getId();
             if (id == R.id.folder_toggle) {
                 Folder folder = (Folder) view.getTag();
-                List<SharedWithDevice> sharedWithDevices = folder.getSharedWithDevices();
                 if (isChecked) {
                     mDevice.addFolder(folder);
                 } else {
@@ -543,12 +550,22 @@ public class DeviceActivity extends SyncthingActivity {
         }
 
         inflater.inflate(R.layout.item_folder_form, mFoldersContainer);
-        SwitchCompat folderView = (SwitchCompat) mFoldersContainer.getChildAt(mFoldersContainer.getChildCount()-1);
-        folderView.setOnCheckedChangeListener(null);
-        folderView.setChecked(folderSharedWithDevice);
-        folderView.setText(folder.toString());
-        folderView.setTag(folder);
-        folderView.setOnCheckedChangeListener(mCheckedListener);
+        LinearLayout folderView = (LinearLayout) mFoldersContainer.getChildAt(mFoldersContainer.getChildCount()-1);
+        SwitchCompat switchView = (SwitchCompat) folderView.getChildAt(0);
+        switchView.setOnCheckedChangeListener(null);
+        switchView.setChecked(folderSharedWithDevice);
+        switchView.setText(folder.toString());
+        switchView.setTag(folder);
+        switchView.setOnCheckedChangeListener(mCheckedListener);
+
+        EditText encryptPassView = (EditText) folderView.getChildAt(1);
+        encryptPassView.removeTextChangedListener(mEncryptionPasswordTextWatcher);
+        if (folderSharedWithDevice) {
+            encryptPassView.setText(folder.getDevice(mDevice.deviceID).encryptionPassword);
+        } else {
+            encryptPassView.setVisibility(View.GONE);
+        }
+        encryptPassView.addTextChangedListener(mEncryptionPasswordTextWatcher);
     }
 
     private void onSave() {
