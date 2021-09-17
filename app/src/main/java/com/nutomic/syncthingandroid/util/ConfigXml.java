@@ -597,7 +597,7 @@ public class ConfigXml {
                 }
 
                 // Pass 2: Add devices below that folder from the POJO model.
-                final List<SharedWithDevice> devices = folder.getDevices();
+                final List<SharedWithDevice> devices = folder.getSharedWithDevices();
                 for (SharedWithDevice device : devices) {
                     Log.d(TAG, "updateFolder: nodeDevices: Adding deviceID=" + device.deviceID);
                     Node nodeDevice = mConfig.createElement("device");

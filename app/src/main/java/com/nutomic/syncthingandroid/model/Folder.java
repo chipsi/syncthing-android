@@ -110,7 +110,7 @@ public class Folder {
         devices.add(d);
     }
 
-    public List<SharedWithDevice> getDevices() {
+    public List<SharedWithDevice> getSharedWithDevices() {
         return devices;
     }
 
