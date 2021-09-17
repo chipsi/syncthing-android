@@ -422,7 +422,7 @@ public class EventProcessor implements  Runnable, RestApi.OnReceiveEventListener
                 LoggingAsyncQueryHandler asyncQueryHandler = new LoggingAsyncQueryHandler(resolver);
                 asyncQueryHandler.startDelete(
                     0,                          // this will be passed to "onUpdatedComplete#token"
-                    fullFilePath,           // this will be passed to "onUpdatedComplete#cookie"
+                    fullFilePath,               // this will be passed to "onUpdatedComplete#cookie"
                     contentUri,
                     MediaStore.Images.ImageColumns.DATA + " LIKE ?",
                     new String[]{fullFilePath}
