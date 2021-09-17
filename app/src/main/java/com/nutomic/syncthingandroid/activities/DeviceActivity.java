@@ -184,6 +184,18 @@ public class DeviceActivity extends SyncthingActivity {
             int id = view.getId();
             if (id == R.id.folder_toggle) {
                 Folder folder = (Folder) view.getTag();
+
+                // Loop through folders the device is shared to and show/hide encryptionPassword UI.
+                for (int i = 0; i < mFoldersContainer.getChildCount(); i++) {
+                    LinearLayout folderView = (LinearLayout) mFoldersContainer.getChildAt(i);
+                    SwitchCompat switchView = (SwitchCompat) folderView.getChildAt(0);
+                    if (folder == ((Folder) switchView.getTag())) {
+                        EditText encryptPassView = (EditText) folderView.getChildAt(1);
+                        encryptPassView.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+                        break;
+                    }
+                }
+
                 if (isChecked) {
                     mDevice.addFolder(folder);
                 } else {
