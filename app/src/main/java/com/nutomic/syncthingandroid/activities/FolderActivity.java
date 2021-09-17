@@ -146,6 +146,7 @@ public class FolderActivity extends SyncthingActivity {
             mFolder.label        = mLabelView.getText().toString().trim();
             mFolder.id           = mIdView.getText().toString();
 
+            // ToDo: Make a separate TextWatcher for the encryption password fields.
             // Loop through devices the folder is shared to and update encryptionPassword property.
             for (int i = 0; i < mDevicesContainer.getChildCount(); i++) {
                 LinearLayout deviceView = (LinearLayout) mDevicesContainer.getChildAt(i);
