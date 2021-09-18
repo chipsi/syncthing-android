@@ -19,6 +19,7 @@ public class QuickSettingsTileCamera extends TileService {
         Tile tile = getQsTile();
         if (tile != null) {
             tile.setState(Tile.STATE_ACTIVE);
+            tile.updateTile();
         }
         super.onStartListening();
     }
