@@ -195,7 +195,8 @@ public class RunConditionMonitor {
                 ", lastSyncTimeSinceBootMillisecs=" + lastSyncTimeSinceBootMillisecs +
                 ", elapsedSecondsSinceLastSync=" + elapsedSecondsSinceLastSync
         );
-        JobUtils.scheduleSyncTriggerServiceJob(context,
+        JobUtils.scheduleSyncTriggerServiceJob(
+                context,
                 mTimeConditionMatch ?
                     Constants.TRIGGERED_SYNC_DURATION_SECS :
                        /**
