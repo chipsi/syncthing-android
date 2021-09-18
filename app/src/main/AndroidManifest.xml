@@ -70,6 +70,16 @@
             </intent-filter>
         </activity>
         <activity
+                android:name=".activities.PhotoShootActivity"
+                android:icon="@mipmap/ic_launcher_photoshoot"
+                android:label="@string/photo_shoot_launcher_title"
+                android:exported="true"
+                android:launchMode="singleInstance">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".activities.MainActivity"
             android:label="@string/app_name"
             android:exported="false"
