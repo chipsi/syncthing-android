@@ -4,7 +4,7 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content">
 
-    <androidx.appcompat.widget.SwitchCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    <androidx.appcompat.widget.SwitchCompat
         xmlns:tools="http://schemas.android.com/tools"
         style="@style/Widget.Syncthing.TextView.Label.Details.DeviceList"
         android:id="@+id/folder_toggle"
