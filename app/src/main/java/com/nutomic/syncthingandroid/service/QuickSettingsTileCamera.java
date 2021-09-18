@@ -26,7 +26,10 @@ public class QuickSettingsTileCamera extends TileService {
 
     @Override
     public void onClick() {
-        startActivity(new Intent(this, PhotoShootActivity.class));
+        startActivity(
+                    new Intent(getApplicationContext(), PhotoShootActivity.class)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        );
         super.onClick();
     }
 }
