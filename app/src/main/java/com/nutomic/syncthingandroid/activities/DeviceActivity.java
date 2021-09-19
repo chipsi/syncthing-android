@@ -195,11 +195,6 @@ public class DeviceActivity extends SyncthingActivity {
                     }
                 }
 
-                if (isChecked) {
-                    mDevice.addFolder(folder);
-                } else {
-                    mDevice.removeFolder(folder.id);
-                }
                 mDeviceNeedsToUpdate = true;
             } else if (id == R.id.introducer) {
                 mDevice.introducer = isChecked;
@@ -613,14 +608,20 @@ public class DeviceActivity extends SyncthingActivity {
                 continue;
             }
             LinearLayout folderView = (LinearLayout) mFoldersContainer.getChildAt(i);
-
             SwitchCompat switchView = (SwitchCompat) folderView.getChildAt(0);
+            Boolean folderSharedWithDevice = switchView.isChecked();
             Folder folder = (Folder) switchView.getTag();
-            if (folder != null) {
-                EditText encryptPassView = (EditText) folderView.getChildAt(1);
-                folder.getDevice(mDevice.deviceID).encryptionPassword = encryptPassView.getText().toString();
-                mConfig.updateFolder(getApi(), folder);
+            if (folder == null) {
+                continue;
             }
+            EditText encryptPassView = (EditText) folderView.getChildAt(1);
+            if (folderSharedWithDevice) {
+                folder.addDevice(mDevice);
+                folder.getDevice(mDevice.deviceID).encryptionPassword = encryptPassView.getText().toString();
+            } else {
+                folder.removeDevice(mDevice.deviceID);
+            }
+            mConfig.updateFolder(getApi(), folder);
         }
 
         if (mIsCreateMode) {
