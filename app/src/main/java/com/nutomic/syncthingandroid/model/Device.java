@@ -55,14 +55,6 @@ public class Device {
         return folders.size();
     }
 
-    public final Set<String> getFolderIDs() {
-        Set<String> folderIDs = new HashSet<>();
-        for (Folder folder : folders) {
-            folderIDs.add(folder.id);
-        }
-        return folderIDs;
-    }
-
     public final List<Folder> getFolders() {
         return folders;
     }
