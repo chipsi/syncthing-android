@@ -148,6 +148,9 @@ public class FolderActivity extends SyncthingActivity {
 
             // Loop through devices the folder is shared to and update encryptionPassword property.
             for (int i = 0; i < mDevicesContainer.getChildCount(); i++) {
+                if (mDevicesContainer.getChildAt(i) instanceof TextView) {
+                    continue;
+                }
                 LinearLayout deviceView = (LinearLayout) mDevicesContainer.getChildAt(i);
 
                 SwitchCompat switchView = (SwitchCompat) deviceView.getChildAt(0);
