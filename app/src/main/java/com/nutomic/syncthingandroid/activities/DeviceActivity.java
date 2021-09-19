@@ -618,7 +618,7 @@ public class DeviceActivity extends SyncthingActivity {
             Folder folder = (Folder) switchView.getTag();
             if (folder != null) {
                 EditText encryptPassView = (EditText) folderView.getChildAt(1);
-                // ToDo: folder.encryptionPassword = encryptPassView.getText().toString();
+                folder.getDevice(mDevice.deviceID).encryptionPassword = encryptPassView.getText().toString();
                 Log.e(TAG, "E: " + encryptPassView.getText().toString());
                 mConfig.updateFolder(getApi(), folder);
             }
