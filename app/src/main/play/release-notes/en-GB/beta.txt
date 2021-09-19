@@ -3,6 +3,7 @@
 Enhanced
 --
 - UI for untrusted devices, encrypted folder sharing (#725)
+- Schedule a backup stop job when running on schedule (#837) @Helium314
 
 
 Fixes
