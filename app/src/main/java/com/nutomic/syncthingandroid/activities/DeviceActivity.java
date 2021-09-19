@@ -142,7 +142,6 @@ public class DeviceActivity extends SyncthingActivity {
     private final TextWatcher mEncryptionPasswordTextWatcher = new TextWatcherAdapter() {
         @Override
         public void afterTextChanged(Editable s) {
-            // ToDo: Read Folder object from TAG, loop through getSharedWithDevices and compare sharedWithDevice.deviceID with mDevice.deviceID. Check if encryption password has changed.
             mDeviceNeedsToUpdate = true;
         }
     };
@@ -606,6 +605,23 @@ public class DeviceActivity extends SyncthingActivity {
             Toast.makeText(this, R.string.device_addresses_invalid, Toast.LENGTH_LONG)
                     .show();
             return;
+        }
+
+        // Loop through devices the folder is shared to and update encryptionPassword property.
+        for (int i = 0; i < mFoldersContainer.getChildCount(); i++) {
+            if (mFoldersContainer.getChildAt(i) instanceof TextView) {
+                continue;
+            }
+            LinearLayout folderView = (LinearLayout) mFoldersContainer.getChildAt(i);
+
+            SwitchCompat switchView = (SwitchCompat) folderView.getChildAt(0);
+            Folder folder = (Folder) switchView.getTag();
+            if (folder != null) {
+                EditText encryptPassView = (EditText) folderView.getChildAt(1);
+                // ToDo: folder.encryptionPassword = encryptPassView.getText().toString();
+                Log.e(TAG, "E: " + encryptPassView.getText().toString());
+                mConfig.updateFolder(getApi(), folder);
+            }
         }
 
         if (mIsCreateMode) {
