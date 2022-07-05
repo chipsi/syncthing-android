@@ -1,4 +1,4 @@
-* Syncthing v1.18.5
+* Syncthing v1.20.1
 
 Enhanced
 --
@@ -7,9 +7,4 @@ Enhanced
 
 Fixes
 --
--
-
-
-Others
---
--
+- Removed in-app language switch option

@@ -25,6 +25,7 @@ import androidx.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
@@ -53,7 +54,6 @@ import com.nutomic.syncthingandroid.service.SyncthingService;
 import com.nutomic.syncthingandroid.service.SyncthingServiceBinder;
 import com.nutomic.syncthingandroid.util.ConfigRouter;
 import com.nutomic.syncthingandroid.util.FileUtils;
-import com.nutomic.syncthingandroid.util.Languages;
 import com.nutomic.syncthingandroid.util.Util;
 import com.nutomic.syncthingandroid.views.WifiSsidPreference;
 
@@ -172,9 +172,6 @@ public class SettingsActivity extends SyncthingActivity {
         private WifiSsidPreference mWifiSsidWhitelist;
         private CheckBoxPreference mRunInFlightMode;
 
-        /* User Interface */
-        private Languages          mLanguages;
-
         /* Behaviour */
         private CheckBoxPreference mStartServiceOnBoot;
         private CheckBoxPreference mUseRoot;
@@ -261,17 +258,7 @@ public class SettingsActivity extends SyncthingActivity {
 
             addPreferencesFromResource(R.xml.app_settings);
             mPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-
-            ListPreference languagePref = (ListPreference) findPreference(Languages.PREFERENCE_LANGUAGE);
             PreferenceScreen categoryUserInterface = (PreferenceScreen) findPreference("category_user_interface");
-            if (Build.VERSION.SDK_INT >= 24) {
-                categoryUserInterface.removePreference(languagePref);
-            } else {
-                mLanguages = new Languages(getActivity());
-                languagePref.setDefaultValue(mLanguages.USE_SYSTEM_DEFAULT);
-                languagePref.setEntries(mLanguages.getAllNames());
-                languagePref.setEntryValues(mLanguages.getSupportedLocales());
-            }
             PreferenceScreen screen = getPreferenceScreen();
 
             /* Run conditions */
@@ -604,9 +591,6 @@ public class SettingsActivity extends SyncthingActivity {
                                 .show();
                     }
                     break;
-                case Languages.PREFERENCE_LANGUAGE:
-                    mLanguages.forceChangeLanguage(getActivity(), (String) o);
-                    return false;
             }
             return true;
         }
@@ -1069,6 +1053,10 @@ public class SettingsActivity extends SyncthingActivity {
             }
             Toast.makeText(syncthingActivity,
                 getString(R.string.config_imported_successful), Toast.LENGTH_LONG).show();
+
+            // Apply theme from restored config.
+            Integer prefAppTheme = Integer.parseInt(mPreferences.getString(Constants.PREF_APP_THEME, Constants.APP_THEME_FOLLOW_SYSTEM));
+            AppCompatDelegate.setDefaultNightMode(prefAppTheme);
 
             // We don't have to send the config via REST on leaving activity.
             mPendingConfig = false;
