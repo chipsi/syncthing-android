@@ -129,10 +129,10 @@ public class SyncthingRunnable implements Runnable {
     }
 
     /**
-     * bind network to avoid the following two situations:
-     * 1. fake wifi, when user want only running in wifi, but connect a no internet wifi,
-     * android will auto routing request to mobile network.
-     * 2. user only want to connect with mobile network, but not wifi.
+     * Avoid the following two situations:
+     * 1. Fake WiFi: User wants only syncing via WiFi, but connects to a WiFi without internet connection,
+     *    Android will auto route the request through the mobile network.
+     * 2. User only wants to sync through mobile network, but not use WiFi.
      */
     private void bindNetwork() {
         clearBindNetwork();
