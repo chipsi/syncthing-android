@@ -1,9 +1,13 @@
 package com.nutomic.syncthingandroid.service;
 
+import static com.nutomic.syncthingandroid.service.SyncthingService.EXTRA_STOP_AFTER_CRASHED_NATIVE;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.Network;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiManager.MulticastLock;
 import android.os.Build;
@@ -17,7 +21,6 @@ import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import com.nutomic.syncthingandroid.R;
 import com.nutomic.syncthingandroid.SyncthingApp;
-import com.nutomic.syncthingandroid.service.Constants;
 import com.nutomic.syncthingandroid.util.FileUtils;
 import com.nutomic.syncthingandroid.util.Util;
 
@@ -42,8 +45,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.inject.Inject;
 
 import eu.chainfire.libsuperuser.Shell;
-
-import static com.nutomic.syncthingandroid.service.SyncthingService.EXTRA_STOP_AFTER_CRASHED_NATIVE;
 
 /**
  * Runs the syncthing binary from command line, and prints its output to logcat.
@@ -119,9 +120,27 @@ public class SyncthingRunnable implements Runnable {
     @Override
     public void run() {
         try {
+            bindNetwork();
             run(false);
         } catch (ExecutableNotFoundException e) {
             throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    /**
+     * bind network to avoid the following two situations:
+     * 1. fake wifi, when user want only running in wifi, but connect a no internet wifi,
+     * android will auto routing request to mobile network.
+     * 2. user only want to connect with mobile network, but not wifi.
+     */
+    private void bindNetwork() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!(mPreferences.getBoolean(Constants.PREF_RUN_ON_WIFI, true)
+                    & !mPreferences.getBoolean(Constants.PREF_RUN_ON_MOBILE_DATA, true))) {
+                ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+                Network network = cm.getActiveNetwork();
+                cm.bindProcessToNetwork(network);
+            }
         }
     }
 
@@ -156,8 +175,8 @@ public class SyncthingRunnable implements Runnable {
              * Since gradle 4.6, wakelock tags have to obey "app:component" naming convention.
              */
             wakeLock = pm.newWakeLock(
-                PowerManager.PARTIAL_WAKE_LOCK,
-                mContext.getString(R.string.app_name) + ":" + TAG
+                    PowerManager.PARTIAL_WAKE_LOCK,
+                    mContext.getString(R.string.app_name) + ":" + TAG
             );
         }
 
