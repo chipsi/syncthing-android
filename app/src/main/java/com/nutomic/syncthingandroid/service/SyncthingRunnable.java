@@ -122,6 +122,7 @@ public class SyncthingRunnable implements Runnable {
         try {
             bindNetwork();
             run(false);
+            clearBindNetwork();
         } catch (ExecutableNotFoundException e) {
             throw new RuntimeException(e.getMessage());
         }
@@ -134,12 +135,22 @@ public class SyncthingRunnable implements Runnable {
      * 2. user only want to connect with mobile network, but not wifi.
      */
     private void bindNetwork() {
+        clearBindNetwork();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!(mPreferences.getBoolean(Constants.PREF_RUN_ON_WIFI, true)
                     & !mPreferences.getBoolean(Constants.PREF_RUN_ON_MOBILE_DATA, true))) {
                 ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
                 Network network = cm.getActiveNetwork();
                 cm.bindProcessToNetwork(network);
+            }
+        }
+    }
+
+    private void clearBindNetwork() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (cm.getBoundNetworkForProcess() != null) {
+                cm.bindProcessToNetwork(null);
             }
         }
     }
@@ -423,6 +434,7 @@ public class SyncthingRunnable implements Runnable {
             SystemClock.sleep(50);
         }
         Log.d(TAG, "killSyncthing: Complete.");
+        clearBindNetwork();
     }
 
     /**
