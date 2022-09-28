@@ -205,6 +205,7 @@ Please report any problems you encounter via Github.</string>
 
     <!-- Indicates that there is no connection to the device -->
     <string name="device_disconnected">Disconnected</string>
+    <string name="device_disconnected_not_synced">Disconnected (%1$s pending)</string>
 
     <!-- Indicates that the device is paused and does not sync -->
     <string name="device_paused">Paused</string>
