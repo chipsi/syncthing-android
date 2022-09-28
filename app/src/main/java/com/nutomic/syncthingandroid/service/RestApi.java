@@ -355,6 +355,15 @@ public class RestApi {
                         result -> {
                     // LogV("ORCC: /rest/db/completion: folder=" + folder.id + ", device=" + device.deviceID + ", result=" + result);
                     final CompletionInfo completionInfo = mGson.fromJson(result, CompletionInfo.class);
+                    LogV("ORCC: /rest/db/completion: folder=" + folder.id +
+                            ", device=" + device.deviceID +
+                            ", completion=" + completionInfo.completion +
+                            ", needBytes=" + String.format("%.0f", completionInfo.needBytes) +
+                            ", remoteState=" + completionInfo.remoteState);
+                    RemoteCompletionInfo remoteCompletionInfo = new RemoteCompletionInfo();
+                    remoteCompletionInfo.completion = completionInfo.completion;
+                    remoteCompletionInfo.needBytes = completionInfo.needBytes;
+                    mRemoteCompletion.setCompletionInfo(device.deviceID, folder.id, remoteCompletionInfo);
                 }, error -> {});
             }
         }
