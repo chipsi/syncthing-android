@@ -259,7 +259,9 @@ public class SyncthingService extends Service {
          * We need to recheck if we still have the storage permission.
          */
         mStoragePermissionGranted = haveStoragePermission();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            mStoragePermissionGranted = haveAllFilesAccessPermission();
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             mStoragePermissionGranted = mStoragePermissionGranted && haveAllFilesAccessPermission();
         }
 
