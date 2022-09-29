@@ -172,10 +172,8 @@
 
     <!-- Indicates that the device is currently syncing. Parameter is sync percentage -->
     <string name="device_syncing">同期中 (%1$d%%)</string>
-
     <!-- Indicates that there is no connection to the device -->
     <string name="device_disconnected">切断中</string>
-
     <!-- Indicates that the device is paused and does not sync -->
     <string name="device_paused">ポーズ（一時停止）</string>
 
@@ -532,8 +530,6 @@
     <string name="socks_proxy_address_title">SOCKS5 プロキシ</string>
     <string name="http_proxy_address_title">HTTP(S) プロキシ</string>
     <string name="broadcast_service_control_title">ブロードキャストによるサービス制御</string>
-
-    <string name="restart_on_wakeup_title">ウェイクアップ時の再起動</string>
 
     <!-- Dialog shown before config export -->
     <string name="dialog_confirm_export">設定をエクスポートしてもよろしいですか? 既存のファイルは上書きされます。\n\n警告! 他のアプリケーションが、バックアップ先の秘密鍵を読み取り、同期したファイルをダウンロード/変更するために使用することができるかもしれません。</string>

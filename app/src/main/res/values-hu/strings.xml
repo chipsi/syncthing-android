@@ -78,10 +78,8 @@ Az összesített statisztika nyilvánosan elérhető a https://data.syncthing.ne
 
     <!-- Indicates that the device is currently syncing. Parameter is sync percentage -->
     <string name="device_syncing">Szinkronizálás (%1$d%%)</string>
-
     <!-- Indicates that there is no connection to the device -->
     <string name="device_disconnected">Kapcsolat bontva</string>
-
     <!-- Indicates that the device is paused and does not sync -->
     <string name="device_paused">Szünteteltetve</string>
 
@@ -300,10 +298,6 @@ Az összesített statisztika nyilvánosan elérhető a https://data.syncthing.ne
     <string name="http_proxy_address_title">HTTP(S) proxy</string>
     <!-- Toast after entering invalid http proxy address -->
     <string name="toast_invalid_http_proxy_address">A bemenet sérti a proxy szintaxist \'http://[IP/HOSTNAME]:[PORT]\'</string>
-
-    <string name="restart_on_wakeup_title">Újraindítás felébresztéskor</string>
-
-    <string name="restart_on_wakeup_summary">Alapértelmezés: bekapcsolva. A funckió bekapcsolása a mappák szkennelésének és az eszközök újracsatlakozásának késleltetését okozza az akkumulátor kímélése érdekében.</string>
 
     <!-- Dialog shown before config export -->
     <string name="dialog_confirm_export">Biztosan exportálni szeretnéd a konfigurációt? A már létező fájlok felül lesznek írva.

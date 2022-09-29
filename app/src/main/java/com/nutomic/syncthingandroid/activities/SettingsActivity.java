@@ -171,6 +171,7 @@ public class SettingsActivity extends SyncthingActivity {
         private CheckBoxPreference mUseWifiWhitelist;
         private WifiSsidPreference mWifiSsidWhitelist;
         private CheckBoxPreference mRunInFlightMode;
+        private EditTextPreference mSyncDurationMinutes;
 
         /* Behaviour */
         private CheckBoxPreference mStartServiceOnBoot;
@@ -189,7 +190,6 @@ public class SettingsActivity extends SyncthingActivity {
         private EditTextPreference mGlobalAnnounceServers;
         private EditTextPreference mWebUITcpPort;
         private CheckBoxPreference mWebUIRemoteAccess;
-        private CheckBoxPreference mRestartOnWakeup;
         private CheckBoxPreference mUrAccepted;
         private CheckBoxPreference mCrashReportingEnabled;
         private CheckBoxPreference mWebUIDebugging;
@@ -278,6 +278,8 @@ public class SettingsActivity extends SyncthingActivity {
                     (ListPreference) findPreference(Constants.PREF_POWER_SOURCE);
             mRunInFlightMode =
                     (CheckBoxPreference) findPreference(Constants.PREF_RUN_IN_FLIGHT_MODE);
+            mSyncDurationMinutes =
+                    (EditTextPreference) findPreference(Constants.PREF_SYNC_DURATION_MINUTES);
 
             mRunOnMeteredWifi.setEnabled(mRunOnWifi.isChecked());
             mUseWifiWhitelist.setEnabled(mRunOnWifi.isChecked());
@@ -290,6 +292,10 @@ public class SettingsActivity extends SyncthingActivity {
             screen.findPreference(Constants.PREF_WIFI_SSID_WHITELIST).setSummary(TextUtils.isEmpty(wifiSsidSummary) ?
                 getString(R.string.wifi_ssid_whitelist_empty) :
                 getString(R.string.run_on_whitelisted_wifi_networks, wifiSsidSummary)
+            );
+
+            mSyncDurationMinutes.setSummary(
+                    getString(R.string.sync_duration_minutes_summary, mSyncDurationMinutes.getText())
             );
 
             mCategoryRunConditions = (PreferenceScreen) findPreference("category_run_conditions");
@@ -319,7 +325,6 @@ public class SettingsActivity extends SyncthingActivity {
             mWebUITcpPort           = (EditTextPreference) findPreference(KEY_WEBUI_TCP_PORT);
             mWebUIRemoteAccess      = (CheckBoxPreference) findPreference(KEY_WEBUI_REMOTE_ACCESS);
             mSyncthingApiKey        = findPreference(KEY_SYNCTHING_API_KEY);
-            mRestartOnWakeup        = (CheckBoxPreference) findPreference("restartOnWakeup");
             mUrAccepted             = (CheckBoxPreference) findPreference("urAccepted");
             mCrashReportingEnabled  = (CheckBoxPreference) findPreference("crashReportingEnabled");
             mWebUIDebugging         = (CheckBoxPreference) findPreference(KEY_WEBUI_DEBUGGING);
@@ -516,7 +521,6 @@ public class SettingsActivity extends SyncthingActivity {
                 mGlobalAnnounceEnabled.setChecked(mOptions.globalAnnounceEnabled);
                 mRelaysEnabled.setChecked(mOptions.relaysEnabled);
                 mGlobalAnnounceServers.setText(joiner.join(mOptions.globalAnnounceServers));
-                mRestartOnWakeup.setChecked(mOptions.restartOnWakeup);
                 mUrAccepted.setChecked(mRestApi.isUsageReportingAccepted());
                 mCrashReportingEnabled.setChecked(mOptions.crashReportingEnabled);
             }
@@ -571,6 +575,9 @@ public class SettingsActivity extends SyncthingActivity {
                     break;
                 case Constants.PREF_RUN_ON_MOBILE_DATA:
                     mRunOnRoaming.setEnabled((Boolean) o);
+                    break;
+                case Constants.PREF_SYNC_DURATION_MINUTES:
+                    mSyncDurationMinutes.setSummary(getString(R.string.sync_duration_minutes_summary, o.toString()));
                     break;
             }
             mPendingRunConditions = true;
@@ -673,9 +680,6 @@ public class SettingsActivity extends SyncthingActivity {
                     break;
                 case KEY_WEBUI_REMOTE_ACCESS:
                     mGui.address = ((boolean) o ? BIND_ALL : BIND_LOCALHOST) + ":" + mWebUITcpPort.getSummary();
-                    break;
-                case "restartOnWakeup":
-                    mOptions.restartOnWakeup = (boolean) o;
                     break;
                 case "urAccepted":
                     mRestApi.setUsageReporting((boolean) o);

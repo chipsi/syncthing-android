@@ -1,10 +1,12 @@
-* Syncthing v1.20.1
+* Syncthing v1.21.0
 
 Enhanced
 --
--
+- Show pending bytes of disconnected devices (#916)
+- App is removed from recents after exit
+- Route network request to specific network (#914)
 
 
 Fixes
 --
-- Removed in-app language switch option
+- Fix total completion percentage (#915)
