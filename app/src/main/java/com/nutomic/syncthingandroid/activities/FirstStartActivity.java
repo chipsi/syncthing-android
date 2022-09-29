@@ -113,8 +113,10 @@ public class FirstStartActivity extends AppCompatActivity {
          * If anything mandatory is missing, the according welcome slide(s) will be shown.
          */
         Boolean showSlideStoragePermission = !haveStoragePermission();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                showSlideStoragePermission = showSlideStoragePermission || !haveAllFilesAccessPermission();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            showSlideStoragePermission = !haveAllFilesAccessPermission();
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            showSlideStoragePermission = showSlideStoragePermission || !haveAllFilesAccessPermission();
         }
         Boolean showSlideIgnoreDozePermission = !haveIgnoreDozePermission();
         Boolean showSlideLocationPermission = !haveLocationPermission();
@@ -257,7 +259,9 @@ public class FirstStartActivity extends AppCompatActivity {
         if (mViewPager.getCurrentItem() == mSlidePosStoragePermission) {
             // As the storage permission is a prerequisite to run syncthing, refuse to continue without it.
             Boolean storagePermissionsGranted = haveStoragePermission();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                storagePermissionsGranted = haveAllFilesAccessPermission();
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     if (storagePermissionsGranted && !haveAllFilesAccessPermission()) {
                         Button btnConfigExport = (Button) findViewById(R.id.btnConfigExport);
                         btnConfigExport.setVisibility(View.VISIBLE);
@@ -424,7 +428,11 @@ public class FirstStartActivity extends AppCompatActivity {
                 btnGrantStoragePerm.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        requestStoragePermission();
+                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                            requestStoragePermission();
+                        } else {
+                            requestAllFilesAccessPermission();
+                        }
                     }
                 });
             }
