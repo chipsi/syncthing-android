@@ -47,6 +47,7 @@ public class SyncConditionsActivity extends SyncthingActivity {
             "com.github.catfriend1.syncthingandroid.activities.SyncConditionsActivity.OBJECT_READABLE_NAME";
 
     // UI elements
+    private SwitchCompat mSyncOnlyOnVpn;
     private SwitchCompat mSyncOnWifi;
     private SwitchCompat mSyncOnWhitelistedWifi;
     private ViewGroup mWifiSsidContainer;
@@ -64,6 +65,7 @@ public class SyncConditionsActivity extends SyncthingActivity {
      * Object can e.g. be a folder or device.
      */
     private String mObjectPrefixAndId;
+    private String mPrefSyncOnlyOnVpn;
     private String mPrefSyncOnWifi;
     private String mPrefSyncOnWhitelistedWifi;
     private String mPrefSelectedWhitelistSsid;
@@ -100,6 +102,7 @@ public class SyncConditionsActivity extends SyncthingActivity {
 
         // Display content and get views.
         setContentView(R.layout.activity_sync_conditions);
+        mSyncOnlyOnVpn = findViewById(R.id.sync_only_on_vpn_title);
         mSyncOnWifi = findViewById(R.id.sync_on_wifi_title);
         mSyncOnWhitelistedWifi = findViewById(R.id.sync_on_whitelisted_wifi_title);
         mWifiSsidContainer = findViewById(R.id.wifiSsidContainer);
@@ -110,6 +113,7 @@ public class SyncConditionsActivity extends SyncthingActivity {
         // Generate shared preferences names.
         mObjectPrefixAndId = intent.getStringExtra(EXTRA_OBJECT_PREFIX_AND_ID);
         Log.v(TAG, "Prefix is \'" + mObjectPrefixAndId + "\' (" + mObjectReadableName + ")");
+        mPrefSyncOnlyOnVpn = Constants.DYN_PREF_OBJECT_SYNC_ONLY_ON_VPN(mObjectPrefixAndId);
         mPrefSyncOnWifi = Constants.DYN_PREF_OBJECT_SYNC_ON_WIFI(mObjectPrefixAndId);
         mPrefSyncOnWhitelistedWifi = Constants.DYN_PREF_OBJECT_USE_WIFI_SSID_WHITELIST(mObjectPrefixAndId);
         mPrefSelectedWhitelistSsid = Constants.DYN_PREF_OBJECT_SELECTED_WHITELIST_SSID(mObjectPrefixAndId);
@@ -120,6 +124,7 @@ public class SyncConditionsActivity extends SyncthingActivity {
         /**
          * Load global run conditions.
          */
+        Boolean globalRunOnlyOnVpnEnabled = mPreferences.getBoolean(Constants.PREF_RUN_ONLY_ON_VPN, false);
         Boolean globalRunOnWifiEnabled = mPreferences.getBoolean(Constants.PREF_RUN_ON_WIFI, true);
         Set<String> globalWhitelistedSsid = mPreferences.getStringSet(Constants.PREF_WIFI_SSID_WHITELIST, new HashSet<>());
         mGlobalWhitelistEnabled = mPreferences.getBoolean(Constants.PREF_USE_WIFI_SSID_WHITELIST, false);
@@ -130,6 +135,10 @@ public class SyncConditionsActivity extends SyncthingActivity {
         /**
          * Load custom object preferences. If unset, use global setting as default.
          */
+        mSyncOnlyOnVpn.setChecked(globalRunOnlyOnVpnEnabled && mPreferences.getBoolean(mPrefSyncOnlyOnVpn, globalRunOnlyOnVpnEnabled));
+        mSyncOnlyOnVpn.setEnabled(globalRunOnlyOnVpnEnabled);
+        mSyncOnlyOnVpn.setOnCheckedChangeListener(mCheckedListener);
+
         mSyncOnWifi.setChecked(globalRunOnWifiEnabled && mPreferences.getBoolean(mPrefSyncOnWifi, globalRunOnWifiEnabled));
         mSyncOnWifi.setEnabled(globalRunOnWifiEnabled);
         mSyncOnWifi.setOnCheckedChangeListener(mCheckedListener);
@@ -234,6 +243,7 @@ public class SyncConditionsActivity extends SyncthingActivity {
              * Save custom object preferences.
              */
             SharedPreferences.Editor editor = mPreferences.edit();
+            editor.putBoolean(mPrefSyncOnlyOnVpn, mSyncOnlyOnVpn.isChecked());
             editor.putBoolean(mPrefSyncOnWifi, mSyncOnWifi.isChecked());
             editor.putBoolean(mPrefSyncOnWhitelistedWifi, mSyncOnWhitelistedWifi.isChecked());
             editor.putBoolean(mPrefSyncOnMeteredWifi, mSyncOnMeteredWifi.isChecked());

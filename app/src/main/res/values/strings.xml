@@ -512,6 +512,9 @@ Please report any problems you encounter via Github.</string>
     <string name="run_on_roaming_title">Run while roaming</string>
     <string name="run_on_roaming_summary">Allow Syncthing to use mobile data while roaming. (!) Please post feedback to GitHub if this works correctly.</string>
 
+    <string name="run_only_on_vpn_title">Run only on VPN</string>
+    <string name="run_only_on_vpn_summary">Run only when device is connected to a VPN network.</string>
+
     <string name="run_on_wifi_title">Run on Wi-Fi</string>
     <string name="run_on_wifi_summary">Run when device is connected to a Wi-Fi or ethernet network.</string>
 
@@ -905,6 +908,10 @@ Please report any problems you encounter via Github.</string>
     <string name="reason_on_roaming_nonroaming_mobile_data">Syncthing is allowed to run on roaming and non-roaming mobile data connections.</string>
     <string name="reason_on_nonroaming_mobile_data">Syncthing is allowed to run on non-roaming mobile data connections. The active connection is non-roaming.</string>
     <string name="reason_not_nonroaming_mobile_data">Syncthing is not running as you disallowed it to run on roaming mobile data connections.</string>
+
+    <string name="reason_on_vpn">Syncthing is forced to run on VPN and VPN is currently connected.</string>
+    <string name="reason_not_on_vpn">Syncthing is forced to run on VPN but VPN isn\'t connected or the phone is in flight mode.</string>
+    <string name="reason_not_restricted_to_vpn">Syncthing is not restricted to VPN.</string>
 
     <string name="reason_wifi_disallowed">Syncthing is not allowed to run on WiFi or ethernet.</string>
     <string name="reason_on_wifi">Syncthing is allowed to run on WiFi and WiFi is currently connected.</string>

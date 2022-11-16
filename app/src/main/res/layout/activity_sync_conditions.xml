@@ -49,6 +49,35 @@
 
             </LinearLayout>
 
+            <!-- Sync Only On Vpn -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?selectableItemBackground"
+                android:orientation="vertical"
+                android:gravity="center_vertical">
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/sync_only_on_vpn_title"
+                    style="@style/Widget.Syncthing.TextView.Label.Details"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:checked="false"
+                    app:drawableLeftCompat="@drawable/baseline_wifi_24"
+                    app:drawableStartCompat="@drawable/baseline_wifi_24"
+                    android:text="@string/run_only_on_vpn_title" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="75dp"
+                    android:layout_marginTop="-20dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                    android:text="@string/run_only_on_vpn_summary"
+                    android:focusable="false"/>
+
+            </LinearLayout>
+
             <!-- Sync on WiFi -->
             <LinearLayout
                 android:layout_width="match_parent"

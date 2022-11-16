@@ -10,6 +10,8 @@ import android.content.SharedPreferences;
 import android.content.SyncStatusObserver;
 import android.content.res.Resources;
 import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -429,6 +431,23 @@ public class RunConditionMonitor {
      * Each sync condition has its own evaluator function which
      * determines if the condition is met.
      */
+
+    /**
+     * Constants.PREF_RUN_ONLY_ON_VPN
+     */
+    private SyncConditionResult checkConditionSyncOnlyOnVpn(String prefNameSyncOnlyOnVpn) {
+        boolean prefSyncOnlyOnVpn = mPreferences.getBoolean(prefNameSyncOnlyOnVpn, false);
+
+        if (prefSyncOnlyOnVpn) {
+            if (isVpnConnection()) {
+                return new SyncConditionResult(true, res.getString(R.string.reason_on_vpn));
+            }
+            return new SyncConditionResult(false, res.getString(R.string.reason_not_on_vpn));
+        }
+
+        return new SyncConditionResult(true, res.getString(R.string.reason_not_restricted_to_vpn));
+    }
+
     /**
      * Constants.PREF_RUN_ON_WIFI
      */
@@ -515,14 +534,14 @@ public class RunConditionMonitor {
     private SyncConditionResult checkConditionSyncOnMobileData(String prefNameSyncOnMobileData) {
         boolean prefSyncOnMobileData = mPreferences.getBoolean(prefNameSyncOnMobileData, false);
         if (!prefSyncOnMobileData) {
-            return new SyncConditionResult(false, res.getString(R.string.reason_mobile_data_disallowed));
+            return new SyncConditionResult(false, "\n" + res.getString(R.string.reason_mobile_data_disallowed));
         }
 
         if (isMobileDataConnection()) {
-            return new SyncConditionResult(true, res.getString(R.string.reason_on_mobile_data));
+            return new SyncConditionResult(true, "\n" + res.getString(R.string.reason_on_mobile_data));
         }
 
-        return new SyncConditionResult(false, res.getString(R.string.reason_not_on_mobile_data));
+        return new SyncConditionResult(false, "\n" + res.getString(R.string.reason_not_on_mobile_data));
     }
 
     /**
@@ -609,6 +628,18 @@ public class RunConditionMonitor {
             return false;
         }
 
+        // Run on vpn?
+        scr = checkConditionSyncOnlyOnVpn(Constants.PREF_RUN_ONLY_ON_VPN);
+        mRunDecisionExplanation += scr.explanation;
+        if (scr.conditionMet) {
+            // Network is vpn.
+            LogV("decideShouldRun: checkConditionSyncOnlyOnVpn");
+        } else {
+            // Network is not a vpn.
+            LogV("decideShouldRun: !checkConditionSyncOnlyOnVpn");
+            return false;
+        }
+
         // Run on mobile data?
         scr = checkConditionSyncOnMobileData(Constants.PREF_RUN_ON_MOBILE_DATA);
         mRunDecisionExplanation += scr.explanation;
@@ -671,6 +702,18 @@ public class RunConditionMonitor {
         SyncConditionResult scr = checkConditionSyncOnPowerSource(Constants.DYN_PREF_OBJECT_SYNC_ON_POWER_SOURCE(objectPrefixAndId));
         if (!scr.conditionMet) {
             LogV("checkObjectSyncConditions(" + objectPrefixAndId + "): checkConditionSyncOnPowerSource");
+            return false;
+        }
+
+        // Sync on vpn?
+        scr = checkConditionSyncOnlyOnVpn(Constants.DYN_PREF_OBJECT_SYNC_ONLY_ON_VPN(objectPrefixAndId));
+        mRunDecisionExplanation += scr.explanation;
+        if (scr.conditionMet) {
+            // Network is vpn.
+            LogV("checkObjectSyncConditions(" + objectPrefixAndId + "): checkConditionSyncOnlyOnVpn");
+        } else {
+            // Network is not a vpn.
+            LogV("checkObjectSyncConditions(" + objectPrefixAndId + "): !checkConditionSyncOnlyOnVpn");
             return false;
         }
 
@@ -808,6 +851,21 @@ public class RunConditionMonitor {
             return false;
         }
         return ni.isRoaming();
+    }
+
+    private boolean isVpnConnection() {
+        ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        Network n = cm.getActiveNetwork();
+        if (n == null) {
+            // In flight mode.
+            return false;
+        }
+        NetworkCapabilities caps = cm.getNetworkCapabilities(n);
+        if (caps.hasTransport(NetworkCapabilities.TRANSPORT_VPN)) {
+            // Network has VPN capabilities.
+            return true;
+        }
+        return false;
     }
 
     private boolean isWifiOrEthernetConnection() {

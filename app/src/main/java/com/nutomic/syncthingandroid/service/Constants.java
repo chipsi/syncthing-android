@@ -22,6 +22,7 @@ public class Constants {
     public static final String PREF_START_SERVICE_ON_BOOT       = "always_run_in_background";
     public static final String PREF_RUN_ON_MOBILE_DATA          = "run_on_mobile_data";
     public static final String PREF_RUN_ON_ROAMING              = "run_on_roaming";
+    public static final String PREF_RUN_ONLY_ON_VPN             = "run_only_on_vpn";
     public static final String PREF_RUN_ON_WIFI                 = "run_on_wifi";
     public static final String PREF_RUN_ON_METERED_WIFI         = "run_on_metered_wifi";
     public static final String PREF_USE_WIFI_SSID_WHITELIST     = "use_wifi_whitelist";
@@ -69,6 +70,10 @@ public class Constants {
 
     public static String DYN_PREF_OBJECT_CUSTOM_SYNC_CONDITIONS(String objectPrefixAndId) {
         return objectPrefixAndId + "_" + "custom_sync_conditions";
+    }
+
+    public static String DYN_PREF_OBJECT_SYNC_ONLY_ON_VPN(String objectPrefixAndId) {
+        return objectPrefixAndId + "_" + PREF_RUN_ONLY_ON_VPN;
     }
 
     public static String DYN_PREF_OBJECT_SYNC_ON_WIFI(String objectPrefixAndId) {

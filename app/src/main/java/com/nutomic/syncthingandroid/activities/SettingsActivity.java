@@ -164,6 +164,7 @@ public class SettingsActivity extends SyncthingActivity {
         /* Run conditions */
         private PreferenceScreen   mCategoryRunConditions;
         private ListPreference     mPowerSource;
+        private CheckBoxPreference mRunOnlyOnVpn;
         private CheckBoxPreference mRunOnMobileData;
         private CheckBoxPreference mRunOnRoaming;
         private CheckBoxPreference mRunOnWifi;
@@ -263,6 +264,8 @@ public class SettingsActivity extends SyncthingActivity {
             PreferenceScreen screen = getPreferenceScreen();
 
             /* Run conditions */
+            mRunOnlyOnVpn =
+                    (CheckBoxPreference) findPreference(Constants.PREF_RUN_ONLY_ON_VPN);
             mRunOnWifi =
                     (CheckBoxPreference) findPreference(Constants.PREF_RUN_ON_WIFI);
             mRunOnMeteredWifi =
