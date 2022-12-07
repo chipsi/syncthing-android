@@ -27,6 +27,7 @@ import com.nutomic.syncthingandroid.model.Folder;
 import com.nutomic.syncthingandroid.util.ConfigRouter;
 import com.nutomic.syncthingandroid.util.ConfigXml;
 import com.nutomic.syncthingandroid.util.FileUtils;
+import com.nutomic.syncthingandroid.util.PermissionUtil;
 import com.nutomic.syncthingandroid.util.Util;
 import com.nutomic.syncthingandroid.service.SyncthingRunnable.ExecutableNotFoundException;
 
@@ -258,7 +259,7 @@ public class SyncthingService extends Service {
          * see issue: https://github.com/syncthing/syncthing-android/issues/871
          * We need to recheck if we still have the storage permission.
          */
-        mStoragePermissionGranted = haveStoragePermission();
+        mStoragePermissionGranted = PermissionUtil.haveStoragePermission(this);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             mStoragePermissionGranted = haveAllFilesAccessPermission();
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -1129,12 +1130,6 @@ public class SyncthingService extends Service {
     @TargetApi(30)
     private boolean haveAllFilesAccessPermission() {
         return Environment.isExternalStorageManager();
-    }
-
-    private boolean haveStoragePermission() {
-        int permissionState = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        return permissionState == PackageManager.PERMISSION_GRANTED;
     }
 
     private void LogV(String logMessage) {
