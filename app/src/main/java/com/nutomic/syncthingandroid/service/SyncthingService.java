@@ -8,7 +8,6 @@ import android.content.res.Resources;
 import android.content.SharedPreferences;
 import android.Manifest;
 import android.os.Build;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -260,11 +259,6 @@ public class SyncthingService extends Service {
          * We need to recheck if we still have the storage permission.
          */
         mStoragePermissionGranted = PermissionUtil.haveStoragePermission(this);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            mStoragePermissionGranted = haveAllFilesAccessPermission();
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            mStoragePermissionGranted = mStoragePermissionGranted && haveAllFilesAccessPermission();
-        }
 
         if (mNotificationHandler != null) {
             mNotificationHandler.setAppShutdownInProgress(false);
@@ -1122,14 +1116,6 @@ public class SyncthingService extends Service {
             set.add(type.cast(o));
         }
         return set;
-    }
-
-    /**
-     * Permission check and request functions
-     */
-    @TargetApi(30)
-    private boolean haveAllFilesAccessPermission() {
-        return Environment.isExternalStorageManager();
     }
 
     private void LogV(String logMessage) {
