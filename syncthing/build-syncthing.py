@@ -359,6 +359,9 @@ else:
     ]).strip();
     syncthingVersion = syncthingVersion.decode().replace("rc", "preview");
 
+print('Cleaning go-build cache')
+subprocess.check_call([go_bin, 'clean', '-cache'], cwd=syncthing_dir)
+
 print('Building syncthing version', syncthingVersion);
 for target in BUILD_TARGETS:
     print('')
