@@ -42,6 +42,7 @@ import com.nutomic.syncthingandroid.service.SyncthingRunnable.ExecutableNotFound
 import com.nutomic.syncthingandroid.util.ConfigXml;
 import com.nutomic.syncthingandroid.util.FileUtils;
 import com.nutomic.syncthingandroid.util.FileUtils.ExternalStorageDirType;
+import com.nutomic.syncthingandroid.util.PermissionUtil;
 import com.nutomic.syncthingandroid.util.Util;
 import com.nutomic.syncthingandroid.views.CustomViewPager;
 
@@ -113,7 +114,7 @@ public class FirstStartActivity extends AppCompatActivity {
          * Check if prerequisites to run the app are still in place.
          * If anything mandatory is missing, the according welcome slide(s) will be shown.
          */
-        Boolean showSlideStoragePermission = !haveStoragePermission();
+        Boolean showSlideStoragePermission = !PermissionUtil.haveStoragePermission(this);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             showSlideStoragePermission = !haveAllFilesAccessPermission();
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -259,7 +260,7 @@ public class FirstStartActivity extends AppCompatActivity {
         // Check if we are allowed to advance to the next slide.
         if (mViewPager.getCurrentItem() == mSlidePosStoragePermission) {
             // As the storage permission is a prerequisite to run syncthing, refuse to continue without it.
-            Boolean storagePermissionsGranted = haveStoragePermission();
+            Boolean storagePermissionsGranted = PermissionUtil.haveStoragePermission(this);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 storagePermissionsGranted = haveAllFilesAccessPermission();
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -609,12 +610,6 @@ public class FirstStartActivity extends AppCompatActivity {
         ActivityCompat.requestPermissions(this,
                 new String[]{Manifest.permission.POST_NOTIFICATIONS},
                 REQUEST_NOTIFICATION);
-    }
-
-    private boolean haveStoragePermission() {
-        int permissionState = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        return permissionState == PackageManager.PERMISSION_GRANTED;
     }
 
     private void requestStoragePermission() {
