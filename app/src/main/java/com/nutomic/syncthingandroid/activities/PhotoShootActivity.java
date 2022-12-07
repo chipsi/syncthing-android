@@ -28,6 +28,7 @@ import com.nutomic.syncthingandroid.SyncthingApp;
 import com.nutomic.syncthingandroid.service.Constants;
 import com.nutomic.syncthingandroid.util.FileUtils;
 import com.nutomic.syncthingandroid.util.FileUtils.ExternalStorageDirType;
+import com.nutomic.syncthingandroid.util.PermissionUtil;
 
 import java.io.IOException;
 import java.io.File;
@@ -71,7 +72,7 @@ public class PhotoShootActivity extends AppCompatActivity {
 
         // Check if user granted permissions before and consented to use this feature.
         Boolean prefEnableSyncthingCamera = mPreferences.getBoolean(Constants.PREF_ENABLE_SYNCTHING_CAMERA, false);
-        Boolean haveRequiredPermissions = haveStoragePermission() && haveCameraPermission();
+        Boolean haveRequiredPermissions = PermissionUtil.haveStoragePermission(this) && haveCameraPermission();
         Log.v(TAG, "prefEnableSyncthingCamera=" + Boolean.toString(prefEnableSyncthingCamera) + ", haveRequiredPermissions=" + Boolean.toString(haveRequiredPermissions));
         if (haveRequiredPermissions && prefEnableSyncthingCamera) {
             // Take a shortcut and offer to take a picture instantly.
@@ -94,7 +95,7 @@ public class PhotoShootActivity extends AppCompatActivity {
             mBtnGrantStoragePerm.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (!haveStoragePermission()) {
+                    if (!PermissionUtil.haveStoragePermission(PhotoShootActivity.this)) {
                         requestStoragePermission();
                     }
                 }
@@ -126,7 +127,7 @@ public class PhotoShootActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // Re-check permissions.
-                Boolean haveRequiredPermissions = haveStoragePermission() && haveCameraPermission();
+                Boolean haveRequiredPermissions = PermissionUtil.haveStoragePermission(PhotoShootActivity.this) && haveCameraPermission();
                 if (!haveRequiredPermissions) {
                     Toast.makeText(
                             PhotoShootActivity.this,
@@ -253,12 +254,6 @@ public class PhotoShootActivity extends AppCompatActivity {
                 REQUEST_CAMERA);
     }
 
-    private boolean haveStoragePermission() {
-        int permissionState = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        return permissionState == PackageManager.PERMISSION_GRANTED;
-    }
-
     private void requestStoragePermission() {
         ActivityCompat.requestPermissions(this,
                 new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
@@ -296,6 +291,6 @@ public class PhotoShootActivity extends AppCompatActivity {
 
     private void updateButtons() {
         mBtnGrantCameraPerm.setVisibility(haveCameraPermission() ? View.GONE : View.VISIBLE);
-        mBtnGrantStoragePerm.setVisibility(haveStoragePermission() ? View.GONE : View.VISIBLE);
+        mBtnGrantStoragePerm.setVisibility(PermissionUtil.haveStoragePermission(this) ? View.GONE : View.VISIBLE);
     }
 }
