@@ -1,12 +1,11 @@
-* Syncthing v1.21.0
+* Syncthing v1.22.2
 
 Enhanced
 --
-- Show pending bytes of disconnected devices (#916)
-- App is removed from recents after exit
-- Route network request to specific network (#914)
+- Add pref "log to file" (#945)
+- Hint if location services are off during wifi selection dialog (#924)
 
 
 Fixes
 --
-- Fix total completion percentage (#915)
+- Fix sync cycle set to empty (#937)

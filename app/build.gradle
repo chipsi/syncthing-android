@@ -35,14 +35,15 @@ def ourVersionName = "${versionMajor}.${versionMinor}.${versionPatch}.${versionW
 android {
     compileSdkVersion 33
     buildToolsVersion '33.0.0'
-    ndkVersion = '25.1.8937393'
+    ndkVersion = "${ndkVersionShared}"
 
+    namespace = 'com.nutomic.syncthingandroid'
     buildFeatures.dataBinding = true
 
     defaultConfig {
         applicationId "com.github.catfriend1.syncthingandroid"
         minSdkVersion 21
-        targetSdkVersion 33
+        targetSdkVersion 30
         versionCode ourVersionCode
         versionName ourVersionName
         testApplicationId 'com.github.catfriend1.syncthingandroid.test'
@@ -76,8 +77,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
 
     bundle {
@@ -93,7 +94,7 @@ android {
     }
 
     lintOptions {
-        disable "UnsafeExperimentalUsageError", "UnsafeExperimentalUsageWarning"
+        disable "UnsafeExperimentalUsageError", "UnsafeExperimentalUsageWarning", "ExpiringTargetSdkVersion", "ExpiredTargetSdkVersion"
         abortOnError true
     }
 
