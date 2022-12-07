@@ -47,6 +47,12 @@ BUILD_TARGETS = [
         'goarch': '386',
         'jni_dir': 'x86',
         'cc': 'i686-linux-android{}-clang',
+    },
+    {
+        'arch': 'x86_64',
+        'goarch': 'amd64',
+        'jni_dir': 'x86_64',
+        'cc': 'x86_64-linux-android{}-clang',
     }
 ]
 
@@ -400,11 +406,11 @@ for target in BUILD_TARGETS:
 
     print('*** Finished build for', target['arch'])
 
-print('Copy x86 artifact to x86_64 folder, workaround for issue #583')
-target_dir = os.path.join(project_dir, 'app', 'src', 'main', 'jniLibs', 'x86_64')
-if not os.path.isdir(target_dir):
-    os.makedirs(target_dir)
-shutil.copy(os.path.join(project_dir, 'app', 'src', 'main', 'jniLibs', 'x86', FILENAME_SYNCTHING_BINARY),
-        os.path.join(target_dir, FILENAME_SYNCTHING_BINARY))
+# print('Copy x86 artifact to x86_64 folder, workaround for issue #583')
+# target_dir = os.path.join(project_dir, 'app', 'src', 'main', 'jniLibs', 'x86_64')
+# if not os.path.isdir(target_dir):
+#     os.makedirs(target_dir)
+# shutil.copy(os.path.join(project_dir, 'app', 'src', 'main', 'jniLibs', 'x86', FILENAME_SYNCTHING_BINARY),
+#         os.path.join(target_dir, FILENAME_SYNCTHING_BINARY))
 
 print('All builds finished')
