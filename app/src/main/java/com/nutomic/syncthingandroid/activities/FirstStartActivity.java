@@ -665,6 +665,7 @@ public class FirstStartActivity extends AppCompatActivity {
             Button nextButton = (Button) firstStartActivity.findViewById(R.id.btn_next);
             nextButton.setVisibility(View.VISIBLE);
             nextButton.requestFocus();
+            nextButton.performClick();
         }
     }
 
