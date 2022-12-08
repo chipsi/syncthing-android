@@ -381,35 +381,6 @@ public class FirstStartActivity extends AppCompatActivity {
             View view = layoutInflater.inflate(mSlides[position].layout, container, false);
 
             /* Slide: storage permission */
-            Button btnConfigExport = (Button) view.findViewById(R.id.btnConfigExport);
-            if (btnConfigExport != null) {
-                btnConfigExport.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // Get app specific /Android/media directory.
-                        File externalFilesDir = FileUtils.getExternalFilesDir(FirstStartActivity.this, ExternalStorageDirType.INT_MEDIA, null);
-                        if (externalFilesDir == null) {
-                            Log.w(TAG, "Failed to export config. Could not determine app's private files directory on external storage.");
-                            Toast.makeText(FirstStartActivity.this,
-                                    getString(R.string.config_export_failed),
-                                    Toast.LENGTH_LONG).show();
-                            return;
-                        }
-                        final String exportToMediaPath = externalFilesDir.getAbsolutePath();
-                        if (!exportConfig(exportToMediaPath)) {
-                            Toast.makeText(FirstStartActivity.this,
-                                    getString(R.string.config_export_failed),
-                                    Toast.LENGTH_LONG).show();
-                            return;
-                        }
-                        Toast.makeText(FirstStartActivity.this,
-                                getString(R.string.config_export_successful,
-                                exportToMediaPath), Toast.LENGTH_LONG).show();
-                        finish();
-                    }
-                });
-            }
-
             Button btnGrantStoragePerm = (Button) view.findViewById(R.id.btnGrantStoragePerm);
             if (btnGrantStoragePerm != null) {
                 btnGrantStoragePerm.setOnClickListener(new View.OnClickListener() {
