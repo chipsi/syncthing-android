@@ -582,7 +582,6 @@ public class FirstStartActivity extends AppCompatActivity {
                     Toast.makeText(this, R.string.permission_granted, Toast.LENGTH_SHORT).show();
                     Log.i(TAG, "User granted WRITE_EXTERNAL_STORAGE permission.");
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        requestAllFilesAccessPermission();
                         mNextButton.requestFocus();
                         return;
                     }
