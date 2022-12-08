@@ -113,12 +113,7 @@ public class FirstStartActivity extends AppCompatActivity {
          * Check if prerequisites to run the app are still in place.
          * If anything mandatory is missing, the according welcome slide(s) will be shown.
          */
-        Boolean showSlideStoragePermission = !PermissionUtil.haveStoragePermission(this);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            showSlideStoragePermission = !haveAllFilesAccessPermission();
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            showSlideStoragePermission = showSlideStoragePermission || !haveAllFilesAccessPermission();
-        }
+        Boolean showSlideStoragePermission = !PermissionUtil.haveStoragePermission(FirstStartActivity.this);
         Boolean showSlideIgnoreDozePermission = !haveIgnoreDozePermission();
         Boolean showSlideLocationPermission = !haveLocationPermission();
         Boolean showSlideKeyGeneration = !checkForParseableConfig();
