@@ -386,9 +386,7 @@ public class FirstStartActivity extends AppCompatActivity {
                 btnGrantStoragePerm.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                            requestNotificationPermission();
-                        }
+                        requestNotificationPermission();
                         PermissionUtil.requestStoragePermission(FirstStartActivity.this, REQUEST_WRITE_STORAGE);
                     }
                 });
@@ -524,6 +522,9 @@ public class FirstStartActivity extends AppCompatActivity {
     }
 
     private void requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            return;
+        }
         ActivityCompat.requestPermissions(this,
                 new String[]{Manifest.permission.POST_NOTIFICATIONS},
                 REQUEST_NOTIFICATION);
