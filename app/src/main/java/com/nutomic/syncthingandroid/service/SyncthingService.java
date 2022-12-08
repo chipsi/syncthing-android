@@ -849,6 +849,10 @@ public class SyncthingService extends Service {
                     new File(Constants.EXPORT_PATH_OBJ, Constants.PRIVATE_KEY_FILE));
             Files.copy(Constants.getPublicKeyFile(this),
                     new File(Constants.EXPORT_PATH_OBJ, Constants.PUBLIC_KEY_FILE));
+            Files.copy(Constants.getHttpsCertFile(this),
+                    new File(Constants.EXPORT_PATH_OBJ, Constants.HTTPS_CERT_FILE));
+            Files.copy(Constants.getHttpsKeyFile(this),
+                    new File(Constants.EXPORT_PATH_OBJ, Constants.HTTPS_KEY_FILE));
         } catch (IOException e) {
             Log.w(TAG, "Failed to export config", e);
             failSuccess = false;
