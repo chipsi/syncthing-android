@@ -254,16 +254,7 @@ public class FirstStartActivity extends AppCompatActivity {
         // Check if we are allowed to advance to the next slide.
         if (mViewPager.getCurrentItem() == mSlidePosStoragePermission) {
             // As the storage permission is a prerequisite to run syncthing, refuse to continue without it.
-            Boolean storagePermissionsGranted = PermissionUtil.haveStoragePermission(this);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                storagePermissionsGranted = haveAllFilesAccessPermission();
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    if (storagePermissionsGranted && !haveAllFilesAccessPermission()) {
-                        Button btnConfigExport = (Button) findViewById(R.id.btnConfigExport);
-                        btnConfigExport.setVisibility(View.VISIBLE);
-                    }
-                    storagePermissionsGranted = storagePermissionsGranted && haveAllFilesAccessPermission();
-            }
+            Boolean storagePermissionsGranted = PermissionUtil.haveStoragePermission(FirstStartActivity.this);
             if (!storagePermissionsGranted) {
                 Toast.makeText(this, R.string.toast_write_storage_permission_required,
                         Toast.LENGTH_LONG).show();
