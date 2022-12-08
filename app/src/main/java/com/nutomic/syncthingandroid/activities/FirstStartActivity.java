@@ -14,7 +14,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.PowerManager;
 import android.provider.Settings;
 import androidx.annotation.NonNull;
@@ -493,43 +492,6 @@ public class FirstStartActivity extends AppCompatActivity {
         finish();
     }
 
-    /**
-     * Permission check and request functions
-     */
-    @TargetApi(30)
-    private boolean haveAllFilesAccessPermission() {
-        return Environment.isExternalStorageManager();
-    }
-
-    @TargetApi(30)
-    private void requestAllFilesAccessPermission() {
-        Boolean intentFailed = false;
-        Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
-        intent.setData(Uri.parse("package:" + getPackageName()));
-        try {
-            ComponentName componentName = intent.resolveActivity(getPackageManager());
-            if (componentName != null) {
-                String className = componentName.getClassName();
-                if (className != null) {
-                    // Launch "Allow all files access?" dialog.
-                    startActivity(intent);
-                    return;
-                }
-                intentFailed = true;
-            } else {
-                Log.w(TAG, "Request all files access not supported");
-                intentFailed = true;
-            }
-        } catch (ActivityNotFoundException e) {
-            Log.w(TAG, "Request all files access not supported", e);
-            intentFailed = true;
-        }
-        if (intentFailed) {
-            // Some devices don't support this request.
-            Toast.makeText(this, R.string.dialog_all_files_access_not_supported, Toast.LENGTH_LONG).show();
-        }
-    }
-
     private boolean haveIgnoreDozePermission() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             // Older android version don't have the doze feature so we'll assume having the anti-doze permission.
@@ -610,12 +572,6 @@ public class FirstStartActivity extends AppCompatActivity {
         ActivityCompat.requestPermissions(this,
                 new String[]{Manifest.permission.POST_NOTIFICATIONS},
                 REQUEST_NOTIFICATION);
-    }
-
-    private void requestStoragePermission() {
-        ActivityCompat.requestPermissions(this,
-                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                REQUEST_WRITE_STORAGE);
     }
 
     @Override
