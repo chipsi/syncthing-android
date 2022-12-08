@@ -96,7 +96,7 @@ public class PhotoShootActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     if (!PermissionUtil.haveStoragePermission(PhotoShootActivity.this)) {
-                        requestStoragePermission();
+                        PermissionUtil.requestStoragePermission(PhotoShootActivity.this, REQUEST_WRITE_STORAGE);
                     }
                 }
             });
@@ -252,12 +252,6 @@ public class PhotoShootActivity extends AppCompatActivity {
         ActivityCompat.requestPermissions(this,
                 new String[]{Manifest.permission.CAMERA},
                 REQUEST_CAMERA);
-    }
-
-    private void requestStoragePermission() {
-        ActivityCompat.requestPermissions(this,
-                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                REQUEST_WRITE_STORAGE);
     }
 
     @Override
