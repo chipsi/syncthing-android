@@ -687,24 +687,4 @@ public class FirstStartActivity extends AppCompatActivity {
         return configParseable;
     }
 
-    private boolean exportConfig(final String exportAbsolutePath) {
-        Boolean failSuccess = true;
-        Log.d(TAG, "exportConfig BEGIN");
-        final File exportPath = new File(exportAbsolutePath);
-
-        // Copy config, privateKey and/or publicKey to export path.
-        exportPath.mkdirs();
-        try {
-            Files.copy(Constants.getConfigFile(this),
-                    new File(exportPath, Constants.CONFIG_FILE));
-            Files.copy(Constants.getPrivateKeyFile(this),
-                    new File(exportPath, Constants.PRIVATE_KEY_FILE));
-            Files.copy(Constants.getPublicKeyFile(this),
-                    new File(exportPath, Constants.PUBLIC_KEY_FILE));
-        } catch (IOException e) {
-            Log.w(TAG, "Failed to export config", e);
-            failSuccess = false;
-        }
-        return failSuccess;
-    }
 }
