@@ -236,6 +236,18 @@ public class FirstStartActivity extends AppCompatActivity {
         outState.putBoolean("mNextButton", mNextButton.getVisibility() == View.VISIBLE);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mNextButton == null || mViewPager == null) {
+            return;
+        }
+        if (mViewPager.getCurrentItem() == mSlidePosStoragePermission ||
+                mViewPager.getCurrentItem() == mSlidePosIgnoreDozePermission) {
+            mNextButton.performClick();
+        }
+    }
+
     public void onBtnBackClick() {
         int current = getItem(-1);
         if (current >= 0) {
