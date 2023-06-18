@@ -970,6 +970,16 @@ public class SettingsActivity extends SyncthingActivity {
         }
 
         /**
+         * Get backup folder
+         * Default: /storage/emulated0/backups/syncthing
+         */
+        private final File getBackupFolder() {
+            SharedPreferences mPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String backupFolderName = mPreferences.getString(Constants.PREF_BACKUP_FOLDER_NAME, "syncthing");
+            return new File(Environment.getExternalStorageDirectory() + "/backups/" + backupFolderName);
+        }
+
+        /**
          * Performs export of settings, config and database in the background.
          */
         private static class ExportConfigTask extends AsyncTask<Void, String, Void> {
