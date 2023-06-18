@@ -809,7 +809,7 @@ public class SettingsActivity extends SyncthingActivity {
                     new AlertDialog.Builder(getActivity())
                             .setMessage(R.string.dialog_confirm_export)
                             .setPositiveButton(android.R.string.yes, (dialog, which) -> {
-                                new ExportConfigTask((SettingsActivity) getActivity(), mSyncthingService)
+                                new ExportConfigTask(this, mSyncthingService)
                                     .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                             })
                             .setNegativeButton(android.R.string.no, null)
@@ -973,13 +973,13 @@ public class SettingsActivity extends SyncthingActivity {
          * Performs export of settings, config and database in the background.
          */
         private static class ExportConfigTask extends AsyncTask<Void, String, Void> {
-            private WeakReference<SettingsActivity> refSettingsActivity;
+            private WeakReference<SettingsFragment> refSettingsFragment;
             private WeakReference<SyncthingService> refSyncthingService;
             Boolean actionSucceeded = false;
             File backupFolder = new File(Environment.getExternalStorageDirectory() + "/backups/syncthing");
 
-            ExportConfigTask(SettingsActivity context, SyncthingService service) {
-                refSettingsActivity = new WeakReference<>(context);
+            ExportConfigTask(SettingsFragment context, SyncthingService service) {
+                refSettingsFragment = new WeakReference<>(context);
                 refSyncthingService = new WeakReference<>(service);
             }
 
@@ -996,22 +996,33 @@ public class SettingsActivity extends SyncthingActivity {
 
             @Override
             protected void onPostExecute(Void aVoid) {
-                // Get a reference to the activity if it is still there.
-                SettingsActivity settingsActivity = refSettingsActivity.get();
-                if (settingsActivity == null || settingsActivity.isFinishing()) {
+                SettingsFragment settingsFragment = refSettingsFragment.get();
+                if (settingsFragment == null) {
                     return;
                 }
-                if (!actionSucceeded) {
-                    Toast.makeText(settingsActivity,
-                            settingsActivity.getString(R.string.config_export_failed),
-                            Toast.LENGTH_LONG).show();
-                    return;
-                }
-                Toast.makeText(settingsActivity,
-                        settingsActivity.getString(R.string.config_export_successful,
-                        backupFolder), Toast.LENGTH_LONG).show();
-                settingsActivity.finish();
+                settingsFragment.afterConfigExport(actionSucceeded, backupFolder);
             }
+        }
+
+        /**
+         * Called by {@link SyncthingService#exportConfig} after config export.
+         */
+        private void afterConfigExport(Boolean actionSucceeded, final File backupFolder) {
+            SyncthingActivity syncthingActivity = (SyncthingActivity) getActivity();
+            if (syncthingActivity == null || syncthingActivity.isFinishing()) {
+                return;
+            }
+
+            if (!actionSucceeded) {
+                Toast.makeText(syncthingActivity,
+                        getString(R.string.config_export_failed),
+                        Toast.LENGTH_LONG).show();
+                return;
+            }
+            Toast.makeText(syncthingActivity,
+                    getString(R.string.config_export_successful,
+                    backupFolder), Toast.LENGTH_LONG).show();
+            syncthingActivity.finish();
         }
 
         /**
