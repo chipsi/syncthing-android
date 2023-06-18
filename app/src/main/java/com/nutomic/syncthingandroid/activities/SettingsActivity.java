@@ -343,8 +343,9 @@ public class SettingsActivity extends SyncthingActivity {
 
             /* Import and Export */
             Preference exportConfig = findPreference("export_config");
-            Preference importConfig = findPreference("import_config");
             exportConfig.setOnPreferenceClickListener(this);
+
+            Preference importConfig = findPreference("import_config");
             importConfig.setOnPreferenceClickListener(this);
 
             /* Troubleshooting */
