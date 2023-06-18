@@ -1051,7 +1051,7 @@ public class SettingsActivity extends SyncthingActivity {
         }
 
         /**
-         * Calley by {@link SyncthingService#importConfig} after config import.
+         * Called by {@link SyncthingService#importConfig} after config import.
          */
         private void afterConfigImport(Boolean actionSucceeded, final File backupFolder) {
             SyncthingActivity syncthingActivity = (SyncthingActivity) getActivity();
