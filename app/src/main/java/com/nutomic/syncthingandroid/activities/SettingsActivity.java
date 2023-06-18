@@ -970,17 +970,27 @@ public class SettingsActivity extends SyncthingActivity {
         }
 
         /**
+         * Get backup folder
+         * Default: /storage/emulated0/backups/syncthing
+         */
+        private final File getBackupFolder() {
+            String backupFolderName = mPreferences.getString(Constants.PREF_BACKUP_FOLDER_NAME, "syncthing");
+            return new File(Environment.getExternalStorageDirectory() + "/backups/" + backupFolderName);
+        }
+
+        /**
          * Performs export of settings, config and database in the background.
          */
         private static class ExportConfigTask extends AsyncTask<Void, String, Void> {
             private WeakReference<SettingsFragment> refSettingsFragment;
             private WeakReference<SyncthingService> refSyncthingService;
             Boolean actionSucceeded = false;
-            File backupFolder = new File(Environment.getExternalStorageDirectory() + "/backups/syncthing");
+            File backupFolder;
 
             ExportConfigTask(SettingsFragment context, SyncthingService service) {
                 refSettingsFragment = new WeakReference<>(context);
                 refSyncthingService = new WeakReference<>(service);
+                backupFolder = context.getBackupFolder();
             }
 
             @Override
@@ -1032,11 +1042,12 @@ public class SettingsActivity extends SyncthingActivity {
             private WeakReference<SettingsFragment> refSettingsFragment;
             private WeakReference<SyncthingService> refSyncthingService;
             Boolean actionSucceeded = false;
-            File backupFolder = new File(Environment.getExternalStorageDirectory() + "/backups/syncthing");
+            File backupFolder;
 
             ImportConfigTask(SettingsFragment context, SyncthingService service) {
                 refSettingsFragment = new WeakReference<>(context);
                 refSyncthingService = new WeakReference<>(service);
+                backupFolder = context.getBackupFolder();
             }
 
             @Override
