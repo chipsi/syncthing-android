@@ -197,6 +197,9 @@ public class SettingsActivity extends SyncthingActivity {
         private CheckBoxPreference mWebUIDebugging;
         private Preference mDownloadSupportBundle;
 
+        /* Import and Export */
+        private EditTextPreference mBackupFolderName;
+
         /* Experimental options */
         private CheckBoxPreference mUseWakelock;
         private CheckBoxPreference mUseTor;
@@ -347,6 +350,10 @@ public class SettingsActivity extends SyncthingActivity {
 
             Preference importConfig = findPreference("import_config");
             importConfig.setOnPreferenceClickListener(this);
+
+            mBackupFolderName = (EditTextPreference) findPreference("backup_folder_name");
+            mBackupFolderName.setSummary(mBackupFolderName.getText());
+            mBackupFolderName.setOnPreferenceChangeListener(this);
 
             /* Troubleshooting */
             Preference verboseLog                   = findPreference(Constants.PREF_VERBOSE_LOG);
@@ -741,6 +748,9 @@ public class SettingsActivity extends SyncthingActivity {
         @Override
         public boolean onPreferenceChange(Preference preference, Object o) {
             switch (preference.getKey()) {
+                case Constants.PREF_BACKUP_FOLDER_NAME:
+                    preference.setSummary((String) o);
+                    break;
                 case Constants.PREF_DEBUG_FACILITIES_ENABLED:
                     mPendingConfig = true;
                     break;
