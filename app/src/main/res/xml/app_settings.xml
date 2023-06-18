@@ -285,7 +285,7 @@
         android:title="@string/category_backup">
 
         <EditTextPreference
-            android:key="backupFolderName"
+            android:key="backup_folder_name"
             android:title="@string/backup_folder_name"
             android:persistent="true"
             android:defaultValue="syncthing"
