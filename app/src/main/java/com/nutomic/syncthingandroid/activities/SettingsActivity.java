@@ -1042,7 +1042,7 @@ public class SettingsActivity extends SyncthingActivity {
             }
             Toast.makeText(syncthingActivity,
                     getString(R.string.config_export_successful,
-                    backupFolder), Toast.LENGTH_LONG).show();
+                    backupFolder.replace("/storage/emulated/0/", "[/]")), Toast.LENGTH_LONG).show();
             syncthingActivity.finish();
         }
 
