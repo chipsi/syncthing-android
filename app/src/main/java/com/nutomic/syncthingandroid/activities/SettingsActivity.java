@@ -1084,7 +1084,7 @@ public class SettingsActivity extends SyncthingActivity {
             if (!actionSucceeded) {
                 Toast.makeText(syncthingActivity,
                     getString(R.string.config_import_failed,
-                    backupFolder), Toast.LENGTH_LONG).show();
+                    backupFolder.getAbsolutePath().replace("/storage/emulated/0/", "[/]")), Toast.LENGTH_LONG).show();
                     return;
             }
             Toast.makeText(syncthingActivity,
