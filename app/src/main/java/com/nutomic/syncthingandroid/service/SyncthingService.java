@@ -841,18 +841,18 @@ public class SyncthingService extends Service {
         }
 
         // Copy config, privateKey and/or publicKey to export path.
-        Constants.EXPORT_PATH_OBJ.mkdirs();
+        exportPath.mkdirs();
         try {
             Files.copy(Constants.getConfigFile(this),
-                    new File(Constants.EXPORT_PATH_OBJ, Constants.CONFIG_FILE));
+                    new File(exportPath, Constants.CONFIG_FILE));
             Files.copy(Constants.getPrivateKeyFile(this),
-                    new File(Constants.EXPORT_PATH_OBJ, Constants.PRIVATE_KEY_FILE));
+                    new File(exportPath, Constants.PRIVATE_KEY_FILE));
             Files.copy(Constants.getPublicKeyFile(this),
-                    new File(Constants.EXPORT_PATH_OBJ, Constants.PUBLIC_KEY_FILE));
+                    new File(exportPath, Constants.PUBLIC_KEY_FILE));
             Files.copy(Constants.getHttpsCertFile(this),
-                    new File(Constants.EXPORT_PATH_OBJ, Constants.HTTPS_CERT_FILE));
+                    new File(exportPath, Constants.HTTPS_CERT_FILE));
             Files.copy(Constants.getHttpsKeyFile(this),
-                    new File(Constants.EXPORT_PATH_OBJ, Constants.HTTPS_KEY_FILE));
+                    new File(exportPath, Constants.HTTPS_KEY_FILE));
         } catch (IOException e) {
             Log.w(TAG, "Failed to export config", e);
             failSuccess = false;
@@ -863,7 +863,7 @@ public class SyncthingService extends Service {
         FileOutputStream fileOutputStream = null;
         ObjectOutputStream objectOutputStream = null;
         try {
-            file = new File(Constants.EXPORT_PATH_OBJ, Constants.SHARED_PREFS_EXPORT_FILE);
+            file = new File(exportPath, Constants.SHARED_PREFS_EXPORT_FILE);
             fileOutputStream = new FileOutputStream(file);
             if (!file.exists()) {
                 file.createNewFile();
@@ -895,7 +895,7 @@ public class SyncthingService extends Service {
         if (Build.VERSION.SDK_INT >= 26) {
             Log.d(TAG, "exportConfig: Exporting index database");
             Path databaseSourcePath = Paths.get(this.getFilesDir() + "/" + Constants.INDEX_DB_FOLDER);
-            Path databaseExportPath = Paths.get(Constants.EXPORT_PATH + "/" + Constants.INDEX_DB_FOLDER);
+            Path databaseExportPath = Paths.get(exportPath.getAbsolutePath() + "/" + Constants.INDEX_DB_FOLDER);
             if (java.nio.file.Files.exists(databaseExportPath)) {
                 try {
                     FileUtils.deleteDirectoryRecursively(databaseExportPath);
@@ -939,7 +939,7 @@ public class SyncthingService extends Service {
      *
      * @return True if the import was successful, false otherwise (eg if files aren't found).
      */
-    public boolean importConfig() {
+    public boolean importConfig(final File importPath) {
         Boolean failSuccess = true;
         Log.d(TAG, "importConfig BEGIN");
 
@@ -950,11 +950,11 @@ public class SyncthingService extends Service {
 
         // Import config, privateKey and/or publicKey.
         try {
-            File config = new File(Constants.EXPORT_PATH_OBJ, Constants.CONFIG_FILE);
-            File privateKey = new File(Constants.EXPORT_PATH_OBJ, Constants.PRIVATE_KEY_FILE);
-            File publicKey = new File(Constants.EXPORT_PATH_OBJ, Constants.PUBLIC_KEY_FILE);
-            File httpsCert = new File(Constants.EXPORT_PATH_OBJ, Constants.HTTPS_CERT_FILE);
-            File httpsKey = new File(Constants.EXPORT_PATH_OBJ, Constants.HTTPS_KEY_FILE);
+            File config = new File(importPath, Constants.CONFIG_FILE);
+            File privateKey = new File(importPath, Constants.PRIVATE_KEY_FILE);
+            File publicKey = new File(importPath, Constants.PUBLIC_KEY_FILE);
+            File httpsCert = new File(importPath, Constants.HTTPS_CERT_FILE);
+            File httpsKey = new File(importPath, Constants.HTTPS_KEY_FILE);
 
             // Check if necessary files for import are available.
             if (config.exists() && privateKey.exists() && publicKey.exists()) {
@@ -978,7 +978,7 @@ public class SyncthingService extends Service {
         ObjectInputStream objectInputStream = null;
         Map<?, ?> sharedPrefsMap = null;
         try {
-            file = new File(Constants.EXPORT_PATH_OBJ, Constants.SHARED_PREFS_EXPORT_FILE);
+            file = new File(importPath, Constants.SHARED_PREFS_EXPORT_FILE);
             if (file.exists()) {
                 // Read, deserialize shared preferences.
                 fileInputStream = new FileInputStream(file);
@@ -1077,7 +1077,7 @@ public class SyncthingService extends Service {
          * https://developer.android.com/reference/java/nio/file/package-summary
          */
         if (Build.VERSION.SDK_INT >= 26) {
-            Path databaseImportPath = Paths.get(Constants.EXPORT_PATH + "/" + Constants.INDEX_DB_FOLDER);
+            Path databaseImportPath = Paths.get(importPath.getAbsolutePath() + "/" + Constants.INDEX_DB_FOLDER);
             if (java.nio.file.Files.exists(databaseImportPath)) {
                 Log.d(TAG, "importConfig: Importing index database");
                 Path databaseTargetPath = Paths.get(this.getFilesDir() + "/" + Constants.INDEX_DB_FOLDER);
