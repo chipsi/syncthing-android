@@ -14,6 +14,7 @@ import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.preference.CheckBoxPreference;
@@ -975,6 +976,7 @@ public class SettingsActivity extends SyncthingActivity {
             private WeakReference<SettingsActivity> refSettingsActivity;
             private WeakReference<SyncthingService> refSyncthingService;
             Boolean actionSucceeded = false;
+            File backupFolder = new File(Environment.getExternalStorageDirectory() + "/backups/syncthing");
 
             ExportConfigTask(SettingsActivity context, SyncthingService service) {
                 refSettingsActivity = new WeakReference<>(context);
@@ -988,7 +990,7 @@ public class SettingsActivity extends SyncthingActivity {
                     cancel(true);
                     return null;
                 }
-                actionSucceeded = syncthingService.exportConfig();
+                actionSucceeded = syncthingService.exportConfig(backupFolder);
                 return null;
             }
 
@@ -1007,7 +1009,7 @@ public class SettingsActivity extends SyncthingActivity {
                 }
                 Toast.makeText(settingsActivity,
                         settingsActivity.getString(R.string.config_export_successful,
-                        Constants.EXPORT_PATH_OBJ), Toast.LENGTH_LONG).show();
+                        backupFolder), Toast.LENGTH_LONG).show();
                 settingsActivity.finish();
             }
         }
@@ -1019,6 +1021,7 @@ public class SettingsActivity extends SyncthingActivity {
             private WeakReference<SettingsFragment> refSettingsFragment;
             private WeakReference<SyncthingService> refSyncthingService;
             Boolean actionSucceeded = false;
+            File backupFolder = new File(Environment.getExternalStorageDirectory() + "/backups/syncthing");
 
             ImportConfigTask(SettingsFragment context, SyncthingService service) {
                 refSettingsFragment = new WeakReference<>(context);
@@ -1032,7 +1035,7 @@ public class SettingsActivity extends SyncthingActivity {
                     cancel(true);
                     return null;
                 }
-                actionSucceeded = syncthingService.importConfig();
+                actionSucceeded = syncthingService.importConfig(backupFolder);
                 return null;
             }
 
@@ -1043,14 +1046,14 @@ public class SettingsActivity extends SyncthingActivity {
                 if (settingsFragment == null) {
                     return;
                 }
-                settingsFragment.afterConfigImport(actionSucceeded);
+                settingsFragment.afterConfigImport(actionSucceeded, backupFolder);
             }
         }
 
         /**
          * Calley by {@link SyncthingService#importConfig} after config import.
          */
-        private void afterConfigImport(Boolean actionSucceeded) {
+        private void afterConfigImport(Boolean actionSucceeded, final File backupFolder) {
             SyncthingActivity syncthingActivity = (SyncthingActivity) getActivity();
             if (syncthingActivity == null || syncthingActivity.isFinishing()) {
                 return;
@@ -1059,7 +1062,7 @@ public class SettingsActivity extends SyncthingActivity {
             if (!actionSucceeded) {
                 Toast.makeText(syncthingActivity,
                     getString(R.string.config_import_failed,
-                    Constants.EXPORT_PATH_OBJ), Toast.LENGTH_LONG).show();
+                    backupFolder), Toast.LENGTH_LONG).show();
                     return;
             }
             Toast.makeText(syncthingActivity,
