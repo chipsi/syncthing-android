@@ -972,7 +972,28 @@ public class SyncthingService extends Service {
             failSuccess = false;
         }
 
-        // Import SharedPreferences.
+        if (failSuccess) {
+            failSuccess = failSuccess && importConfigSharedPrefs(importPath);
+            failSuccess = failSuccess && importConfigDatabase(importPath);
+        }
+        Log.d(TAG, "importConfig END");
+
+        // Start syncthing after import if run conditions apply.
+        if (mLastDeterminedShouldRun) {
+            Handler mainLooper = new Handler(Looper.getMainLooper());
+            Runnable launchStartupTaskRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    launchStartupTask(SyncthingRunnable.Command.main);
+                }
+            };
+            mainLooper.post(launchStartupTaskRunnable);
+        }
+        return failSuccess;
+    }
+
+    public boolean importConfigSharedPrefs(final File importPath) {
+        Boolean failSuccess = true;
         File file;
         FileInputStream fileInputStream = null;
         ObjectInputStream objectInputStream = null;
@@ -1072,7 +1093,11 @@ public class SyncthingService extends Service {
                 Log.e(TAG, "importConfig: Failed to import SharedPreferences #2", e);
             }
         }
+        return failSuccess;
+    }
 
+    public boolean importConfigDatabase(final File importPath) {
+        boolean failSuccess = true;
         /**
          * java.nio.file library is available since API level 26, see
          * https://developer.android.com/reference/java/nio/file/package-summary
@@ -1099,19 +1124,6 @@ public class SyncthingService extends Service {
                     Log.e(TAG, "Failed to copy directory '" + databaseImportPath + "' to '" + databaseTargetPath + "'");
                 }
             }
-        }
-        Log.d(TAG, "importConfig END");
-
-        // Start syncthing after import if run conditions apply.
-        if (mLastDeterminedShouldRun) {
-            Handler mainLooper = new Handler(Looper.getMainLooper());
-            Runnable launchStartupTaskRunnable = new Runnable() {
-                @Override
-                public void run() {
-                    launchStartupTask(SyncthingRunnable.Command.main);
-                }
-            };
-            mainLooper.post(launchStartupTaskRunnable);
         }
         return failSuccess;
     }
