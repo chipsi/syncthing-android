@@ -146,6 +146,7 @@ public class ConfigXml {
                     Element elementParam = (Element) nodeParam;
                     elementParam.setAttribute("key", "cleanoutDays");
                     elementParam.setAttribute("val", "14");
+                    changed = true;
                 }
             }
         }
