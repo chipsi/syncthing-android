@@ -1175,6 +1175,12 @@ public class ConfigXml {
         folder.setAttribute("type", Constants.FOLDER_TYPE_SEND_RECEIVE);
         folder.setAttribute("fsWatcherEnabled", Boolean.toString(defaultFolder.fsWatcherEnabled));
         folder.setAttribute("fsWatcherDelayS", Integer.toString(defaultFolder.fsWatcherDelayS));
+
+        Element elementVersioning = (Element) folder.getElementsByTagName("versioning").item(0);
+        if (elementVersioning != null) {
+            elementVersioning.setAttribute("type", "trashcan");
+        }
+
         return true;
     }
 
