@@ -84,12 +84,15 @@ public class Folder {
     public String invalid;
 
     public static class Versioning implements Serializable {
-        public String type;
-        public int cleanupIntervalS;
-        public Map<String, String> params = new HashMap<>();
+        public String type = "trashcan";
+        public int cleanupIntervalS = 3600;
+        public Map<String, String> params = new HashMap<>() {{
+            put("cleanoutDays", "14");
+        }};
+
         // Since v1.14.0
-        public String fsPath;
-        public String fsType;           // default: "basic"
+        public String fsPath = "";
+        public String fsType = "basic";           // default: "basic"
     }
 
     public static class MinDiskFree {
