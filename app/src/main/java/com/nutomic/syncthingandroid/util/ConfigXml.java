@@ -255,21 +255,6 @@ public class ConfigXml {
             // Set 'hashers' (see https://github.com/syncthing/syncthing-android/issues/384) on the
             // given folder.
             changed = setConfigElement(r, "hashers", "1") || changed;
-
-            // Lower cleanupIntervalS for every folder to force cleanup on startup.
-            // https://github.com/Catfriend1/syncthing-android/issues/990
-            Element elementVersioning = (Element) r.getElementsByTagName("versioning").item(0);
-            if (elementVersioning != null) {
-                Integer cleanupIntervalS = getContentOrDefault(elementVersioning.getElementsByTagName("cleanupIntervalS").item(0), 3600);
-                if (cleanupIntervalS == 3600) {
-                    cleanupIntervalS = 10;
-                    changed = true;
-                } else if (cleanupIntervalS == 10) {
-                    cleanupIntervalS = 3600;
-                    changed = true;
-                }
-                setConfigElement(elementVersioning, "cleanupIntervalS", Integer.toString(cleanupIntervalS));
-            }
         }
 
         /* Section - GUI */
