@@ -1297,6 +1297,16 @@ public class RestApi {
         }
     }
 
+    private void setVersioningCleanupIntervalS (Integer cleanupIntervalS) {
+        synchronized (mConfigLock) {
+            for (Folder folder : mConfig.folders) {
+                folder.versioning.cleanupIntervalS = cleanupIntervalS;
+            }
+            sendConfig();
+        }
+        return;
+    }
+
     private void onTotalSyncCompletionChange() {
         // LogV("onTotalSyncCompletionChange fired.");
         if (mNotificationHandler == null) {
