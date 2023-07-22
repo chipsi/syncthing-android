@@ -131,6 +131,25 @@ public class ConfigXml {
             changed = changeLocalDeviceName(localDeviceID) || changed;
         }
 
+        // Change default folder section.
+        Element elementDefaults = (Element) mConfig.getDocumentElement()
+                .getElementsByTagName("defaults").item(0);
+        if (elementDefaults != null) {
+            Element elementDefaultFolder = (Element) elementDefaults
+                    .getElementsByTagName("folder").item(0);
+            if (elementDefaultFolder != null) {
+                Element elementVersioning = (Element) elementDefaultFolder.getElementsByTagName("versioning").item(0);
+                if (elementVersioning != null) {
+                    elementVersioning.setAttribute("type", "trashcan");
+                    Node nodeParam = mConfig.createElement("param");
+                    elementVersioning.appendChild(nodeParam);
+                    Element elementParam = (Element) nodeParam;
+                    elementParam.setAttribute("key", "cleanoutDays");
+                    elementParam.setAttribute("val", "14");
+                }
+            }
+        }
+
         // Set default folder to the "camera" folder: path and name
         changed = changeDefaultFolder() || changed;
 
