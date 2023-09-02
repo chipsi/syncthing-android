@@ -953,6 +953,7 @@ public class ConfigXml {
         gui.insecureAdminAccess = getContentOrDefault(elementGui.getElementsByTagName("insecureAdminAccess").item(0), gui.insecureAdminAccess);
         gui.insecureAllowFrameLoading = getContentOrDefault(elementGui.getElementsByTagName("insecureAllowFrameLoading").item(0), gui.insecureAllowFrameLoading);
         gui.insecureSkipHostCheck = getContentOrDefault(elementGui.getElementsByTagName("insecureSkipHostCheck").item(0), gui.insecureSkipHostCheck);
+        gui.sendBasicAuthPrompt = getContentOrDefault(elementGui.getElementsByTagName("sendBasicAuthPrompt").item(0), gui.sendBasicAuthPrompt);
         return gui;
     }
 
@@ -975,6 +976,7 @@ public class ConfigXml {
         setConfigElement(elementGui, "insecureAdminAccess", Boolean.toString(gui.insecureAdminAccess));
         setConfigElement(elementGui, "insecureAllowFrameLoading", Boolean.toString(gui.insecureAllowFrameLoading));
         setConfigElement(elementGui, "insecureSkipHostCheck", Boolean.toString(gui.insecureSkipHostCheck));
+        setConfigElement(elementGui, "sendBasicAuthPrompt", Boolean.toString(gui.sendBasicAuthPrompt));
     }
 
     public Options getOptions() {
