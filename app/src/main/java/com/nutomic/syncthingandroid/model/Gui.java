@@ -30,10 +30,6 @@ public class Gui {
     public boolean insecureAllowFrameLoading = false;
     public boolean insecureSkipHostCheck = false;
 
-    // Since v1.24+
-    // See https://github.com/syncthing/syncthing/pull/8757/
-    public boolean sendBasicAuthPrompt = true;
-
     public String getBindAddress() {
         if (address == null) {
             return "";
