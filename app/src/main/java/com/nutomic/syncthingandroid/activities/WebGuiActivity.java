@@ -182,7 +182,7 @@ public class WebGuiActivity extends SyncthingActivity
                 String b64Credentials = Base64.encodeToString(credentials.getBytes(UTF_8), Base64.NO_WRAP);
                 Map<String,String> headers = new HashMap<>();
                 headers.put("Authorization", "Basic " + b64Credentials);
-                mWebView.loadUrl(mConfig.getWebGuiUrl().toString(), headers);
+                mWebView.loadUrl(mConfig.getWebGuiUrl().toString() + "/themes.json", headers);
             }
         }
     }
