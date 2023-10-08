@@ -315,14 +315,6 @@ public class ConfigXml {
             changed = true;
         }
 
-        // Enable basicAuth mode instead of login form.
-        // See https://github.com/syncthing/syncthing/pull/8757
-        if (!gui.hasAttribute("sendBasicAuthPrompt") ||
-                !Boolean.parseBoolean(gui.getAttribute("sendBasicAuthPrompt"))) {
-            gui.setAttribute("sendBasicAuthPrompt", Boolean.toString(true));
-            changed = true;
-        }
-
         /* Section - options */
         Element options = (Element) mConfig.getDocumentElement()
                 .getElementsByTagName("options").item(0);
