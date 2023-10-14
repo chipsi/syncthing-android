@@ -93,15 +93,15 @@ android {
         }
     }
 
-    lintOptions {
-        disable "UnsafeExperimentalUsageError", "UnsafeExperimentalUsageWarning", "ExpiringTargetSdkVersion", "ExpiredTargetSdkVersion"
-        abortOnError true
-    }
 
     packagingOptions {
         jniLibs {
             useLegacyPackaging = true
         }
+    }
+    lint {
+        abortOnError true
+        disable 'UnsafeExperimentalUsageError', 'UnsafeExperimentalUsageWarning', 'ExpiringTargetSdkVersion', 'ExpiredTargetSdkVersion'
     }
 }
 
