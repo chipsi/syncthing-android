@@ -30,6 +30,7 @@ public class Device {
     public boolean paused = false;
     public List<IgnoredFolder> ignoredFolders;
     public boolean autoAcceptFolders = false;
+    public String allowedNetwork = "";
 
     // Since v1.12.0
     // See https://github.com/syncthing/syncthing/pull/7055
