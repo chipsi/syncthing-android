@@ -23,6 +23,7 @@ public class Device {
     public String deviceID;
     public String name = "";
     public List<String> addresses;
+    public List<String> allowedNetworks;
     public String compression = "metadata";
     public String certName;
     public String introducedBy = "";
@@ -30,7 +31,6 @@ public class Device {
     public boolean paused = false;
     public List<IgnoredFolder> ignoredFolders;
     public boolean autoAcceptFolders = false;
-    public String allowedNetwork = "";
 
     // Since v1.12.0
     // See https://github.com/syncthing/syncthing/pull/7055
