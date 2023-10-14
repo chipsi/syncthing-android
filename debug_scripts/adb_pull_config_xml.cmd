@@ -14,6 +14,7 @@ REM
 :loopMe
 cls
 adb shell "su root cat %DATA_ROOT%/%PACKAGE_NAME%/files/config.xml" > "%SCRIPT_PATH%config.xml"
+call :psConvertFileFromCRLFtoLF "%SCRIPT_PATH%config.xml"
 IF EXIST "%SCRIPT_PATH%config.xml" TYPE "%SCRIPT_PATH%config.xml" | more
 echo.
 pause
@@ -21,3 +22,19 @@ echo.
 echo ==========================================================
 echo.
 goto :loopMe
+
+
+:psConvertFileFromCRLFtoLF
+REM 
+REM Syntax:
+REM 	call :psConvertFileFromCRLFtoLF [FULLFN]
+REM 
+REM Variables.
+SET TMP_PSCFFCL_FULLFN=%1
+IF DEFINED TMP_PSCFFCL_FULLFN SET TMP_PSCFFCL_FULLFN=%TMP_PSCFFCL_FULLFN:"=%
+REM 
+IF NOT EXIST %TMP_PSCFFCL_FULLFN% call :logAdd "[ERROR] psConvertFileFromCRLFtoLF: TMP_PSCFFCL_FULLFN=[%TMP_PSCFFCL_FULLFN%] does not exist." & goto :eof
+call :logAdd "[INFO] psConvertFileFromCRLFtoLF: Converting [%TMP_PSCFFCL_FULLFN%] ..."
+powershell -NoLogo -NoProfile -ExecutionPolicy ByPass -Command "Set-Content -Path '%TMP_PSCFFCL_FULLFN%' -NoNewLine -Value (Get-Content '%TMP_PSCFFCL_FULLFN%' -Raw).Replace(\"`r`n\",\"`n\")" 2> NUL:
+REM 
+goto :eof
