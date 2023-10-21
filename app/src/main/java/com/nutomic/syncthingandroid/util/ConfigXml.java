@@ -327,12 +327,13 @@ public class ConfigXml {
         for (int i = 0; i < childNodes.getLength(); i++) {
             Node node = childNodes.item(i);
             if (node.getNodeName().equals("unackedNotificationID")) {
-                switch (getContentOrDefault(node, "")) {
+                String notificationType = getContentOrDefault(node, "");
+                switch (notificationType) {
                     case "authenticationUserAndPassword":
                     case "crAutoEnabled":
                     case "crAutoDisabled":
                     case "fsWatcherNotification":
-                        Log.i(TAG, "Remove found unackedNotificationID '" + node + "'.");
+                        Log.i(TAG, "Remove found unackedNotificationID '" + notificationType + "'.");
                         options.removeChild(node);
                         changed = true;
                         break;
