@@ -140,8 +140,6 @@ public class SettingsActivity extends SyncthingActivity {
         private static final String TAG = "SettingsFragment";
         // Settings/Syncthing Options
         private static final String KEY_WEBUI_TCP_PORT = "webUITcpPort";
-        private static final String KEY_WEBUI_USERNAME = "webui_username";
-        private static final String KEY_WEBUI_PASSWORD = "webui_password";
         private static final String KEY_WEBUI_REMOTE_ACCESS = "webUIRemoteAccess";
         private static final String KEY_WEBUI_DEBUGGING = "webUIDebugging";
         private static final String KEY_DOWNLOAD_SUPPORT_BUNDLE = "downloadSupportBundle";
@@ -336,8 +334,8 @@ public class SettingsActivity extends SyncthingActivity {
             mRelaysEnabled          = (CheckBoxPreference) findPreference("relaysEnabled");
             mGlobalAnnounceServers  = (EditTextPreference) findPreference("globalAnnounceServers");
             mWebUITcpPort           = (EditTextPreference) findPreference(KEY_WEBUI_TCP_PORT);
-            mWebUIUsername          = (EditTextPreference) findPreference(KEY_WEBUI_USERNAME);
-            mWebUIPassword          = (EditTextPreference) findPreference(KEY_WEBUI_PASSWORD);
+            mWebUIUsername          = (EditTextPreference) findPreference(Constants.PREF_WEBUI_USERNAME);
+            mWebUIPassword          = (EditTextPreference) findPreference(Constants.PREF_WEBUI_PASSWORD);
             mWebUIRemoteAccess      = (CheckBoxPreference) findPreference(KEY_WEBUI_REMOTE_ACCESS);
             mSyncthingApiKey        = findPreference(KEY_SYNCTHING_API_KEY);
             mUrAccepted             = (CheckBoxPreference) findPreference("urAccepted");
@@ -706,10 +704,10 @@ public class SettingsActivity extends SyncthingActivity {
                     mWebUITcpPort.setSummary(Integer.toString(webUITcpPort));
                     mGui.address = mGui.getBindAddress() + ":" + Integer.toString(webUITcpPort);
                     break;
-                case KEY_WEBUI_USERNAME:
+                case Constants.PREF_WEBUI_USERNAME:
                     mGui.user = (String) o;
                     break;
-                case KEY_WEBUI_PASSWORD:
+                case Constants.PREF_WEBUI_PASSWORD:
                     mGui.password = BCrypt.hashpw((String) o, BCrypt.gensalt(4));
                     break;
                 case KEY_WEBUI_REMOTE_ACCESS:
