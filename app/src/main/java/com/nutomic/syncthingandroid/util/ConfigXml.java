@@ -257,8 +257,12 @@ public class ConfigXml {
         return getGuiElement().getElementsByTagName("apikey").item(0).getTextContent();
     }
 
-    public String getUserName() {
+    public String getWebUIUsername() {
         return getGuiElement().getElementsByTagName("user").item(0).getTextContent();
+    }
+
+    public String getWebUIPassword() {
+        return PreferenceManager.getDefaultSharedPreferences(mContext).getString(Constants.PREF_WEBUI_PASSWORD, "");
     }
 
     /**
