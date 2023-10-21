@@ -58,6 +58,8 @@ import com.nutomic.syncthingandroid.util.FileUtils;
 import com.nutomic.syncthingandroid.util.Util;
 import com.nutomic.syncthingandroid.views.WifiSsidPreference;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.security.InvalidParameterException;
@@ -138,6 +140,8 @@ public class SettingsActivity extends SyncthingActivity {
         private static final String TAG = "SettingsFragment";
         // Settings/Syncthing Options
         private static final String KEY_WEBUI_TCP_PORT = "webUITcpPort";
+        private static final String KEY_WEBUI_USERNAME = "webui_username";
+        private static final String KEY_WEBUI_PASSWORD = "webui_password";
         private static final String KEY_WEBUI_REMOTE_ACCESS = "webUIRemoteAccess";
         private static final String KEY_WEBUI_DEBUGGING = "webUIDebugging";
         private static final String KEY_DOWNLOAD_SUPPORT_BUNDLE = "downloadSupportBundle";
@@ -191,6 +195,8 @@ public class SettingsActivity extends SyncthingActivity {
         private CheckBoxPreference mRelaysEnabled;
         private EditTextPreference mGlobalAnnounceServers;
         private EditTextPreference mWebUITcpPort;
+        private EditTextPreference mWebUIUsername;
+        private EditTextPreference mWebUIPassword;
         private CheckBoxPreference mWebUIRemoteAccess;
         private CheckBoxPreference mUrAccepted;
         private CheckBoxPreference mCrashReportingEnabled;
@@ -330,6 +336,8 @@ public class SettingsActivity extends SyncthingActivity {
             mRelaysEnabled          = (CheckBoxPreference) findPreference("relaysEnabled");
             mGlobalAnnounceServers  = (EditTextPreference) findPreference("globalAnnounceServers");
             mWebUITcpPort           = (EditTextPreference) findPreference(KEY_WEBUI_TCP_PORT);
+            mWebUIUsername          = (EditTextPreference) findPreference(KEY_WEBUI_USERNAME);
+            mWebUIPassword          = (EditTextPreference) findPreference(KEY_WEBUI_PASSWORD);
             mWebUIRemoteAccess      = (CheckBoxPreference) findPreference(KEY_WEBUI_REMOTE_ACCESS);
             mSyncthingApiKey        = findPreference(KEY_SYNCTHING_API_KEY);
             mUrAccepted             = (CheckBoxPreference) findPreference("urAccepted");
@@ -542,6 +550,10 @@ public class SettingsActivity extends SyncthingActivity {
             if (mGui != null) {
                 mWebUITcpPort.setText(mGui.getBindPort());
                 mWebUITcpPort.setSummary(mGui.getBindPort());
+
+                mWebUIUsername.setText(mGui.user);
+                mWebUIUsername.setSummary(mGui.user);
+
                 mWebUIRemoteAccess.setChecked(!BIND_LOCALHOST.equals(mGui.getBindAddress()));
                 mWebUIDebugging.setChecked(mGui.debugging);
                 mDownloadSupportBundle.setEnabled(mGui.debugging);
@@ -693,6 +705,12 @@ public class SettingsActivity extends SyncthingActivity {
                     }
                     mWebUITcpPort.setSummary(Integer.toString(webUITcpPort));
                     mGui.address = mGui.getBindAddress() + ":" + Integer.toString(webUITcpPort);
+                    break;
+                case KEY_WEBUI_USERNAME:
+                    mGui.user = (String) o;
+                    break;
+                case KEY_WEBUI_PASSWORD:
+                    mGui.password = BCrypt.hashpw((String) o, BCrypt.gensalt(4));
                     break;
                 case KEY_WEBUI_REMOTE_ACCESS:
                     mGui.address = ((boolean) o ? BIND_ALL : BIND_LOCALHOST) + ":" + mWebUITcpPort.getSummary();
