@@ -12,10 +12,10 @@ REM 	SET DATA_ROOT=/data/user/0
 SET DATA_ROOT=/data/data
 REM 
 :loopMe
-cls
+REM cls
 adb shell "su root cat %DATA_ROOT%/%PACKAGE_NAME%/files/config.xml" > "%SCRIPT_PATH%config.xml"
 call :psConvertFileFromCRLFtoLF "%SCRIPT_PATH%config.xml"
-IF EXIST "%SCRIPT_PATH%config.xml" TYPE "%SCRIPT_PATH%config.xml" | more
+IF EXIST "%SCRIPT_PATH%config.xml" TYPE "%SCRIPT_PATH%config.xml" | findstr /i /c:"user" /c:"pass" | findstr /i /v /c:"encrypt"
 echo.
 pause
 echo.
