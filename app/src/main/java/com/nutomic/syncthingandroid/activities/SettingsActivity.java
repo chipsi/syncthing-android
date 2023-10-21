@@ -705,6 +705,7 @@ public class SettingsActivity extends SyncthingActivity {
                     mGui.address = mGui.getBindAddress() + ":" + Integer.toString(webUITcpPort);
                     break;
                 case Constants.PREF_WEBUI_USERNAME:
+                    mWebUIUsername.setSummary((String) o);
                     mGui.user = (String) o;
                     break;
                 case Constants.PREF_WEBUI_PASSWORD:
