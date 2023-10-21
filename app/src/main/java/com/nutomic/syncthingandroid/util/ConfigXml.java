@@ -154,6 +154,18 @@ public class ConfigXml {
         // Set default folder to the "camera" folder: path and name
         changed = changeDefaultFolder() || changed;
 
+        /* Section - GUI */
+        Element gui = getGuiElement();
+        if (gui == null) {
+            throw new OpenConfigException();
+        }
+
+        // Set user to "syncthing"
+        changed = setConfigElement(gui, "user", "syncthing") || changed;
+
+        // Set password to the API key
+        changed = setConfigElement(gui, "password", BCrypt.hashpw(getApiKey(), BCrypt.gensalt(4))) || changed;
+
         // Save changes if we made any.
         if (changed) {
             saveChanges();
@@ -288,30 +300,6 @@ public class ConfigXml {
         if (!gui.hasAttribute("tls") ||
                 Boolean.parseBoolean(gui.getAttribute("tls")) != forceHttps) {
             gui.setAttribute("tls", Boolean.toString(forceHttps));
-            changed = true;
-        }
-
-        // Set user to "syncthing"
-        changed = setConfigElement(gui, "user", "syncthing") || changed;
-
-        // Set password to the API key
-        Node password = gui.getElementsByTagName("password").item(0);
-        if (password == null) {
-            password = mConfig.createElement("password");
-            gui.appendChild(password);
-        }
-        String apikey = getApiKey();
-        String pw = password.getTextContent();
-        boolean passwordOk;
-        try {
-            passwordOk = !TextUtils.isEmpty(pw) && BCrypt.checkpw(apikey, pw);
-        } catch (IllegalArgumentException e) {
-            Log.w(TAG, "Malformed password", e);
-            passwordOk = false;
-        }
-        if (!passwordOk) {
-            Log.i(TAG, "Updating password");
-            password.setTextContent(BCrypt.hashpw(apikey, BCrypt.gensalt(4)));
             changed = true;
         }
 
