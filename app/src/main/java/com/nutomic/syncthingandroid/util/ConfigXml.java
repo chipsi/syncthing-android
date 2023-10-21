@@ -163,8 +163,11 @@ public class ConfigXml {
         // Set user to "syncthing"
         changed = setConfigElement(gui, "user", "syncthing") || changed;
 
-        // Set password to the API key
-        changed = setConfigElement(gui, "password", BCrypt.hashpw(getApiKey(), BCrypt.gensalt(4))) || changed;
+        // Initialiaze password to the API key
+        changed = setConfigElement(gui, "password",  BCrypt.hashpw(getApiKey(), BCrypt.gensalt(4))) || changed;
+        PreferenceManager.getDefaultSharedPreferences(mContext).edit()
+                .putString(Constants.PREF_WEBUI_PASSWORD, getApiKey())
+                .apply();
 
         // Save changes if we made any.
         if (changed) {
