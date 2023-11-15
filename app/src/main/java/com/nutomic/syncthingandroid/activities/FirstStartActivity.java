@@ -190,7 +190,7 @@ public class FirstStartActivity extends AppCompatActivity {
             mSlides[slideIndex++] = new Slide(R.layout.activity_firststart_location_permission, colorsActive[2], colorsInactive[2]);
         }
         if (showSlideNotificationPermission) {
-            mSlideLocationPermission = slideIndex;
+            mSlideNotificationPermission = slideIndex;
             mSlides[slideIndex++] = new Slide(R.layout.activity_firststart_notification_permission, colorsActive[0], colorsInactive[0]);
         }
         if (showSlideKeyGeneration) {
