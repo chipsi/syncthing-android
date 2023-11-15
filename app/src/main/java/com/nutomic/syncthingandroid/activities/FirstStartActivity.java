@@ -142,7 +142,7 @@ public class FirstStartActivity extends AppCompatActivity {
         if (showSlideLocationPermission) {
             Log.d(TAG, "We (no longer?) have location permission and will politely ask for it.");
         }
-        if (mSlideNotificationPermission) {
+        if (showSlideNotificationPermission) {
             Log.d(TAG, "We (no longer?) have notification permission and will politely ask for it.");
         }
         if (showSlideKeyGeneration) {
@@ -302,7 +302,7 @@ public class FirstStartActivity extends AppCompatActivity {
             }
         }
 
-        if (mViewPager.getCurrentItem() == mSlideNotificationPermission() {
+        if (mViewPager.getCurrentItem() == mSlideNotificationPermission) {
             // As the notification permission is a prerequisite to run the syncthing service permanently, refuse to continue without it.
             if (!haveNotificationPermission()) {
                 Toast.makeText(this, R.string.toast_notification_permission_required,
