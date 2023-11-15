@@ -254,6 +254,7 @@ public class FirstStartActivity extends AppCompatActivity {
             return;
         }
         if (mViewPager.getCurrentItem() == mSlidePosStoragePermission ||
+                mViewPager.getCurrentItem() == mSlideNotificationPermission ||
                 mViewPager.getCurrentItem() == mSlidePosIgnoreDozePermission) {
             mNextButton.performClick();
         }
