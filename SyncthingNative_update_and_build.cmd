@@ -13,6 +13,7 @@ SET DESIRED_SUBMODULE_VERSION=v1.26.1
 SET GRADLEW_PARAMS=-q
 REM
 REM Runtime Variables.
+IF EXIST "%LocalAppData%\Android\Sdk" SET "ANDROID_SDK_ROOT=%LocalAppData%\Android\Sdk"
 IF NOT DEFINED ANDROID_SDK_ROOT SET "ANDROID_SDK_ROOT=%SCRIPT_PATH%..\syncthing-android-prereq"
 IF NOT DEFINED JAVA_HOME SET JAVA_HOME=%ProgramFiles%\Android\Android Studio\jbr
 REM
