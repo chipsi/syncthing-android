@@ -230,7 +230,7 @@ def get_ndk_ready():
         print('ANDROID_NDK_HOME or NDK_VERSION and ANDROID_HOME environment variable must be defined')
         install_ndk()
         return
-    os.environ["ANDROID_NDK_HOME"] = return os.path.join(os.environ['ANDROID_HOME'], 'ndk', os.environ['NDK_VERSION'])
+    os.environ["ANDROID_NDK_HOME"] = os.path.join(os.environ['ANDROID_HOME'], 'ndk', os.environ['NDK_VERSION'])
     return
 
 
