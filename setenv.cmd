@@ -2,6 +2,7 @@
 REM
 REM Runtime Variables.
 IF NOT DEFINED JAVA_HOME SET JAVA_HOME=%ProgramFiles%\Android\Android Studio\jbr
+IF EXIST "%LocalAppData%\Android\Sdk" SET "ANDROID_SDK_ROOT=%LocalAppData%\Android\Sdk"
 REM
 where /q java
 IF NOT "%ERRORLEVEL%" == "0" SET PATH=%PATH%;%JAVA_HOME%\bin
