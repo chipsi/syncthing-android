@@ -223,6 +223,17 @@ def write_file(fullfn, text):
         hFile.write(text + '\n')
 
 
+def get_ndk_ready():
+    if os.environ.get('ANDROID_NDK_HOME', ''):
+        return
+    if not os.environ.get('NDK_VERSION', '') or not os.environ.get('ANDROID_HOME', ''):
+        print('ANDROID_NDK_HOME or NDK_VERSION and ANDROID_HOME environment variable must be defined')
+        install_ndk()
+        return
+    os.environ["ANDROID_NDK_HOME"] = return os.path.join(os.environ['ANDROID_HOME'], 'ndk', os.environ['NDK_VERSION'])
+    return
+
+
 def install_ndk():
     import os
     import zipfile
@@ -327,13 +338,10 @@ if not go_bin:
         fail('Error: go is not available on the PATH.')
 print('go_bin=\'' + go_bin + '\'')
 
-# Check if ANDROID_NDK_HOME variable is set.
+# Check if "ANDROID_NDK_HOME" env var is set. If not, try to discover and set it.
+get_ndk_ready()
 if not os.environ.get('ANDROID_NDK_HOME', ''):
-    print('Warning: ANDROID_NDK_HOME environment variable not defined.')
-    install_ndk();
-    # Retry: Check if ANDROID_NDK_HOME variable is set.
-    if not os.environ.get('ANDROID_NDK_HOME', ''):
-        fail('Error: ANDROID_NDK_HOME environment variable not defined')
+    fail('Error: ANDROID_NDK_HOME environment variable not defined')
 print('ANDROID_NDK_HOME=\'' + os.environ.get('ANDROID_NDK_HOME', '') + '\'')
 
 # Make sure all tags are available for git describe
