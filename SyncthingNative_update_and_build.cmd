@@ -27,7 +27,7 @@ REM
 where /q java
 IF NOT "%ERRORLEVEL%" == "0" SET PATH=%PATH%;%JAVA_HOME%\bin
 where /q java
-IF NOT "%ERRORLEVEL%" == "0" echo [ERROR] java.exe not found on PATH env var. Download 'https://www.oracle.com/java/technologies/downloads/#java11-windows' and run the installer & pause & goto :checkPrerequisites
+IF NOT "%ERRORLEVEL%" == "0" echo [ERROR] java.exe not found on PATH env var. Download 'https://www.oracle.com/java/technologies/downloads/#java17' and run the installer & pause & goto :checkPrerequisites
 REM
 where /q python
 IF NOT "%ERRORLEVEL%" == "0" echo [ERROR] python.exe not found on PATH env var. Download 'https://www.python.org/ftp/python/3.9.6/python-3.9.6-amd64.exe' and run 'python-3.9.6-amd64.exe /quiet InstallAllUsers=1 PrependPath=1 Include_test=0' & pause & goto :checkPrerequisites
