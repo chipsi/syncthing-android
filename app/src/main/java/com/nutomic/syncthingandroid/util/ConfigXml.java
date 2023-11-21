@@ -1195,6 +1195,15 @@ public class ConfigXml {
     private boolean changeDefaultFolder() {
         String dcimPath = Environment
                 .getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath();
+        /**
+         * Do not create the folder in Syncthing, if ".stfolder" already exists.
+         * The user might then have two Syncthing app installations running side by side
+         * or he is just setting things up from scratch (and knows how to create a folder).
+         */
+        if ((new File (dcimPath + "/" + Constants.FILENAME_STFOLDER)).exists()) {
+            Log.w(TAG, "changeDefaultFolder: " + Constants.FILENAME_STFOLDER + " from previous installation detected. Will not create the folder in Syncthing for safety reasons.");
+            return false;
+        }
         Folder defaultFolder = new Folder();
         Element folder = (Element) mConfig.getDocumentElement()
                 .getElementsByTagName("folder").item(0);
