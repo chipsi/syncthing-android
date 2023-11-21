@@ -968,7 +968,7 @@ public class FolderActivity extends SyncthingActivity {
         arguments.remove("type");
 
         if (type.equals("none")) {
-            mFolder.versioning.type = type;
+            mFolder.versioning = new Folder.Versioning();
         } else {
             for (String key : arguments.keySet()) {
                 mFolder.versioning.params.put(key, arguments.getString(key));
@@ -1062,7 +1062,7 @@ public class FolderActivity extends SyncthingActivity {
             return;
         }
 
-        if (TextUtils.isEmpty(mFolder.versioning.type) || mFolder.versioning.type.equals("none")) {
+        if (TextUtils.isEmpty(mFolder.versioning.type)) {
             setVersioningDescription(getString(R.string.none), "");
             return;
         }
