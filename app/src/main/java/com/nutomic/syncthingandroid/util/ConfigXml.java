@@ -1201,7 +1201,7 @@ public class ConfigXml {
          * or he is just setting things up from scratch (and knows how to create a folder).
          */
         if ((new File (dcimPath + "/" + Constants.FILENAME_STFOLDER)).exists()) {
-            Log.w(TAG, "addDcimDefaultFolder: " + Constants.FILENAME_STFOLDER + " from previous installation detected. Will not create the folder in Syncthing for safety reasons.");
+            Log.v(TAG, "addDcimDefaultFolder: " + Constants.FILENAME_STFOLDER + " from previous installation detected. Will not create the folder in Syncthing for safety reasons.");
             return false;
         }
 
