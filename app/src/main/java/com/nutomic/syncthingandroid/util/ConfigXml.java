@@ -1167,6 +1167,17 @@ public class ConfigXml {
             return false;
         }
 
+        /**
+         * Do not create the folder in Syncthing, if ".stfolder" already exists.
+         * The user might then have two Synchting app installations running side by side
+         * or he is just setting things up from scratch (and knows how to create a folder).
+         */
+        Log.w(TAG, storageDir.getAbsolutePath() + "/" + Constants.FILENAME_STFOLDER );
+        if ((new File (storageDir.getAbsolutePath() + "/" + Constants.FILENAME_STFOLDER)).exists()) {
+            Log.w(TAG, "addSyncthingCameraFolder: " + Constants.FILENAME_STFOLDER + " from previous installation detected. Will not create the folder in Syncthing for safety reasons.");
+            return false;
+        }
+
         // Prepare folder element.
         Folder folder = new Folder();
         folder.minDiskFree = new Folder.MinDiskFree();
