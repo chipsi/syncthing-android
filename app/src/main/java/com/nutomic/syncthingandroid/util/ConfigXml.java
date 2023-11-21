@@ -1193,6 +1193,8 @@ public class ConfigXml {
      * Returns if changes to the config have been made.
      */
     private boolean changeDefaultFolder() {
+        String dcimPath = Environment
+                .getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath();
         Folder defaultFolder = new Folder();
         Element folder = (Element) mConfig.getDocumentElement()
                 .getElementsByTagName("folder").item(0);
@@ -1203,8 +1205,7 @@ public class ConfigXml {
         String defaultFolderId = deviceModel + "_" + generateRandomString(FOLDER_ID_APPENDIX_LENGTH);
         folder.setAttribute("label", mContext.getString(R.string.default_android_camera_folder_label));
         folder.setAttribute("id", mContext.getString(R.string.default_folder_id, defaultFolderId));
-        folder.setAttribute("path", Environment
-                .getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath());
+        folder.setAttribute("path", dcimPath);
         folder.setAttribute("type", Constants.FOLDER_TYPE_SEND_RECEIVE);
         folder.setAttribute("fsWatcherEnabled", Boolean.toString(defaultFolder.fsWatcherEnabled));
         folder.setAttribute("fsWatcherDelayS", Integer.toString(defaultFolder.fsWatcherDelayS));
