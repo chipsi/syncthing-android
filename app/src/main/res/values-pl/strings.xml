@@ -83,7 +83,7 @@
     <string name="revert_local_changes">Cofnij zmiany lokalne</string>
     <string name="delete_unexpected_items">Usuń elementy nieoczekiwane</string>
     <!-- Revert Local Changes Confirmation Dialog -->
-    <string name="revert_local_changes_question">Nastąpi wycofanie wszystkich zmian dokonanych na tym urządzeniu w tym katalogu. Czy kontynuować\?</string>
+    <string name="revert_local_changes_question">Nastąpi wycofanie wszystkich zmian dokonanych na tym urządzeniu w tym folderze. Czy kontynuować?</string>
     <string name="open_file_manager">Otwórz menedżer plików</string>
     <string name="open_file_with">Otwórz plik za pomocą</string>
     <string name="open_file_no_compatible_app">Nie znaleziono aplikacji do otwarcia tego pliku.</string>
