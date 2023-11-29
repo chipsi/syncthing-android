@@ -53,7 +53,7 @@
     <!-- Shown in the chooser dialog when sharing a Device ID -->
     <string name="send_device_id_to">Wyślij identyfikator urządzenia do</string>
     <string name="usage_reporting_dialog_title">Czy chcesz zezwolić na anonimowe statystyki użycia?</string>
-    <string name="usage_reporting_dialog_description">Codziennie wysyłany jest zaszyfrowany raport statystyk użycia. Zawarte w nim są informacje o platformie użytkownika, rozmiarach folderów i wersji aplikacji. Jeśli zestaw pobieranych danych zmieni się to okno zostanie ponownie wyświetlone.
+    <string name="usage_reporting_dialog_description">Codziennie wysyłany jest zaszyfrowany raport statystyk użycia. Zawarte w nim są informacje o platformie użytkownika, rozmiarach folderów i wersji aplikacji. Jeśli zestaw pobieranych danych zmieni się, to okno zostanie ponownie wyświetlone.
 \n
 \nZebrane statystyki są dostępne dla każdego na https://data.syncthing.net.</string>
     <string name="yes">Tak</string>
@@ -72,14 +72,14 @@
     <string name="folder_list_empty">Nie odnaleziono folderów</string>
     <!-- Format string for folder file count -->
     <plurals name="files">
-        <item quantity="one">1%1$d / 2%2$d plik</item>
+        <item quantity="one">1%1$d / %2$d plik</item>
         <item quantity="few">%1$d / %2$d pliki</item>
         <item quantity="many">%1$d / %2$d plików</item>
-        <item quantity="other">%1$d / %2$d</item>
+        <item quantity="other">%1$d / %2$d plików</item>
     </plurals>
     <string name="override_changes">Nadpisz zmiany</string>
     <!-- Override Changes Confirmation Dialog -->
-    <string name="override_changes_question">Nastąpi wycofanie wszystkich zmian dokonanych na innych urządzeniach współdzielących ten katalog. Czy kontynuować\?</string>
+    <string name="override_changes_question">Nastąpi wycofanie wszystkich zmian dokonanych na innych urządzeniach współdzielących ten folder. Czy kontynuować?</string>
     <string name="revert_local_changes">Cofnij zmiany lokalne</string>
     <string name="delete_unexpected_items">Usuń elementy nieoczekiwane</string>
     <!-- Revert Local Changes Confirmation Dialog -->
