@@ -104,11 +104,11 @@
     <string name="device_syncing_percent_bytes">Synchronizowanie (%1$d%%, %2$s)</string>
     <!-- Indicates that there is no connection to the device -->
     <string name="device_disconnected">Rozłączony</string>
-    <string name="device_disconnected_not_synced">Rozłączono (%1$s oczekuje)</string>
+    <string name="device_disconnected_not_synced">Rozłączony (%1$s oczekuje)</string>
     <!-- Indicates that the device is paused and does not sync -->
     <string name="device_paused">Zatrzymany</string>
     <!-- Indicates that devices does not share any folders -->
-    <string name="device_state_unused">Nieużywane</string>
+    <string name="device_state_unused">Nieużywany</string>
     <!-- Indicates that the device connection is unknown -->
     <string name="device_state_unknown">Nieznany</string>
     <!-- Last seen title -->
@@ -151,7 +151,7 @@
     <string name="folder_fileWatcher">Obserwuj zmiany</string>
     <!-- Setting title and description -->
     <string name="folder_ignore_delete_caption">Ignoruj usunięcia</string>
-    <string name="folder_ignore_delete_description">Zaawansowana opcja zmieniająca sposób obsługi przychodzących aktualizacji indeksu. Gdy jest włączona, przychodzące aktualizacje z flagą \"usunięto\" są ignorowane. Więcej informacji: &folder_ignore_delete_docs_url;</string>
+    <string name="folder_ignore_delete_description">Zaawansowana opcja zmieniająca sposób obsługi przychodzących aktualizacji indeksu. Gdy jest włączona, przychodzące aktualizacje z flagą „usunięto” są ignorowane. Więcej informacji: &folder_ignore_delete_docs_url;</string>
     <!-- Setting title -->
     <string name="folder_pause">Zatrzymaj folder</string>
     <!-- Setting title -->
