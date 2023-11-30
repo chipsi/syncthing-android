@@ -4,13 +4,13 @@
 ]>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Syncthing-Fork</string>
-    <string name="app_description">Açık, güvenilir ve merkezi olmayan bir dosya eşzamanlama uygulaması.</string>
+    <string name="app_description">Açık, güvenilir ve merkezi olmayan bir dosya eşitleme uygulaması.</string>
     <!-- FirstStartActivity -->
     <!-- Title for dialog displayed on first start -->
     <string name="welcome_title">Android için Syncthing\'e Hoş Geldiniz</string>
     <!-- Slide "Ignore battery optimizations" -->
-    <string name="ignore_doze_permission_title">Batarya İyileştirme</string>
-    <string name="cont">Devam et</string>
+    <string name="ignore_doze_permission_title">Pil İyileştirme</string>
+    <string name="cont">Devam</string>
     <string name="generic_error">Hata</string>
     <!-- Title of the "add folder" menu action -->
     <string name="add_folder">Klasör Ekleme</string>
@@ -231,4 +231,61 @@
     <string name="folder_size_format">%1$s / %2$s</string>
     <string name="appconfig_receiver_background_enabled">Arka planda çalışma etkinken Syncthing\'i durdurma desteklenmiyor.</string>
     <string name="file_versioning">Dosya Sürümlendirme</string>
+    <string name="qs_schedule_label">5 dakikalığına çalıştır</string>
+    <string name="photo_shoot_activity_title">Syncthing-Fork Camera</string>
+    <string name="introduction">Tanıtım</string>
+    <string name="qs_force_label">Çalıştırmaya zorla</string>
+    <string name="custom_sync_conditions_dialog">Eşitleme koşullarını belirle</string>
+    <string name="location_permission_title">Konum İzni</string>
+    <string name="activity_main_bottom_navigation_rescan_all">Tümünü Yeniden Tara</string>
+    <string name="location_permission_desc_api_29">Android 10+ için ipucu: \"Her zaman izin ver\"</string>
+    <string name="key_generation_success">Özel veri alışverişi için güvenli anahtarlar başarılı olarak üretildi.</string>
+    <string name="welcome_text">Syncthing bir açık kaynaklı dosya eşitleme uygulamasıdır. Diğer cihazlarla veri paylaşmak için onların benzersiz cihaz kimliklerini cihaz listesine eklemeniz gerekir. Daha sonra hangi klasörlerin hangi cihazlarla paylaşılacağını seçebilirsiniz.
+\n
+\nLütfen karşılaştığınız herhangi bir sorunu Github aracılığıyla bildirin.</string>
+    <string name="notification_permission_desc">Yeni cihaz bağlantıları, klasör paylaşım istekleri ile ilgili bildirimleri göstermek ve hizmeti canlı ve bağlı tutmak için gereklidir.</string>
+    <string name="reason">Sebep:</string>
+    <string name="qs_schedule_disabled">Zamanlama etkisizleştirildi</string>
+    <string name="grant_permission">İzin ver</string>
+    <string name="close_main_menu">Ana Menüyü Kapat</string>
+    <string name="finish">Bitti</string>
+    <string name="back">Geri</string>
+    <string name="grant_camera_permission">Kamera izni ver</string>
+    <string name="dialog_all_files_access_not_supported">Cihazınız tüm dosyalara erişimi desteklemiyor</string>
+    <string name="ignore_doze_permission_desc">Android bir süre sonra eşitlemeyi durdurabilir. Bunu önlemek için pil iyileştirmeyi kapatın. Bazı cihazlarda önceden yüklenmiş ek görev sonlandırma uygulamaları bulunur. Syncthing\'i de beyaz listeye eklemelisiniz.</string>
+    <string name="ignore">Yoksay</string>
+    <string name="photo_shoot_take_picture_success">Resim başarılı olarak Syncthing Camera klasörüne kaydedildi.</string>
+    <string name="generic_example">Örnek</string>
+    <string name="main_menu">Ana Menü</string>
+    <string name="photo_shoot_intro_permission_title">Gerekli izinler</string>
+    <string name="key_generation_title">Anahtar Üretme</string>
+    <string name="qs_following_run_conditions">Aşağıdaki çalıştırma koşulları</string>
+    <string name="qs_schedule_label_minutes" tools:ignore="PluralsCandidate">%1$d dakikalığına çalıştır</string>
+    <string name="run_on_whitelisted_wifi_summary">Eşitlemenin yalnızca belirli kablosuz (Wi-Fi) ağlarda gerçekleşmesini kısıtlamak için beyaz listeyi açın.</string>
+    <string name="photo_shoot_intro_no_camera">Üzgünüz, bu cihazın kamerası yok.</string>
+    <string name="custom_sync_conditions_description">Genel çalıştırma koşullarının istisnalarını belirtmenizi sağlar.</string>
+    <string name="custom_sync_conditions_title">Özel eşitleme koşulları</string>
+    <string name="photo_shoot_launcher_title">Sync. Camera</string>
+    <string name="page_x_of_y">Sayfa %1$s / %2$s</string>
+    <string name="refresh">Yenile</string>
+    <string name="generic_help">Yardım</string>
+    <string name="dialog_disable_battery_optimizations_not_supported">Cihazınız pil iyileştirmelerini etkisizleştirmeyi desteklemiyor</string>
+    <string name="location_permission_desc">Syncthing, seçilen kablosuz (Wi-Fi) ağlarda çalışacak şekilde yapılandırılabilir. Android, uygulamanın etkin kablosuz (Wi-Fi) ağ adını okuyabilmesi için konum iznine sahip olmasını gerektirir. Eğer bu özelliği kullanmak istiyorsanız, yukarıdaki düğmeye basın. Bu adımı atlayabilirsiniz. Daha fazla ayrıntı için gizlilik ilkemize bakın.</string>
+    <string name="photo_shoot_intro_welcome_title">Syncthing Camera\'ya Hoş Geldiniz</string>
+    <string name="photo_shoot_take_picture_failure">Resim çekme başarısız oldu veya iptal ettiniz.</string>
+    <string name="storage_permission_desc">Dosya eşitlemesi yapmak için Syncthing\'in depolama alanınıza erişmesi gerekiyor.</string>
+    <string name="photo_shoot_intro_permission_desc">Syncthing Camera, resim çekmek ve bunları cihazınızda saklamak için onayınızı gerektirir. Bu özellik isteğe bağlıdır. Kullanmak için izinleri verin ve \"Devam\"a dokunun. Daha sonra diğer Syncthing cihazlarıyla paylaşabileceğiniz bir Syncthing Camera klasörü oluşturacağız.</string>
+    <string name="qs_forced_to_run">Çalıştırmaya zorlandı</string>
+    <string name="storage_permission_title">Depolama İzni</string>
+    <string name="ignore_doze_permission_os_notice">Android TV\'lerin, arka planda çalışırken uygulamayı ara sıra sonlandırdığı bilinmektedir. \'%1$s/%2$s\' adresindeki vikide bir çözüm mevcuttur.</string>
+    <string name="notification_permission_title">Bildirim İzni</string>
+    <string name="default_syncthing_camera_folder_label">Syncthing Camera</string>
+    <string name="toast_notification_permission_required">Syncthing, hizmetini canlı ve bağlı tutmak için bildirim iznini gerektirir.</string>
+    <string name="accept">Kabul Et</string>
+    <string name="qs_forced_to_stop">Durdurmaya zorlandı</string>
+    <string name="toast_ignore_doze_permission_required">Bu uygulama yalnızca \"doze\" güç tasarrufu modundan muaf tutulduğunda güvenilir bir şekilde çalışır.</string>
+    <string name="open_main_menu">Ana Menüyü Aç</string>
+    <string name="photo_shoot_intro_missing_permissions">Devam etmek için depolama ve kamera iznine ihtiyacımız var.</string>
+    <string name="permission_granted">İzin verildi</string>
+    <string name="grant_storage_permission">Depolama izni ver</string>
 </resources>
