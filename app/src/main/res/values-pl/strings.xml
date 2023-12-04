@@ -478,7 +478,7 @@
     <string name="security_notice">Uwaga dotycząca bezpieczeństwa</string>
     <plurals name="device_online_up_to_date">
         <item quantity="one">%1$d urządzenie online i aktualne</item>
-        <item quantity="few">%1$d urządznia online i aktualne</item>
+        <item quantity="few">%1$d urządzenia online i aktualne</item>
         <item quantity="many">%1$d urządzeń online i aktualnych</item>
         <item quantity="other">%1$d urządzeń online i aktualnych</item>
     </plurals>
