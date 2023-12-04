@@ -463,9 +463,9 @@
     <string name="reason_force_start">Syncthing jest uruchomiony, ponieważ wymuszono uruchomienie aplikacji niezależnie od warunków działania.</string>
     <plurals name="syncthing_active_syncing_device_online">
         <item quantity="one">Synchronizacja: %1$d%% ukończono, %2$d urządzenie online</item>
-        <item quantity="few">Synchronizacja: %1$d%% ukończono, %2$d urządzeń online</item>
-        <item quantity="many"></item>
-        <item quantity="other"></item>
+        <item quantity="few">Synchronizacja: %1$d%% ukończono, %2$d urządzenia online</item>
+        <item quantity="many">Synchronizacja: %1$d%% ukończono, %2$d urządzeń online</item>
+        <item quantity="other">Synchronizacja: %1$d%% ukończono, %2$d urządzeń online</item>
     </plurals>
     <string name="undo_ignored_devices_folders_question">To cofnie wcześniejsze decyzje o ignorowaniu urządzeń i folderów. Kontynuować?</string>
     <string name="pull_order_type_newestFirst_description">Pobierz pliki według czasu modyfikacji. Najpierw najnowsze.</string>
@@ -478,9 +478,9 @@
     <string name="security_notice">Uwaga dotycząca bezpieczeństwa</string>
     <plurals name="device_online_up_to_date">
         <item quantity="one">%1$d urządzenie online i aktualne</item>
-        <item quantity="few">%1$d urządzeń online i aktualnych</item>
-        <item quantity="many"></item>
-        <item quantity="other"></item>
+        <item quantity="few">%1$d urządznia online i aktualne</item>
+        <item quantity="many">%1$d urządzeń online i aktualnych</item>
+        <item quantity="other">%1$d urządzeń online i aktualnych</item>
     </plurals>
     <string name="category_syncthing_options_summary">To menu jest dostępne tylko wtedy, gdy uruchomiono Syncthing.</string>
     <string name="autoAcceptFolders">Autoakceptacja</string>
@@ -695,9 +695,9 @@
     <string name="broadcast_service_control_summary">Wartość domyślna: wyłączona. Włącz tę opcję, aby uruchamiać i zatrzymywać usługę poprzez wysyłanie transmisji, np. z aplikacji do automatyzacji innych dostawców. Uwaga: po zmianie tej opcji należy ręcznie ponownie uruchomić aplikację.</string>
     <plurals name="reason_not_within_time_frame_minutes">
         <item quantity="one">%d minuta</item>
-        <item quantity="few">%d minut</item>
-        <item quantity="many"></item>
-        <item quantity="other"></item>
+        <item quantity="few">%d minuty</item>
+        <item quantity="many">%d minut</item>
+        <item quantity="other">%d minut</item>
     </plurals>
     <string name="bind_network_title">Powiąż z aktywną siecią</string>
     <string name="device_addresses_invalid">Adresy urządzeń nie są poprawnie sformatowane. Spróbuj ponownie. Więcej informacji znajdziesz w dokumentacji Syncthing.</string>
