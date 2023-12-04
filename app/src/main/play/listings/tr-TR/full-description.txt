@@ -14,7 +14,7 @@ Android için Syncthing-Fork, Syncthing'in yerleşik Web Kullanıcı Arayüzü y
 
 Çatalın amaçları:
 * Toplulukla birlikte iyileştirmeleri geliştirin ve deneyin.
-* Senkronizasyon alt modülündeki değişikliklerin neden olduğu hataları belirlemek ve düzeltmek için sarmalayıcıyı daha sık serbest bırakın
+* Syncthing alt modülündeki değişikliklerin neden olduğu hataları belirlemek ve düzeltmek için sarmalayıcıyı daha sık serbest bırakın
 * Kullanıcı arayüzünde yapılandırılabilir geliştirmeler yapın, kullanıcılar bunları açıp kapatabilmelidir
 
 Bunu yazarken yukarı akış ve çatal arasındaki karşılaştırma:
