@@ -291,14 +291,15 @@ public class FirstStartActivity extends AppCompatActivity {
             // As the ignore doze permission is a prerequisite to run syncthing, refuse to continue without it.
             if (!haveIgnoreDozePermission()) {
                 /**
-                 * a) Phones, tablets: The ignore doze permission is mandatory.
+                 * a) Phones, tablets: The ignore doze permission is recommended.
                  * b) TVs: The ignore doze permission is optional as it can only set by ADB on Android 8+.
                  */
-                if (!mUserDecisionIgnoreDozePermission || !mRunningOnTV) {
+                if (!mUserDecisionIgnoreDozePermission && !mRunningOnTV) {
                     new AlertDialog.Builder(FirstStartActivity.this)
                             .setMessage(R.string.dialog_confirm_skip_ignore_doze_permission)
                             .setPositiveButton(android.R.string.yes, (dialog, which) -> {
                                     mUserDecisionIgnoreDozePermission = true;
+                                    onBtnNextClick();
                             })
                             .setNegativeButton(android.R.string.no, (dialog, which) -> {
                                     mUserDecisionIgnoreDozePermission = false;
