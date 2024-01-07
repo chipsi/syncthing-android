@@ -14,7 +14,7 @@
     <!-- Slide "Storage Permission" -->
     <string name="storage_permission_title">Доступ к файлам</string>
     <string name="storage_permission_desc">Syncthing требуется доступ к вашим файлам для осуществления синхронизации.</string>
-    <string name="dialog_all_files_access_not_supported">Ваше устройство не поддерживает полный доступ к файлам.</string>
+    <string name="dialog_all_files_access_not_supported">Ваше утройство не поддерживает доступ ко всем файлам</string>
     <!-- Slide "Ignore battery optimizations" -->
     <string name="ignore_doze_permission_title">Оптимизация батареи</string>
     <string name="ignore_doze_permission_os_notice">Известна проблема с Android TV, которая вызывает прекращение работы приложения в фоновом режиме. Решение доступно в вики: %1$s/%2$s.</string>
