@@ -22,10 +22,10 @@ dependencies {
     implementation('com.google.dagger:dagger:2.38.1')
     implementation('com.google.guava:guava:30.1.1-android')
     // Do not upgrade zxing:core beyond 3.3.0 to ensure Android 6.0 compatibility, see issue #761.
-    implementation 'com.google.zxing:core:3.3.0'
-    implementation ('com.journeyapps:zxing-android-embedded:4.2.0') { transitive = false }
-    implementation 'eu.chainfire:libsuperuser:1.1.0'
-    implementation 'org.mindrot:jbcrypt:0.4'
+    implementation('com.google.zxing:core:3.3.0')
+    implementation('com.journeyapps:zxing-android-embedded:4.2.0') { transitive = false }
+    implementation('eu.chainfire:libsuperuser:1.1.0')
+    implementation('org.mindrot:jbcrypt:0.4')
 
     constraints {
         implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.0") {
