@@ -69,8 +69,6 @@ android {
     }
 
     buildTypes {
-        release {
-            signingConfig = signingConfigs.release.storeFile ? signingConfigs.release : null
         }
         debug {
             applicationIdSuffix ".debug"
@@ -79,6 +77,10 @@ android {
                     logger.lifecycle("BUILD FAILED")
                 }
             }
+        getByName("release") {
+            signingConfig = signingConfigs.runCatching { getByName("release") }
+                .getOrNull()
+                .takeIf { it?.storeFile != null }
         }
     }
 
