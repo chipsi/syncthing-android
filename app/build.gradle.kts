@@ -71,7 +71,11 @@ android {
     buildTypes {
         }
         debug {
-            applicationIdSuffix ".debug"
+            applicationIdSuffix = ".debug"
+            isDebuggable = true
+            isJniDebuggable = true
+            isRenderscriptDebuggable = true
+            isMinifyEnabled = false
             gradle.buildFinished {
                 buildResult -> if (buildResult.failure) {
                     logger.lifecycle("BUILD FAILED")
