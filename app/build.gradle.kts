@@ -43,10 +43,10 @@ apply {
 
 android {
     val ndkVersionShared = rootProject.extra.get("ndkVersionShared")
-    val versionMajor = rootProject.extra.get("versionMajor")
-    val versionMinor = rootProject.extra.get("versionMinor")
-    val versionPatch = rootProject.extra.get("versionPatch")
-    val versionWrapper = rootProject.extra.get("versionWrapper")
+    val versionMajor = 1 // ToDo
+    val versionMinor = 2
+    val versionPatch = 3
+    val versionWrapper = 4
     compileSdk = 35
     buildToolsVersion = "35.0.0"
     ndkVersion = "${ndkVersionShared}"
@@ -113,7 +113,7 @@ android {
     }
     lint {
         abortOnError = true
-        disable("UnsafeExperimentalUsageError", "UnsafeExperimentalUsageWarning", "ExpiringTargetSdkVersion", "ExpiredTargetSdkVersion")
+        // ToDo disable("UnsafeExperimentalUsageError", "UnsafeExperimentalUsageWarning", "ExpiringTargetSdkVersion", "ExpiredTargetSdkVersion")
     }
 }
 
@@ -140,10 +140,11 @@ tasks.register<Delete>("deleteUnsupportedPlayTranslations") {
     )
 }
 
+/*
 task.register<Exec>("postBuildScript") {
     executable = "python"
     args = ["-u", "./postbuild.py"]
-}
+}*/
 
 project.afterEvaluate {
     project.getTasks().getByName("mergeDebugJniLibFolders").dependsOn(":syncthing:buildNative")
