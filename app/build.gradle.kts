@@ -38,7 +38,7 @@ dependencies {
 }
 
 apply {
-    from("versions.gradle")
+    from("versions.gradle.kts")
 }
 
 android {
