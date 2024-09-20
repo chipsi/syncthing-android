@@ -60,14 +60,11 @@ android {
     }
 
     signingConfigs {
-        release {
-            storeFile = {
-                def path = System.getenv("SYNCTHING_RELEASE_STORE_FILE")
-                return (path) ? file(path) : null
-            }()
-            storePassword System.getenv("SIGNING_PASSWORD") ?: ""
-            keyAlias System.getenv("SYNCTHING_RELEASE_KEY_ALIAS") ?: ""
-            keyPassword System.getenv("SIGNING_PASSWORD") ?: ""
+        create("release") {
+            storeFile = System.getenv("SYNCTHING_RELEASE_STORE_FILE")?.let(::file)
+            storePassword = System.getenv("SIGNING_PASSWORD")
+            keyAlias = System.getenv("SYNCTHING_RELEASE_KEY_ALIAS")
+            keyPassword = System.getenv("SIGNING_PASSWORD")
         }
     }
 
