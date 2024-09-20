@@ -42,6 +42,7 @@ apply {
 }
 
 android {
+    val ndkVersionShared = rootProject.extra.get("ndkVersionShared")
     compileSdk = 35
     buildToolsVersion = "35.0.0"
     ndkVersion = "${ndkVersionShared}"
