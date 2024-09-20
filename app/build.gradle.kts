@@ -37,26 +37,26 @@ dependencies {
     }
 }
 
-apply from: 'versions.gradle'
-def ourVersionCode = versionMajor * 1000000 + versionMinor * 10000 + versionPatch * 100 + versionWrapper
-def ourVersionName = "${versionMajor}.${versionMinor}.${versionPatch}.${versionWrapper}"
+apply {
+    from("versions.gradle")
+}
 
 android {
-    compileSdkVersion 35
-    buildToolsVersion '35.0.0'
+    compileSdk = 35
+    buildToolsVersion = "35.0.0"
     ndkVersion = "${ndkVersionShared}"
 
     namespace = 'com.nutomic.syncthingandroid'
     buildFeatures.dataBinding = true
 
     defaultConfig {
-        applicationId "com.github.catfriend1.syncthingandroid"
-        minSdkVersion 21
-        targetSdkVersion 35
-        versionCode ourVersionCode
-        versionName ourVersionName
-        testApplicationId 'com.github.catfriend1.syncthingandroid.test'
-        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+        applicationId = "com.github.catfriend1.syncthingandroid"
+        minSdk = 21
+        targetSdk = 35
+        versionCode = versionMajor * 1000000 + versionMinor * 10000 + versionPatch * 100 + versionWrapper
+        versionName = "${versionMajor}.${versionMinor}.${versionPatch}.${versionWrapper}"
+        testApplicationId = "com.github.catfriend1.syncthingandroid.test"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     signingConfigs {
