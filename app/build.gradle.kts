@@ -46,7 +46,7 @@ android {
     buildToolsVersion = "35.0.0"
     ndkVersion = "${ndkVersionShared}"
 
-    namespace = 'com.nutomic.syncthingandroid'
+    namespace = "com.nutomic.syncthingandroid"
     buildFeatures.dataBinding = true
 
     defaultConfig {
@@ -113,19 +113,19 @@ android {
     }
     lint {
         abortOnError = true
-        disable('UnsafeExperimentalUsageError', 'UnsafeExperimentalUsageWarning', 'ExpiringTargetSdkVersion', 'ExpiredTargetSdkVersion')
+        disable("UnsafeExperimentalUsageError", "UnsafeExperimentalUsageWarning", "ExpiringTargetSdkVersion", "ExpiredTargetSdkVersion")
     }
 }
 
 play {
     // Use ANDROID_PUBLISHER_CREDENTIALS environment variable to specify serviceAccountCredentials.
-    track = 'beta'
+    track = "beta"
     resolutionStrategy = com.github.triplet.gradle.androidpublisher.ResolutionStrategy.IGNORE
     defaultToAppBundles = true
 }
 
 tasks.whenTaskAdded { task ->
-    if (task.name == 'compileDebugSources') {
+    if (task.name == "compileDebugSources") {
         // task.dependsOn lint
         // task.mustRunAfter lint
     }
@@ -148,8 +148,8 @@ tasks.register<Delete>("deleteUnsupportedPlayTranslations") {
 }
 
 task.register<Exec>("postBuildScript") {
-    executable = 'python'
-    args = ['-u', './postbuild.py']
+    executable = "python"
+    args = ["-u", "./postbuild.py"]
 }
 
 project.afterEvaluate {
