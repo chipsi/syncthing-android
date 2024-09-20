@@ -134,18 +134,20 @@ tasks.whenTaskAdded { task ->
 /**
  * Some languages are not supported by Google Play, so we ignore them.
  */
-task deleteUnsupportedPlayTranslations(type: Delete) {
-    delete 'src/main/play/listings/el-EL/'
-    delete 'src/main/play/listings/en/'
-    delete 'src/main/play/listings/eu/'
-    delete 'src/main/play/listings/nb/'
-    delete 'src/main/play/listings/nl_BE/'
-    delete 'src/main/play/listings/nl-BE/'
-    delete 'src/main/play/listings/nn/'
-    delete 'src/main/play/listings/ta/'
+tasks.register<Delete>("deleteUnsupportedPlayTranslations") {
+    delete(
+            "src/main/play/listings/el-EL/",
+            "src/main/play/listings/en/",
+            "src/main/play/listings/eu/",
+            "src/main/play/listings/nb/",
+            "src/main/play/listings/nl_BE/",
+            "src/main/play/listings/nl-BE/",
+            "src/main/play/listings/nn/",
+            "src/main/play/listings/ta/",
+    )
 }
 
-task postBuildScript(type: Exec) {
+task.register<Exec>("postBuildScript") {
     executable = 'python'
     args = ['-u', './postbuild.py']
 }
