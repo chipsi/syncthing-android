@@ -74,18 +74,13 @@ android {
     }
 
     buildTypes {
-        }
-        debug {
+        getByName("debug") {
             applicationIdSuffix = ".debug"
             isDebuggable = true
             isJniDebuggable = true
             isRenderscriptDebuggable = true
             isMinifyEnabled = false
-            gradle.buildFinished {
-                buildResult -> if (buildResult.failure) {
-                    logger.lifecycle("BUILD FAILED")
-                }
-            }
+        }
         getByName("release") {
             signingConfig = signingConfigs.runCatching { getByName("release") }
                 .getOrNull()
@@ -127,13 +122,6 @@ play {
     track = "beta"
     resolutionStrategy = com.github.triplet.gradle.androidpublisher.ResolutionStrategy.IGNORE
     defaultToAppBundles = true
-}
-
-tasks.whenTaskAdded { task ->
-    if (task.name == "compileDebugSources") {
-        // task.dependsOn lint
-        // task.mustRunAfter lint
-    }
 }
 
 /**
