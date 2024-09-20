@@ -118,7 +118,7 @@ android {
 }
 
 play {
-    // Use ANDROID_PUBLISHER_CREDENTIALS  environment variable to specify serviceAccountCredentials.
+    // Use ANDROID_PUBLISHER_CREDENTIALS environment variable to specify serviceAccountCredentials.
     track = 'beta'
     resolutionStrategy = com.github.triplet.gradle.androidpublisher.ResolutionStrategy.IGNORE
     defaultToAppBundles = true
