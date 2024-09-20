@@ -112,8 +112,8 @@ android {
         }
     }
     lint {
-        abortOnError true
-        disable 'UnsafeExperimentalUsageError', 'UnsafeExperimentalUsageWarning', 'ExpiringTargetSdkVersion', 'ExpiredTargetSdkVersion'
+        abortOnError = true
+        disable('UnsafeExperimentalUsageError', 'UnsafeExperimentalUsageWarning', 'ExpiringTargetSdkVersion', 'ExpiredTargetSdkVersion')
     }
 }
 
