@@ -6,8 +6,9 @@ buildscript {
         ndkVersionShared = '27.0.12077973'
     }
     repositories {
+        gradlePluginPortal()
         google()
-        jcenter()
+        mavenCentral()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:8.5.1'
@@ -21,7 +22,7 @@ buildscript {
 allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 }
 
