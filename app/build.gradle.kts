@@ -37,10 +37,6 @@ dependencies {
     }
 }
 
-apply {
-    from("versions.gradle.kts")
-}
-
 android {
     val ndkVersionShared = rootProject.extra.get("ndkVersionShared")
     val versionMajor = 1 // ToDo
