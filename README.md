@@ -30,9 +30,9 @@ Switching is easier then you may think!
 - On Syncthing on the official app, go into the settings and create a backup
 - Confirm you can see that backup in your files
 - Now stop the official app entirely using the system app settings for Syncthing (force stop the app basically - we need to ensure it's not running)
-- Now start Syncthing-fork
-- In the Syncthing-fork settings, restore the backup you created earlier
-- Like magic, everything should be as it was in Syncthing-fork
+- Now start Syncthing-Fork
+- In the Syncthing-Fork settings, restore the backup you created earlier
+- Like magic, everything should be as it was in Syncthing official.
 - Confirm everything looks good
 - Uninstall the official Syncthing app
 
