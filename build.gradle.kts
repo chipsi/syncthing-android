@@ -5,6 +5,10 @@ buildscript {
         // Cannot be called "ndkVersion" as that leads to naming collision
         // Changes to this value must be reflected in `./docker/Dockerfile`
         set("ndkVersionShared", "27.0.12077973")
+        set("versionMajor", 1)
+        set("versionMinor", 28)
+        set("versionPatch", 0)
+        set("versionWrapper", 0)
     }
 
     repositories {
@@ -12,6 +16,7 @@ buildscript {
         google()
         mavenCentral()
     }
+
     dependencies {
         classpath("com.android.tools.build:gradle:8.6.1")
         classpath("com.github.ben-manes:gradle-versions-plugin:0.42.0")
