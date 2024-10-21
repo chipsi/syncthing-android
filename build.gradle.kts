@@ -5,7 +5,6 @@ buildscript {
         // Cannot be called "ndkVersion" as that leads to naming collision
         // Changes to this value must be reflected in `./docker/Dockerfile`
         set("ndkVersionShared", "27.0.12077973")
-
     }
 
     repositories {
