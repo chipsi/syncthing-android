@@ -112,7 +112,10 @@ android {
     }
     lint {
         abortOnError = true
-        // ToDo disable("UnsafeExperimentalUsageError", "UnsafeExperimentalUsageWarning", "ExpiringTargetSdkVersion", "ExpiredTargetSdkVersion")
+        disable += "UnsafeExperimentalUsageError"
+        disable += "UnsafeExperimentalUsageWarning"
+        disable += "ExpiringTargetSdkVersion"
+        disable += "ExpiredTargetSdkVersion"
     }
 }
 
