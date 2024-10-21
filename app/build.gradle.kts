@@ -78,7 +78,6 @@ android {
             applicationIdSuffix = ".debug"
             isDebuggable = true
             isJniDebuggable = true
-            isRenderscriptDebuggable = true
             isMinifyEnabled = false
         }
         getByName("release") {
