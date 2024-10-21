@@ -316,6 +316,8 @@ syncthing_dir = os.path.join(module_dir, 'src', 'github.com', 'syncthing', 'sync
 prerequisite_tools_dir = os.path.dirname(os.path.realpath(__file__)) + os.path.sep + ".." + os.path.sep + ".." + os.path.sep + "syncthing-android-prereq"
 min_sdk = get_min_sdk(project_dir)
 
+# print ('Info: min_sdk = ' + str(min_sdk))
+
 # Check if git is available.
 git_bin = which("git");
 if not git_bin:
