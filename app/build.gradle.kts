@@ -139,11 +139,9 @@ tasks.register<Delete>("deleteUnsupportedPlayTranslations") {
     )
 }
 
-/*
-task.register<Exec>("postBuildScript") {
-    executable = "python"
-    args = ["-u", "./postbuild.py"]
-}*/
+task<Exec>("postBuildScript") {
+    commandLine("python", "-u" , "./postbuild.py")
+}
 
 project.afterEvaluate {
     project.getTasks().getByName("mergeDebugJniLibFolders").dependsOn(":syncthing:buildNative")
