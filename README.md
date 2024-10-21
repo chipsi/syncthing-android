@@ -23,7 +23,7 @@ A wrapper of [Syncthing](https://github.com/syncthing/syncthing) for Android. He
 - Supports two-way synchronization on external sd cards since Android 11.
 - Supports encrypted folders on untrusted devices.
 
-# Switcing from the (now deprecated) official version
+# Switching from the (now deprecated) official version
 
 Switching is easier then you may think!
 
