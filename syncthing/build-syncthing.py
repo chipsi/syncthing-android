@@ -332,7 +332,7 @@ print('git_bin=\'' + git_bin + '\'')
 # Check if go is available.
 go_bin = which("go");
 if not go_bin:
-    print('Warning: go is not available on the PATH.')
+    print('Info: go is not available on the PATH. Trying install_go')
     install_go();
     # Retry: Check if go is available.
     go_bin = which("go");
