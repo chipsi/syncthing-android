@@ -39,10 +39,11 @@ dependencies {
 
 android {
     val ndkVersionShared = rootProject.extra.get("ndkVersionShared")
-    val versionMajor = 1 // ToDo
-    val versionMinor = 2
-    val versionPatch = 3
-    val versionWrapper = 4
+    val versionMajor: kotlin.Int by rootProject.extra
+    val versionMinor: kotlin.Int by rootProject.extra
+    val versionPatch: kotlin.Int by rootProject.extra
+    val versionWrapper: kotlin.Int by rootProject.extra
+
     compileSdk = 35
     buildToolsVersion = "35.0.0"
     ndkVersion = "${ndkVersionShared}"
