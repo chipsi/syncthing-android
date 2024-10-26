@@ -3,6 +3,7 @@ package com.nutomic.syncthingandroid.service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -20,8 +21,9 @@ public class ReceiverManager {
     public static synchronized void registerReceiver(Context context, BroadcastReceiver receiver, IntentFilter intentFilter) {
         mReceivers.add(receiver);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            context.registerReceiver(receiver, intentFilter, RECEIVER_EXPORTED);
+            context.registerReceiver(receiver, intentFilter, Context.RECEIVER_EXPORTED);
         } else {
+            @Suppress("UnspecifiedRegisterReceiverFlag"
             context.registerReceiver(receiver, intentFilter);
         }
         LogV("Registered receiver: " + receiver + " with filter: " + intentFilter);
