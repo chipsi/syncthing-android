@@ -19,7 +19,11 @@ public class ReceiverManager {
 
     public static synchronized void registerReceiver(Context context, BroadcastReceiver receiver, IntentFilter intentFilter) {
         mReceivers.add(receiver);
-        context.registerReceiver(receiver, intentFilter, RECEIVER_EXPORTED);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.registerReceiver(receiver, intentFilter, RECEIVER_EXPORTED);
+        } else {
+            context.registerReceiver(receiver, intentFilter);
+        }
         LogV("Registered receiver: " + receiver + " with filter: " + intentFilter);
     }
 
