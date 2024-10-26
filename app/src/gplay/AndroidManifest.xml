@@ -6,4 +6,14 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" tools:node="remove"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" tools:node="add"/>
 
+    <service
+            android:name=".service.SyncthingService"
+            android:foregroundServiceType="specialUse"
+            tools:node="remove"/>
+
+    <service
+            android:name=".service.SyncthingService"
+            android:foregroundServiceType="dataSync"
+            tools:node="add"/>
+
 </manifest>
