@@ -16,7 +16,7 @@ REM
 REM SET ANDROID_PUBLISHER_CREDENTIALS=%userprofile%\.android\play_key.json"
 REM SET SYNCTHING_RELEASE_STORE_FILE="%userprofile%\.android\signing_key.jks"
 SET SYNCTHING_RELEASE_KEY_ALIAS=Syncthing-Fork
-SET BUILD_FLAVOUR_GPLAY=release
+SET BUILD_FLAVOUR_GPLAY=gplay
 title %SYNCTHING_RELEASE_KEY_ALIAS% - Build APK
 REM
 SET GIT_INSTALL_DIR=%ProgramFiles%\Git
@@ -72,6 +72,7 @@ REM
 REM Check if we should skip the release build and just make a debug build.
 IF "%SKIP_RELEASE_BUILD%" == "1" goto :absPostBuildScript
 REM
+call :buildApk release
 call :buildApk %BUILD_FLAVOUR_GPLAY%
 REM
 IF "%CLEANUP_BEFORE_BUILD%" == "1" del /f "%SCRIPT_PATH%app\build\outputs\bundle\%BUILD_FLAVOUR_GPLAY%\app-%BUILD_FLAVOUR_GPLAY%.aab" 2> NUL:
