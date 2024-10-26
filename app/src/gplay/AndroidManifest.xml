@@ -4,16 +4,13 @@
     package="com.nutomic.syncthingandroid">
 
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" tools:node="remove"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" tools:node="add"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" tools:node="merge"/>
 
-    <service
-            android:name=".service.SyncthingService"
-            android:foregroundServiceType="specialUse"
-            tools:node="remove"/>
-
-    <service
-            android:name=".service.SyncthingService"
-            android:foregroundServiceType="dataSync"
-            tools:node="add"/>
+	<application tools:node="replace">
+		<service
+				android:name=".service.SyncthingService"
+				android:foregroundServiceType="dataSync"
+				/>
+    </application>
 
 </manifest>
