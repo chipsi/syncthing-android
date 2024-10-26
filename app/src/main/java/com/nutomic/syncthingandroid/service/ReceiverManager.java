@@ -23,7 +23,7 @@ public class ReceiverManager {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             context.registerReceiver(receiver, intentFilter, Context.RECEIVER_EXPORTED);
         } else {
-            @Suppress("UnspecifiedRegisterReceiverFlag"
+            @Suppress("UnspecifiedRegisterReceiverFlag")
             context.registerReceiver(receiver, intentFilter);
         }
         LogV("Registered receiver: " + receiver + " with filter: " + intentFilter);
