@@ -18,12 +18,12 @@ public class ReceiverManager {
 
     private static List<BroadcastReceiver> mReceivers = new ArrayList<BroadcastReceiver>();
 
+    @SuppressWarnings("UnspecifiedRegisterReceiverFlag")
     public static synchronized void registerReceiver(Context context, BroadcastReceiver receiver, IntentFilter intentFilter) {
         mReceivers.add(receiver);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             context.registerReceiver(receiver, intentFilter, Context.RECEIVER_EXPORTED);
         } else {
-            @Suppress("UnspecifiedRegisterReceiverFlag")
             context.registerReceiver(receiver, intentFilter);
         }
         LogV("Registered receiver: " + receiver + " with filter: " + intentFilter);
