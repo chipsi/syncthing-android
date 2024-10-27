@@ -66,7 +66,7 @@ REM
 call gradlew --quiet lint%BUILD_FLAVOUR_GPLAY% & SET RESULT=%ERRORLEVEL%
 IF NOT "!RESULT!" == "0" echo [ERROR] "gradlew lint%BUILD_FLAVOUR_GPLAY%" exited with code #%RESULT%. & goto :eos
 REM
-echo [INFO] Building APK ...
+REM Building APK
 REM
 call :buildApk %BUILD_FLAVOUR_RELEASE%
 call :buildApk %BUILD_FLAVOUR_GPLAY%
