@@ -617,6 +617,9 @@ public class SettingsActivity extends SyncthingActivity {
                     if (TextUtils.isEmpty(intervalMinutes)) {
                         return false;
                     }
+                    if (Integer.parseInt(intervalMinutes) <= 0) {
+                        return false;
+                    }
                     preference.setSummary(getString(R.string.sync_duration_minutes_summary, intervalMinutes));
                     break;
             }
