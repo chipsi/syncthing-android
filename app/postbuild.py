@@ -87,7 +87,6 @@ print ('')
 
 # Build FullFNs.
 current_dir = os.path.dirname(os.path.realpath(__file__))
-enable_push_to_device = os.path.realpath(os.path.join(current_dir, "..", "#enable_push_to_device"))
 debug_apk = os.path.realpath(os.path.join(current_dir, 'build', 'outputs', 'apk', 'debug', 'app-debug.apk'))
 release_apk = os.path.realpath(os.path.join(current_dir, 'build', 'outputs', 'apk', 'release', 'app-release.apk'))
 
