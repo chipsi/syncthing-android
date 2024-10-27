@@ -281,7 +281,7 @@ public class RunConditionMonitor {
                 JobUtils.cancelAllScheduledJobs(context);
                 JobUtils.scheduleSyncTriggerServiceJob(
                         context,
-                        (int) (Integer.parseInt(mPreferences.getString(Constants.PREF_SYNC_INTERVAL_MINUTES,"60")) * 60),
+                        Integer.parseInt(mPreferences.getString(Constants.PREF_SYNC_INTERVAL_MINUTES,"60")) * 60,
                         true
                 );
                 return;
@@ -341,7 +341,7 @@ public class RunConditionMonitor {
                 JobUtils.cancelAllScheduledJobs(context);
                 JobUtils.scheduleSyncTriggerServiceJob(
                         context,
-                        (int) (Integer.parseInt(mPreferences.getString(Constants.PREF_SYNC_INTERVAL_MINUTES,"60")) * 60),
+                        Integer.parseInt(mPreferences.getString(Constants.PREF_SYNC_INTERVAL_MINUTES,"60")) * 60,
                         true
                 );
             } else {
@@ -572,7 +572,6 @@ public class RunConditionMonitor {
 
         // PREF_RUN_ON_TIME_SCHEDULE
         // set mTimeConditionMatch to true if the last run was more than WAIT_FOR_NEXT_SYNC_DELAY_SECS ago
-        Integer.parseInt(mPreferences.getString(Constants.PREF_SYNC_INTERVAL_MINUTES,"60"));
         if (SystemClock.elapsedRealtime() - mPreferences.getLong(Constants.PREF_LAST_RUN_TIME,0) > Integer.parseInt(mPreferences.getString(Constants.PREF_SYNC_INTERVAL_MINUTES,"60")) * 60 * 1000)
             mTimeConditionMatch = true;
         if (prefRunOnTimeSchedule && !mTimeConditionMatch) {
