@@ -97,5 +97,5 @@ release_apk = os.path.realpath(os.path.join(current_dir, 'build', 'outputs', 'ap
 # Calculate certificate hash of built APKs and output if it matches a known release channel.
 # See the wiki for more details: wiki/Switch-between-releases_Verify-APK-is-genuine.md
 calcAndPrintCertHash(debug_apk, "debug");
-calcAndPrintCertHash(debug_apk, "gplay");
+calcAndPrintCertHash(gplay_apk, "gplay");
 calcAndPrintCertHash(release_apk, "release");
