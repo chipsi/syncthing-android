@@ -108,7 +108,6 @@
             android:maxLength="9"
             android:defaultValue="5" />
 
-        <!-- TODO: Update strings -->
         <EditTextPreference
             android:key="sync_interval_minutes"
             android:title="@string/sync_interval_minutes_title"
