@@ -6,16 +6,15 @@ cls
 REM
 REM Script Consts.
 SET CLEANUP_BEFORE_BUILD=1
-SET SKIP_RELEASE_BUILD=0
 REM
 REM Runtime Variables.
 IF EXIST "%LocalAppData%\Android\Sdk" SET "ANDROID_SDK_ROOT=%LocalAppData%\Android\Sdk"
 IF NOT DEFINED ANDROID_SDK_ROOT SET "ANDROID_SDK_ROOT=%SCRIPT_PATH%..\syncthing-android-prereq"
-IF NOT DEFINED ANDROID_PUBLISHER_CREDENTIALS echo [WARN] ANDROID_PUBLISHER_CREDENTIALS env var not set. We will skip the signed release build. & SET SKIP_RELEASE_BUILD=1
 REM
 REM SET ANDROID_PUBLISHER_CREDENTIALS=%userprofile%\.android\play_key.json"
 REM SET SYNCTHING_RELEASE_STORE_FILE="%userprofile%\.android\signing_key.jks"
 SET SYNCTHING_RELEASE_KEY_ALIAS=Syncthing-Fork
+SET BUILD_FLAVOUR_RELEASE=release
 SET BUILD_FLAVOUR_GPLAY=gplay
 title %SYNCTHING_RELEASE_KEY_ALIAS% - Build APK
 REM
@@ -36,9 +35,6 @@ echo [INFO] Checking if SyncthingNative was built before starting this script ..
 SET LIBCOUNT=
 for /f "tokens=*" %%A IN ('dir /s /a "%SCRIPT_PATH%app\src\main\jniLibs\*" 2^>NUL: ^| find /C "libsyncthingnative.so"') DO SET LIBCOUNT=%%A
 IF NOT "%LIBCOUNT%" == "4" echo [ERROR] SyncthingNative[s] "libsyncthingnative.so" are missing. Please run "gradlew buildNative" first. & goto :eos
-REM
-REM Check if we should skip the release build and just make a debug build.
-IF "%SKIP_RELEASE_BUILD%" == "1" goto :absLint
 REM
 echo [INFO] Let's prepare a new "%SYNCTHING_RELEASE_KEY_ALIAS%" release.
 REM
@@ -63,16 +59,16 @@ REM
 copy /y "%SCRIPT_PATH%app\src\main\play\release-notes\en-GB\beta.txt" "%SCRIPT_PATH%app\src\main\play\release-notes\en-GB\default.txt" 
 REM
 echo [INFO] Running lint before building ...
-IF "%SKIP_RELEASE_BUILD%" == "1" call gradlew --quiet lintDebug & SET RESULT=%ERRORLEVEL%
-IF NOT "%SKIP_RELEASE_BUILD%" == "1" call gradlew --quiet lint & SET RESULT=%ERRORLEVEL%
-IF NOT "!RESULT!" == "0" echo [ERROR] "gradlew lint" exited with code #%RESULT%. & goto :eos
 REM
-call :buildApk debug
+call gradlew --quiet lint%BUILD_FLAVOUR_RELEASE% & SET RESULT=%ERRORLEVEL%
+IF NOT "!RESULT!" == "0" echo [ERROR] "gradlew lint%BUILD_FLAVOUR_RELEASE%" exited with code #%RESULT%. & goto :eos
 REM
-REM Check if we should skip the release build and just make a debug build.
-IF "%SKIP_RELEASE_BUILD%" == "1" goto :absPostBuildScript
+call gradlew --quiet lint%BUILD_FLAVOUR_GPLAY% & SET RESULT=%ERRORLEVEL%
+IF NOT "!RESULT!" == "0" echo [ERROR] "gradlew lint%BUILD_FLAVOUR_GPLAY%" exited with code #%RESULT%. & goto :eos
 REM
-call :buildApk release
+echo [INFO] Building APK ...
+REM
+call :buildApk %BUILD_FLAVOUR_RELEASE%
 call :buildApk %BUILD_FLAVOUR_GPLAY%
 REM
 IF "%CLEANUP_BEFORE_BUILD%" == "1" del /f "%SCRIPT_PATH%app\build\outputs\bundle\%BUILD_FLAVOUR_GPLAY%\app-%BUILD_FLAVOUR_GPLAY%.aab" 2> NUL:
@@ -93,9 +89,6 @@ IF NOT "%RESULT%" == "0" echo [ERROR] "gradlew deleteUnsupportedPlayTranslations
 REM
 REM Copy build artifacts with correct file name to upload folder.
 call "%SCRIPT_PATH%postbuild_copy_apk.cmd"
-REM
-REM Check if we should skip the release upload and finish here.
-IF "%SKIP_RELEASE_BUILD%" == "1" goto :eos
 REM
 :askUserReadyToPublish
 SET UI_ANSWER=
