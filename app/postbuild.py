@@ -88,9 +88,11 @@ print ('')
 # Build FullFNs.
 current_dir = os.path.dirname(os.path.realpath(__file__))
 debug_apk = os.path.realpath(os.path.join(current_dir, 'build', 'outputs', 'apk', 'debug', 'app-debug.apk'))
+gplay_apk = os.path.realpath(os.path.join(current_dir, 'build', 'outputs', 'apk', 'gplay', 'app-gplay.apk'))
 release_apk = os.path.realpath(os.path.join(current_dir, 'build', 'outputs', 'apk', 'release', 'app-release.apk'))
 
 # Calculate certificate hash of built APKs and output if it matches a known release channel.
 # See the wiki for more details: wiki/Switch-between-releases_Verify-APK-is-genuine.md
 calcAndPrintCertHash(debug_apk, "debug");
+calcAndPrintCertHash(debug_apk, "gplay");
 calcAndPrintCertHash(release_apk, "release");
