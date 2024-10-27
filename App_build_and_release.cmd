@@ -138,6 +138,6 @@ echo [INFO] Building Android APK variant "%BA_BUILD_TYPE%" ...
 call gradlew --quiet assemble%BA_BUILD_TYPE%
 SET RESULT=%ERRORLEVEL%
 IF NOT "%RESULT%" == "0" echo [ERROR] "gradlew assemble%BA_BUILD_TYPE%" exited with code #%RESULT%. & goto :eos
-type "app\build\intermediates\merged_manifests\%BA_BUILD_TYPE%\AndroidManifest.xml" | findstr /i "android:version"
+type "app\build\intermediates\merged_manifests\%BA_BUILD_TYPE%\process%BA_BUILD_TYPE%Manifest\AndroidManifest.xml" | findstr /i "android:version"
 REM
 goto :eof
