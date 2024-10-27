@@ -11,6 +11,9 @@ import re
 # - Python 2.7.15
 # - Python 3.7.0
 #
+# Command line:
+#   gradlew postbuildscript
+#
 
 SUPPORTED_PYTHON_PLATFORMS = ['Windows', 'Linux', 'Darwin']
 
