@@ -47,7 +47,7 @@ IF NOT EXIST "%ANDROID_PUBLISHER_CREDENTIALS%" echo [ERROR] ANDROID_PUBLISHER_CR
 FOR /F "tokens=*" %%i in ('type "%ANDROID_PUBLISHER_CREDENTIALS%" 2^>NUL:') DO SET ANDROID_PUBLISHER_CREDENTIALS=%%i
 REM
 REM User has to enter the signing password if it is not filled in here.
-SET SIGNING_PASSWORD=
+REM SET SIGNING_PASSWORD=
 IF DEFINED SIGNING_PASSWORD goto :absLint
 :enterSigningPassword
 setlocal DisableDelayedExpansion
