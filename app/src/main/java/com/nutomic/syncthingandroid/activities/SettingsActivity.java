@@ -291,7 +291,7 @@ public class SettingsActivity extends SyncthingActivity {
             mSyncDurationMinutes =
                     (EditTextPreference) findPreference(Constants.PREF_SYNC_DURATION_MINUTES);
             mSyncIntervalMinutes =
-                    (EditTextPreference) findPreference(Constants.PREF_SYNC_INTERVAL_MINUTES);
+                    (EditTextPreference) findPreference(Constants.PREF_SLEEP_INTERVAL_MINUTES);
 
             mRunOnMeteredWifi.setEnabled(mRunOnWifi.isChecked());
             mUseWifiWhitelist.setEnabled(mRunOnWifi.isChecked());
@@ -612,7 +612,7 @@ public class SettingsActivity extends SyncthingActivity {
                     }
                     preference.setSummary(getString(R.string.sync_duration_minutes_summary, durationMinutes));
                     break;
-                case Constants.PREF_SYNC_INTERVAL_MINUTES:
+                case Constants.PREF_SLEEP_INTERVAL_MINUTES:
                     String intervalMinutes = o.toString();
                     if (TextUtils.isEmpty(intervalMinutes)) {
                         return false;
